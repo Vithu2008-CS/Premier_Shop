@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Checkout - Premier Shop')
 
 @section('content')
@@ -17,15 +17,10 @@
                             @error('address_line') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="row g-3 mb-3">
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <label class="form-label">City</label>
                                 <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" value="{{ old('city', auth()->user()->city) }}" required>
                                 @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Postcode</label>
-                                <input type="text" name="postcode" class="form-control @error('postcode') is-invalid @enderror" value="{{ old('postcode', auth()->user()->postal_code) }}" required>
-                                @error('postcode') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
                         <div class="mb-3">
@@ -87,7 +82,7 @@
                     @endif
                     <div class="d-flex justify-content-between mb-2">
                         <span>Shipping</span>
-                        <span id="shippingCostDisplay">Enter postcode</span>
+                        <span id="shippingCostDisplay">Enter address</span>
                     </div>
                     <div id="shippingMessageDisplay" class="text-muted small text-end fst-italic mb-2"></div>
                     <hr>
@@ -96,7 +91,7 @@
                     @endphp
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold fs-5">Total</span>
-                        <span class="fw-bold fs-5 text-primary" id="cartTotalDisplay" data-base-total="{{ $subtotalMinusDiscount }}">£{{ number_format($subtotalMinusDiscount + 5.99, 2) }}</span>
+                        <span class="fw-bold fs-5 text-primary" id="cartTotalDisplay" data-base-total="{{ $subtotalMinusDiscount }}">£{{ number_format($subtotalMinusDiscount, 2) }}</span>
                     </div>
                 </div>
             </div>
@@ -106,53 +101,64 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const postcodeInput = document.querySelector('input[name="postcode"]');
+        const addressInput = document.querySelector('input[name="address_line"]');
+        const cityInput = document.querySelector('input[name="city"]');
         const shippingCostDisplay = document.getElementById('shippingCostDisplay');
         const shippingMessageDisplay = document.getElementById('shippingMessageDisplay');
         const cartTotalDisplay = document.getElementById('cartTotalDisplay');
         const baseTotal = parseFloat(cartTotalDisplay.dataset.baseTotal);
+        const shippingUrl = "{{ route('checkout.calculateShipping') }}";
 
-        postcodeInput.addEventListener('blur', function() {
-            const postcode = this.value.trim();
-            if (!postcode) return;
+        function calculateShipping() {
+            const address = addressInput.value.trim();
+            const city = cityInput.value.trim();
+
+            if (!address || !city) return;
 
             shippingCostDisplay.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>';
-            shippingMessageDisplay.textContent = 'Calculating distance...';
+            shippingMessageDisplay.textContent = 'Calculating driving distance...';
 
-            fetch('{{ route('checkout.calculateShipping') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ postcode: postcode })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.cost !== undefined) {
-                    const shippingCost = parseFloat(data.cost);
-                    shippingCostDisplay.textContent = shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`;
-                    shippingMessageDisplay.textContent = data.message || '';
+            fetch(shippingUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        address_line: address,
+                        city: city
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cost !== undefined) {
+                        const shippingCost = parseFloat(data.cost);
+                        shippingCostDisplay.textContent = shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`;
+                        shippingMessageDisplay.textContent = data.message || '';
 
-                    const newTotal = baseTotal + shippingCost;
-                    cartTotalDisplay.textContent = `£${newTotal.toFixed(2)}`;
-                } else {
-                    shippingCostDisplay.textContent = 'Error';
-                    shippingMessageDisplay.textContent = 'Could not calculate shipping.';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                shippingCostDisplay.textContent = '£5.99';
-                shippingMessageDisplay.textContent = 'Flat rate applied due to network error.';
-                cartTotalDisplay.textContent = `£${(baseTotal + 5.99).toFixed(2)}`;
-            });
+                        const newTotal = baseTotal + shippingCost;
+                        cartTotalDisplay.textContent = `£${newTotal.toFixed(2)}`;
+                    } else {
+                        shippingCostDisplay.textContent = 'Error';
+                        shippingMessageDisplay.textContent = 'Could not calculate shipping.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    shippingCostDisplay.textContent = '£5.99';
+                    shippingMessageDisplay.textContent = 'Flat rate applied due to network error.';
+                    cartTotalDisplay.textContent = `£${(baseTotal + 5.99).toFixed(2)}`;
+                });
+        }
+
+        [addressInput, cityInput].forEach(input => {
+            input.addEventListener('blur', calculateShipping);
         });
 
-        // Trigger calculation if postcode is pre-filled from user profile
-        if (postcodeInput.value.trim() !== '') {
-            postcodeInput.dispatchEvent(new Event('blur'));
+        // Trigger calculation if address is pre-filled from user profile
+        if (addressInput.value.trim() !== '' && cityInput.value.trim() !== '') {
+            calculateShipping();
         }
     });
 </script>

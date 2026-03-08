@@ -10,8 +10,17 @@ use App\Mail\OrderReceipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
+use App\Services\ShippingService;
+
 class CheckoutController extends Controller
 {
+    protected $shippingService;
+
+    public function __construct(ShippingService $shippingService)
+    {
+        $this->shippingService = $shippingService;
+    }
+
     public function index()
     {
         $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
@@ -56,7 +65,6 @@ class CheckoutController extends Controller
         $request->validate([
             'address_line' => 'required|string|max:255',
             'city' => 'required|string|max:100',
-            'postcode' => 'required|string|max:20',
             'phone' => 'required|string|max:20',
         ]);
 
@@ -88,23 +96,28 @@ class CheckoutController extends Controller
 
         // Fetch shipping settings
         $shippingSettings = \App\Models\ShippingSetting::first();
-        $distanceService = app(\App\Services\DistanceCalculationService::class);
 
         $shippingCost = $shippingSettings ? $shippingSettings->flat_rate_fee : 5.99; // Fallback flat rate
         $distance = null;
 
         if ($shippingSettings) {
-            // Calculate distance
-            $distance = $distanceService->calculateDistance($request->postcode);
+            // Calculate driving distance using Google Maps (Full Address for precision)
+            $origin = $shippingSettings->origin_address ?? 'Buckingham Palace, London, SW1A 1AA, UK';
+            $destination = "{$request->address_line}, {$request->city}, UK";
+
+            $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
 
             if ($subtotal >= $shippingSettings->free_delivery_threshold) {
                 $shippingCost = 0.00; // Free delivery over threshold
             } elseif ($distance !== null) {
-                if ($distance <= $shippingSettings->free_delivery_radius_miles) {
+                // Convert km to miles if the settings use miles (settings say miles)
+                $distanceInMiles = $distance * 0.621371;
+
+                if ($distanceInMiles <= $shippingSettings->free_delivery_radius_miles) {
                     $shippingCost = 0.00; // Free delivery within radius
                 } else {
                     // Charge base rate + surcharge for extra miles
-                    $extraMiles = $distance - $shippingSettings->free_delivery_radius_miles;
+                    $extraMiles = $distanceInMiles - $shippingSettings->free_delivery_radius_miles;
                     $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
                 }
             }
@@ -121,11 +134,11 @@ class CheckoutController extends Controller
             'discount_amount' => $discount,
             'coupon_code' => $couponCode,
             'shipping_cost' => $shippingCost,
+            'distance' => $distance, // Save distance in KM
             'total' => $total,
             'shipping_address' => [
                 'address_line' => $request->address_line,
                 'city' => $request->city,
-                'postcode' => $request->postcode,
                 'phone' => $request->phone,
             ],
             'payment_status' => 'completed', // simplified for now
@@ -159,7 +172,11 @@ class CheckoutController extends Controller
 
     public function calculateShipping(Request $request)
     {
-        $request->validate(['postcode' => 'required|string']);
+        // For distance calculation, address_line or city is now required as we removed postcode
+        $request->validate([
+            'address_line' => 'required|string',
+            'city' => 'required|string'
+        ]);
 
         $shippingSettings = \App\Models\ShippingSetting::first();
         if (!$shippingSettings) {
@@ -171,8 +188,16 @@ class CheckoutController extends Controller
             return response()->json(['error' => 'Cart not found'], 400);
         }
 
-        $distanceService = app(\App\Services\DistanceCalculationService::class);
-        $distance = $distanceService->calculateDistance($request->postcode);
+        $origin = $shippingSettings->origin_address ?? 'Buckingham Palace, London, SW1A 1AA, UK';
+
+        // Use full address for precision
+        $addressParts = array_filter([
+            $request->address_line ?? null,
+            $request->city ?? null
+        ]);
+        $destination = implode(', ', $addressParts) . ', UK';
+
+        $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
 
         $shippingCost = $shippingSettings->flat_rate_fee;
         $message = "Flat rate shipping.";
@@ -181,19 +206,21 @@ class CheckoutController extends Controller
             $shippingCost = 0.00;
             $message = "Free shipping (Over £{$shippingSettings->free_delivery_threshold})";
         } elseif ($distance !== null) {
-            if ($distance <= $shippingSettings->free_delivery_radius_miles) {
+            $distanceInMiles = $distance * 0.621371;
+
+            if ($distanceInMiles <= $shippingSettings->free_delivery_radius_miles) {
                 $shippingCost = 0.00;
-                $message = "Free local delivery (" . number_format($distance, 1) . " miles)";
+                $message = "Free local delivery (" . number_format($distanceInMiles, 1) . " miles)";
             } else {
-                $extraMiles = $distance - $shippingSettings->free_delivery_radius_miles;
+                $extraMiles = $distanceInMiles - $shippingSettings->free_delivery_radius_miles;
                 $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
-                $message = "Distance: " . number_format($distance, 1) . " miles. Includes £" . number_format($shippingSettings->surcharge_per_mile, 2) . "/mile surcharge outside free radius.";
+                $message = "Distance: " . number_format($distanceInMiles, 1) . " miles. Includes £" . number_format($shippingSettings->surcharge_per_mile, 2) . "/mile surcharge outside free radius.";
             }
         }
 
         return response()->json([
             'cost' => round($shippingCost, 2),
-            'distance' => $distance ? round($distance, 1) : null,
+            'distance' => $distance ? round($distance * 0.621371, 1) : null,
             'message' => $message
         ]);
     }

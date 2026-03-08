@@ -71,12 +71,6 @@
             <x-input-error class="mt-2" :messages="$errors->get('city')" />
         </div>
 
-        <div>
-            <x-input-label for="postal_code" :value="__('Postal Code (For Shipping Calculation)')" />
-            <x-text-input id="postal_code" name="postal_code" type="text" class="mt-1 block w-full" :value="old('postal_code', $user->postal_code)" autocomplete="postal-code" />
-            <x-input-error class="mt-2" :messages="$errors->get('postal_code')" />
-        </div>
-
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

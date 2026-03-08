@@ -33,16 +33,12 @@
                     <span>{{ $customer->address ?? 'Not provided' }}</span>
                 </div>
                 <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--admin-border);">
-                    <span style="color:var(--admin-muted);"><i class="bi bi-mailbox me-2"></i>Postal Code</span>
-                    <span>{{ $customer->postal_code ?? 'Not provided' }}</span>
-                </div>
-                <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--admin-border);">
                     <span style="color:var(--admin-muted);"><i class="bi bi-calendar me-2"></i>DOB</span>
                     <span>
                         @if($customer->dob)
-                            {{ \Carbon\Carbon::parse($customer->dob)->format('d M Y') }} ({{ $customer->age }} yrs)
+                        {{ \Carbon\Carbon::parse($customer->dob)->format('d M Y') }} ({{ $customer->age }} yrs)
                         @else
-                            Not provided
+                        Not provided
                         @endif
                     </span>
                 </div>
@@ -51,9 +47,9 @@
                     <span>{{ $customer->created_at->format('d M Y') }}</span>
                 </div>
                 @if($customer->isUnder16())
-                    <div class="alert alert-warning mt-3 mb-0" style="border-radius:10px;">
-                        <i class="bi bi-exclamation-triangle me-1"></i> Under 16 — Cannot purchase age-restricted items
-                    </div>
+                <div class="alert alert-warning mt-3 mb-0" style="border-radius:10px;">
+                    <i class="bi bi-exclamation-triangle me-1"></i> Under 16 — Cannot purchase age-restricted items
+                </div>
                 @endif
             </div>
         </div>
@@ -63,30 +59,36 @@
         <div class="admin-card">
             <div class="card-title">Order History</div>
             @if($customer->orders->count() > 0)
-                <table class="admin-table">
-                    <thead>
-                        <tr><th>Order #</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr>
-                    </thead>
-                    <tbody>
-                        @foreach($customer->orders as $order)
-                            <tr>
-                                <td><a href="{{ route('admin.orders.show', $order) }}" style="color:#A29BFE;text-decoration:none;font-weight:600;">{{ $order->order_number }}</a></td>
-                                <td style="color:var(--admin-muted);">{{ $order->created_at->format('d M Y') }}</td>
-                                <td class="fw-bold">£{{ number_format($order->total, 2) }}</td>
-                                <td>
-                                    @php $colors = ['pending'=>'warning','processing'=>'info','shipped'=>'primary','delivered'=>'success','cancelled'=>'danger']; @endphp
-                                    <span class="badge badge-status bg-{{ $colors[$order->status] ?? 'secondary' }}">{{ ucfirst($order->status) }}</span>
-                                </td>
-                                <td><a href="{{ route('admin.orders.show', $order) }}" class="btn-icon"><i class="bi bi-eye"></i></a></td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($customer->orders as $order)
+                    <tr>
+                        <td><a href="{{ route('admin.orders.show', $order) }}" style="color:#A29BFE;text-decoration:none;font-weight:600;">{{ $order->order_number }}</a></td>
+                        <td style="color:var(--admin-muted);">{{ $order->created_at->format('d M Y') }}</td>
+                        <td class="fw-bold">£{{ number_format($order->total, 2) }}</td>
+                        <td>
+                            @php $colors = ['pending'=>'warning','processing'=>'info','shipped'=>'primary','delivered'=>'success','cancelled'=>'danger']; @endphp
+                            <span class="badge badge-status bg-{{ $colors[$order->status] ?? 'secondary' }}">{{ ucfirst($order->status) }}</span>
+                        </td>
+                        <td><a href="{{ route('admin.orders.show', $order) }}" class="btn-icon"><i class="bi bi-eye"></i></a></td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
             @else
-                <div class="text-center py-5" style="color:var(--admin-muted);">
-                    <i class="bi bi-bag-x" style="font-size:2.5rem;display:block;margin-bottom:10px;"></i>
-                    No orders yet
-                </div>
+            <div class="text-center py-5" style="color:var(--admin-muted);">
+                <i class="bi bi-bag-x" style="font-size:2.5rem;display:block;margin-bottom:10px;"></i>
+                No orders yet
+            </div>
             @endif
         </div>
     </div>

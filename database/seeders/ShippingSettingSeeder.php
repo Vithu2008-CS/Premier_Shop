@@ -15,7 +15,7 @@ class ShippingSettingSeeder extends Seeder
         \App\Models\ShippingSetting::updateOrCreate(
             ['id' => 1], // Assuming single settings row
             [
-                'origin_postal_code' => 'SW1A 1AA', // Default London origin
+                'origin_address' => 'GQ6Q+WH London, United Kingdom', // User specified shop location (Plus Code)
                 'free_delivery_threshold' => 100.00,
                 'free_delivery_radius_miles' => 20.00,
                 'surcharge_per_mile' => 1.50,
