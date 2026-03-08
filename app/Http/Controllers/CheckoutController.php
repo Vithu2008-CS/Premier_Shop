@@ -102,7 +102,7 @@ class CheckoutController extends Controller
 
         if ($shippingSettings) {
             // Calculate driving distance using Google Maps (Full Address for precision)
-            $origin = $shippingSettings->origin_address ?? 'Buckingham Palace, London, SW1A 1AA, UK';
+            $origin = $shippingSettings->origin_address ?? config('app.address', 'United Kingdom');
             $destination = "{$request->address_line}, {$request->city}, UK";
 
             $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
@@ -117,7 +117,9 @@ class CheckoutController extends Controller
                     $shippingCost = 0.00; // Free delivery within radius
                 } else {
                     // Charge base rate + surcharge for extra miles
-                    $extraMiles = $distanceInMiles - $shippingSettings->free_delivery_radius_miles;
+                    // Note: We always charge the base rate (flat_rate_fee) if outside free radius,
+                    // plus a surcharge for every mile BEYOND the free radius.
+                    $extraMiles = max(0, $distanceInMiles - $shippingSettings->free_delivery_radius_miles);
                     $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
                 }
             }
@@ -188,7 +190,7 @@ class CheckoutController extends Controller
             return response()->json(['error' => 'Cart not found'], 400);
         }
 
-        $origin = $shippingSettings->origin_address ?? 'Buckingham Palace, London, SW1A 1AA, UK';
+        $origin = $shippingSettings->origin_address ?? config('app.address', 'United Kingdom');
 
         // Use full address for precision
         $addressParts = array_filter([
