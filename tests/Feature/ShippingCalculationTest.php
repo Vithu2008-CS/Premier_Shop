@@ -69,13 +69,10 @@ class ShippingCalculationTest extends TestCase
 
     public function test_free_shipping_over_threshold()
     {
-        // Create a new cart with high subtotal to test free shipping threshold
-        $newCart = Cart::create(['user_id' => $this->user->id, 'subtotal' => 150.00]);
-        CartItem::create([
-            'cart_id' => $newCart->id,
-            'product_id' => $this->product->id,
+        // Update existing cart with high subtotal to test free shipping threshold
+        $this->cart->update(['subtotal' => 150.00]);
+        $this->cart->items()->first()->update([
             'quantity' => 15,
-            'price' => 10.00,
             'line_total' => 150.00,
         ]);
 
@@ -87,7 +84,7 @@ class ShippingCalculationTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals(0.00, $response->json('cost'));
-        $this->assertStringContainsString('Free shipping (Over £100)', $response->json('message'));
+        $this->assertStringContainsString('Free shipping (Over £100.00)', $response->json('message'));
     }
 
     public function test_shipping_calculation_requires_address_fields()
