@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Receipt</title>
 </head>
+
 <body style="margin:0;padding:0;background-color:#f0f2f5;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 
     {{-- Outer Wrapper --}}
@@ -76,12 +78,12 @@
                                 </tr>
                                 {{-- Items --}}
                                 @foreach($order->items as $item)
-                                    <tr style="border-bottom:1px solid #eee;">
-                                        <td style="padding:14px;font-size:14px;color:#2d3436;font-weight:600;">{{ $item->product->name }}</td>
-                                        <td align="center" style="padding:14px;font-size:14px;color:#636e72;">{{ $item->quantity }}</td>
-                                        <td align="center" style="padding:14px;font-size:14px;color:#636e72;">£{{ number_format($item->price, 2) }}</td>
-                                        <td align="right" style="padding:14px;font-size:14px;color:#2d3436;font-weight:600;">£{{ number_format($item->price * $item->quantity, 2) }}</td>
-                                    </tr>
+                                <tr style="border-bottom:1px solid #eee;">
+                                    <td style="padding:14px;font-size:14px;color:#2d3436;font-weight:600;">{{ $item->product->name }}</td>
+                                    <td align="center" style="padding:14px;font-size:14px;color:#636e72;">{{ $item->quantity }}</td>
+                                    <td align="center" style="padding:14px;font-size:14px;color:#636e72;">£{{ number_format($item->price, 2) }}</td>
+                                    <td align="right" style="padding:14px;font-size:14px;color:#2d3436;font-weight:600;">£{{ number_format($item->price * $item->quantity, 2) }}</td>
+                                </tr>
                                 @endforeach
                             </table>
                         </td>
@@ -99,10 +101,10 @@
                                                 <td align="right" style="padding:6px 0;font-size:14px;color:#2d3436;">£{{ number_format($order->subtotal, 2) }}</td>
                                             </tr>
                                             @if($order->discount_amount > 0)
-                                                <tr>
-                                                    <td style="padding:6px 0;font-size:14px;color:#00B894;">Discount {{ $order->coupon_code ? '(' . $order->coupon_code . ')' : '' }}</td>
-                                                    <td align="right" style="padding:6px 0;font-size:14px;color:#00B894;font-weight:600;">-£{{ number_format($order->discount_amount, 2) }}</td>
-                                                </tr>
+                                            <tr>
+                                                <td style="padding:6px 0;font-size:14px;color:#00B894;">Discount {{ $order->coupon_code ? '(' . $order->coupon_code . ')' : '' }}</td>
+                                                <td align="right" style="padding:6px 0;font-size:14px;color:#00B894;font-weight:600;">-£{{ number_format($order->discount_amount, 2) }}</td>
+                                            </tr>
                                             @endif
                                             <tr>
                                                 <td style="padding:6px 0;font-size:14px;color:#636e72;">Shipping</td>
@@ -124,18 +126,18 @@
 
                     {{-- Shipping Address --}}
                     @if($order->shipping_address)
-                        <tr>
-                            <td style="padding:0 40px 20px;">
-                                <h3 style="margin:0 0 8px;font-size:16px;color:#2d3436;font-weight:700;">📦 Delivery Address</h3>
-                                <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;border-left:4px solid #6C5CE7;">
-                                    <p style="margin:0;font-size:14px;color:#2d3436;line-height:1.7;">
-                                        {{ $order->shipping_address['address_line'] ?? '' }}<br>
-                                        {{ $order->shipping_address['city'] ?? '' }}, {{ $order->shipping_address['postcode'] ?? '' }}<br>
-                                        📞 {{ $order->shipping_address['phone'] ?? '' }}
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style="padding:0 40px 20px;">
+                            <h3 style="margin:0 0 8px;font-size:16px;color:#2d3436;font-weight:700;">📦 Delivery Address</h3>
+                            <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;border-left:4px solid #6C5CE7;">
+                                <p style="margin:0;font-size:14px;color:#2d3436;line-height:1.7;">
+                                    {{ $order->shipping_address['address_line'] ?? '' }}<br>
+                                    {{ $order->shipping_address['city'] ?? '' }}<br>
+                                    📞 {{ $order->shipping_address['phone'] ?? '' }}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
                     @endif
 
                     {{-- CTA Button --}}
@@ -169,4 +171,5 @@
         </tr>
     </table>
 </body>
+
 </html>

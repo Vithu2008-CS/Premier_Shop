@@ -35,7 +35,6 @@ class RegisteredUserController extends Controller
             'dob' => ['required', 'date', 'before:today'],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:500'],
-            'postal_code' => ['nullable', 'string', 'max:20'],
         ]);
 
         // Generate 6-digit OTP
@@ -50,7 +49,6 @@ class RegisteredUserController extends Controller
                 'dob' => $request->dob,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'postal_code' => $request->postal_code,
             ],
             'registration_otp' => $otp,
             'registration_otp_expires' => now()->addMinutes(10),
@@ -117,7 +115,6 @@ class RegisteredUserController extends Controller
             'dob' => $regData['dob'],
             'phone' => $regData['phone'],
             'address' => $regData['address'],
-            'postal_code' => $regData['postal_code'] ?? null,
             'role' => 'customer',
         ]);
 

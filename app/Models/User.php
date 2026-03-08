@@ -19,7 +19,6 @@ class User extends Authenticatable
         'phone',
         'address',
         'city',
-        'postal_code',
         'role',
     ];
 

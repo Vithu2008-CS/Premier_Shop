@@ -9,7 +9,7 @@ class ShippingSetting extends Model
     protected $table = 'shipping_settings';
 
     protected $fillable = [
-        'origin_postal_code',
+        'origin_address',
         'free_delivery_threshold',
         'free_delivery_radius_miles',
         'surcharge_per_mile',

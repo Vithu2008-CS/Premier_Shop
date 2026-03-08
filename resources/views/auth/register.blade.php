@@ -59,14 +59,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Postal Code</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-mailbox"></i></span>
-                                        <input type="text" name="postal_code" class="form-control @error('postal_code') is-invalid @enderror" value="{{ old('postal_code') }}" placeholder="e.g. SW1A 1AA">
-                                        @error('postal_code') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
                                     <label class="form-label">Password</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
