@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
         }
 
         return redirect()->route('register.verify')
-            ->with('success', 'A verification code has been sent to your email! (OTP: ' . $otp . ')');
+            ->with('success', 'A verification code has been sent to your email!');
     }
 
     /**
@@ -161,6 +161,6 @@ class RegisteredUserController extends Controller
             Log::error('Failed to resend OTP email: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'A new verification code has been sent! (OTP: ' . $otp . ')');
+        return back()->with('success', 'A new verification code has been sent!');
     }
 }
