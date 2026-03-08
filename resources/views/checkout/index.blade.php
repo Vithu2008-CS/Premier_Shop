@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Checkout - Premier Shop')
 
 @section('content')
@@ -6,7 +6,7 @@
     <h2 class="fw-bold mb-4"><i class="bi bi-bag-check me-2"></i>Checkout</h2>
     <div class="row g-4">
         <div class="col-lg-7">
-            <div class="card">
+            <div class="card shadow-sm mb-4">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Shipping Address</h5>
                     <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
@@ -19,12 +19,12 @@
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">City</label>
-                                <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" value="{{ old('city') }}" required>
+                                <input type="text" name="city" class="form-control @error('city') is-invalid @enderror" value="{{ old('city', auth()->user()->city) }}" required>
                                 @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Postcode</label>
-                                <input type="text" name="postcode" class="form-control @error('postcode') is-invalid @enderror" value="{{ old('postcode') }}" required>
+                                <input type="text" name="postcode" class="form-control @error('postcode') is-invalid @enderror" value="{{ old('postcode', auth()->user()->postal_code) }}" required>
                                 @error('postcode') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -43,7 +43,7 @@
 
         <div class="col-lg-5">
             {{-- Coupon --}}
-            <div class="card mb-3">
+            <div class="card mb-4 shadow-sm">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3"><i class="bi bi-tag me-1"></i> Got a Coupon?</h5>
                     @if(session('coupon'))
@@ -65,7 +65,7 @@
             </div>
 
             {{-- Order Summary --}}
-            <div class="card" style="position:sticky;top:100px;">
+            <div class="card shadow-sm" style="position:sticky;top:100px;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Order Summary</h5>
                     @foreach($cart->items as $item)
@@ -119,38 +119,35 @@
             shippingCostDisplay.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>';
             shippingMessageDisplay.textContent = 'Calculating distance...';
 
-            fetch('{{ route('
-                    checkout.calculateShipping ') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            postcode: postcode
-                        })
-                    })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.cost !== undefined) {
-                        const shippingCost = parseFloat(data.cost);
-                        shippingCostDisplay.textContent = shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`;
-                        shippingMessageDisplay.textContent = data.message || '';
+            fetch('{{ route('checkout.calculateShipping') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ postcode: postcode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.cost !== undefined) {
+                    const shippingCost = parseFloat(data.cost);
+                    shippingCostDisplay.textContent = shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`;
+                    shippingMessageDisplay.textContent = data.message || '';
 
-                        const newTotal = baseTotal + shippingCost;
-                        cartTotalDisplay.textContent = `£${newTotal.toFixed(2)}`;
-                    } else {
-                        shippingCostDisplay.textContent = 'Error';
-                        shippingMessageDisplay.textContent = 'Could not calculate shipping.';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    shippingCostDisplay.textContent = '£5.99';
-                    shippingMessageDisplay.textContent = 'Flat rate applied due to network error.';
-                    cartTotalDisplay.textContent = `£${(baseTotal + 5.99).toFixed(2)}`;
-                });
+                    const newTotal = baseTotal + shippingCost;
+                    cartTotalDisplay.textContent = `£${newTotal.toFixed(2)}`;
+                } else {
+                    shippingCostDisplay.textContent = 'Error';
+                    shippingMessageDisplay.textContent = 'Could not calculate shipping.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                shippingCostDisplay.textContent = '£5.99';
+                shippingMessageDisplay.textContent = 'Flat rate applied due to network error.';
+                cartTotalDisplay.textContent = `£${(baseTotal + 5.99).toFixed(2)}`;
+            });
         });
 
         // Trigger calculation if postcode is pre-filled from user profile
