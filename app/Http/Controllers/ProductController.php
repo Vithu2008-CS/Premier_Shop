@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Http\Request;
+
+class ProductController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = Product::where('is_active', true);
+
+        // Filter by category
+        if ($request->has('category')) {
+            $category = Category::where('slug', $request->category)->first();
+            if ($category) {
+                $query->where('category_id', $category->id);
+            }
+        }
+
+        // Search
+        if ($request->has('search') && $request->search) {
+            $query->where('name', 'ilike', '%' . $request->search . '%');
+        }
+
+        // Sort
+        switch ($request->get('sort', 'newest')) {
+            case 'price_low': $query->orderBy('price', 'asc'); break;
+            case 'price_high': $query->orderBy('price', 'desc'); break;
+            case 'name': $query->orderBy('name', 'asc'); break;
+            default: $query->orderBy('created_at', 'desc');
+        }
+
+        // Age restriction: hide 16+ products from underage users
+        if (auth()->check() && auth()->user()->isUnder16()) {
+            $query->where('is_age_restricted', false);
+        }
+
+        $products = $query->paginate(12);
+        $categories = Category::all();
+
+        return view('products.index', compact('products', 'categories'));
+    }
+
+    public function show($slug)
+    {
+        $product = Product::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
+        // Block age-restricted products for underage users
+        if ($product->is_age_restricted && auth()->check() && auth()->user()->isUnder16()) {
+            abort(403, 'You must be 16 or older to view this product.');
+        }
+
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('is_active', true)
+            ->limit(4)
+            ->get();
+
+        return view('products.show', compact('product', 'relatedProducts'));
+    }
+
+    /**
+     * Search auto-suggest — returns JSON suggestions as user types
+     */
+    public function suggest(Request $request)
+    {
+        $q = $request->get('q', '');
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $products = Product::where('is_active', true)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'ilike', '%' . $q . '%')
+                      ->orWhereHas('category', function ($cq) use ($q) {
+                          $cq->where('name', 'ilike', '%' . $q . '%');
+                      });
+            })
+            ->limit(8)
+            ->get(['id', 'name', 'slug', 'price', 'images', 'category_id'])
+            ->map(function ($p) {
+                return [
+                    'name' => $p->name,
+                    'slug' => $p->slug,
+                    'price' => '£' . number_format($p->price, 2),
+                    'image' => $p->first_image,
+                    'category' => $p->category?->name,
+                    'url' => route('products.show', $p->slug),
+                ];
+            });
+
+        return response()->json($products);
+    }
+}
