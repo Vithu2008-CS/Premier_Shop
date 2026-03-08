@@ -86,7 +86,30 @@ class CheckoutController extends Controller
             }
         }
 
-        $shippingCost = 5.99; // flat rate default
+        // Fetch shipping settings
+        $shippingSettings = \App\Models\ShippingSetting::first();
+        $distanceService = app(\App\Services\DistanceCalculationService::class);
+
+        $shippingCost = $shippingSettings ? $shippingSettings->flat_rate_fee : 5.99; // Fallback flat rate
+        $distance = null;
+
+        if ($shippingSettings) {
+            // Calculate distance
+            $distance = $distanceService->calculateDistance($request->postcode);
+
+            if ($subtotal >= $shippingSettings->free_delivery_threshold) {
+                $shippingCost = 0.00; // Free delivery over threshold
+            } elseif ($distance !== null) {
+                if ($distance <= $shippingSettings->free_delivery_radius_miles) {
+                    $shippingCost = 0.00; // Free delivery within radius
+                } else {
+                    // Charge base rate + surcharge for extra miles
+                    $extraMiles = $distance - $shippingSettings->free_delivery_radius_miles;
+                    $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
+                }
+            }
+        }
+
         $total = $subtotal - $discount + $shippingCost;
 
         // Create order
@@ -132,5 +155,46 @@ class CheckoutController extends Controller
         }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully! A receipt has been sent to your email.');
+    }
+
+    public function calculateShipping(Request $request)
+    {
+        $request->validate(['postcode' => 'required|string']);
+
+        $shippingSettings = \App\Models\ShippingSetting::first();
+        if (!$shippingSettings) {
+            return response()->json(['cost' => 5.99, 'distance' => null, 'message' => 'Flat rate typical shipping.']);
+        }
+
+        $cart = Cart::where('user_id', auth()->id())->first();
+        if (!$cart) {
+            return response()->json(['error' => 'Cart not found'], 400);
+        }
+
+        $distanceService = app(\App\Services\DistanceCalculationService::class);
+        $distance = $distanceService->calculateDistance($request->postcode);
+
+        $shippingCost = $shippingSettings->flat_rate_fee;
+        $message = "Flat rate shipping.";
+
+        if ($cart->subtotal >= $shippingSettings->free_delivery_threshold) {
+            $shippingCost = 0.00;
+            $message = "Free shipping (Over £{$shippingSettings->free_delivery_threshold})";
+        } elseif ($distance !== null) {
+            if ($distance <= $shippingSettings->free_delivery_radius_miles) {
+                $shippingCost = 0.00;
+                $message = "Free local delivery (" . number_format($distance, 1) . " miles)";
+            } else {
+                $extraMiles = $distance - $shippingSettings->free_delivery_radius_miles;
+                $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
+                $message = "Distance: " . number_format($distance, 1) . " miles. Includes £" . number_format($shippingSettings->surcharge_per_mile, 2) . "/mile surcharge outside free radius.";
+            }
+        }
+
+        return response()->json([
+            'cost' => round($shippingCost, 2),
+            'distance' => $distance ? round($distance, 1) : null,
+            'message' => $message
+        ]);
     }
 }

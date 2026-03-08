@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon');
     Route::delete('/checkout/coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon');
+    Route::post('/checkout/shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculateShipping');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 
     // Orders
@@ -69,4 +70,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

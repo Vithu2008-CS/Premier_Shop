@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -60,7 +61,7 @@ class RegisteredUserController extends Controller
             Mail::to($request->email)->send(new RegistrationOtp($otp, $request->name));
         } catch (\Exception $e) {
             // Log the error but don't block registration
-            \Log::error('Failed to send OTP email: ' . $e->getMessage());
+            Log::error('Failed to send OTP email: ' . $e->getMessage());
         }
 
         return redirect()->route('register.verify')
@@ -70,10 +71,10 @@ class RegisteredUserController extends Controller
     /**
      * Show OTP verification page
      */
-    public function showVerify(): View
+    public function showVerify(): View|RedirectResponse
     {
         if (!session('registration_data')) {
-            return view('auth.register');
+            return redirect()->route('register')->with('error', 'Session expired. Please register again.');
         }
         return view('auth.verify-otp');
     }
@@ -129,7 +130,7 @@ class RegisteredUserController extends Controller
         try {
             Mail::to($user->email)->send(new WelcomeEmail($user));
         } catch (\Exception $e) {
-            \Log::error('Failed to send welcome email: ' . $e->getMessage());
+            Log::error('Failed to send welcome email: ' . $e->getMessage());
         }
 
         Auth::login($user);
@@ -160,7 +161,7 @@ class RegisteredUserController extends Controller
         try {
             Mail::to($regData['email'])->send(new RegistrationOtp($otp, $regData['name']));
         } catch (\Exception $e) {
-            \Log::error('Failed to resend OTP email: ' . $e->getMessage());
+            Log::error('Failed to resend OTP email: ' . $e->getMessage());
         }
 
         return back()->with('success', 'A new verification code has been sent! (OTP: ' . $otp . ')');
