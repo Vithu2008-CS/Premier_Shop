@@ -9,8 +9,11 @@ class ShippingSetting extends Model
     protected $table = 'shipping_settings';
 
     protected $fillable = [
-        'free_delivery_threshold', 'free_delivery_radius_miles',
-        'surcharge_per_mile', 'flat_rate_fee',
+        'origin_postal_code',
+        'free_delivery_threshold',
+        'free_delivery_radius_miles',
+        'surcharge_per_mile',
+        'flat_rate_fee',
     ];
 
     protected function casts(): array

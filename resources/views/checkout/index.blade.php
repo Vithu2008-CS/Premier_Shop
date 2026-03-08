@@ -47,19 +47,19 @@
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3"><i class="bi bi-tag me-1"></i> Got a Coupon?</h5>
                     @if(session('coupon'))
-                        <div class="alert alert-success d-flex justify-content-between align-items-center">
-                            <span><strong>{{ session('coupon.code') }}</strong> — £{{ number_format(session('coupon.discount'), 2) }} off</span>
-                            <form action="{{ route('checkout.removeCoupon') }}" method="POST">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></button>
-                            </form>
-                        </div>
-                    @else
-                        <form action="{{ route('checkout.applyCoupon') }}" method="POST" class="d-flex gap-2">
-                            @csrf
-                            <input type="text" name="coupon_code" class="form-control" placeholder="Enter coupon code">
-                            <button type="submit" class="btn btn-outline-primary">Apply</button>
+                    <div class="alert alert-success d-flex justify-content-between align-items-center">
+                        <span><strong>{{ session('coupon.code') }}</strong> — £{{ number_format(session('coupon.discount'), 2) }} off</span>
+                        <form action="{{ route('checkout.removeCoupon') }}" method="POST">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></button>
                         </form>
+                    </div>
+                    @else
+                    <form action="{{ route('checkout.applyCoupon') }}" method="POST" class="d-flex gap-2">
+                        @csrf
+                        <input type="text" name="coupon_code" class="form-control" placeholder="Enter coupon code">
+                        <button type="submit" class="btn btn-outline-primary">Apply</button>
+                    </form>
                     @endif
                 </div>
             </div>
@@ -69,10 +69,10 @@
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Order Summary</h5>
                     @foreach($cart->items as $item)
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>{{ Str::limit($item->product->name, 25) }} x{{ $item->quantity }}</span>
-                            <span>£{{ number_format($item->line_total, 2) }}</span>
-                        </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ Str::limit($item->product->name, 25) }} x{{ $item->quantity }}</span>
+                        <span>£{{ number_format($item->line_total, 2) }}</span>
+                    </div>
                     @endforeach
                     <hr>
                     <div class="d-flex justify-content-between mb-2">
@@ -80,26 +80,83 @@
                         <span>£{{ number_format($cart->subtotal, 2) }}</span>
                     </div>
                     @if(session('coupon'))
-                        <div class="d-flex justify-content-between mb-2 text-success">
-                            <span>Discount</span>
-                            <span>-£{{ number_format(session('coupon.discount'), 2) }}</span>
-                        </div>
+                    <div class="d-flex justify-content-between mb-2 text-success">
+                        <span>Discount</span>
+                        <span>-£{{ number_format(session('coupon.discount'), 2) }}</span>
+                    </div>
                     @endif
                     <div class="d-flex justify-content-between mb-2">
                         <span>Shipping</span>
-                        <span>£5.99</span>
+                        <span id="shippingCostDisplay">Enter postcode</span>
                     </div>
+                    <div id="shippingMessageDisplay" class="text-muted small text-end fst-italic mb-2"></div>
                     <hr>
                     @php
-                        $total = $cart->subtotal - (session('coupon.discount') ?? 0) + 5.99;
+                    $subtotalMinusDiscount = $cart->subtotal - (session('coupon.discount') ?? 0);
                     @endphp
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold fs-5">Total</span>
-                        <span class="fw-bold fs-5 text-primary">£{{ number_format($total, 2) }}</span>
+                        <span class="fw-bold fs-5 text-primary" id="cartTotalDisplay" data-base-total="{{ $subtotalMinusDiscount }}">£{{ number_format($subtotalMinusDiscount + 5.99, 2) }}</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const postcodeInput = document.querySelector('input[name="postcode"]');
+        const shippingCostDisplay = document.getElementById('shippingCostDisplay');
+        const shippingMessageDisplay = document.getElementById('shippingMessageDisplay');
+        const cartTotalDisplay = document.getElementById('cartTotalDisplay');
+        const baseTotal = parseFloat(cartTotalDisplay.dataset.baseTotal);
+
+        postcodeInput.addEventListener('blur', function() {
+            const postcode = this.value.trim();
+            if (!postcode) return;
+
+            shippingCostDisplay.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>';
+            shippingMessageDisplay.textContent = 'Calculating distance...';
+
+            fetch('{{ route('
+                    checkout.calculateShipping ') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            postcode: postcode
+                        })
+                    })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cost !== undefined) {
+                        const shippingCost = parseFloat(data.cost);
+                        shippingCostDisplay.textContent = shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`;
+                        shippingMessageDisplay.textContent = data.message || '';
+
+                        const newTotal = baseTotal + shippingCost;
+                        cartTotalDisplay.textContent = `£${newTotal.toFixed(2)}`;
+                    } else {
+                        shippingCostDisplay.textContent = 'Error';
+                        shippingMessageDisplay.textContent = 'Could not calculate shipping.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    shippingCostDisplay.textContent = '£5.99';
+                    shippingMessageDisplay.textContent = 'Flat rate applied due to network error.';
+                    cartTotalDisplay.textContent = `£${(baseTotal + 5.99).toFixed(2)}`;
+                });
+        });
+
+        // Trigger calculation if postcode is pre-filled from user profile
+        if (postcodeInput.value.trim() !== '') {
+            postcodeInput.dispatchEvent(new Event('blur'));
+        }
+    });
+</script>
 @endsection

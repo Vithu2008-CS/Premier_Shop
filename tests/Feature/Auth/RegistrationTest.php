@@ -23,9 +23,21 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'postal_code' => 'SW1A 1AA',
+            'dob' => '2000-01-01',
+        ]);
+
+        $response->assertRedirect(route('register.verify'));
+
+        $this->assertGuest();
+
+        $otp = session('registration_otp');
+
+        $verifyResponse = $this->post('/register/verify', [
+            'otp' => $otp,
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $verifyResponse->assertRedirect('/');
     }
 }
