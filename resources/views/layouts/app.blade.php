@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Premier Shop — Your one-stop destination for quality products at unbeatable prices.">
+    <meta name="description"
+        content="Premier Shop — Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
 </head>
+
 <body>
     {{-- Top Bar --}}
     <div class="top-bar d-none d-md-block">
@@ -32,7 +35,8 @@
             {{-- Search Bar - Center --}}
             <div class="search-wrapper d-none d-lg-block flex-grow-1 mx-4">
                 <div class="search-container position-relative">
-                    <input type="text" id="searchInput" class="form-control search-input" placeholder="Search products..." autocomplete="off">
+                    <input type="text" id="searchInput" class="form-control search-input"
+                        placeholder="Search products..." autocomplete="off">
                     <button class="search-btn"><i class="bi bi-search"></i></button>
                     <div id="searchSuggestions" class="search-suggestions"></div>
                 </div>
@@ -50,7 +54,8 @@
                         @if($cartCount > 0)<span class="badge">{{ $cartCount }}</span>@endif
                     </a>
                 @endauth
-                <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileMenu">
                     <i class="bi bi-list text-white fs-4"></i>
                 </button>
             </div>
@@ -64,15 +69,14 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">Products</a>
+                        <a class="nav-link {{ request('category') ? 'active' : '' }}" href="#categoryMegaMenu"
+                            data-bs-toggle="collapse" role="button">
+                            <i class="bi bi-grid-3x3-gap me-1"></i>Categories
+                        </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
-                        <ul class="dropdown-menu">
-                            @foreach(\App\Models\Category::all() as $cat)
-                                <li><a class="dropdown-item" href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a></li>
-                            @endforeach
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('products.*') && !request('category') ? 'active' : '' }}"
+                            href="{{ route('products.index') }}">Products</a>
                     </li>
                     @auth
                         <li class="nav-item">
@@ -90,14 +94,19 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 @if(auth()->user()->isAdmin())
-                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Admin Panel</a></li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i
+                                                class="bi bi-speedometer2 me-2"></i>Admin Panel</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
                                 @endif
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i
+                                            class="bi bi-gear me-2"></i>Profile</a></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                        <button class="dropdown-item text-danger"><i
+                                                class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                     </form>
                                 </li>
                             </ul>
@@ -111,6 +120,48 @@
         </div>
     </nav>
 
+    {{-- Category Mega Menu --}}
+    <div class="collapse category-mega-menu sticky-top" id="categoryMegaMenu" style="top: 72px; z-index: 1030;">
+        <div class="container">
+            @php
+                $categoryIcons = [
+                    "Beer, Cider & Alcoholic RTD's" => 'bi-cup-straw',
+                    "Biscuits" => 'bi-box-seam',
+                    "Bread & Cakes" => 'bi-basket',
+                    "Confectionery" => 'bi-cookie',
+                    "Crisps, Snacks & Dips" => 'bi-box-seam-fill',
+                    "Food & Drink Disposables" => 'bi-cup',
+                    "Fresh Food" => 'bi-apple',
+                    "Frozen Food" => 'bi-snow',
+                    "Greengrocery" => 'bi-basket2',
+                    "Grocery - Retail" => 'bi-cart-fill',
+                    "Grocery - Catering" => 'bi-truck',
+                    "Health, Beauty & Baby" => 'bi-heart-pulse',
+                    "Hot Drinks" => 'bi-cup-hot',
+                    "Household, Cleaning & Paper" => 'bi-house',
+                    "Meat, Fish & Poultry" => 'bi-box',
+                    "Non-Food" => 'bi-box',
+                    "Pet Food" => 'bi-paw',
+                    "Seasonal" => 'bi-calendar-event',
+                    "Soft Drinks" => 'bi-drop',
+                    "Spirits & Liqueurs" => 'bi-cup-hot-fill',
+                    "Tobacco & Cigarettes" => 'bi-fire',
+                    "Wine" => 'bi-wine-glass'
+                ];
+            @endphp
+            <div class="mega-cat-grid">
+                @foreach(\App\Models\Category::withCount('products')->get() as $cat)
+                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}"
+                        class="mega-cat-card {{ request('category') == $cat->slug ? 'active' : '' }}">
+                        <i class="bi {{ $categoryIcons[$cat->name] ?? 'bi-tag' }}"></i>
+                        <h6>{{ $cat->name }}</h6>
+                        <small>{{ $cat->products_count }} Items</small>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
     {{-- Mobile Off-Canvas Menu --}}
     <div class="offcanvas offcanvas-end" id="mobileMenu" style="background:var(--ps-gradient-dark);color:#fff;">
         <div class="offcanvas-header border-bottom border-secondary">
@@ -119,29 +170,48 @@
         </div>
         <div class="offcanvas-body">
             <ul class="nav flex-column gap-1">
-                <li><a class="nav-link text-white" href="{{ route('offers') }}"><i class="bi bi-tag me-2"></i>Offers</a></li>
-                <li><a class="nav-link text-white" href="{{ route('products.index') }}"><i class="bi bi-grid me-2"></i>Products</a></li>
+                <li><a class="nav-link text-white" href="{{ route('offers') }}"><i class="bi bi-tag me-2"></i>Offers</a>
+                </li>
+                <li><a class="nav-link text-white" href="{{ route('products.index') }}"><i
+                            class="bi bi-grid me-2"></i>Products</a></li>
                 @foreach(\App\Models\Category::all() as $cat)
-                    <li><a class="nav-link text-white-50 ps-4" href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a></li>
+                    <li>
+                        <a class="nav-link text-white-50 ps-4 d-flex align-items-center"
+                            href="{{ route('products.index', ['category' => $cat->slug]) }}">
+                            <i class="bi {{ $categoryIcons[$cat->name] ?? 'bi-tag' }} me-2" style="font-size: 0.9rem;"></i>
+                            {{ $cat->name }}
+                        </a>
+                    </li>
                 @endforeach
                 @auth
-                    <li><hr class="border-secondary"></li>
-                    <li><a class="nav-link text-white" href="{{ route('cart.index') }}"><i class="bi bi-bag me-2"></i>Cart</a></li>
-                    <li><a class="nav-link text-white" href="{{ route('orders.index') }}"><i class="bi bi-receipt me-2"></i>Orders</a></li>
-                    <li><a class="nav-link text-white" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2"></i>Profile</a></li>
+                    <li>
+                        <hr class="border-secondary">
+                    </li>
+                    <li><a class="nav-link text-white" href="{{ route('cart.index') }}"><i
+                                class="bi bi-bag me-2"></i>Cart</a></li>
+                    <li><a class="nav-link text-white" href="{{ route('orders.index') }}"><i
+                                class="bi bi-receipt me-2"></i>Orders</a></li>
+                    <li><a class="nav-link text-white" href="{{ route('profile.edit') }}"><i
+                                class="bi bi-gear me-2"></i>Profile</a></li>
                     @if(auth()->user()->isAdmin())
-                        <li><a class="nav-link text-warning" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Admin Panel</a></li>
+                        <li><a class="nav-link text-warning" href="{{ route('admin.dashboard') }}"><i
+                                    class="bi bi-speedometer2 me-2"></i>Admin Panel</a></li>
                     @endif
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="nav-link text-danger border-0 bg-transparent"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                            <button class="nav-link text-danger border-0 bg-transparent"><i
+                                    class="bi bi-box-arrow-right me-2"></i>Logout</button>
                         </form>
                     </li>
                 @else
-                    <li><hr class="border-secondary"></li>
-                    <li><a class="nav-link text-white" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
-                    <li><a class="nav-link text-primary" href="{{ route('register') }}"><i class="bi bi-person-plus me-2"></i>Sign Up</a></li>
+                    <li>
+                        <hr class="border-secondary">
+                    </li>
+                    <li><a class="nav-link text-white" href="{{ route('login') }}"><i
+                                class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
+                    <li><a class="nav-link text-primary" href="{{ route('register') }}"><i
+                                class="bi bi-person-plus me-2"></i>Sign Up</a></li>
                 @endauth
             </ul>
         </div>
@@ -153,7 +223,8 @@
             <div class="modal-content" style="background:var(--ps-gradient-dark);border:none;">
                 <div class="modal-body p-4">
                     <div class="search-container position-relative">
-                        <input type="text" id="mobileSearchInput" class="form-control search-input" placeholder="Search products..." autocomplete="off">
+                        <input type="text" id="mobileSearchInput" class="form-control search-input"
+                            placeholder="Search products..." autocomplete="off">
                         <button class="search-btn"><i class="bi bi-search"></i></button>
                         <div id="mobileSearchSuggestions" class="search-suggestions"></div>
                     </div>
@@ -191,7 +262,8 @@
             <div class="row g-4">
                 <div class="col-lg-4">
                     <div class="footer-brand">🛍️ Premier Shop</div>
-                    <p class="mb-4" style="font-size:0.9rem;">Your one-stop destination for quality products at unbeatable prices.</p>
+                    <p class="mb-4" style="font-size:0.9rem;">Your one-stop destination for quality products at
+                        unbeatable prices.</p>
                     <div class="social-icons">
                         <a href="#"><i class="bi bi-facebook"></i></a>
                         <a href="#"><i class="bi bi-twitter-x"></i></a>
@@ -205,7 +277,8 @@
                         <li><a href="{{ route('offers') }}">Offers</a></li>
                         <li><a href="{{ route('products.index') }}">All Products</a></li>
                         @foreach(\App\Models\Category::take(4)->get() as $cat)
-                            <li><a href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a></li>
+                            <li><a href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a>
+                            </li>
                         @endforeach
                     </ul>
                 </div>
@@ -236,10 +309,12 @@
     </footer>
 
     {{-- Back to Top --}}
-    <button id="backToTop" class="btn btn-primary" style="display:none;position:fixed;bottom:30px;right:30px;width:48px;height:48px;border-radius:50%;align-items:center;justify-content:center;z-index:999;box-shadow:var(--ps-shadow-lg);">
+    <button id="backToTop" class="btn btn-primary"
+        style="display:none;position:fixed;bottom:30px;right:30px;width:48px;height:48px;border-radius:50%;align-items:center;justify-content:center;z-index:999;box-shadow:var(--ps-shadow-lg);">
         <i class="bi bi-arrow-up"></i>
     </button>
 
     @stack('scripts')
 </body>
+
 </html>

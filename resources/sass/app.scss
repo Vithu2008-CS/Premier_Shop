@@ -181,6 +181,94 @@ h3,
 }
 
 // ============================================================
+// Category Mega Menu (Horizontal Pull-down)
+// ============================================================
+.category-mega-menu {
+  background: #fff;
+  border-bottom: 2px solid $primary;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  transition: var(--ps-transition);
+  z-index: 1020;
+
+  .container {
+    padding: 30px 15px;
+  }
+
+  .mega-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+  }
+
+  .mega-cat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    padding: 16px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid rgba(108, 92, 231, 0.08);
+    transition: var(--ps-transition);
+    text-align: center;
+    height: 100%;
+
+    i {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: $primary;
+      background: rgba(108, 92, 231, 0.08);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      transition: var(--ps-transition);
+    }
+
+    h6 {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: $secondary;
+      margin-bottom: 4px;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    small {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--ps-shadow-hover);
+      border-color: $primary;
+
+      i {
+        background: var(--ps-gradient);
+        color: #fff;
+      }
+    }
+
+    &.active {
+      border-color: $primary;
+      background: rgba(108, 92, 231, 0.02);
+
+      i {
+        background: var(--ps-gradient);
+        color: #fff;
+      }
+    }
+  }
+}
+
+// ============================================================
 // Search Bar (Booker-style prominent search)
 // ============================================================
 .search-wrapper {
