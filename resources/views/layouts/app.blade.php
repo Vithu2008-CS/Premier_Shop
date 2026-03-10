@@ -64,7 +64,8 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('offers') ? 'active' : '' }}" href="{{ route('offers') }}">
+                        <a class="nav-link {{ request()->routeIs('offers') ? 'active' : '' }}"
+                            href="{{ route('offers') }}">
                             <i class="bi bi-tag me-1"></i>Offers
                         </a>
                     </li>
@@ -123,37 +124,16 @@
     {{-- Category Mega Menu --}}
     <div class="collapse category-mega-menu sticky-top" id="categoryMegaMenu" style="top: 72px; z-index: 1030;">
         <div class="container">
-            @php
-                $categoryIcons = [
-                    "Beer, Cider & Alcoholic RTD's" => 'bi-cup-straw',
-                    "Biscuits" => 'bi-box-seam',
-                    "Bread & Cakes" => 'bi-basket',
-                    "Confectionery" => 'bi-cookie',
-                    "Crisps, Snacks & Dips" => 'bi-box-seam-fill',
-                    "Food & Drink Disposables" => 'bi-cup',
-                    "Fresh Food" => 'bi-apple',
-                    "Frozen Food" => 'bi-snow',
-                    "Greengrocery" => 'bi-basket2',
-                    "Grocery - Retail" => 'bi-cart-fill',
-                    "Grocery - Catering" => 'bi-truck',
-                    "Health, Beauty & Baby" => 'bi-heart-pulse',
-                    "Hot Drinks" => 'bi-cup-hot',
-                    "Household, Cleaning & Paper" => 'bi-house',
-                    "Meat, Fish & Poultry" => 'bi-box',
-                    "Non-Food" => 'bi-box',
-                    "Pet Food" => 'bi-paw',
-                    "Seasonal" => 'bi-calendar-event',
-                    "Soft Drinks" => 'bi-drop',
-                    "Spirits & Liqueurs" => 'bi-cup-hot-fill',
-                    "Tobacco & Cigarettes" => 'bi-fire',
-                    "Wine" => 'bi-wine-glass'
-                ];
-            @endphp
             <div class="mega-cat-grid">
                 @foreach(\App\Models\Category::withCount('products')->get() as $cat)
                     <a href="{{ route('products.index', ['category' => $cat->slug]) }}"
                         class="mega-cat-card {{ request('category') == $cat->slug ? 'active' : '' }}">
-                        <i class="bi {{ $categoryIcons[$cat->name] ?? 'bi-tag' }}"></i>
+                        @if($cat->image)
+                            <img src="{{ $cat->image }}" alt="{{ $cat->name }}"
+                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 12px; margin-bottom: 10px;">
+                        @else
+                            <i class="bi bi-tag"></i>
+                        @endif
                         <h6>{{ $cat->name }}</h6>
                         <small>{{ $cat->products_count }} Items</small>
                     </a>
@@ -178,7 +158,12 @@
                     <li>
                         <a class="nav-link text-white-50 ps-4 d-flex align-items-center"
                             href="{{ route('products.index', ['category' => $cat->slug]) }}">
-                            <i class="bi {{ $categoryIcons[$cat->name] ?? 'bi-tag' }} me-2" style="font-size: 0.9rem;"></i>
+                            @if($cat->image)
+                                <img src="{{ $cat->image }}" alt=""
+                                    style="width: 18px; height: 18px; object-fit: cover; border-radius: 4px; margin-right: 8px;">
+                            @else
+                                <i class="bi bi-tag me-2" style="font-size: 0.9rem;"></i>
+                            @endif
                             {{ $cat->name }}
                         </a>
                     </li>

@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController;
@@ -55,6 +56,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('scanner', [AdminProductController::class, 'scanner'])->name('scanner');
     Route::post('products/find-by-qr', [AdminProductController::class, 'findByQr'])->name('products.findByQr');
     Route::post('products/{product}/update-stock', [AdminProductController::class, 'updateStock'])->name('products.updateStock');
+
+    // Categories
+    Route::resource('categories', CategoryController::class);
 
     // Coupons
     Route::resource('coupons', CouponController::class);

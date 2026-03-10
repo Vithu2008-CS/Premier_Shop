@@ -189,6 +189,9 @@ h3,
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
   transition: var(--ps-transition);
   z-index: 1020;
+  max-height: calc(100vh - 72px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
   .container {
     padding: 30px 15px;

@@ -484,6 +484,11 @@
             <i class="bi bi-box-seam"></i> Products
             <span class="badge bg-primary">{{ \App\Models\Product::count() }}</span>
         </a>
+        <a href="{{ route('admin.categories.index') }}"
+            class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+            <i class="bi bi-tags"></i> Categories
+            <span class="badge bg-primary">{{ \App\Models\Category::count() }}</span>
+        </a>
         <a href="{{ route('admin.orders.index') }}"
             class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
             <i class="bi bi-receipt"></i> Orders
