@@ -36,112 +36,218 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Categories
-        $electronics = Category::create(['name' => 'Electronics', 'description' => 'Gadgets, phones, and accessories']);
-        $clothing = Category::create(['name' => 'Clothing', 'description' => 'Fashion and apparel']);
-        $groceries = Category::create(['name' => 'Groceries', 'description' => 'Fresh food and daily essentials']);
-        $homeGarden = Category::create(['name' => 'Home & Garden', 'description' => 'Furniture and garden supplies']);
-        $beverages = Category::create(['name' => 'Beverages', 'description' => 'Drinks and refreshments']);
+        $categoriesNames = [
+            "Beer, Cider & Alcoholic RTD's",
+            "Biscuits",
+            "Bread & Cakes",
+            "Confectionery",
+            "Crisps, Snacks & Dips",
+            "Food & Drink Disposables",
+            "Fresh Food",
+            "Frozen Food",
+            "Greengrocery",
+            "Grocery - Retail",
+            "Grocery - Catering",
+            "Health, Beauty & Baby",
+            "Hot Drinks",
+            "Household, Cleaning & Paper",
+            "Meat, Fish & Poultry",
+            "Non-Food",
+            "Pet Food",
+            "Seasonal",
+            "Soft Drinks",
+            "Spirits & Liqueurs",
+            "Tobacco & Cigarettes",
+            "Wine"
+        ];
+
+        $categories = [];
+        foreach ($categoriesNames as $name) {
+            $categories[$name] = Category::create([
+                'name' => $name,
+                'description' => 'Quality ' . $name . ' products at Premier Shop.'
+            ]);
+        }
 
         // Products
         Product::create([
-            'name' => 'Wireless Bluetooth Earbuds',
-            'description' => 'Premium noise-cancelling wireless earbuds with 24-hour battery life. Crystal clear sound quality with deep bass.',
-            'price' => 49.99,
-            'stock' => 150,
-            'category_id' => $electronics->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Smart Watch Pro',
-            'description' => 'Feature-packed smartwatch with heart rate monitor, GPS tracking, and 7-day battery life.',
-            'price' => 129.99,
-            'stock' => 75,
-            'category_id' => $electronics->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Organic Cotton T-Shirt',
-            'description' => 'Comfortable 100% organic cotton t-shirt. Available in multiple colors.',
-            'price' => 19.99,
-            'stock' => 300,
-            'category_id' => $clothing->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Premium Denim Jacket',
-            'description' => 'Classic fit denim jacket with vintage wash. Perfect for all seasons.',
-            'price' => 69.99,
-            'stock' => 80,
-            'category_id' => $clothing->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Fresh Fruit Basket',
-            'description' => 'Assorted seasonal fresh fruits. Locally sourced and farm-fresh.',
-            'price' => 15.99,
-            'stock' => 50,
-            'category_id' => $groceries->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Organic Extra Virgin Olive Oil',
-            'description' => 'Cold-pressed organic olive oil from Mediterranean farms. 1L bottle.',
-            'price' => 12.49,
-            'stock' => 200,
-            'category_id' => $groceries->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Premium Red Wine Collection',
-            'description' => 'Curated selection of three award-winning red wines from French vineyards.',
-            'price' => 45.00,
-            'stock' => 40,
-            'category_id' => $beverages->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => true,
-        ]);
-
-        Product::create([
-            'name' => 'Craft Beer Variety Pack',
-            'description' => '12-pack of assorted craft beers from local UK breweries.',
-            'price' => 24.99,
-            'stock' => 60,
-            'category_id' => $beverages->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => true,
-        ]);
-
-        Product::create([
-            'name' => 'Indoor Plant Collection',
-            'description' => 'Set of 3 easy-care indoor plants in decorative ceramic pots.',
-            'price' => 34.99,
-            'stock' => 45,
-            'category_id' => $homeGarden->id,
-            'product_type' => 'normal',
-            'is_age_restricted' => false,
-        ]);
-
-        Product::create([
-            'name' => 'Bulk Rice 25kg',
-            'description' => 'Premium long-grain basmati rice in 25kg bag. Perfect for wholesale buyers.',
-            'price' => 39.99,
-            'wholesale_price' => 32.99,
+            'name' => 'Premium Lager 4x440ml',
+            'description' => 'Refreshing premium lager with a crisp taste.',
+            'price' => 5.50,
             'stock' => 100,
-            'category_id' => $groceries->id,
+            'category_id' => $categories["Beer, Cider & Alcoholic RTD's"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => true,
+        ]);
+
+        Product::create([
+            'name' => 'Digestive Biscuits 400g',
+            'description' => 'Classic sweet-meal biscuits, perfect with tea.',
+            'price' => 1.20,
+            'stock' => 200,
+            'category_id' => $categories["Biscuits"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'White Sliced Bread 800g',
+            'description' => 'Freshly baked soft white sliced bread.',
+            'price' => 1.10,
+            'stock' => 50,
+            'category_id' => $categories["Bread & Cakes"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Milk Chocolate Bar 100g',
+            'description' => 'Smooth and creamy milk chocolate.',
+            'price' => 1.00,
+            'stock' => 300,
+            'category_id' => $categories["Confectionery"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Potato Crisps Ready Salted 6pk',
+            'description' => 'Crunchy potato crisps with a touch of salt.',
+            'price' => 1.85,
+            'stock' => 150,
+            'category_id' => $categories["Crisps, Snacks & Dips"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Disposable Paper Plates 50pk',
+            'description' => 'Eco-friendly sturdy paper plates for parties.',
+            'price' => 3.50,
+            'stock' => 80,
+            'category_id' => $categories["Food & Drink Disposables"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Whole Milk 2L',
+            'description' => 'Fresh farm-assured whole milk.',
+            'price' => 1.65,
+            'stock' => 60,
+            'category_id' => $categories["Fresh Food"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Frozen Garden Peas 1kg',
+            'description' => 'Sweet and tender garden peas, frozen as soon as picked.',
+            'price' => 1.40,
+            'stock' => 100,
+            'category_id' => $categories["Frozen Food"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Fresh Bananas 5pk',
+            'description' => 'Sweet and ripe premium bananas.',
+            'price' => 1.00,
+            'stock' => 40,
+            'category_id' => $categories["Greengrocery"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Baked Beans in Tomato Sauce 415g',
+            'description' => 'High protein baked beans in a delicious tomato sauce.',
+            'price' => 0.50,
+            'stock' => 400,
+            'category_id' => $categories["Grocery - Retail"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Bulk Long Grain Rice 5kg',
+            'description' => 'High quality long grain rice for catering.',
+            'price' => 8.99,
+            'stock' => 30,
+            'category_id' => $categories["Grocery - Catering"]->id,
             'product_type' => 'wholesale',
             'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Instant Coffee 200g',
+            'description' => 'Rich and smooth freeze-dried instant coffee.',
+            'price' => 4.50,
+            'stock' => 120,
+            'category_id' => $categories["Hot Drinks"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Toilet Tissue 9pk',
+            'description' => 'Soft and strong 2-ply toilet tissue.',
+            'price' => 3.99,
+            'stock' => 90,
+            'category_id' => $categories["Household, Cleaning & Paper"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Fresh Chicken Breast 1kg',
+            'description' => 'Lean and tender fresh chicken breast fillets.',
+            'price' => 7.50,
+            'stock' => 45,
+            'category_id' => $categories["Meat, Fish & Poultry"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Dry Dog Food 2kg',
+            'description' => 'Complete and balanced nutrition for adult dogs.',
+            'price' => 5.99,
+            'stock' => 70,
+            'category_id' => $categories["Pet Food"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'Cola 2L',
+            'description' => 'Classic sparkling cola drink.',
+            'price' => 1.80,
+            'stock' => 140,
+            'category_id' => $categories["Soft Drinks"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => false,
+        ]);
+
+        Product::create([
+            'name' => 'London Dry Gin 70cl',
+            'description' => 'Classic dry gin with juniper notes.',
+            'price' => 16.00,
+            'stock' => 25,
+            'category_id' => $categories["Spirits & Liqueurs"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => true,
+        ]);
+
+        Product::create([
+            'name' => 'Merlot Red Wine 75cl',
+            'description' => 'Smooth and fruity merlot from Chile.',
+            'price' => 7.00,
+            'stock' => 40,
+            'category_id' => $categories["Wine"]->id,
+            'product_type' => 'normal',
+            'is_age_restricted' => true,
         ]);
 
         // Shipping Settings

@@ -167,3 +167,18 @@ if (backToTop) {
 document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
     new bootstrap.Tooltip(el);
 });
+
+// ============================================================
+// Prevent Background Scroll on Category Mega Menu
+// ============================================================
+const categoryMegaMenu = document.getElementById('categoryMegaMenu');
+if (categoryMegaMenu) {
+    categoryMegaMenu.addEventListener('show.bs.collapse', () => {
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+    });
+    categoryMegaMenu.addEventListener('hide.bs.collapse', () => {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+    });
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +13,17 @@
             --admin-sidebar-w: 260px;
             --admin-bg: #0F1117;
             --admin-card: #181B23;
-            --admin-border: rgba(255,255,255,0.06);
-            --admin-text: rgba(255,255,255,0.85);
-            --admin-muted: rgba(255,255,255,0.45);
+            --admin-border: rgba(255, 255, 255, 0.06);
+            --admin-text: rgba(255, 255, 255, 0.85);
+            --admin-muted: rgba(255, 255, 255, 0.65);
+            --admin-placeholder: rgba(255, 255, 255, 0.3);
         }
-        body { background: var(--admin-bg) !important; color: var(--admin-text); overflow-x: hidden; }
+
+        body {
+            background: var(--admin-bg) !important;
+            color: var(--admin-text);
+            overflow-x: hidden;
+        }
 
         /* ── Sidebar ── */
         .admin-sidebar {
@@ -33,6 +40,7 @@
             flex-direction: column;
             transition: transform 0.3s ease;
         }
+
         .sidebar-brand {
             padding: 20px 24px;
             font-family: 'Outfit', sans-serif;
@@ -44,10 +52,27 @@
             align-items: center;
             gap: 10px;
         }
-        .sidebar-brand i { color: #6C5CE7; font-size: 1.4rem; }
-        .sidebar-brand small { font-size: 0.65rem; font-weight: 500; color: var(--admin-muted); display: block; }
 
-        .sidebar-section { padding: 16px 12px 8px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--admin-muted); font-weight: 600; }
+        .sidebar-brand i {
+            color: #6C5CE7;
+            font-size: 1.4rem;
+        }
+
+        .sidebar-brand small {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--admin-muted);
+            display: block;
+        }
+
+        .sidebar-section {
+            padding: 16px 12px 8px;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--admin-muted);
+            font-weight: 600;
+        }
 
         .admin-sidebar .nav-link {
             display: flex;
@@ -62,25 +87,49 @@
             transition: all 0.2s ease;
             text-decoration: none;
         }
-        .admin-sidebar .nav-link:hover { color: #fff; background: rgba(108,92,231,0.12); }
-        .admin-sidebar .nav-link.active { color: #fff; background: rgba(108,92,231,0.2); box-shadow: 0 0 20px rgba(108,92,231,0.1); }
-        .admin-sidebar .nav-link.active i { color: #6C5CE7; }
-        .admin-sidebar .nav-link i { font-size: 1.1rem; width: 22px; text-align: center; }
-        .admin-sidebar .nav-link .badge { margin-left: auto; font-size: 0.65rem; padding: 3px 8px; }
+
+        .admin-sidebar .nav-link:hover {
+            color: #fff;
+            background: rgba(108, 92, 231, 0.12);
+        }
+
+        .admin-sidebar .nav-link.active {
+            color: #fff;
+            background: rgba(108, 92, 231, 0.2);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.1);
+        }
+
+        .admin-sidebar .nav-link.active i {
+            color: #6C5CE7;
+        }
+
+        .admin-sidebar .nav-link i {
+            font-size: 1.1rem;
+            width: 22px;
+            text-align: center;
+        }
+
+        .admin-sidebar .nav-link .badge {
+            margin-left: auto;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+        }
 
         .sidebar-footer {
             margin-top: auto;
             padding: 16px 12px;
             border-top: 1px solid var(--admin-border);
         }
+
         .sidebar-footer .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 10px 12px;
             border-radius: 10px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
         }
+
         .sidebar-footer .user-avatar {
             width: 36px;
             height: 36px;
@@ -93,8 +142,17 @@
             font-weight: 700;
             font-size: 0.85rem;
         }
-        .sidebar-footer .user-name { color: #fff; font-weight: 600; font-size: 0.85rem; }
-        .sidebar-footer .user-role { color: var(--admin-muted); font-size: 0.72rem; }
+
+        .sidebar-footer .user-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-footer .user-role {
+            color: var(--admin-muted);
+            font-size: 0.72rem;
+        }
 
         /* ── Main Content ── */
         .admin-content {
@@ -112,10 +170,28 @@
             padding-bottom: 20px;
             border-bottom: 1px solid var(--admin-border);
         }
-        .admin-topbar h2 { font-family: 'Outfit', sans-serif; color: #fff; font-weight: 700; font-size: 1.6rem; margin: 0; }
-        .admin-topbar .breadcrumb { margin: 0; font-size: 0.8rem; }
-        .admin-topbar .breadcrumb-item a { color: var(--admin-muted); text-decoration: none; }
-        .admin-topbar .breadcrumb-item.active { color: #fff; }
+
+        .admin-topbar h2 {
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin: 0;
+        }
+
+        .admin-topbar .breadcrumb {
+            margin: 0;
+            font-size: 0.8rem;
+        }
+
+        .admin-topbar .breadcrumb-item a {
+            color: var(--admin-muted);
+            text-decoration: none;
+        }
+
+        .admin-topbar .breadcrumb-item.active {
+            color: #fff;
+        }
 
         /* ── Cards ── */
         .admin-card {
@@ -125,8 +201,17 @@
             padding: 24px;
             transition: all 0.2s ease;
         }
-        .admin-card:hover { border-color: rgba(108,92,231,0.2); }
-        .admin-card .card-title { font-weight: 700; font-size: 0.95rem; color: #fff; margin-bottom: 16px; }
+
+        .admin-card:hover {
+            border-color: rgba(108, 92, 231, 0.2);
+        }
+
+        .admin-card .card-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 16px;
+        }
 
         /* ── Stat Cards ── */
         .stat-card {
@@ -136,6 +221,7 @@
             position: relative;
             overflow: hidden;
         }
+
         .stat-card::after {
             content: '';
             position: absolute;
@@ -144,77 +230,237 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.08);
         }
-        .stat-number { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.1; }
-        .stat-label { font-size: 0.8rem; opacity: 0.8; margin-top: 4px; }
-        .stat-icon { font-size: 2rem; opacity: 0.6; }
-        .bg-gradient-primary { background: linear-gradient(135deg, #6C5CE7, #A29BFE) !important; }
+
+        .stat-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #6C5CE7, #A29BFE) !important;
+        }
 
         /* ── Tables ── */
         .admin-table {
             width: 100%;
             color: var(--admin-text);
         }
+
         .admin-table thead th {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.06);
             border-bottom: 1px solid var(--admin-border);
-            padding: 12px 16px;
-            font-size: 0.78rem;
+            padding: 14px 16px;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--admin-muted);
-            font-weight: 600;
+            letter-spacing: 1px;
+            color: #fff;
+            font-weight: 700;
         }
+
         .admin-table tbody td {
             padding: 14px 16px;
             border-bottom: 1px solid var(--admin-border);
             font-size: 0.9rem;
             vertical-align: middle;
         }
-        .admin-table tbody tr:hover { background: rgba(108,92,231,0.04); }
-        .admin-table tbody tr:last-child td { border-bottom: none; }
+
+        .admin-table tbody tr:hover {
+            background: rgba(108, 92, 231, 0.04);
+        }
+
+        .admin-table tbody tr:last-child td {
+            border-bottom: none;
+        }
 
         /* ── Buttons (admin-specific) ── */
-        .btn-admin { background: linear-gradient(135deg, #6C5CE7, #A29BFE); color: #fff; border: none; border-radius: 10px; font-weight: 600; padding: 10px 20px; transition: all 0.2s; }
-        .btn-admin:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(108,92,231,0.3); }
-        .btn-admin-outline { background: transparent; color: #6C5CE7; border: 1px solid rgba(108,92,231,0.3); border-radius: 10px; font-weight: 600; padding: 10px 20px; transition: all 0.2s; }
-        .btn-admin-outline:hover { background: rgba(108,92,231,0.1); color: #A29BFE; }
+        .btn-admin {
+            background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.2s;
+        }
 
-        .btn-icon { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--admin-border); background: transparent; color: var(--admin-muted); transition: all 0.2s; }
-        .btn-icon:hover { color: #fff; border-color: rgba(108,92,231,0.4); background: rgba(108,92,231,0.1); }
-        .btn-icon.btn-icon-danger:hover { color: #E17055; border-color: rgba(225,112,85,0.4); background: rgba(225,112,85,0.1); }
+        .btn-admin:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-admin-outline {
+            background: transparent;
+            color: #6C5CE7;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-admin-outline:hover {
+            background: rgba(108, 92, 231, 0.1);
+            color: #A29BFE;
+        }
+
+        .btn-icon {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid var(--admin-border);
+            background: transparent;
+            color: var(--admin-muted);
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            color: #fff;
+            border-color: rgba(108, 92, 231, 0.4);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        .btn-icon.btn-icon-danger:hover {
+            color: #E17055;
+            border-color: rgba(225, 112, 85, 0.4);
+            background: rgba(225, 112, 85, 0.1);
+        }
 
         /* ── Badge styles ── */
-        .badge-status { padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 0.72rem; }
+        .badge-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.72rem;
+        }
 
         /* ── Form controls (dark theme) ── */
-        .admin-card .form-control, .admin-card .form-select {
-            background: rgba(255,255,255,0.05);
-            border-color: var(--admin-border);
-            color: #fff;
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: var(--admin-border) !important;
+            color: #fff !important;
+            transition: all 0.2s ease;
         }
-        .admin-card .form-control:focus, .admin-card .form-select:focus {
-            background: rgba(255,255,255,0.08);
-            border-color: #6C5CE7;
-            color: #fff;
-            box-shadow: 0 0 0 3px rgba(108,92,231,0.15);
+
+        .form-control::placeholder {
+            color: var(--admin-placeholder);
         }
-        .admin-card .form-label { color: var(--admin-muted); font-weight: 500; font-size: 0.85rem; }
-        .admin-card .form-check-label { color: var(--admin-text); }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #6C5CE7 !important;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2) !important;
+        }
+
+        .form-label {
+            color: var(--admin-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .form-check-label {
+            color: var(--admin-text);
+        }
+
+        /* ── Custom Pagination (Admin) ── */
+        .pagination {
+            gap: 5px;
+            margin: 0;
+        }
+
+        .page-link,
+        [role="navigation"] a,
+        [role="navigation"] span.inline-flex {
+            background: var(--admin-card) !important;
+            border-color: var(--admin-border) !important;
+            color: var(--admin-muted) !important;
+            border-radius: 8px !important;
+            padding: 8px 16px;
+            box-shadow: none !important;
+            text-decoration: none !important;
+        }
+
+        /* Specific fix for SVG size in Laravel default pagination */
+        [role="navigation"] svg {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .page-link:hover,
+        [role="navigation"] a:hover {
+            background: rgba(108, 92, 231, 0.1) !important;
+            color: #fff !important;
+            border-color: #6C5CE7 !important;
+        }
+
+        .page-item.active .page-link,
+        [aria-current="page"] span {
+            background: #6C5CE7 !important;
+            border-color: #6C5CE7 !important;
+            color: #fff !important;
+        }
+
+        .page-item.disabled .page-link,
+        [aria-disabled="true"] span {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border-color: var(--admin-border) !important;
+            color: rgba(255, 255, 255, 0.1) !important;
+            cursor: not-allowed;
+        }
+
+        .text-muted {
+            color: var(--admin-muted) !important;
+        }
 
         /* ── Alerts ── */
-        .admin-content .alert { border-radius: 12px; border: none; }
+        .admin-content .alert {
+            border-radius: 12px;
+            border: none;
+        }
 
         /* ── Mobile ── */
         @media (max-width: 991.98px) {
-            .admin-sidebar { transform: translateX(-100%); }
-            .admin-sidebar.show { transform: translateX(0); box-shadow: 20px 0 60px rgba(0,0,0,0.5); }
-            .admin-content { margin-left: 0; padding: 16px; }
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .admin-sidebar.show {
+                transform: translateX(0);
+                box-shadow: 20px 0 60px rgba(0, 0, 0, 0.5);
+            }
+
+            .admin-content {
+                margin-left: 0;
+                padding: 16px;
+            }
         }
     </style>
     @stack('styles')
 </head>
+
 <body>
     {{-- Sidebar --}}
     <div class="admin-sidebar" id="adminSidebar">
@@ -227,30 +473,41 @@
         </div>
 
         <div class="sidebar-section">Main</div>
-        <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+        <a href="{{ route('admin.dashboard') }}"
+            class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="bi bi-grid-1x2"></i> Dashboard
         </a>
 
         <div class="sidebar-section">Store Management</div>
-        <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.products.index') }}"
+            class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
             <i class="bi bi-box-seam"></i> Products
             <span class="badge bg-primary">{{ \App\Models\Product::count() }}</span>
         </a>
-        <a href="{{ route('admin.orders.index') }}" class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.categories.index') }}"
+            class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+            <i class="bi bi-tags"></i> Categories
+            <span class="badge bg-primary">{{ \App\Models\Category::count() }}</span>
+        </a>
+        <a href="{{ route('admin.orders.index') }}"
+            class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
             <i class="bi bi-receipt"></i> Orders
             <span class="badge bg-success">{{ \App\Models\Order::where('status', 'pending')->count() }}</span>
         </a>
-        <a href="{{ route('admin.customers.index') }}" class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.customers.index') }}"
+            class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i> Customers
         </a>
 
         <div class="sidebar-section">Marketing</div>
-        <a href="{{ route('admin.coupons.index') }}" class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
+        <a href="{{ route('admin.coupons.index') }}"
+            class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
             <i class="bi bi-tag"></i> Coupons
         </a>
 
         <div class="sidebar-section">Tools</div>
-        <a href="{{ route('admin.scanner') }}" class="nav-link {{ request()->routeIs('admin.scanner') ? 'active' : '' }}">
+        <a href="{{ route('admin.scanner') }}"
+            class="nav-link {{ request()->routeIs('admin.scanner') ? 'active' : '' }}">
             <i class="bi bi-qr-code-scan"></i> QR Scanner
         </a>
         <a href="{{ url('/') }}" class="nav-link">
@@ -268,7 +525,8 @@
             </div>
             <form method="POST" action="{{ route('logout') }}" class="mt-2">
                 @csrf
-                <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent" style="color:#E17055;margin:0;padding:10px 12px;">
+                <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent"
+                    style="color:#E17055;margin:0;padding:10px 12px;">
                     <i class="bi bi-box-arrow-right"></i> Sign Out
                 </button>
             </form>
@@ -278,7 +536,8 @@
     {{-- Main Content --}}
     <div class="admin-content">
         {{-- Mobile Toggle --}}
-        <button class="btn btn-admin d-lg-none mb-3" onclick="document.getElementById('adminSidebar').classList.toggle('show')">
+        <button class="btn btn-admin d-lg-none mb-3"
+            onclick="document.getElementById('adminSidebar').classList.toggle('show')">
             <i class="bi bi-list me-1"></i> Menu
         </button>
 
@@ -309,4 +568,5 @@
     </script>
     @stack('scripts')
 </body>
+
 </html>
