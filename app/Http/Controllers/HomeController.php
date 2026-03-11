@@ -23,7 +23,9 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        return view('home', compact('promotions', 'featuredProducts', 'categories', 'offerProducts'));
+        $sliders = \App\Models\Slider::where('is_active', true)->orderBy('order')->get();
+
+        return view('home', compact('promotions', 'featuredProducts', 'categories', 'offerProducts', 'sliders'));
     }
 
     public function offers()

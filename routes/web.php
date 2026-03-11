@@ -60,6 +60,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Categories
     Route::resource('categories', CategoryController::class);
 
+    // Sliders
+    Route::resource('sliders', \App\Http\Controllers\Admin\SliderController::class);
+
     // Coupons
     Route::resource('coupons', CouponController::class);
 

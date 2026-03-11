@@ -39,6 +39,22 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        /* ── Sidebar Scrollbar ── */
+        .admin-sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .admin-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .admin-sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .sidebar-brand {
@@ -504,6 +520,10 @@
         </a>
 
         <div class="sidebar-section">Marketing</div>
+        <a href="{{ route('admin.sliders.index') }}"
+            class="nav-link {{ request()->routeIs('admin.sliders.*') ? 'active' : '' }}">
+            <i class="bi bi-images"></i> Sliders
+        </a>
         <a href="{{ route('admin.coupons.index') }}"
             class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
             <i class="bi bi-tag"></i> Coupons
