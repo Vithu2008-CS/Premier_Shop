@@ -72,6 +72,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
     Route::get('customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
     Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+    // Reports
+    Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
 });
 
 require __DIR__ . '/auth.php';

@@ -23,7 +23,14 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate(['status' => 'required|in:pending,processing,shipped,delivered,cancelled']);
+        
+        $oldStatus = $order->status;
         $order->update(['status' => $request->status]);
+
+        if ($oldStatus !== $request->status) {
+            \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+        }
+
         return back()->with('success', 'Order status updated.');
     }
 }
