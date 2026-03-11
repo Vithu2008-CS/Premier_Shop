@@ -498,6 +498,10 @@
             class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i> Customers
         </a>
+        <a href="{{ route('admin.reports.index') }}"
+            class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart-fill"></i> Reports
+        </a>
 
         <div class="sidebar-section">Marketing</div>
         <a href="{{ route('admin.coupons.index') }}"

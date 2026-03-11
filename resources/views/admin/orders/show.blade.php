@@ -1,7 +1,61 @@
 @extends('layouts.admin')
 @section('title', 'Order ' . $order->order_number . ' — Admin')
 
+@push('styles')
+<style>
+    @media print {
+        body {
+            background: #fff !important;
+            color: #000 !important;
+        }
+        .admin-sidebar, .admin-topbar form, .btn-admin, .btn-admin-outline, .d-lg-none, .alert, .admin-card form, .card-title:contains('Update Status') {
+            display: none !important;
+        }
+        .admin-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .admin-card {
+            border: none !important;
+            background: #fff !important;
+            box-shadow: none !important;
+            padding: 10px 0 !important;
+        }
+        .col-lg-4 .admin-card:last-child {
+            display: none !important; /* Hide update status card completely */
+        }
+        .print-header {
+            display: block !important;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+        .print-header h1 { margin: 0; color: #000; font-size: 24px; }
+        .print-header p { margin: 5px 0 0; color: #555; }
+        
+        /* Typography adjustments for print */
+        .fw-bold { color: #000 !important; }
+        .text-success { color: #000 !important; }
+        small, p { color: #333 !important; }
+        i.bi { display: none !important; } /* Hide icons in print for cleaner look */
+        .admin-card .card-title {
+            color: #000 !important;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+    }
+    .print-header { display: none; }
+</style>
+@endpush
+
 @section('content')
+<div class="print-header">
+    <h1>Premier Shop Invoice</h1>
+    <p>Order #{{ $order->order_number }} | Date: {{ $order->created_at->format('M d, Y') }}</p>
+</div>
+
 <div class="admin-topbar">
     <div>
         <h2>Order {{ $order->order_number }}</h2>
@@ -13,7 +67,10 @@
             </ol>
         </nav>
     </div>
-    <a href="{{ route('admin.orders.index') }}" class="btn btn-admin-outline"><i class="bi bi-arrow-left me-1"></i> Back</a>
+    <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-admin"><i class="bi bi-printer me-1"></i> Print Order</button>
+        <a href="{{ route('admin.orders.index') }}" class="btn btn-admin-outline"><i class="bi bi-arrow-left me-1"></i> Back</a>
+    </div>
 </div>
 
 <div class="row g-4">
@@ -65,7 +122,6 @@
             <div class="card-title">Shipping</div>
             <p style="color:var(--admin-muted);font-size:0.9rem;">{{ $order->shipping_address['address_line'] ?? '' }}<br>{{ $order->shipping_address['city'] ?? '' }}</p>
             <p style="color:var(--admin-muted);">No address provided</p>
-            @endif
         </div>
 
         <div class="admin-card">
