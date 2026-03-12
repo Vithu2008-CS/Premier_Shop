@@ -275,32 +275,38 @@
         .admin-table {
             width: 100%;
             color: var(--admin-text);
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--admin-text);
+            --bs-table-hover-bg: rgba(108, 92, 231, 0.04);
+            --bs-table-hover-color: var(--admin-text);
         }
 
         .admin-table thead th {
-            background: rgba(255, 255, 255, 0.06);
-            border-bottom: 1px solid var(--admin-border);
+            background: rgba(255, 255, 255, 0.06) !important;
+            border-bottom: 1px solid var(--admin-border) !important;
             padding: 14px 16px;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #fff;
+            color: #fff !important;
             font-weight: 700;
         }
 
         .admin-table tbody td {
+            background: transparent !important;
+            color: var(--admin-text) !important;
             padding: 14px 16px;
-            border-bottom: 1px solid var(--admin-border);
+            border-bottom: 1px solid var(--admin-border) !important;
             font-size: 0.9rem;
             vertical-align: middle;
         }
 
-        .admin-table tbody tr:hover {
-            background: rgba(108, 92, 231, 0.04);
+        .admin-table tbody tr:hover td {
+            background: rgba(108, 92, 231, 0.04) !important;
         }
 
         .admin-table tbody tr:last-child td {
-            border-bottom: none;
+            border-bottom: none !important;
         }
 
         /* ── Buttons (admin-specific) ── */

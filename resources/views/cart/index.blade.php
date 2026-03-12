@@ -19,9 +19,9 @@
             </div>
         @else
             <div class="row g-4">
-                <div class="col-lg-8">
+                <div class="col-lg-8" id="cart-items-container">
                     @foreach($cart->items as $item)
-                        <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }}">
+                        <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" id="cart-item-{{ $item->id }}">
                             <div class="card-body p-3">
                                 <div class="row align-items-center g-3">
                                     {{-- Image --}}
@@ -46,19 +46,19 @@
                                     </div>
                                     {{-- Quantity --}}
                                     <div class="col-6 col-md-3">
-                                        <form action="{{ route('cart.update', $item) }}" method="POST">
+                                        <form action="{{ route('cart.update', $item) }}" method="POST" class="cart-update-form">
                                             @csrf @method('PATCH')
                                             <div class="qty-stepper d-flex align-items-center border rounded-3">
                                                 <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-2">−</button>
-                                                <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control form-control-sm text-center border-0" style="width:45px;" onchange="this.form.submit()">
+                                                <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control form-control-sm text-center border-0 qty-input" style="width:45px;">
                                                 <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-2">+</button>
                                             </div>
                                         </form>
                                     </div>
                                     {{-- Line Total + Remove --}}
                                     <div class="col-6 col-md-3 text-end">
-                                        <div class="fw-bold mb-2" style="font-size:1.1rem;">£{{ number_format($item->line_total, 2) }}</div>
-                                        <form action="{{ route('cart.remove', $item) }}" method="POST">
+                                        <div class="fw-bold mb-2 item-line-total" style="font-size:1.1rem;">£{{ number_format($item->line_total, 2) }}</div>
+                                        <form action="{{ route('cart.remove', $item) }}" method="POST" class="cart-remove-form">
                                             @csrf @method('DELETE')
                                             <button class="btn btn-outline-danger btn-sm" style="border-radius:8px;"><i class="bi bi-trash3 me-1"></i>Remove</button>
                                         </form>
@@ -75,17 +75,17 @@
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-3">Order Summary</h5>
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Subtotal ({{ $cart->totalItems }} items)</span>
-                                <span class="fw-bold">£{{ number_format($cart->subtotal, 2) }}</span>
+                                <span class="text-muted">Subtotal (<span id="summary-total-items">{{ $cart->totalItems }}</span> items)</span>
+                                <span class="fw-bold" id="summary-subtotal">£{{ number_format($cart->subtotal, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Shipping</span>
-                                <span class="text-success fw-bold">{{ $cart->subtotal >= 50 ? 'Free' : '£5.99' }}</span>
+                                <span class="text-success fw-bold" id="summary-shipping">{{ $cart->subtotal >= 50 ? 'Free' : '£5.99' }}</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between mb-4">
                                 <span class="fw-bold" style="font-size:1.1rem;">Total</span>
-                                <span class="fw-bold gradient-text" style="font-size:1.3rem;">£{{ number_format($cart->subtotal + ($cart->subtotal >= 50 ? 0 : 5.99), 2) }}</span>
+                                <span class="fw-bold gradient-text" style="font-size:1.3rem;" id="summary-total">£{{ number_format($cart->subtotal + ($cart->subtotal >= 50 ? 0 : 5.99), 2) }}</span>
                             </div>
                             <a href="{{ route('checkout.index') }}" class="btn btn-add-cart w-100">
                                 <i class="bi bi-lock me-2"></i> Secure Checkout
@@ -100,4 +100,124 @@
         @endif
     </div>
 </section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateCartUI(data, itemRow = null) {
+        if(data.success) {
+            if(itemRow && data.lineTotal) {
+                itemRow.querySelector('.item-line-total').textContent = '£' + data.lineTotal;
+            }
+            document.getElementById('summary-total-items').textContent = data.totalItems;
+            document.getElementById('summary-subtotal').textContent = '£' + data.subtotal;
+            document.getElementById('summary-shipping').textContent = data.shipping;
+            document.getElementById('summary-total').textContent = '£' + data.total;
+            
+            // Update top nav cart badge if present
+            document.querySelectorAll('.cart-badge .badge').forEach(badge => {
+                badge.textContent = data.totalItems;
+            });
+        }
+    }
+
+    // Handle Quantity increments/decrements
+    document.querySelectorAll('.qty-stepper').forEach(stepper => {
+        const input = stepper.querySelector('.qty-input');
+        const minusBtn = stepper.querySelector('.qty-minus');
+        const plusBtn = stepper.querySelector('.qty-plus');
+        const form = stepper.closest('.cart-update-form');
+
+        const triggerUpdate = () => {
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    updateCartUI(data, form.closest('.cart-item-row'));
+                } else {
+                    alert(data.message || 'Error updating cart');
+                    // Reset input to something reasonably valid if possible, or just reload on error
+                }
+            });
+        };
+
+        minusBtn.addEventListener('click', () => {
+            if (input.value > 1) {
+                input.value = parseInt(input.value) - 1;
+                triggerUpdate();
+            }
+        });
+
+        plusBtn.addEventListener('click', () => {
+            if (parseInt(input.value) < parseInt(input.max)) {
+                input.value = parseInt(input.value) + 1;
+                triggerUpdate();
+            }
+        });
+
+        input.addEventListener('change', () => {
+            if(input.value < 1) input.value = 1;
+            if(parseInt(input.value) > parseInt(input.max)) input.value = input.max;
+            triggerUpdate();
+        });
+    });
+
+    // Handle Removals
+    document.querySelectorAll('.cart-remove-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            btn.disabled = true;
+
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    if(data.empty) {
+                        window.location.reload(); // Reload to show empty state
+                    } else {
+                        const row = form.closest('.cart-item-row');
+                        row.classList.remove('fade-up');
+                        row.style.transition = 'all 0.4s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            row.remove();
+                            updateCartUI(data);
+                        }, 400);
+                    }
+                } else {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                    alert(data.message || 'Error removing item');
+                }
+            })
+            .catch(() => {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                alert('Connection error');
+            });
+        });
+    });
+});
+</script>
+@endpush
 @endsection

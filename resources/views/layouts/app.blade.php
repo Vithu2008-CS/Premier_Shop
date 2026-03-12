@@ -330,6 +330,65 @@
         <i class="bi bi-arrow-up"></i>
     </button>
 
+    @push('scripts')
+    <script>
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form && form.action && form.action.includes('/wishlists/') && form.action.includes('/toggle')) {
+            e.preventDefault();
+            
+            const btn = form.querySelector('button');
+            if(!btn) return;
+            
+            const icon = btn.querySelector('i');
+            btn.disabled = true;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                if (data.success) {
+                    if (window.location.pathname.includes('/wishlists')) {
+                        const cardParent = form.closest('.product-card').parentElement;
+                        if (cardParent) {
+                            cardParent.style.transition = 'all 0.4s ease';
+                            cardParent.style.opacity = '0';
+                            cardParent.style.transform = 'translateY(20px)';
+                            setTimeout(() => cardParent.remove(), 400);
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        if (data.status === 'added') {
+                            if(icon.classList.contains('bi-heart')) icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill', 'text-danger');
+                            btn.title = 'Remove from wishlist';
+                        } else {
+                            if(icon.classList.contains('bi-heart-fill')) icon.classList.remove('bi-heart-fill');
+                            if(icon.classList.contains('text-danger')) icon.classList.remove('text-danger');
+                            icon.classList.add('bi-heart');
+                            btn.title = 'Add to wishlist';
+                        }
+                    }
+                } else {
+                    alert(data.message || 'Error updating wishlist.');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                console.error(err);
+            });
+        }
+    });
+    </script>
+    @endpush
     @stack('scripts')
 </body>
 

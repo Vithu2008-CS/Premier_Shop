@@ -911,11 +911,19 @@ h3,
     font-weight: 700;
   }
 
-  input {
+  input[type=number] {
     text-align: center;
     border: none !important;
     background: transparent;
     font-weight: 600;
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
 
     &:focus {
       box-shadow: none;

@@ -105,16 +105,51 @@ class CartController extends Controller
         $request->validate(['quantity' => 'required|integer|min:1']);
 
         if ($request->quantity > $cartItem->product->stock) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Not enough stock available.']);
+            }
             return back()->with('error', 'Not enough stock available.');
         }
 
         $cartItem->update(['quantity' => $request->quantity]);
+
+        if ($request->wantsJson()) {
+            $cartLevel = \App\Models\Cart::with('items.product')->find($cartItem->cart_id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart updated.',
+                'lineTotal' => number_format($cartItem->line_total, 2),
+                'subtotal' => number_format($cartLevel->subtotal, 2),
+                'totalItems' => $cartLevel->totalItems,
+                'shipping' => $cartLevel->subtotal >= 50 ? 'Free' : '£5.99',
+                'total' => number_format($cartLevel->subtotal + ($cartLevel->subtotal >= 50 ? 0 : 5.99), 2)
+            ]);
+        }
+
         return back()->with('success', 'Cart updated.');
     }
 
-    public function remove(CartItem $cartItem)
+    public function remove(Request $request, CartItem $cartItem)
     {
+        $cartId = $cartItem->cart_id;
         $cartItem->delete();
+
+        if ($request->wantsJson()) {
+            $cartLevel = \App\Models\Cart::with('items.product')->find($cartId);
+            if (!$cartLevel || $cartLevel->items->isEmpty()) {
+                return response()->json(['success' => true, 'empty' => true]);
+            }
+            return response()->json([
+                'success' => true,
+                'empty' => false,
+                'message' => 'Item removed from cart.',
+                'subtotal' => number_format($cartLevel->subtotal, 2),
+                'totalItems' => $cartLevel->totalItems,
+                'shipping' => $cartLevel->subtotal >= 50 ? 'Free' : '£5.99',
+                'total' => number_format($cartLevel->subtotal + ($cartLevel->subtotal >= 50 ? 0 : 5.99), 2)
+            ]);
+        }
+
         return back()->with('success', 'Item removed from cart.');
     }
 }

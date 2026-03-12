@@ -15,7 +15,7 @@ class WishlistController extends Controller
         return view('wishlists.index', compact('wishlists'));
     }
 
-    public function toggle(Product $product)
+    public function toggle(Request $request, Product $product)
     {
         $wishlist = Wishlist::where('user_id', auth()->id())
             ->where('product_id', $product->id)
@@ -23,12 +23,18 @@ class WishlistController extends Controller
 
         if ($wishlist) {
             $wishlist->delete();
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'status' => 'removed', 'message' => 'Product removed from wishlist.']);
+            }
             return back()->with('success', 'Product removed from wishlist.');
         } else {
             Wishlist::create([
                 'user_id' => auth()->id(),
                 'product_id' => $product->id,
             ]);
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'status' => 'added', 'message' => 'Product added to wishlist.']);
+            }
             return back()->with('success', 'Product added to wishlist.');
         }
     }
