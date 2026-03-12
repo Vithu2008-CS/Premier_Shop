@@ -223,7 +223,18 @@
                 <div class="row g-4">
                     @foreach($offerProducts as $i => $product)
                         <div class="col-6 col-md-3 fade-up delay-{{ $i + 1 }}">
-                            <div class="product-card">
+                            <div class="product-card position-relative">
+                                @auth
+                                    @php
+                                        $inWishlist = \App\Models\Wishlist::where('user_id', auth()->id())->where('product_id', $product->id)->exists();
+                                    @endphp
+                                    <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST" class="position-absolute" style="top:10px; right:10px; z-index:10;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:35px;height:35px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                                            <i class="bi bi-heart{{ $inWishlist ? '-fill text-danger' : '' }} fs-6"></i>
+                                        </button>
+                                    </form>
+                                @endauth
                                 <span class="product-badge bg-danger"><i class="bi bi-lightning-fill"></i>
                                     {{ number_format($product->offer_discount_percent) }}% OFF</span>
                                 <div class="product-img-wrap">
@@ -260,64 +271,56 @@
     @endif
 
 
-    {{-- Featured Products --}}
-    <section class="py-5 fade-up">
+    {{-- Popular Products --}}
+    @if(isset($popularProducts) && $popularProducts->count() > 0)
+    <section class="py-5 bg-light fade-up delay-1">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title">Featured <span class="gradient-text">Products</span></h2>
-                <a href="{{ route('products.index') }}" class="btn btn-outline-primary" style="border-radius:50px;">View All
-                    <i class="bi bi-arrow-right ms-1"></i></a>
+                <h2 class="section-title"><i class="bi bi-star-fill text-warning me-2"></i>Most <span class="gradient-text">Popular</span></h2>
+                <a href="{{ route('products.index', ['sort' => 'popular']) }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
             </div>
             <div class="row g-4">
-                @foreach($featuredProducts as $i => $product)
-                    <div class="col-6 col-md-3 fade-up delay-{{ ($i % 4) + 1 }}">
-                        <div class="product-card">
-                            @if($product->created_at->gt(now()->subDays(7)))
-                                <span class="product-badge" style="background:var(--ps-gradient);">NEW</span>
-                            @endif
-                            @if($product->has_offer)
-                                <span class="product-badge bg-danger">{{ number_format($product->offer_discount_percent) }}%
-                                    OFF</span>
-                            @endif
-                            <div class="product-img-wrap">
-                                @if($product->images && count($product->images) > 0)
-                                    <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy">
-                                @else
-                                    <div class="d-flex align-items-center justify-content-center h-100" style="background:#f0f0f5;">
-                                        <i class="bi bi-image text-muted" style="font-size:2.5rem;"></i></div>
-                                @endif
-                                <div class="product-overlay">
-                                    <a href="{{ route('products.show', $product->slug) }}" class="btn btn-light btn-sm"><i
-                                            class="bi bi-eye me-1"></i>View</a>
-                                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button class="btn btn-primary btn-sm btn-add-to-cart"><i
-                                                class="bi bi-bag-plus me-1"></i>Add</button>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="product-body">
-                                <div class="product-category">{{ $product->category?->name }}</div>
-                                <h5 class="product-title"><a
-                                        href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a></h5>
-                                <div class="product-price">
-                                    £{{ number_format($product->price, 2) }}
-                                </div>
-                            </div>
-                            <div class="product-footer">
-                                <div class="stock-indicator">
-                                    <span class="dot {{ $product->stock > 0 ? 'dot-green' : 'dot-red' }}"></span>
-                                    {{ $product->stock > 0 ? 'In Stock' : 'Out of Stock' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                @foreach($popularProducts as $i => $product)
+                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
             </div>
         </div>
     </section>
+    @endif
+
+    {{-- New Arrivals --}}
+    @if(isset($newProducts) && $newProducts->count() > 0)
+    <section class="py-5 fade-up delay-2">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title"><i class="bi bi-rocket-takeoff-fill text-primary me-2"></i>New <span class="text-primary">Arrivals</span></h2>
+                <a href="{{ route('products.index', ['sort' => 'newest']) }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
+            </div>
+            <div class="row g-4">
+                @foreach($newProducts as $i => $product)
+                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    {{-- Random Products --}}
+    @if(isset($randomProducts) && $randomProducts->count() > 0)
+    <section class="py-5 bg-light fade-up delay-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title">Discover <span class="gradient-text">More</span></h2>
+                <a href="{{ route('products.index') }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
+            </div>
+            <div class="row g-4">
+                @foreach($randomProducts as $i => $product)
+                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
 
     {{-- Trust Bar --}}
     <section class="trust-bar fade-up">

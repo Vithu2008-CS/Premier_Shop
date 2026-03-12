@@ -87,6 +87,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('wishlists.index') }}"><i class="bi bi-heart"></i> Wishlist</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('orders.index') }}"><i class="bi bi-receipt"></i> Orders</a>
                         </li>
                         <li class="nav-item dropdown">
@@ -176,6 +179,8 @@
                                 class="bi bi-bag me-2"></i>Cart</a></li>
                     <li><a class="nav-link text-white" href="{{ route('orders.index') }}"><i
                                 class="bi bi-receipt me-2"></i>Orders</a></li>
+                    <li><a class="nav-link text-white" href="{{ route('wishlists.index') }}"><i
+                                class="bi bi-heart me-2"></i>Wishlist</a></li>
                     <li><a class="nav-link text-white" href="{{ route('profile.edit') }}"><i
                                 class="bi bi-gear me-2"></i>Profile</a></li>
                     @if(auth()->user()->isAdmin())
@@ -245,7 +250,7 @@
     <footer class="footer-premium">
         <div class="container">
             <div class="row g-4">
-                <div class="col-lg-4">
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <div class="footer-brand">🛍️ Premier Shop</div>
                     <p class="mb-4" style="font-size:0.9rem;">Your one-stop destination for quality products at
                         unbeatable prices.</p>
@@ -256,7 +261,7 @@
                         <a href="#"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-4">
+                <div class="col-lg-2 col-md-3 mb-4 mb-lg-0">
                     <h6 class="footer-heading">Shop</h6>
                     <ul class="footer-links">
                         <li><a href="{{ route('offers') }}">Offers</a></li>
@@ -267,7 +272,7 @@
                         @endforeach
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-4">
+                <div class="col-lg-2 col-md-3 mb-4 mb-lg-0">
                     <h6 class="footer-heading">Account</h6>
                     <ul class="footer-links">
                         <li><a href="{{ route('login') }}">Login</a></li>
@@ -278,7 +283,33 @@
                         @endauth
                     </ul>
                 </div>
-                <div class="col-lg-4 col-md-4">
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h6 class="footer-heading">Shop Hours</h6>
+                     <ul class="footer-links" style="font-size:0.85rem;">
+                        @php
+                            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                            $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+                        @endphp
+                        @foreach($days as $day)
+                            @php
+                                $open = $settings["shop_hours_{$day}_open"] ?? '';
+                                $close = $settings["shop_hours_{$day}_close"] ?? '';
+                                $isClosed = filter_var($settings["shop_hours_{$day}_closed"] ?? 'false', FILTER_VALIDATE_BOOLEAN);
+                            @endphp
+                            <li class="d-flex justify-content-between mb-1">
+                                <span class="text-capitalize text-muted">{{ substr($day, 0, 3) }}:</span>
+                                <span>
+                                    @if($isClosed || (!$open && !$close))
+                                        <span class="text-danger">Closed</span>
+                                    @else
+                                        {{ $open ? \Carbon\Carbon::parse($open)->format('H:i') : '' }} - {{ $close ? \Carbon\Carbon::parse($close)->format('H:i') : '' }}
+                                    @endif
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                     <h6 class="footer-heading">Get In Touch</h6>
                     <ul class="footer-links">
                         <li><i class="bi bi-geo-alt me-2 text-primary"></i>London, United Kingdom</li>

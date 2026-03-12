@@ -24,4 +24,26 @@ class OrderController extends Controller
         $order->load('items.product');
         return view('orders.show', compact('order'));
     }
+
+    public function cancel(Request $request, Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Only pending orders can be cancelled.');
+        }
+
+        $request->validate([
+            'cancellation_reason' => 'required|string|max:1000',
+        ]);
+
+        $order->update([
+            'status' => 'cancelled',
+            'cancellation_reason' => $request->cancellation_reason,
+        ]);
+
+        return back()->with('success', 'Order cancelled successfully.');
+    }
 }

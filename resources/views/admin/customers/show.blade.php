@@ -51,6 +51,28 @@
                     <i class="bi bi-exclamation-triangle me-1"></i> Under 16 — Cannot purchase age-restricted items
                 </div>
                 @endif
+
+                {{-- Role Assignment --}}
+                <hr style="border-color:var(--admin-border);">
+                <div class="mt-3">
+                    <label class="form-label"><i class="bi bi-shield-lock me-1"></i>User Role</label>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary px-3 py-2">{{ $customer->role?->display_name ?? 'No Role' }}</span>
+                    </div>
+                    @if(auth()->user()->hasPermission('roles.update'))
+                    <form action="{{ route('admin.customers.updateRole', $customer) }}" method="POST">
+                        @csrf @method('PATCH')
+                        <div class="input-group input-group-sm">
+                            <select name="role_id" class="form-select form-select-sm">
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id }}" {{ $customer->role_id == $role->id ? 'selected' : '' }}>{{ $role->display_name }}</option>
+                                @endforeach
+                            </select>
+                            <button class="btn btn-admin btn-sm" type="submit">Update</button>
+                        </div>
+                    </form>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

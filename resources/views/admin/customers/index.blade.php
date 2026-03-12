@@ -19,7 +19,7 @@
     <div class="table-responsive">
         <table class="admin-table">
             <thead>
-                <tr><th>Customer</th><th>Email</th><th>Phone</th><th>Age</th><th>Orders</th><th>Joined</th><th>Actions</th></tr>
+                <tr><th>Customer</th><th>Email</th><th>Role</th><th>Phone</th><th>Age</th><th>Orders</th><th>Joined</th><th>Actions</th></tr>
             </thead>
             <tbody>
                 @forelse($customers as $customer)
@@ -34,6 +34,9 @@
                             </div>
                         </td>
                         <td style="color:var(--admin-muted);">{{ $customer->email }}</td>
+                        <td>
+                            <span class="badge badge-status" style="background:rgba(108,92,231,0.15);color:#A29BFE;">{{ $customer->role?->display_name ?? '—' }}</span>
+                        </td>
                         <td>{{ $customer->phone ?? '—' }}</td>
                         <td>
                             @if($customer->dob)
@@ -57,7 +60,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center py-5" style="color:var(--admin-muted);"><i class="bi bi-people" style="font-size:2rem;display:block;margin-bottom:8px;"></i>No customers yet</td></tr>
+                    <tr><td colspan="8" class="text-center py-5" style="color:var(--admin-muted);"><i class="bi bi-people" style="font-size:2rem;display:block;margin-bottom:8px;"></i>No customers yet</td></tr>
                 @endforelse
             </tbody>
         </table>
