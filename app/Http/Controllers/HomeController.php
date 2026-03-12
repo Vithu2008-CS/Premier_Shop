@@ -11,21 +11,38 @@ class HomeController extends Controller
     public function index()
     {
         $promotions = Promotion::active()->get();
-        $featuredProducts = Product::where('is_active', true)
-            ->inRandomOrder()
-            ->limit(8)
-            ->get();
         $categories = Category::withCount('products')->get();
+        $sliders = \App\Models\Slider::where('is_active', true)->orderBy('order')->get();
 
-        // Products with active offers for offer banner
+        // 1. Offers
         $offerProducts = Product::withActiveOffers()
             ->where('is_active', true)
             ->limit(4)
             ->get();
 
-        $sliders = \App\Models\Slider::where('is_active', true)->orderBy('order')->get();
+        // 2. Popular Products
+        $popularProducts = Product::where('is_active', true)
+            ->withCount('orderItems')
+            ->orderByDesc('order_items_count')
+            ->limit(4)
+            ->get();
 
-        return view('home', compact('promotions', 'featuredProducts', 'categories', 'offerProducts', 'sliders'));
+        // 3. New Products
+        $newProducts = Product::where('is_active', true)
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        // 4. Random Products
+        $randomProducts = Product::where('is_active', true)
+            ->inRandomOrder()
+            ->limit(8)
+            ->get();
+
+        return view('home', compact(
+            'promotions', 'categories', 'sliders', 
+            'offerProducts', 'popularProducts', 'newProducts', 'randomProducts'
+        ));
     }
 
     public function offers()

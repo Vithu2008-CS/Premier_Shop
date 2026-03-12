@@ -46,7 +46,7 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $product = Product::with(['reviews.user'])->where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         // Block age-restricted products for underage users
         if ($product->is_age_restricted && auth()->check() && auth()->user()->isUnder16()) {

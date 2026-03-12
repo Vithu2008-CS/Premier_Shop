@@ -125,15 +125,34 @@
         </div>
 
         <div class="admin-card">
-            <div class="card-title">Update Status</div>
+            <div class="card-title">Update Status & Tracking</div>
             <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST">
                 @csrf @method('PATCH')
-                <select name="status" class="form-select mb-3" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;">
-                    @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
-                    <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                    @endforeach
-                </select>
-                <button type="submit" class="btn btn-admin w-100">Update Status</button>
+                <div class="mb-3">
+                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Status</label>
+                    <select name="status" class="form-select" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;">
+                        @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
+                        <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Processing Date</label>
+                    <input type="datetime-local" name="processing_date" class="form-control" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;" value="{{ $order->processing_date ? $order->processing_date->format('Y-m-d\TH:i') : '' }}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Shipped Date</label>
+                    <input type="datetime-local" name="shipped_date" class="form-control" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;" value="{{ $order->shipped_date ? $order->shipped_date->format('Y-m-d\TH:i') : '' }}">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Delivered Date</label>
+                    <input type="datetime-local" name="delivered_date" class="form-control" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;" value="{{ $order->delivered_date ? $order->delivered_date->format('Y-m-d\TH:i') : '' }}">
+                </div>
+
+                <button type="submit" class="btn btn-admin w-100">Update Order</button>
             </form>
         </div>
     </div>

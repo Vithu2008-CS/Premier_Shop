@@ -25,6 +25,18 @@
             
             <div class="order-details">
                 <p><strong>New Status:</strong> <span style="text-transform: capitalize; color: #E17055; font-weight: bold;">{{ $order->status }}</span></p>
+                @if($order->status === 'processing' && $order->processing_date)
+                    <p><strong>Processing Started:</strong> {{ $order->processing_date->format('M d, Y h:i A') }}</p>
+                @endif
+                @if($order->status === 'shipped' && $order->shipped_date)
+                    <p><strong>Shipped On:</strong> {{ $order->shipped_date->format('M d, Y h:i A') }}</p>
+                @endif
+                @if($order->status === 'delivered' && $order->delivered_date)
+                    <p><strong>Delivered On:</strong> {{ $order->delivered_date->format('M d, Y h:i A') }}</p>
+                @endif
+                @if($order->status === 'cancelled' && $order->cancellation_reason)
+                    <p><strong>Cancellation Reason:</strong> {{ $order->cancellation_reason }}</p>
+                @endif
             </div>
             
             <p>If you have any questions or concerns, please feel free to contact us.</p>

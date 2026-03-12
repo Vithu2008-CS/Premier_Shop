@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -10,7 +11,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = User::where('role', 'customer')
+        $customers = User::with('role')
             ->withCount('orders')
             ->latest()
             ->paginate(15);
@@ -22,16 +23,31 @@ class CustomerController extends Controller
     {
         $customer->load(['orders' => function ($q) {
             $q->latest()->limit(10);
-        }]);
+        }, 'role']);
 
-        return view('admin.customers.show', compact('customer'));
+        $roles = Role::all();
+
+        return view('admin.customers.show', compact('customer', 'roles'));
     }
 
-    public function toggleStatus(User $customer)
+    public function updateRole(Request $request, User $customer)
     {
-        $customer->update(['is_active' => !$customer->is_active]);
-        $status = $customer->is_active ? 'activated' : 'deactivated';
-        return back()->with('success', "Customer {$status} successfully.");
+        $request->validate([
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        // Prevent removing admin role from yourself
+        if ($customer->id === auth()->id() && $customer->isAdmin()) {
+            $newRole = Role::find($request->role_id);
+            if ($newRole->name !== 'admin') {
+                return back()->with('error', 'You cannot remove your own admin role.');
+            }
+        }
+
+        $customer->update(['role_id' => $request->role_id]);
+        $roleName = Role::find($request->role_id)->display_name;
+
+        return back()->with('success', "Role updated to '{$roleName}' successfully.");
     }
 
     public function destroy(User $customer)

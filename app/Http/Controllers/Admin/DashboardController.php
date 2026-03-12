@@ -15,7 +15,7 @@ class DashboardController extends Controller
             'totalProducts' => Product::count(),
             'totalOrders' => Order::count(),
             'totalRevenue' => Order::where('payment_status', 'completed')->sum('total'),
-            'totalCustomers' => User::where('role', 'customer')->count(),
+            'totalCustomers' => User::whereHas('role', fn($q) => $q->where('name', 'customer'))->count(),
             'lowStock' => Product::where('stock', '<', 10)->count(),
             'recentOrders' => Order::with('user')->latest()->limit(5)->get(),
         ];

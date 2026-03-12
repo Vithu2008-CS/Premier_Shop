@@ -25,7 +25,18 @@
             <div class="row g-4">
                 @foreach($offerProducts as $index => $product)
                     <div class="col-6 col-md-4 col-lg-3 fade-up delay-{{ ($index % 8) + 1 }}">
-                        <div class="product-card">
+                        <div class="product-card position-relative">
+                            @auth
+                                @php
+                                    $inWishlist = \App\Models\Wishlist::where('user_id', auth()->id())->where('product_id', $product->id)->exists();
+                                @endphp
+                                <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST" class="position-absolute" style="top:10px; right:10px; z-index:10;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:35px;height:35px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                                        <i class="bi bi-heart{{ $inWishlist ? '-fill text-danger' : '' }} fs-6"></i>
+                                    </button>
+                                </form>
+                            @endauth
                             {{-- Offer Badge --}}
                             <span class="product-badge bg-danger">
                                 <i class="bi bi-lightning-fill me-1"></i>{{ number_format($product->offer_discount_percent) }}% OFF
@@ -46,6 +57,13 @@
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                         <input type="hidden" name="quantity" value="{{ $product->offer_min_qty }}">
                                         <button class="btn btn-primary btn-sm btn-add-to-cart"><i class="bi bi-bag-plus me-1"></i>Add {{ $product->offer_min_qty }}</button>
+                                    </form>
+                                    <form action="{{ route('cart.buyNow') }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="quantity" value="{{ $product->offer_min_qty }}">
+                                        <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #0ba360, #3cba92); border: none;" title="Buy Now"><i
+                                                class="bi bi-lightning-charge"></i></button>
                                     </form>
                                 </div>
                             </div>

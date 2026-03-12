@@ -19,7 +19,7 @@ class User extends Authenticatable
         'phone',
         'address',
         'city',
-        'role',
+        'role_id',
     ];
 
     protected $hidden = [
@@ -36,9 +36,26 @@ class User extends Authenticatable
         ];
     }
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role && $this->role->name === 'admin';
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->role && $this->role->is_staff;
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        if (!$this->role) return false;
+        if ($this->role->name === 'admin') return true; // Admin has all permissions
+        return $this->role->hasPermission($permission);
     }
 
     public function getAgeAttribute(): int
@@ -59,5 +76,10 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }

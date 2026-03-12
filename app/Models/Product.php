@@ -48,6 +48,16 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function wishlistedBy()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
     public function isInStock(): bool
     {
         return $this->stock > 0;

@@ -451,6 +451,50 @@
             color: var(--admin-muted) !important;
         }
 
+        /* ── Dropdown menus (dark theme) ── */
+        .admin-content .dropdown-menu,
+        .admin-sidebar .dropdown-menu {
+            background: #1E2130 !important;
+            border: 1px solid var(--admin-border) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .admin-content .dropdown-item,
+        .admin-sidebar .dropdown-item {
+            color: var(--admin-text) !important;
+        }
+
+        .admin-content .dropdown-item:hover,
+        .admin-content .dropdown-item:focus,
+        .admin-sidebar .dropdown-item:hover,
+        .admin-sidebar .dropdown-item:focus {
+            background: rgba(108, 92, 231, 0.15) !important;
+            color: #fff !important;
+        }
+
+        .admin-content .dropdown-item.active,
+        .admin-sidebar .dropdown-item.active {
+            background: rgba(108, 92, 231, 0.25) !important;
+            color: #fff !important;
+        }
+
+        /* ── Select dropdown fix ── */
+        .admin-content select option {
+            background: #1E2130;
+            color: #fff;
+        }
+
+        /* ── Form switch / checkbox dark fix ── */
+        .admin-content .form-check-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-content .form-check-input:checked {
+            background-color: #6C5CE7;
+            border-color: #6C5CE7;
+        }
+
         /* ── Alerts ── */
         .admin-content .alert {
             border-radius: 12px;
@@ -529,6 +573,16 @@
             <i class="bi bi-tag"></i> Coupons
         </a>
 
+        <div class="sidebar-section">System</div>
+        <a href="{{ route('admin.roles.index') }}"
+            class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+            <i class="bi bi-shield-lock"></i> Roles
+        </a>
+        <a href="{{ route('admin.settings.index') }}"
+            class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+            <i class="bi bi-gear"></i> Settings
+        </a>
+
         <div class="sidebar-section">Tools</div>
         <a href="{{ route('admin.scanner') }}"
             class="nav-link {{ request()->routeIs('admin.scanner') ? 'active' : '' }}">
@@ -544,7 +598,7 @@
                 <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
                 <div>
                     <div class="user-name">{{ auth()->user()->name }}</div>
-                    <div class="user-role">Administrator</div>
+                    <div class="user-role">{{ auth()->user()->role?->display_name ?? 'Staff' }}</div>
                 </div>
             </div>
             <form method="POST" action="{{ route('logout') }}" class="mt-2">

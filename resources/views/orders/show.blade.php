@@ -51,10 +51,107 @@
 
             <div class="card mt-3">
                 <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Order Tracking</h5>
+                    <div class="tracking-timeline position-relative">
+                        <div style="position:absolute;left:15px;top:10px;bottom:10px;width:2px;background:#e9ecef;"></div>
+                        
+                        <div class="d-flex mb-3 position-relative">
+                            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#A29BFE);display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;margin-right:15px;">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Order Placed</h6>
+                                <small class="text-muted">{{ $order->created_at->format('d M Y, H:i') }}</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex mb-3 position-relative">
+                            <div style="width:32px;height:32px;border-radius:50%;background:{{ $order->processing_date ? 'linear-gradient(135deg,#6C5CE7,#A29BFE)' : '#e9ecef' }};display:flex;align-items:center;justify-content:center;color:{{ $order->processing_date ? '#fff' : '#6c757d' }};z-index:2;margin-right:15px;">
+                                <i class="bi bi-box"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold {{ $order->processing_date ? '' : 'text-muted' }}">Processing</h6>
+                                @if($order->processing_date)
+                                    <small class="text-muted">{{ $order->processing_date->format('d M Y, H:i') }}</small>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="d-flex mb-3 position-relative">
+                            <div style="width:32px;height:32px;border-radius:50%;background:{{ $order->shipped_date ? 'linear-gradient(135deg,#6C5CE7,#A29BFE)' : '#e9ecef' }};display:flex;align-items:center;justify-content:center;color:{{ $order->shipped_date ? '#fff' : '#6c757d' }};z-index:2;margin-right:15px;">
+                                <i class="bi bi-truck"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold {{ $order->shipped_date ? '' : 'text-muted' }}">Shipped</h6>
+                                @if($order->shipped_date)
+                                    <small class="text-muted">{{ $order->shipped_date->format('d M Y, H:i') }}</small>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="d-flex position-relative">
+                            <div style="width:32px;height:32px;border-radius:50%;background:{{ $order->delivered_date ? 'linear-gradient(135deg,#00b894,#55efc4)' : '#e9ecef' }};display:flex;align-items:center;justify-content:center;color:{{ $order->delivered_date ? '#fff' : '#6c757d' }};z-index:2;margin-right:15px;">
+                                <i class="bi bi-house-door"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold {{ $order->delivered_date ? 'text-success' : 'text-muted' }}">Delivered</h6>
+                                @if($order->delivered_date)
+                                    <small class="text-muted">{{ $order->delivered_date->format('d M Y, H:i') }}</small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Shipping Address</h5>
                     <p class="mb-0">{{ $order->shipping_address['address_line'] ?? '' }}<br>{{ $order->shipping_address['city'] ?? '' }}<br>{{ $order->shipping_address['phone'] ?? '' }}</p>
                 </div>
             </div>
+
+            @if($order->status === 'pending')
+            <div class="mt-4">
+                <button type="button" class="btn btn-outline-danger w-100 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                    Cancel Order
+                </button>
+            </div>
+
+            <!-- Cancel Order Modal -->
+            <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h5 class="modal-title fw-bold">Cancel Order</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('orders.cancel', $order) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="modal-body">
+                                <p class="text-muted mb-4">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Reason for cancellation <span class="text-danger">*</span></label>
+                                    <textarea name="cancellation_reason" class="form-control bg-light border-0" rows="3" required placeholder="Please let us know why you are cancelling..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-top-0 pt-0">
+                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Keep Order</button>
+                                <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm">Confirm Cancellation</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if($order->status === 'cancelled' && $order->cancellation_reason)
+            <div class="alert alert-danger mt-4 rounded-4 border-0">
+                <i class="bi bi-x-circle-fill me-2"></i><strong>Cancellation Reason:</strong><br>
+                {{ $order->cancellation_reason }}
+            </div>
+            @endif
         </div>
     </div>
 </div>
