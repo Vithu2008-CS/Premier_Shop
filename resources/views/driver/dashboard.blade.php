@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.driver')
 @section('title', 'Driver Dashboard — Premier Shop')
 
 @section('content')

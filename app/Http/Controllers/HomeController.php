@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Promotion;
 use App\Models\Category;
+use App\Models\Slider; // Added this use statement for Slider
 
 class HomeController extends Controller
 {
     public function index()
     {
+        if (auth()->check() && auth()->user()->isDriver()) {
+            return redirect()->route('driver.dashboard');
+        }
+
         $promotions = Promotion::active()->get();
         $categories = Category::withCount('products')->get();
-        $sliders = \App\Models\Slider::where('is_active', true)->orderBy('order')->get();
+        $sliders = Slider::where('is_active', true)->orderBy('order')->get(); // Modified this line based on instruction's snippet
 
         // 1. Offers
         $offerProducts = Product::withActiveOffers()
