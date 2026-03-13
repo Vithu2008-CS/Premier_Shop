@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Coupon;
@@ -22,11 +23,21 @@ class CheckoutController extends Controller
         $this->shippingService = $shippingService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
         if (!$cart || $cart->items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        }
+
+        // Filter items if specifically requested from cart checkboxes
+        if ($request->has('items')) {
+            $selectedIds = $request->items;
+            $cart->setRelation('items', $cart->items->whereIn('id', $selectedIds));
+            
+            if ($cart->items->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Please select at least one item to checkout.');
+            }
         }
 
         return view('checkout.index', compact('cart'));
@@ -42,6 +53,12 @@ class CheckoutController extends Controller
         }
 
         $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
+        
+        // Handle filtered items if passed in request
+        if ($request->has('items')) {
+            $cart->setRelation('items', $cart->items->whereIn('id', $request->items));
+        }
+
         if (!$coupon->isValid($cart->subtotal)) {
             return back()->with('error', 'This coupon is not valid for your order.');
         }
@@ -67,6 +84,7 @@ class CheckoutController extends Controller
             'address_line' => 'required|string|max:255',
             'city' => 'required|string|max:100',
             'phone' => 'required|string|max:20',
+            'items' => 'nullable|array',
         ]);
 
         $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
@@ -74,11 +92,20 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
+        // Filter items if specific IDs were passed
+        $purchasedItems = $cart->items;
+        if ($request->has('items')) {
+            $purchasedItems = $cart->items->whereIn('id', $request->items);
+            if ($purchasedItems->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'No items selected for checkout.');
+            }
+        }
+
         // Fetch shipping settings
         $shippingSettings = \App\Models\ShippingSetting::first();
 
-        // Calculate shipping cost
-        $subtotal = $cart->subtotal;
+        // Calculate totals based on purchased items only
+        $subtotal = $purchasedItems->sum('line_total');
         $shippingCost = $shippingSettings ? $shippingSettings->flat_rate_fee : 5.99;
         $distance = null;
 
@@ -115,9 +142,9 @@ class CheckoutController extends Controller
         $total = $subtotal - $discount + $shippingCost;
 
         try {
-            $order = DB::transaction(function () use ($request, $cart, $subtotal, $discount, $couponCode, $shippingCost, $distance, $total) {
+            $order = DB::transaction(function () use ($request, $purchasedItems, $subtotal, $discount, $couponCode, $shippingCost, $distance, $total) {
                 // Re-validate stock and age restriction inside transaction
-                foreach ($cart->items as $item) {
+                foreach ($purchasedItems as $item) {
                     if ($item->quantity > $item->product->stock) {
                         throw new \Exception("Not enough stock for {$item->product->name}.");
                     }
@@ -147,7 +174,7 @@ class CheckoutController extends Controller
                 ]);
 
                 // Create order items and reduce stock
-                foreach ($cart->items as $item) {
+                foreach ($purchasedItems as $item) {
                     // Calculate effective price (accounting for offers)
                     $effectivePrice = $item->product->price;
                     if ($item->product->has_offer && $item->quantity >= $item->product->offer_min_qty) {
@@ -177,8 +204,9 @@ class CheckoutController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        // Clear cart and coupon
-        $cart->items()->delete();
+        // Clear only purchased items from cart
+        $purchasedIds = $purchasedItems->pluck('id');
+        CartItem::whereIn('id', $purchasedIds)->delete();
         session()->forget('coupon');
 
         // Send order receipt email
