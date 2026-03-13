@@ -835,7 +835,7 @@ h3,
 }
 
 // ============================================================
-// Scroll Animations
+// 3D Animation System — Premium Scroll Reveals
 // ============================================================
 .fade-up {
   opacity: 0;
@@ -859,28 +859,297 @@ h3,
   }
 }
 
-@for $i from 1 through 8 {
-  .delay-#{$i} {
+// 3D Reveal — enters with depth and rotation
+.reveal-3d {
+  opacity: 0;
+  transform: perspective(800px) rotateX(8deg) translateY(40px) translateZ(-30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0) translateY(0) translateZ(0);
+  }
+}
+
+// Slide from left with 3D depth
+.reveal-slide-left {
+  opacity: 0;
+  transform: perspective(600px) rotateY(6deg) translateX(-60px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0) translateX(0);
+  }
+}
+
+// Slide from right with 3D depth
+.reveal-slide-right {
+  opacity: 0;
+  transform: perspective(600px) rotateY(-6deg) translateX(60px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0) translateX(0);
+  }
+}
+
+// 3D Scale reveal
+.reveal-scale {
+  opacity: 0;
+  transform: perspective(800px) scale(0.85) translateZ(-50px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(800px) scale(1) translateZ(0);
+  }
+}
+
+// 3D Flip reveal
+.reveal-flip {
+  opacity: 0;
+  transform: perspective(600px) rotateY(15deg);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0);
+  }
+}
+
+// Stagger delays — up to 12
+@for $i from 1 through 12 {
+  .delay-#{$i},
+  .stagger-#{$i} {
     transition-delay: #{$i * 0.08}s;
   }
 }
 
-// ============================================================
-// Page Transitions
-// ============================================================
-.page-enter {
-  animation: pageEnter 0.4s ease;
+// Auto-stagger children (applied by JS)
+.stagger-children > * {
+  opacity: 0;
+  transform: perspective(800px) translateY(30px) translateZ(-20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+.stagger-children.visible > * {
+  opacity: 1;
+  transform: perspective(800px) translateY(0) translateZ(0);
+}
+
+// ============================================================
+// 3D Card Hover Effects
+// ============================================================
+.product-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: perspective(800px) rotateX(2deg) translateY(-8px) translateZ(10px);
+    box-shadow: 0 20px 60px rgba(108, 92, 231, 0.15),
+                0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.category-card {
+  transform-style: preserve-3d;
+
+  &:hover {
+    transform: perspective(600px) rotateX(3deg) translateY(-6px);
+    box-shadow: 0 15px 40px rgba(108, 92, 231, 0.12);
+  }
+}
+
+.card {
+  transform-style: preserve-3d;
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(108, 92, 231, 0.1);
+  }
+}
+
+// 3D tilt container (applied by JS mouse-follow)
+.tilt-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+
+// ============================================================
+// Floating & Pulse Micro-Animations
+// ============================================================
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes softPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(108, 92, 231, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(108, 92, 231, 0.4); }
+}
+
+// Float on trust icons
+.trust-icon {
+  animation: gentleFloat 3s ease-in-out infinite;
+
+  &:nth-child(2) { animation-delay: -0.5s; }
+  &:nth-child(3) { animation-delay: -1s; }
+  &:nth-child(4) { animation-delay: -1.5s; }
+}
+
+// Pulse on badges
+.product-badge {
+  animation: softPulse 2s ease-in-out infinite;
+}
+
+// Shimmer on gradient text
+.gradient-text {
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+}
+
+// Glow on profile avatar
+.profile-avatar {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+// ============================================================
+// 3D Button Effects
+// ============================================================
+.btn-add-cart,
+.btn-add-to-cart,
+.btn-primary {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-3px) translateZ(5px);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3),
+                0 4px 10px rgba(108, 92, 231, 0.2);
   }
 
+  &:active {
+    transform: translateY(1px) translateZ(-2px);
+    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2);
+  }
+}
+
+// ============================================================
+// Enhanced Page Transitions
+// ============================================================
+.page-enter {
+  animation: pageEnter3D 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pageEnter3D {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translateY(15px) translateZ(-30px) rotateX(2deg);
+  }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: perspective(1000px) translateY(0) translateZ(0) rotateX(0);
+  }
+}
+
+// ============================================================
+// Modal 3D Enter
+// ============================================================
+.modal.show .modal-dialog {
+  animation: modal3DEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal3DEnter {
+  from {
+    opacity: 0;
+    transform: perspective(600px) scale(0.9) rotateX(5deg) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(600px) scale(1) rotateX(0) translateY(0);
+  }
+}
+
+// ============================================================
+// Quick Action Card 3D Hover (profile)
+// ============================================================
+.quick-action-card {
+  transform-style: preserve-3d;
+
+  &:hover {
+    transform: perspective(600px) rotateX(3deg) translateY(-5px) translateZ(8px);
+  }
+}
+
+// Order status icons — bounce on hover
+.order-status-item:hover .order-status-icon {
+  animation: gentleFloat 0.6s ease-in-out;
+}
+
+// ============================================================
+// Smooth Navbar Glassmorphism Transition
+// ============================================================
+.navbar-premium {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.scrolled {
+    background: rgba(13, 13, 26, 0.98);
+    backdrop-filter: blur(30px) saturate(1.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(108, 92, 231, 0.1);
+  }
+}
+
+// ============================================================
+// Collapse 3D
+// ============================================================
+.profile-settings-collapse.collapsing {
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-settings-collapse.show {
+  animation: collapse3DReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes collapse3DReveal {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateX(5deg) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0) translateY(0);
+  }
+}
+
+// ============================================================
+// Reduce Motion (Accessibility)
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -1063,5 +1332,372 @@ h3,
       color: #fff;
       background: rgba(108, 92, 231, 0.2);
     }
+  }
+}
+
+// ============================================================
+// Profile Dashboard (Daraz-Inspired)
+// ============================================================
+.profile-header {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 0 30px;
+  background: linear-gradient(135deg, #0D0D1A 0%, #1A1A2E 40%, #2D1B69 70%, #6C5CE7 100%);
+
+  .profile-header-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(108, 92, 231, 0.4) 0%, transparent 50%),
+      radial-gradient(circle at 20% 80%, rgba(0, 206, 201, 0.2) 0%, transparent 50%);
+    animation: profileBgPulse 6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes profileBgPulse {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.profile-header-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--ps-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+  flex-shrink: 0;
+}
+
+.profile-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+
+  span {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.profile-stats-inline {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+}
+
+.profile-settings-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: var(--ps-transition);
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: rotate(45deg);
+  }
+}
+
+.profile-mobile-stats {
+  background: #fff;
+  border-radius: $border-radius-lg;
+  padding: 16px;
+  box-shadow: var(--ps-shadow);
+}
+
+// Profile Sections
+.profile-section {
+  background: #fff;
+  border-radius: $border-radius-lg;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--ps-shadow);
+}
+
+.profile-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: $secondary;
+
+  i {
+    color: $primary;
+  }
+}
+
+.profile-view-all {
+  font-size: 0.85rem;
+  color: $primary;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--ps-transition);
+
+  &:hover {
+    gap: 8px;
+  }
+}
+
+// Order Status Grid
+.order-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.order-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  padding: 14px 8px;
+  border-radius: $border-radius;
+  transition: var(--ps-transition);
+  position: relative;
+
+  &:hover {
+    background: rgba(108, 92, 231, 0.04);
+    transform: translateY(-2px);
+  }
+}
+
+.order-status-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  transition: var(--ps-transition);
+}
+
+.order-status-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $secondary;
+  text-align: center;
+}
+
+.order-status-badge {
+  position: absolute;
+  top: 8px;
+  right: calc(50% - 30px);
+  background: $danger;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Recent Orders
+.recent-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recent-order-card {
+  padding: 14px;
+  border-radius: $border-radius;
+  text-decoration: none;
+  color: inherit;
+  transition: var(--ps-transition);
+  border: 1px solid transparent;
+
+  &:hover {
+    background: rgba(108, 92, 231, 0.03);
+    border-color: rgba(108, 92, 231, 0.1);
+    color: inherit;
+  }
+
+  .recent-order-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: $border-radius-sm;
+    background: rgba(108, 92, 231, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+// Quick Action Grid
+.quick-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.quick-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 12px;
+  border-radius: $border-radius;
+  text-decoration: none;
+  color: $secondary;
+  transition: var(--ps-transition);
+  border: 1px solid rgba(108, 92, 231, 0.06);
+
+  &:hover {
+    background: rgba(108, 92, 231, 0.04);
+    border-color: rgba(108, 92, 231, 0.15);
+    transform: translateY(-3px);
+    box-shadow: var(--ps-shadow);
+    color: $primary;
+
+    .quick-action-icon {
+      background: var(--ps-gradient);
+      color: #fff;
+      transform: scale(1.08);
+    }
+  }
+
+  span {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  &.quick-action-logout {
+    color: $danger;
+
+    .quick-action-icon {
+      background: rgba($danger, 0.1);
+      color: $danger;
+    }
+
+    &:hover {
+      color: $danger;
+
+      .quick-action-icon {
+        background: $danger;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.quick-action-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(108, 92, 231, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: $primary;
+  transition: var(--ps-transition);
+}
+
+// Profile Settings Collapse
+.profile-settings-collapse {
+  margin-top: 4px;
+}
+
+// Profile Dashboard Responsive
+@media (max-width: 767.98px) {
+  .profile-header {
+    padding: 30px 0 24px;
+  }
+
+  .profile-avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
+  }
+
+  .profile-name {
+    font-size: 1.2rem;
+  }
+
+  .profile-meta {
+    font-size: 0.78rem;
+  }
+
+  .order-status-grid {
+    gap: 6px;
+  }
+
+  .order-status-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .order-status-label {
+    font-size: 0.72rem;
+  }
+
+  .quick-action-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .quick-action-card {
+    padding: 14px 8px;
+  }
+
+  .quick-action-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+  }
+
+  .quick-action-card span {
+    font-size: 0.75rem;
   }
 }

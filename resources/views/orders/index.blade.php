@@ -6,7 +6,7 @@
     <h2 class="fw-bold mb-4"><i class="bi bi-bag me-2"></i>My Orders</h2>
 
     @if($orders->count() > 0)
-        <div class="card">
+        <div class="card reveal-3d">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">

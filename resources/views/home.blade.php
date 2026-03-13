@@ -65,7 +65,7 @@
                             <a href="{{ route('products.index') }}" class="btn btn-outline-light" style="border-radius:50px;"><i
                                     class="bi bi-grid me-2"></i>Browse Products</a>
                         </div>
-                        <div class="hero-stats">
+                        <div class="hero-stats tilt-3d">
                             <div class="stat">
                                 <h3>{{ \App\Models\Product::where('is_active', true)->count() }}+</h3><span>Products</span>
                             </div>
@@ -209,7 +209,7 @@
 
     {{-- Offers Banner --}}
     @if(isset($offerProducts) && $offerProducts->count() > 0)
-        <section class="py-5 fade-up">
+        <section class="py-5 reveal-3d">
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -220,7 +220,7 @@
                     <a href="{{ route('offers') }}" class="btn btn-outline-primary" style="border-radius:50px;">See All Offers
                         <i class="bi bi-arrow-right ms-1"></i></a>
                 </div>
-                <div class="row g-4">
+                <div class="row g-4 stagger-children">
                     @foreach($offerProducts as $i => $product)
                         <div class="col-6 col-md-3 fade-up delay-{{ $i + 1 }}">
                             <div class="product-card position-relative">
@@ -273,13 +273,13 @@
 
     {{-- Popular Products --}}
     @if(isset($popularProducts) && $popularProducts->count() > 0)
-    <section class="py-5 bg-light fade-up delay-1">
+    <section class="py-5 bg-light reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title"><i class="bi bi-star-fill text-warning me-2"></i>Most <span class="gradient-text">Popular</span></h2>
                 <a href="{{ route('products.index', ['sort' => 'popular']) }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @foreach($popularProducts as $i => $product)
                     @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
@@ -290,13 +290,13 @@
 
     {{-- New Arrivals --}}
     @if(isset($newProducts) && $newProducts->count() > 0)
-    <section class="py-5 fade-up delay-2">
+    <section class="py-5 reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title"><i class="bi bi-rocket-takeoff-fill text-primary me-2"></i>New <span class="text-primary">Arrivals</span></h2>
                 <a href="{{ route('products.index', ['sort' => 'newest']) }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @foreach($newProducts as $i => $product)
                     @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
@@ -307,13 +307,13 @@
 
     {{-- Random Products --}}
     @if(isset($randomProducts) && $randomProducts->count() > 0)
-    <section class="py-5 bg-light fade-up delay-3">
+    <section class="py-5 bg-light reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title">Discover <span class="gradient-text">More</span></h2>
                 <a href="{{ route('products.index') }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @foreach($randomProducts as $i => $product)
                     @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
@@ -323,9 +323,9 @@
     @endif
 
     {{-- Trust Bar --}}
-    <section class="trust-bar fade-up">
+    <section class="trust-bar reveal-3d">
         <div class="container">
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 <div class="col-6 col-md-3">
                     <div class="trust-item">
                         <div class="trust-icon"><i class="bi bi-truck"></i></div>

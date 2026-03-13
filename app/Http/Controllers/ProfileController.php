@@ -16,9 +16,32 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = $request->user();
+
+        // Order status counts
+        $orderCounts = [
+            'processing' => $user->orders()->where('status', 'processing')->count(),
+            'shipped'    => $user->orders()->where('status', 'shipped')->count(),
+            'delivered'  => $user->orders()->where('status', 'delivered')->count(),
+            'cancelled'  => $user->orders()->where('status', 'cancelled')->count(),
+        ];
+
+        // Recent orders
+        $recentOrders = $user->orders()->latest()->take(5)->get();
+
+        // Wishlist count
+        $wishlistCount = $user->wishlists()->count();
+
+        // Total orders
+        $totalOrders = $user->orders()->count();
+
+        return view('profile.edit', compact(
+            'user',
+            'orderCounts',
+            'recentOrders',
+            'wishlistCount',
+            'totalOrders'
+        ));
     }
 
     /**

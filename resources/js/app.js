@@ -18,18 +18,63 @@ if (navbar) {
 }
 
 // ============================================================
-// Scroll Animations — IntersectionObserver
+// 3D Scroll Animations — Enhanced IntersectionObserver
 // ============================================================
-const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -40px 0px' };
+const revealClasses = '.fade-up, .scale-in, .reveal-3d, .reveal-slide-left, .reveal-slide-right, .reveal-scale, .reveal-flip, .stagger-children';
+const observerOptions = { threshold: 0.08, rootMargin: '0px 0px -30px 0px' };
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
+
+            // For stagger-children: auto-apply delays to children
+            if (entry.target.classList.contains('stagger-children')) {
+                Array.from(entry.target.children).forEach((child, i) => {
+                    child.style.transitionDelay = `${i * 0.07}s`;
+                });
+            }
+
             observer.unobserve(entry.target);
         }
     });
 }, observerOptions);
-document.querySelectorAll('.fade-up, .scale-in').forEach(el => observer.observe(el));
+document.querySelectorAll(revealClasses).forEach(el => observer.observe(el));
+
+// ============================================================
+// 3D Mouse-Follow Tilt Effect
+// ============================================================
+document.querySelectorAll('.tilt-3d').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -4;
+        const rotateY = ((x - centerX) / centerX) * 4;
+        el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    el.addEventListener('mouseleave', () => {
+        el.style.transform = `perspective(800px) rotateX(0) rotateY(0)`;
+        el.style.transition = 'transform 0.4s ease-out';
+        setTimeout(() => { el.style.transition = 'transform 0.1s ease-out'; }, 400);
+    });
+});
+
+// ============================================================
+// Parallax Scroll — subtle depth on hero/profile headers
+// ============================================================
+const parallaxElements = document.querySelectorAll('.hero-section, .profile-header');
+if (parallaxElements.length > 0) {
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        parallaxElements.forEach(el => {
+            const speed = 0.3;
+            const yPos = -(scrollY * speed);
+            el.style.backgroundPositionY = `${yPos}px`;
+        });
+    }, { passive: true });
+}
 
 // ============================================================
 // Search Auto-Suggest

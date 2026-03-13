@@ -5,7 +5,7 @@
 <div class="container py-5">
     <h2 class="fw-bold mb-4"><i class="bi bi-bag-check me-2"></i>Checkout</h2>
     <div class="row g-4">
-        <div class="col-lg-7">
+        <div class="col-lg-7 reveal-slide-left">
             <div class="card shadow-sm mb-4">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Shipping Address</h5>
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div class="col-lg-5">
+        <div class="col-lg-5 reveal-slide-right">
             {{-- Coupon --}}
             <div class="card mb-4 shadow-sm">
                 <div class="card-body p-4">

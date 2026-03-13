@@ -6,7 +6,7 @@
         <div class="container">
             <div class="row g-4">
                 {{-- Sidebar Filters --}}
-                <div class="col-lg-3">
+                <div class="col-lg-3 reveal-slide-left">
                     <div class="card" style="position:sticky;top:90px;overflow:visible;">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Filters</h5>
@@ -110,7 +110,7 @@
 
                 {{-- Product Grid --}}
                 <div class="col-lg-9">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 reveal-slide-right">
                         <div>
                             <h2 class="section-title mb-0">
                                 @if(request('category'))
@@ -124,7 +124,7 @@
                         </div>
                     </div>
 
-                    <div class="row g-4">
+                    <div class="row g-4 stagger-children">
                         @forelse($products as $index => $product)
                             <div class="col-6 col-md-4 fade-up delay-{{ ($index % 6) + 1 }}">
                                 <div class="product-card position-relative">
