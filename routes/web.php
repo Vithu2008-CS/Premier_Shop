@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\DriverController as AdminDriverController;
+use App\Http\Controllers\DriverController;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -85,6 +87,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::post('orders/{order}/assign-driver', [AdminOrderController::class, 'assignDriver'])->name('orders.assignDriver');
 
     // Customers
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
@@ -105,6 +108,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Order Print
     Route::get('orders/{order}/print', [AdminOrderController::class, 'print'])->name('orders.print');
+
+    // Drivers Monitoring
+    Route::get('drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
+});
+
+// Driver Routes
+Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(function () {
+    Route::get('/', [DriverController::class, 'dashboard'])->name('dashboard');
+    Route::post('/toggle-duty', [DriverController::class, 'toggleDuty'])->name('toggleDuty');
+    Route::get('/orders/{order}', [DriverController::class, 'showOrder'])->name('orders.show');
+    Route::post('/orders/{order}/complete', [DriverController::class, 'completeDelivery'])->name('orders.complete');
 });
 
 require __DIR__ . '/auth.php';

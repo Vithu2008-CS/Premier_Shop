@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -25,8 +27,23 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('items.product', 'user');
-        return view('admin.orders.show', compact('order'));
+        $order->load('items.product', 'user', 'driver');
+        $drivers = User::whereHas('role', function($q) {
+            $q->where('name', 'driver');
+        })->where('is_on_duty', true)->get();
+        
+        return view('admin.orders.show', compact('order', 'drivers'));
+    }
+
+    public function assignDriver(Request $request, Order $order)
+    {
+        $request->validate([
+            'driver_id' => 'required|exists:users,id',
+        ]);
+
+        $order->update(['driver_id' => $request->driver_id]);
+
+        return back()->with('success', 'Driver assigned to order.');
     }
 
     public function updateStatus(Request $request, Order $order)

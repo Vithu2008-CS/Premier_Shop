@@ -7,22 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'user_id',
-        'order_number',
-        'status',
-        'subtotal',
-        'discount_amount',
-        'coupon_code',
-        'shipping_cost',
-        'total',
-        'shipping_address',
-        'payment_intent_id',
-        'payment_status',
-        'distance',
-        'cancellation_reason',
-        'processing_date',
         'shipped_date',
         'delivered_date',
+        'driver_id',
+        'delivery_proof',
     ];
 
     protected function casts(): array
@@ -43,6 +31,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id');
     }
 
     public function items()
