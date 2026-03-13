@@ -7,6 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
+        'user_id',
+        'order_number',
+        'status',
+        'subtotal',
+        'discount_amount',
+        'coupon_code',
+        'shipping_cost',
+        'total',
+        'shipping_address',
+        'payment_intent_id',
+        'payment_status',
+        'distance',
+        'cancellation_reason',
+        'processing_date',
         'shipped_date',
         'delivered_date',
         'driver_id',

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.driver')
 @section('title', 'Order Details — Driver')
 
 @section('content')
