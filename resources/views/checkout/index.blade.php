@@ -11,6 +11,9 @@
                     <h5 class="fw-bold mb-3">Shipping Address</h5>
                     <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
                         @csrf
+                        @foreach($cart->items as $item)
+                            <input type="hidden" name="items[]" value="{{ $item->id }}">
+                        @endforeach
                         <div class="mb-3">
                             <label class="form-label">Address Line</label>
                             <input type="text" name="address_line" class="form-control @error('address_line') is-invalid @enderror" value="{{ old('address_line', auth()->user()->address) }}" required>
@@ -52,6 +55,9 @@
                     @else
                     <form action="{{ route('checkout.applyCoupon') }}" method="POST" class="d-flex gap-2">
                         @csrf
+                        @foreach($cart->items as $item)
+                            <input type="hidden" name="items[]" value="{{ $item->id }}">
+                        @endforeach
                         <input type="text" name="coupon_code" class="form-control" placeholder="Enter coupon code">
                         <button type="submit" class="btn btn-outline-primary">Apply</button>
                     </form>
