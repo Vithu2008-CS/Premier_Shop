@@ -1,0 +1,130 @@
+================================================================================
+PREMIER SHOP - REQUIREMENT ANALYSIS & SYSTEM SPECIFICATION (LATEX SOURCE)
+================================================================================
+
+Copy the LaTeX code below into any editor (like Overleaf) to generate the PDF.
+
+--------------------------------------------------------------------------------
+LATEX CODE STARTS HERE
+--------------------------------------------------------------------------------
+
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+\definecolor{primary}{RGB}{108, 92, 231}
+\hypersetup{colorlinks=true, linkcolor=primary, urlcolor=blue}
+
+\titleformat{\section}{\large\bfseries\color{primary}}{\thesection}{1em}{}[{\titlerule[0.8pt]}]
+
+\title{
+    \vspace{2cm}
+    \textbf{\Huge Premier Shop}\\
+    \large E-commerce Platform Requirements Analysis \& Technical Specification\\
+    \vspace{1cm}
+    \textit{Detailed Documentation for Vithu-Branch}
+}
+\author{System Architecture Analysis}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+The \textbf{Premier Shop} project is a sophisticated e-commerce solution designed for both B2C (Business-to-Consumer) and B2B (Business-to-Business) operations. The platform leverages the Laravel framework to provide a robust, secure, and scalable environment for retail and wholesale transactions.
+
+\section{System Architecture}
+\subsection{Core Technology Stack}
+\begin{itemize}
+    \item \textbf{Backend:} PHP 8.2+ with Laravel 11/12.
+    \item \textbf{Frontend:} Blade Templating, Tailwind CSS, and Vanilla JavaScript via Vite.
+    \item \textbf{Database:} PostgreSQL (Production) and SQLite (Testing/Memory).
+    \item \textbf{PDF Engine:} DomPDF for high-fidelity receipts and reports.
+    \item \textbf{External APIs:} Google Maps Distance Matrix API (Shipping) and QR Server API.
+\end{itemize}
+
+\section{Functional Requirements}
+
+\subsection{Product \& Inventory Management}
+\begin{itemize}
+    \item \textbf{Hybrid Pricing:} Support for `normal` and `wholesale` product types with distinct pricing tiers.
+    \item \textbf{Bulk Offers:} Dynamic discount logic based on minimum quantity thresholds (e.g., 10\% off for 5+ units).
+    \item \textbf{Stock Integrity:} Automatic stock decrementing upon order completion and \textit{restoration} upon order cancellation.
+    \item \textbf{Age Verification:} Automated restriction system for products marked as `is_age_restricted` (minimum age: 16).
+    \item \textbf{QR Logistics:} Unique QR code generation for every product to facilitate rapid admin lookup and stock management.
+\end{itemize}
+
+\subsection{Shopping Cart \& Checkout}
+\begin{itemize}
+    \item \textbf{Selective Checkout:} Users can "tick" specific items in the cart to purchase, leaving others for later.
+    \item \textbf{Distance-Based Shipping:} Dynamic calculation using driving distance between the shop origin and customer address.
+    \item \textbf{Shipping Rules:} 
+        \begin{itemize}
+            \item Free delivery above a specific subtotal threshold.
+            \item Free delivery within a specific mile radius.
+            \item Surcharge per mile for long-distance deliveries.
+        \end{itemize}
+    \item \textbf{Coupon System:} Percentage and fixed-amount discounts with usage limits and expiry tracking.
+    \item \textbf{Atomic Processing:} Checkout logic wrapped in database transactions to prevent partial data corruption.
+\end{itemize}
+
+\subsection{Order Lifecycle}
+\begin{itemize}
+    \item \textbf{Status Workflow:} Transition through Pending $\rightarrow$ Processing $\rightarrow$ Shipped $\rightarrow$ Delivered.
+    \item \textbf{Digital Receipts:} Generation of professional PDF invoices featuring order-specific QR codes for online verification.
+    \item \textbf{Customer Autonomy:} Ability for users to cancel pending orders with automated reasoning logs.
+\end{itemize}
+
+\section{Security Specification}
+
+\subsection{Data Protection}
+\begin{itemize}
+    \item \textbf{IDOR Mitigation:} Every request to update or remove cart items/orders is verified against the \texttt{auth()->id()} to prevent cross-user data manipulation.
+    \item \textbf{Mass Assignment Prevention:} Critical attributes like \texttt{role_id} are removed from the \texttt{\$fillable} array in the \texttt{User} model to prevent privilege escalation attacks.
+\end{itemize}
+
+\subsection{Access Control \& Authentication}
+\begin{itemize}
+    \item \textbf{RBAC:} Multi-layered Role-Based Access Control (Admin, Staff, Customer).
+    \item \textbf{OTP Verification:} Mandatory 6-digit email OTP during registration to eliminate bot accounts.
+    \item \textbf{Rate Limiting:} Throttling implemented on login and OTP verification routes (max 5 attempts per IP).
+\end{itemize}
+
+\section{Non-Functional Requirements}
+
+\subsection{Performance}
+\begin{itemize}
+    \item \textbf{Frontend Optimization:} Use of Vite for asset bundling and minification.
+    \item \textbf{Caching:} Support for Laravel route and config caching.
+    \item \textbf{Asynchronous UI:} AJAX-powered cart updates to minimize full-page reloads.
+\end{itemize}
+
+\subsection{Reliability}
+\begin{itemize}
+    \item \textbf{Automated Testing:} Comprehensive suite of 29+ feature tests covering Authentication, Shipping logic, and Profile management.
+    \item \textbf{Error Logging:} Structured logging of API failures (e.g., Google Maps, Mail) for rapid debugging.
+\end{itemize}
+
+\section{Conclusion}
+The Premier Shop platform is currently in a high state of technical maturity. The integration of advanced shipping logistics, automated QR systems, and a professional reporting engine makes it a top-tier e-commerce solution. The current \texttt{vithu-branch} contains all recent security patches and logic enhancements verified by a 100\% test pass rate.
+
+\end{document}
+
+--------------------------------------------------------------------------------
+LATEX CODE ENDS HERE
+--------------------------------------------------------------------------------

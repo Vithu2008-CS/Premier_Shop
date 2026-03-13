@@ -26,6 +26,10 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
+        if (!$this->isAuthenticated()) {
+            $response->dump();
+        }
+
         $this->assertAuthenticated();
         $response->assertRedirect('/');
     }
