@@ -4,7 +4,7 @@
 @section('content')
 <section class="py-5">
     <div class="container">
-        <div class="text-center mb-5 fade-up">
+        <div class="text-center mb-5 reveal-3d">
             <span class="badge bg-danger px-3 py-2 mb-3" style="font-size:0.85rem;">
                 <i class="bi bi-lightning-fill me-1"></i> Limited Time Deals
             </span>
@@ -13,7 +13,7 @@
         </div>
 
         @if($offerProducts->isEmpty())
-            <div class="text-center py-5 fade-up">
+            <div class="text-center py-5 reveal-3d">
                 <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(108,92,231,0.08);border-radius:50%;">
                     <i class="bi bi-tag text-primary" style="font-size:3rem;"></i>
                 </div>
@@ -22,7 +22,7 @@
                 <a href="{{ route('products.index') }}" class="btn btn-add-cart">Browse All Products</a>
             </div>
         @else
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @foreach($offerProducts as $index => $product)
                     <div class="col-6 col-md-4 col-lg-3 fade-up delay-{{ ($index % 8) + 1 }}">
                         <div class="product-card position-relative">

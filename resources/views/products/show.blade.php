@@ -18,7 +18,7 @@
 
         <div class="row g-5">
             {{-- Product Images --}}
-            <div class="col-lg-6 fade-up">
+            <div class="col-lg-6 reveal-slide-left">
                 <div class="card border-0" style="border-radius:20px;overflow:hidden;">
                     @if($product->images && count($product->images) > 0)
                         <div id="productCarousel" class="carousel slide" data-bs-ride="false">
@@ -55,7 +55,7 @@
             </div>
 
             {{-- Product Details --}}
-            <div class="col-lg-6 fade-up delay-2">
+            <div class="col-lg-6 reveal-slide-right">
                 {{-- Category + Badges --}}
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div class="d-flex gap-2">
@@ -176,7 +176,7 @@
         </div>
 
         {{-- Customer Reviews --}}
-        <div class="mt-5 pt-5 border-top fade-up">
+        <div class="mt-5 pt-5 border-top reveal-3d">
             <div class="row">
                 <div class="col-lg-8">
                     <h3 class="fw-bold mb-4">Customer Reviews</h3>
@@ -267,7 +267,7 @@
         @if(isset($relatedProducts) && $relatedProducts->count() > 0)
             <div class="mt-5 pt-5 border-top">
                 <h3 class="section-title fade-up">You May Also <span class="gradient-text">Like</span></h3>
-                <div class="row g-4 mt-2">
+                <div class="row g-4 mt-2 stagger-children">
                     @foreach($relatedProducts as $i => $rel)
                         <div class="col-6 col-md-3 fade-up delay-{{ $i + 1 }}">
                             <div class="product-card">

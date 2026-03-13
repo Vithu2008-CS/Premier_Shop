@@ -127,7 +127,7 @@
     {{-- Category Mega Menu --}}
     <div class="collapse category-mega-menu sticky-top" id="categoryMegaMenu" style="top: 72px; z-index: 1030;">
         <div class="container">
-            <div class="mega-cat-grid">
+            <div class="mega-cat-grid stagger-children tilt-3d">
                 @foreach(\App\Models\Category::withCount('products')->get() as $cat)
                     <a href="{{ route('products.index', ['category' => $cat->slug]) }}"
                         class="mega-cat-card {{ request('category') == $cat->slug ? 'active' : '' }}">

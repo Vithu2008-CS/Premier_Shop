@@ -4,7 +4,7 @@
 @section('content')
 <section class="py-5">
     <div class="container">
-        <h2 class="section-title mb-4 fade-up"><i class="bi bi-bag me-2"></i>Shopping <span class="gradient-text">Cart</span></h2>
+        <h2 class="section-title mb-4 reveal-3d"><i class="bi bi-bag me-2"></i>Shopping <span class="gradient-text">Cart</span></h2>
 
         @if(!$cart || $cart->items->isEmpty())
             <div class="text-center py-5 fade-up">
@@ -32,7 +32,7 @@
                             </div>
                         </div>
 
-                        <div id="cart-items-container">
+                        <div id="cart-items-container" class="stagger-children">
                             @foreach($cart->items as $item)
                                 <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" id="cart-item-{{ $item->id }}" data-price="{{ $item->product->price }}" data-id="{{ $item->id }}">
                                     <div class="card-body p-3">
@@ -89,7 +89,7 @@
                     </div>
 
                     {{-- Order Summary --}}
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 reveal-slide-right">
                         <div class="card fade-up shadow-sm border-0" style="position:sticky;top:90px; border-radius: 20px;">
                             <div class="card-body p-4">
                                 <h5 class="fw-bold mb-4">Order Summary</h5>

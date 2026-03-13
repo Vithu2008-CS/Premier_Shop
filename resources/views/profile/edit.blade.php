@@ -4,7 +4,7 @@
 
 @section('content')
 {{-- Profile Header --}}
-<div class="profile-header">
+<div class="profile-header reveal-3d tilt-3d">
     <div class="profile-header-bg"></div>
     <div class="container position-relative">
         <div class="profile-header-content">
@@ -59,7 +59,7 @@
             <h5 class="profile-section-title mb-0"><i class="bi bi-bag me-2"></i>My Orders</h5>
             <a href="{{ route('orders.index') }}" class="profile-view-all">View All Orders <i class="bi bi-chevron-right"></i></a>
         </div>
-        <div class="order-status-grid">
+        <div class="order-status-grid stagger-children">
             <a href="{{ route('orders.index') }}" class="order-status-item">
                 <div class="order-status-icon" style="background: rgba(253, 203, 110, 0.15); color: #f39c12;">
                     <i class="bi bi-clock-history"></i>

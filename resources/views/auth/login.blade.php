@@ -6,14 +6,14 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-5">
-                <div class="text-center mb-4 fade-up">
+                <div class="text-center mb-4 reveal-3d">
                     <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width:70px;height:70px;background:var(--ps-gradient);border-radius:20px;">
                         <i class="bi bi-person-fill text-white" style="font-size:2rem;"></i>
                     </div>
                     <h2 class="fw-bold">Welcome Back</h2>
                     <p class="text-muted">Sign in to your Premier Shop account</p>
                 </div>
-                <div class="card fade-up delay-1">
+                <div class="card reveal-3d delay-1">
                     <div class="card-body p-4 p-md-5">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf

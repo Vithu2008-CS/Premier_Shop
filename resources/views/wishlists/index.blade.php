@@ -4,17 +4,17 @@
 @section('content')
 <section class="py-5">
     <div class="container">
-        <h2 class="section-title mb-4 fade-up">My <span class="gradient-text">Wishlist</span></h2>
+        <h2 class="section-title mb-4 reveal-3d">My <span class="gradient-text">Wishlist</span></h2>
 
         @if($wishlists->isEmpty())
-            <div class="text-center py-5 fade-up delay-1">
+            <div class="text-center py-5 reveal-3d">
                 <i class="bi bi-heart text-muted mb-3 d-block" style="font-size: 3rem;"></i>
                 <h4>Your wishlist is empty</h4>
                 <p class="text-muted">Start saving your favorite items for later.</p>
                 <a href="{{ route('products.index') }}" class="btn btn-primary mt-2 rounded-pill px-4">Browse Products</a>
             </div>
         @else
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @foreach($wishlists as $index => $wishlist)
                     @php $product = $wishlist->product; @endphp
                     <div class="col-6 col-md-4 col-lg-3 fade-up delay-{{ ($index % 8) + 1 }}">

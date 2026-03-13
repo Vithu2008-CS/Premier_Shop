@@ -11,7 +11,7 @@
     </nav>
 
     <div class="row g-4">
-        <div class="col-lg-8">
+        <div class="col-lg-8 reveal-slide-left">
             <div class="card">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
+        <div class="col-lg-4 reveal-slide-right">
             <div class="card">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Order Details</h5>

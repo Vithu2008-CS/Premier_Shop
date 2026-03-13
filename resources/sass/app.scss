@@ -835,7 +835,7 @@ h3,
 }
 
 // ============================================================
-// Scroll Animations
+// 3D Animation System — Premium Scroll Reveals
 // ============================================================
 .fade-up {
   opacity: 0;
@@ -859,28 +859,297 @@ h3,
   }
 }
 
-@for $i from 1 through 8 {
-  .delay-#{$i} {
+// 3D Reveal — enters with depth and rotation
+.reveal-3d {
+  opacity: 0;
+  transform: perspective(800px) rotateX(8deg) translateY(40px) translateZ(-30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0) translateY(0) translateZ(0);
+  }
+}
+
+// Slide from left with 3D depth
+.reveal-slide-left {
+  opacity: 0;
+  transform: perspective(600px) rotateY(6deg) translateX(-60px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0) translateX(0);
+  }
+}
+
+// Slide from right with 3D depth
+.reveal-slide-right {
+  opacity: 0;
+  transform: perspective(600px) rotateY(-6deg) translateX(60px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0) translateX(0);
+  }
+}
+
+// 3D Scale reveal
+.reveal-scale {
+  opacity: 0;
+  transform: perspective(800px) scale(0.85) translateZ(-50px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(800px) scale(1) translateZ(0);
+  }
+}
+
+// 3D Flip reveal
+.reveal-flip {
+  opacity: 0;
+  transform: perspective(600px) rotateY(15deg);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.visible {
+    opacity: 1;
+    transform: perspective(600px) rotateY(0);
+  }
+}
+
+// Stagger delays — up to 12
+@for $i from 1 through 12 {
+  .delay-#{$i},
+  .stagger-#{$i} {
     transition-delay: #{$i * 0.08}s;
   }
 }
 
-// ============================================================
-// Page Transitions
-// ============================================================
-.page-enter {
-  animation: pageEnter 0.4s ease;
+// Auto-stagger children (applied by JS)
+.stagger-children > * {
+  opacity: 0;
+  transform: perspective(800px) translateY(30px) translateZ(-20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+.stagger-children.visible > * {
+  opacity: 1;
+  transform: perspective(800px) translateY(0) translateZ(0);
+}
+
+// ============================================================
+// 3D Card Hover Effects
+// ============================================================
+.product-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: perspective(800px) rotateX(2deg) translateY(-8px) translateZ(10px);
+    box-shadow: 0 20px 60px rgba(108, 92, 231, 0.15),
+                0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.category-card {
+  transform-style: preserve-3d;
+
+  &:hover {
+    transform: perspective(600px) rotateX(3deg) translateY(-6px);
+    box-shadow: 0 15px 40px rgba(108, 92, 231, 0.12);
+  }
+}
+
+.card {
+  transform-style: preserve-3d;
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(108, 92, 231, 0.1);
+  }
+}
+
+// 3D tilt container (applied by JS mouse-follow)
+.tilt-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+
+// ============================================================
+// Floating & Pulse Micro-Animations
+// ============================================================
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes softPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(108, 92, 231, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(108, 92, 231, 0.4); }
+}
+
+// Float on trust icons
+.trust-icon {
+  animation: gentleFloat 3s ease-in-out infinite;
+
+  &:nth-child(2) { animation-delay: -0.5s; }
+  &:nth-child(3) { animation-delay: -1s; }
+  &:nth-child(4) { animation-delay: -1.5s; }
+}
+
+// Pulse on badges
+.product-badge {
+  animation: softPulse 2s ease-in-out infinite;
+}
+
+// Shimmer on gradient text
+.gradient-text {
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+}
+
+// Glow on profile avatar
+.profile-avatar {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+// ============================================================
+// 3D Button Effects
+// ============================================================
+.btn-add-cart,
+.btn-add-to-cart,
+.btn-primary {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    transform: translateY(-3px) translateZ(5px);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3),
+                0 4px 10px rgba(108, 92, 231, 0.2);
   }
 
+  &:active {
+    transform: translateY(1px) translateZ(-2px);
+    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2);
+  }
+}
+
+// ============================================================
+// Enhanced Page Transitions
+// ============================================================
+.page-enter {
+  animation: pageEnter3D 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pageEnter3D {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translateY(15px) translateZ(-30px) rotateX(2deg);
+  }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: perspective(1000px) translateY(0) translateZ(0) rotateX(0);
+  }
+}
+
+// ============================================================
+// Modal 3D Enter
+// ============================================================
+.modal.show .modal-dialog {
+  animation: modal3DEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal3DEnter {
+  from {
+    opacity: 0;
+    transform: perspective(600px) scale(0.9) rotateX(5deg) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(600px) scale(1) rotateX(0) translateY(0);
+  }
+}
+
+// ============================================================
+// Quick Action Card 3D Hover (profile)
+// ============================================================
+.quick-action-card {
+  transform-style: preserve-3d;
+
+  &:hover {
+    transform: perspective(600px) rotateX(3deg) translateY(-5px) translateZ(8px);
+  }
+}
+
+// Order status icons — bounce on hover
+.order-status-item:hover .order-status-icon {
+  animation: gentleFloat 0.6s ease-in-out;
+}
+
+// ============================================================
+// Smooth Navbar Glassmorphism Transition
+// ============================================================
+.navbar-premium {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.scrolled {
+    background: rgba(13, 13, 26, 0.98);
+    backdrop-filter: blur(30px) saturate(1.5);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(108, 92, 231, 0.1);
+  }
+}
+
+// ============================================================
+// Collapse 3D
+// ============================================================
+.profile-settings-collapse.collapsing {
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-settings-collapse.show {
+  animation: collapse3DReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes collapse3DReveal {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateX(5deg) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0) translateY(0);
+  }
+}
+
+// ============================================================
+// Reduce Motion (Accessibility)
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
