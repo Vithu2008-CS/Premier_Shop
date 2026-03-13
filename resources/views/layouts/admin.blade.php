@@ -564,6 +564,10 @@
             class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
             <i class="bi bi-people"></i> Customers
         </a>
+        <a href="{{ route('admin.drivers.index') }}"
+            class="nav-link {{ request()->routeIs('admin.drivers.*') ? 'active' : '' }}">
+            <i class="bi bi-truck"></i> Drivers
+        </a>
         <a href="{{ route('admin.reports.index') }}"
             class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
             <i class="bi bi-bar-chart-fill"></i> Reports

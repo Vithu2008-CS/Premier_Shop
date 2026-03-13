@@ -163,7 +163,35 @@
 
                 <button type="submit" class="btn btn-admin w-100">Update Order</button>
             </form>
+        <div class="admin-card mb-4">
+            <div class="card-title">Assigned Driver</div>
+            @if($order->driver)
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div style="width:40px;height:40px;border-radius:50%;background:#FDCB6E;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">{{ substr($order->driver->name, 0, 1) }}</div>
+                    <div>
+                        <div class="fw-bold">{{ $order->driver->name }}</div>
+                        <div style="color:var(--admin-muted);font-size:0.8rem;">Status: <span class="text-success">On Duty</span></div>
+                    </div>
+                </div>
+            @else
+                <p style="color:var(--admin-muted);font-size:0.9rem;">No driver assigned yet.</p>
+            @endif
+
+            <form action="{{ route('admin.orders.assignDriver', $order) }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <select name="driver_id" class="form-select" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;">
+                        <option value="">Select Driver...</option>
+                        @foreach($drivers as $driver)
+                            <option value="{{ $driver->id }}" {{ $order->driver_id == $driver->id ? 'selected' : '' }}>
+                                {{ $driver->name }} ({{ $driver->assigned_orders_count ?? 0 }} active)
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-admin w-100">Assign Driver</button>
+            </form>
         </div>
-    </div>
-</div>
+
+        <div class="admin-card">
 @endsection

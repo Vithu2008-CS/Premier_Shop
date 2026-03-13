@@ -34,6 +34,11 @@ class RolePermissionSeeder extends Seeder
             'description' => 'Regular customer account.',
             'is_staff' => false,
         ]);
+        $driver = Role::firstOrCreate(['name' => 'driver'], [
+            'display_name' => 'Driver',
+            'description' => 'Can manage assigned deliveries and update status.',
+            'is_staff' => true,
+        ]);
 
         // Create Permissions grouped by module
         $permissionGroups = [
@@ -119,5 +124,11 @@ class RolePermissionSeeder extends Seeder
             'reports.view',
         ])->pluck('id');
         $accountant->permissions()->sync($accountantPerms);
+
+        // Driver gets specific order permissions
+        $driverPerms = Permission::whereIn('name', [
+            'orders.view',
+        ])->pluck('id');
+        $driver->permissions()->sync($driverPerms);
     }
 }

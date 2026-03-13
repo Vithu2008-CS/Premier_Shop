@@ -12,14 +12,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'dob',
-        'phone',
-        'address',
-        'city',
         'role_id',
+        'is_on_duty',
     ];
 
     protected $hidden = [
@@ -44,6 +38,11 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role && $this->role->name === 'admin';
+    }
+
+    public function isDriver(): bool
+    {
+        return $this->role && $this->role->name === 'driver';
     }
 
     public function isStaff(): bool
@@ -81,5 +80,10 @@ class User extends Authenticatable
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function assignedOrders()
+    {
+        return $this->hasMany(Order::class, 'driver_id');
     }
 }
