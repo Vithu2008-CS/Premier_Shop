@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
     Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
     // Profile
@@ -88,6 +89,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Reports
     Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/print', [App\Http\Controllers\Admin\ReportController::class, 'print'])->name('reports.print');
 
     // Settings
     Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');

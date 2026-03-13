@@ -41,6 +41,11 @@
             
             <p>If you have any questions or concerns, please feel free to contact us.</p>
             
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #eee;">
+                <img src="{{ $order->qr_code_url }}" alt="Scan to verify order" width="100" height="100" style="display:block; margin: 0 auto;">
+                <p style="font-size: 12px; color: #777; margin-top: 5px;">Scan to verify order status online</p>
+            </div>
+            
             <div style="text-align: center;">
                 <a href="{{ route('orders.show', $order) }}" class="btn">View Order Details</a>
             </div>

@@ -89,9 +89,9 @@
             </select>
         </div>
         <button type="submit" class="btn btn-admin btn-sm h-100 px-3">Filter</button>
-        <button type="button" onclick="window.print()" class="btn btn-admin-outline btn-sm h-100 px-3 ms-2">
-            <i class="bi bi-printer me-1"></i> Print
-        </button>
+        <a href="{{ route('admin.reports.print', request()->all()) }}" class="btn btn-admin-outline btn-sm h-100 px-3 ms-2">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
+        </a>
     </form>
 </div>
 

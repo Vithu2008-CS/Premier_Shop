@@ -115,14 +115,20 @@ class CartController extends Controller
 
         if ($request->wantsJson()) {
             $cartLevel = \App\Models\Cart::with('items.product')->find($cartItem->cart_id);
+            $settings = \App\Models\ShippingSetting::first();
+            $threshold = $settings ? $settings->free_delivery_threshold : 50;
+            $baseFee = $settings ? $settings->flat_rate_fee : 5.99;
+            
+            $shippingCost = $cartLevel->subtotal >= $threshold ? 0 : $baseFee;
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Cart updated.',
                 'lineTotal' => number_format($cartItem->line_total, 2),
                 'subtotal' => number_format($cartLevel->subtotal, 2),
                 'totalItems' => $cartLevel->totalItems,
-                'shipping' => $cartLevel->subtotal >= 50 ? 'Free' : '£5.99',
-                'total' => number_format($cartLevel->subtotal + ($cartLevel->subtotal >= 50 ? 0 : 5.99), 2)
+                'shipping' => $shippingCost == 0 ? 'Free' : '£' . number_format($baseFee, 2),
+                'total' => number_format($cartLevel->subtotal + $shippingCost, 2)
             ]);
         }
 
@@ -139,14 +145,21 @@ class CartController extends Controller
             if (!$cartLevel || $cartLevel->items->isEmpty()) {
                 return response()->json(['success' => true, 'empty' => true]);
             }
+            
+            $settings = \App\Models\ShippingSetting::first();
+            $threshold = $settings ? $settings->free_delivery_threshold : 50;
+            $baseFee = $settings ? $settings->flat_rate_fee : 5.99;
+            
+            $shippingCost = $cartLevel->subtotal >= $threshold ? 0 : $baseFee;
+            
             return response()->json([
                 'success' => true,
                 'empty' => false,
                 'message' => 'Item removed from cart.',
                 'subtotal' => number_format($cartLevel->subtotal, 2),
                 'totalItems' => $cartLevel->totalItems,
-                'shipping' => $cartLevel->subtotal >= 50 ? 'Free' : '£5.99',
-                'total' => number_format($cartLevel->subtotal + ($cartLevel->subtotal >= 50 ? 0 : 5.99), 2)
+                'shipping' => $shippingCost == 0 ? 'Free' : '£' . number_format($baseFee, 2),
+                'total' => number_format($cartLevel->subtotal + $shippingCost, 2)
             ]);
         }
 

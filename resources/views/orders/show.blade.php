@@ -15,7 +15,12 @@
             <div class="card">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="fw-bold mb-0">{{ $order->order_number }}</h4>
+                        <div class="d-flex align-items-center gap-3">
+                            <h4 class="fw-bold mb-0">{{ $order->order_number }}</h4>
+                            <a href="{{ route('orders.print', $order) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm">
+                                <i class="bi bi-printer me-1"></i> Print Order
+                            </a>
+                        </div>
                         @php $statusColors = ['pending'=>'warning','processing'=>'info','shipped'=>'primary','delivered'=>'success','cancelled'=>'danger']; @endphp
                         <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }} fs-6">{{ ucfirst($order->status) }}</span>
                     </div>

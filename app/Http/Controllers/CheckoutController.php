@@ -10,6 +10,7 @@ use App\Mail\OrderReceipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
+use Illuminate\Support\Facades\DB;
 use App\Services\ShippingService;
 
 class CheckoutController extends Controller
@@ -73,14 +74,32 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Re-validate stock
-        foreach ($cart->items as $item) {
-            if ($item->quantity > $item->product->stock) {
-                return back()->with('error', "Not enough stock for {$item->product->name}.");
+        // Fetch shipping settings
+        $shippingSettings = \App\Models\ShippingSetting::first();
+
+        // Calculate shipping cost
+        $subtotal = $cart->subtotal;
+        $shippingCost = $shippingSettings ? $shippingSettings->flat_rate_fee : 5.99;
+        $distance = null;
+
+        if ($shippingSettings) {
+            $origin = $shippingSettings->origin_address ?? config('app.address', 'United Kingdom');
+            $destination = "{$request->address_line}, {$request->city}, UK";
+            $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
+
+            if ($subtotal >= $shippingSettings->free_delivery_threshold) {
+                $shippingCost = 0.00;
+            } elseif ($distance !== null) {
+                $distanceInMiles = $distance * 0.621371;
+                if ($distanceInMiles <= $shippingSettings->free_delivery_radius_miles) {
+                    $shippingCost = 0.00;
+                } else {
+                    $extraMiles = max(0, $distanceInMiles - $shippingSettings->free_delivery_radius_miles);
+                    $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
+                }
             }
         }
 
-        $subtotal = $cart->subtotal;
         $discount = 0;
         $couponCode = null;
 
@@ -90,71 +109,72 @@ class CheckoutController extends Controller
             if ($coupon && $coupon->isValid($subtotal)) {
                 $discount = $coupon->calculateDiscount($subtotal);
                 $couponCode = $coupon->code;
-                $coupon->increment('times_used');
-            }
-        }
-
-        // Fetch shipping settings
-        $shippingSettings = \App\Models\ShippingSetting::first();
-
-        $shippingCost = $shippingSettings ? $shippingSettings->flat_rate_fee : 5.99; // Fallback flat rate
-        $distance = null;
-
-        if ($shippingSettings) {
-            // Calculate driving distance using Google Maps (Full Address for precision)
-            $origin = $shippingSettings->origin_address ?? config('app.address', 'United Kingdom');
-            $destination = "{$request->address_line}, {$request->city}, UK";
-
-            $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
-
-            if ($subtotal >= $shippingSettings->free_delivery_threshold) {
-                $shippingCost = 0.00; // Free delivery over threshold
-            } elseif ($distance !== null) {
-                // Convert km to miles if the settings use miles (settings say miles)
-                $distanceInMiles = $distance * 0.621371;
-
-                if ($distanceInMiles <= $shippingSettings->free_delivery_radius_miles) {
-                    $shippingCost = 0.00; // Free delivery within radius
-                } else {
-                    // Charge base rate + surcharge for extra miles
-                    // Note: We always charge the base rate (flat_rate_fee) if outside free radius,
-                    // plus a surcharge for every mile BEYOND the free radius.
-                    $extraMiles = max(0, $distanceInMiles - $shippingSettings->free_delivery_radius_miles);
-                    $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
-                }
             }
         }
 
         $total = $subtotal - $discount + $shippingCost;
 
-        // Create order
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'order_number' => Order::generateOrderNumber(),
-            'status' => 'pending',
-            'subtotal' => $subtotal,
-            'discount_amount' => $discount,
-            'coupon_code' => $couponCode,
-            'shipping_cost' => $shippingCost,
-            'distance' => $distance, // Save distance in KM
-            'total' => $total,
-            'shipping_address' => [
-                'address_line' => $request->address_line,
-                'city' => $request->city,
-                'phone' => $request->phone,
-            ],
-            'payment_status' => 'completed', // simplified for now
-        ]);
+        try {
+            $order = DB::transaction(function () use ($request, $cart, $subtotal, $discount, $couponCode, $shippingCost, $distance, $total) {
+                // Re-validate stock and age restriction inside transaction
+                foreach ($cart->items as $item) {
+                    if ($item->quantity > $item->product->stock) {
+                        throw new \Exception("Not enough stock for {$item->product->name}.");
+                    }
+                    
+                    if ($item->product->is_age_restricted && auth()->user()->isUnder16()) {
+                        throw new \Exception("You must be 16 or older to purchase {$item->product->name}.");
+                    }
+                }
 
-        // Create order items and reduce stock
-        foreach ($cart->items as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'price' => $item->product->price,
-            ]);
-            $item->product->decrement('stock', $item->quantity);
+                // Create order
+                $order = Order::create([
+                    'user_id' => auth()->id(),
+                    'order_number' => Order::generateOrderNumber(),
+                    'status' => 'pending',
+                    'subtotal' => $subtotal,
+                    'discount_amount' => $discount,
+                    'coupon_code' => $couponCode,
+                    'shipping_cost' => $shippingCost,
+                    'distance' => $distance,
+                    'total' => $total,
+                    'shipping_address' => [
+                        'address_line' => $request->address_line,
+                        'city' => $request->city,
+                        'phone' => $request->phone,
+                    ],
+                    'payment_status' => 'completed',
+                ]);
+
+                // Create order items and reduce stock
+                foreach ($cart->items as $item) {
+                    // Calculate effective price (accounting for offers)
+                    $effectivePrice = $item->product->price;
+                    if ($item->product->has_offer && $item->quantity >= $item->product->offer_min_qty) {
+                        $effectivePrice = $item->product->offer_price;
+                    }
+
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'price' => $effectivePrice,
+                    ]);
+
+                    $item->product->decrement('stock', $item->quantity);
+                }
+
+                if (session('coupon')) {
+                    $coupon = Coupon::find(session('coupon.id'));
+                    if ($coupon) {
+                        $coupon->increment('times_used');
+                    }
+                }
+
+                return $order;
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         // Clear cart and coupon

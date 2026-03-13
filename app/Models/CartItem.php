@@ -20,6 +20,12 @@ class CartItem extends Model
 
     public function getLineTotalAttribute(): float
     {
-        return $this->product->price * $this->quantity;
+        $price = $this->product->price;
+
+        if ($this->product->has_offer && $this->quantity >= $this->product->offer_min_qty) {
+            $price = $this->product->offer_price;
+        }
+
+        return $price * $this->quantity;
     }
 }
