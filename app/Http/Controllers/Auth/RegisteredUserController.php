@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+use Illuminate\Support\Facades\RateLimiter;
+
 class RegisteredUserController extends Controller
 {
     public function create(): View
@@ -86,6 +88,13 @@ class RegisteredUserController extends Controller
             'otp' => ['required', 'string', 'size:6'],
         ]);
 
+        $throttleKey = 'otp-verification|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return back()->with('error', "Too many attempts. Please try again in {$seconds} seconds.");
+        }
+
         $storedOtp = session('registration_otp');
         $expiresAt = session('registration_otp_expires');
         $regData = session('registration_data');
@@ -104,8 +113,11 @@ class RegisteredUserController extends Controller
 
         // Check OTP match
         if ($request->otp !== $storedOtp) {
+            RateLimiter::hit($throttleKey);
             return back()->with('error', 'Invalid verification code. Please try again.');
         }
+
+        RateLimiter::clear($throttleKey);
 
         // Create the user
         $user = User::create([
@@ -115,8 +127,14 @@ class RegisteredUserController extends Controller
             'dob' => $regData['dob'],
             'phone' => $regData['phone'],
             'address' => $regData['address'],
-            'role' => 'customer',
         ]);
+
+        // Assign default customer role
+        $customerRole = \App\Models\Role::where('name', 'customer')->first();
+        if ($customerRole) {
+            $user->role_id = $customerRole->id;
+            $user->save();
+        }
 
         // Clear session
         session()->forget(['registration_data', 'registration_otp', 'registration_otp_expires']);

@@ -102,6 +102,10 @@ class CartController extends Controller
 
     public function update(Request $request, CartItem $cartItem)
     {
+        if ($cartItem->cart->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate(['quantity' => 'required|integer|min:1']);
 
         if ($request->quantity > $cartItem->product->stock) {
@@ -137,6 +141,10 @@ class CartController extends Controller
 
     public function remove(Request $request, CartItem $cartItem)
     {
+        if ($cartItem->cart->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $cartId = $cartItem->cart_id;
         $cartItem->delete();
 
