@@ -68,7 +68,7 @@
         </nav>
     </div>
     <div class="d-flex gap-2">
-        <button onclick="window.print()" class="btn btn-admin"><i class="bi bi-printer me-1"></i> Print Order</button>
+        <a href="{{ route('admin.orders.print', $order) }}" class="btn btn-admin"><i class="bi bi-file-earmark-pdf me-1"></i> Download PDF</a>
         <a href="{{ route('admin.orders.index') }}" class="btn btn-admin-outline"><i class="bi bi-arrow-left me-1"></i> Back</a>
     </div>
 </div>
@@ -120,8 +120,17 @@
 
         <div class="admin-card mb-4">
             <div class="card-title">Shipping</div>
-            <p style="color:var(--admin-muted);font-size:0.9rem;">{{ $order->shipping_address['address_line'] ?? '' }}<br>{{ $order->shipping_address['city'] ?? '' }}</p>
-            <p style="color:var(--admin-muted);">No address provided</p>
+            @if(isset($order->shipping_address['address_line']))
+                <p style="color:var(--admin-muted);font-size:0.9rem;">
+                    {{ $order->shipping_address['address_line'] }}<br>
+                    {{ $order->shipping_address['city'] ?? '' }}
+                    @if(isset($order->shipping_address['phone']))
+                        <br><i class="bi bi-telephone me-1"></i> {{ $order->shipping_address['phone'] }}
+                    @endif
+                </p>
+            @else
+                <p style="color:var(--admin-muted);">No address provided</p>
+            @endif
         </div>
 
         <div class="admin-card">

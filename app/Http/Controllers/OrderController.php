@@ -5,8 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class OrderController extends Controller
 {
+    public function print(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $order->load('items.product', 'user');
+        $pdf = Pdf::loadView('admin.orders.print', compact('order'));
+        return $pdf->download("order-{$order->order_number}.pdf");
+    }
+
     public function index()
     {
         $orders = Order::where('user_id', auth()->id())
@@ -44,6 +57,8 @@ class OrderController extends Controller
             'status' => 'cancelled',
             'cancellation_reason' => $request->cancellation_reason,
         ]);
+
+        $order->restoreStock();
 
         return back()->with('success', 'Order cancelled successfully.');
     }

@@ -7,8 +7,28 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class ReportController extends Controller
 {
+    public function print(Request $request)
+    {
+        $categories = Category::all();
+        $query = Product::with('category')
+            ->withSum('orderItems as total_sold', 'quantity');
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $sort = $request->get('sort', 'desc');
+        $query->orderBy('total_sold', $sort);
+        $products = $query->get();
+
+        $pdf = Pdf::loadView('admin.reports.print', compact('products', 'categories'));
+        return $pdf->download('sales-report-' . now()->format('Y-m-d') . '.pdf');
+    }
+
     public function index(Request $request)
     {
         $categories = Category::all();

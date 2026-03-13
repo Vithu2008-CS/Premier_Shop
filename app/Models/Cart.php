@@ -20,9 +20,7 @@ class Cart extends Model
 
     public function getSubtotalAttribute(): float
     {
-        return $this->items->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
+        return $this->items->sum('line_total');
     }
 
     public function getTotalItemsAttribute(): int

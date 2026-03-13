@@ -6,8 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class OrderController extends Controller
 {
+    public function print(Order $order)
+    {
+        $order->load('items.product', 'user');
+        $pdf = Pdf::loadView('admin.orders.print', compact('order'));
+        return $pdf->download("order-{$order->order_number}.pdf");
+    }
+
     public function index()
     {
         $orders = Order::with('user')->latest()->paginate(15);
@@ -30,30 +39,44 @@ class OrderController extends Controller
         ]);
         
         $oldStatus = $order->status;
-        $updates = ['status' => $request->status];
+        
+        // Convert empty strings to null for dates
+        $processingDate = $request->filled('processing_date') ? $request->processing_date : null;
+        $shippedDate = $request->filled('shipped_date') ? $request->shipped_date : null;
+        $deliveredDate = $request->filled('delivered_date') ? $request->delivered_date : null;
 
-        // Auto-set dates if status changes to a state it wasn't in before
-        if ($request->status === 'processing' && !$order->processing_date) {
+        $updates = [
+            'status' => $request->status,
+            'processing_date' => $processingDate,
+            'shipped_date' => $shippedDate,
+            'delivered_date' => $deliveredDate,
+        ];
+
+        // Auto-set dates if status changes and date is currently null
+        if ($request->status === 'processing' && !$processingDate && !$order->processing_date) {
             $updates['processing_date'] = now();
         }
-        if ($request->status === 'shipped' && !$order->shipped_date) {
+        if ($request->status === 'shipped' && !$shippedDate && !$order->shipped_date) {
             $updates['shipped_date'] = now();
         }
-        if ($request->status === 'delivered' && !$order->delivered_date) {
+        if ($request->status === 'delivered' && !$deliveredDate && !$order->delivered_date) {
             $updates['delivered_date'] = now();
         }
 
-        // Allow manual overrides
-        if ($request->has('processing_date')) $updates['processing_date'] = $request->processing_date;
-        if ($request->has('shipped_date')) $updates['shipped_date'] = $request->shipped_date;
-        if ($request->has('delivered_date')) $updates['delivered_date'] = $request->delivered_date;
-
         $order->update($updates);
 
-        if ($oldStatus !== $request->status) {
-            \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+        if ($request->status === 'cancelled' && $oldStatus !== 'cancelled') {
+            $order->restoreStock();
         }
 
-        return back()->with('success', 'Order status updated.');
+        if ($oldStatus !== $request->status) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send order status email: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'Order status and tracking updated.');
     }
 }

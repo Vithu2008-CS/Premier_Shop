@@ -140,6 +140,16 @@
                     </tr>
                     @endif
 
+                    {{-- QR Code Section --}}
+                    <tr>
+                        <td style="padding:20px 40px;text-align:center;border-top:1px dashed #eee;">
+                            <div style="background:#fff;padding:15px;border-radius:12px;display:inline-block;border:1px solid #eee;">
+                                <img src="{{ $order->qr_code_url }}" alt="Scan to verify order" width="120" height="120" style="display:block;margin:0 auto;">
+                                <p style="margin:10px 0 0;font-size:12px;color:#636e72;font-weight:600;">Scan to verify order status online</p>
+                            </div>
+                        </td>
+                    </tr>
+
                     {{-- CTA Button --}}
                     <tr>
                         <td style="padding:10px 40px 30px;text-align:center;">
