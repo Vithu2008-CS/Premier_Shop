@@ -44,7 +44,9 @@ class CustomerController extends Controller
             }
         }
 
-        $customer->update(['role_id' => $request->role_id]);
+        $customer->role_id = $request->role_id;
+        $customer->save();
+        
         $roleName = Role::find($request->role_id)->display_name;
 
         return back()->with('success', "Role updated to '{$roleName}' successfully.");
