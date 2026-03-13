@@ -13,13 +13,20 @@ class DriverController extends Controller
     public function dashboard()
     {
         $driver = auth()->user();
-        $assignedOrders = $driver->assignedOrders()
+        
+        $pendingOrders = $driver->assignedOrders()
             ->with('user')
             ->whereIn('status', ['pending', 'processing', 'shipped'])
             ->latest()
             ->get();
 
-        return view('driver.dashboard', compact('driver', 'assignedOrders'));
+        $deliveredOrders = $driver->assignedOrders()
+            ->with('user')
+            ->where('status', 'delivered')
+            ->latest()
+            ->get();
+
+        return view('driver.dashboard', compact('driver', 'pendingOrders', 'deliveredOrders'));
     }
 
     public function toggleDuty(Request $request)
@@ -50,13 +57,18 @@ class DriverController extends Controller
 
         $request->validate([
             'delivery_proof' => 'required|image|max:2048',
+            'delivered_date' => 'nullable|date',
         ]);
 
         $proofPath = $request->file('delivery_proof')->store('delivery_proofs', 'public');
 
+        $deliveredDate = $request->filled('delivered_date') 
+            ? Carbon::parse($request->delivered_date) 
+            : now();
+
         $order->update([
             'status' => 'delivered',
-            'delivered_date' => now(),
+            'delivered_date' => $deliveredDate,
             'delivery_proof' => $proofPath,
         ]);
 

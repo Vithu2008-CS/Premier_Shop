@@ -31,9 +31,9 @@
 
     <div class="row g-4 reveal-3d delay-2">
         <div class="col-12">
-            <h4 class="fw-bold mb-3"><i class="bi bi-truck me-2"></i>Assigned Deliveries</h4>
-            <div class="row g-4 stagger-children">
-                @forelse($assignedOrders as $order)
+            <h4 class="fw-bold mb-3"><i class="bi bi-truck me-2"></i>To Deliver</h4>
+            <div class="row g-4 stagger-children mb-5">
+                @forelse($pendingOrders as $order)
                 <div class="col-md-6 col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden tilt-3d">
                         <div class="card-body p-4">
@@ -60,11 +60,43 @@
                     </div>
                 </div>
                 @empty
-                <div class="col-12 text-center py-5 reveal-3d">
-                    <div class="mb-3">
-                        <i class="bi bi-inbox text-muted display-1"></i>
+                <div class="col-12 text-center py-4 bg-white rounded-4 shadow-sm reveal-3d">
+                    <h6 class="text-muted mb-0">No active orders assigned to you.</h6>
+                </div>
+                @endforelse
+            </div>
+
+            <h4 class="fw-bold mb-3"><i class="bi bi-check-all me-2"></i>Completed Deliveries</h4>
+            <div class="row g-4 stagger-children">
+                @forelse($deliveredOrders as $order)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden tilt-3d" style="opacity: 0.85;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge rounded-pill px-3 py-2" style="background:rgba(0,184,148,0.1);color:#00b894;">
+                                    #{{ $order->order_number }}
+                                </span>
+                                <span class="badge bg-success text-white rounded-pill px-3 py-2">
+                                    Delivered
+                                </span>
+                            </div>
+                            <h5 class="fw-bold mb-2">{{ $order->user->name }}</h5>
+                            <p class="text-muted small mb-1">
+                                <i class="bi bi-calendar-check me-1"></i>
+                                {{ $order->delivered_date->format('M d, H:i') }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="text-muted small">£{{ number_format($order->total, 2) }}</span>
+                                <a href="{{ route('driver.orders.show', $order) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                    History
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <h5 class="text-muted">No orders assigned to you yet.</h5>
+                </div>
+                @empty
+                <div class="col-12 text-center py-4 reveal-3d">
+                    <p class="text-muted">No completed deliveries yet.</p>
                 </div>
                 @endforelse
             </div>
