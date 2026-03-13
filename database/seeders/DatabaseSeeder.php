@@ -9,10 +9,19 @@ use App\Models\Product;
 use App\Models\ShippingSetting;
 use App\Models\Promotion;
 
+use App\Models\Role;
+
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // First run RolePermissionSeeder to ensure roles exist
+        $this->call(RolePermissionSeeder::class);
+
+        // Get Role IDs
+        $adminRole = Role::where('name', 'admin')->first();
+        $customerRole = Role::where('name', 'customer')->first();
+
         // Admin user
         User::create([
             'name' => 'Shop Admin',
@@ -21,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'dob' => '1990-01-01',
             'phone' => '07700000000',
             'address' => 'Premier Shop HQ, London, UK',
-            'role' => 'admin',
+            'role_id' => $adminRole->id,
         ]);
 
         // Sample customer
@@ -32,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'dob' => '2000-05-15',
             'phone' => '07700000001',
             'address' => '123 High Street, London',
-            'role' => 'customer',
+            'role_id' => $customerRole->id,
         ]);
 
         // Categories
