@@ -60,7 +60,10 @@ class DriverController extends Controller
             'delivered_date' => 'nullable|date',
         ]);
 
-        $proofPath = $request->file('delivery_proof')->store('delivery_proofs', 'public');
+        $file = $request->file('delivery_proof');
+        $type = $file->getClientOriginalExtension();
+        $data = file_get_contents($file->getRealPath());
+        $base64Proof = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
         $deliveredDate = $request->filled('delivered_date') 
             ? Carbon::parse($request->delivered_date) 
@@ -69,7 +72,7 @@ class DriverController extends Controller
         $order->update([
             'status' => 'delivered',
             'delivered_date' => $deliveredDate,
-            'delivery_proof' => $proofPath,
+            'delivery_proof' => $base64Proof,
         ]);
 
         // Notify user

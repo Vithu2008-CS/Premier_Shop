@@ -260,12 +260,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Shipping Settings
-        ShippingSetting::create([
-            'free_delivery_threshold' => 50.00,
-            'free_delivery_radius_miles' => 10.00,
-            'surcharge_per_mile' => 1.50,
-            'flat_rate_fee' => 5.99,
-        ]);
+        $this->call(ShippingSettingSeeder::class);
 
         // Sample Promotion
         Promotion::create([

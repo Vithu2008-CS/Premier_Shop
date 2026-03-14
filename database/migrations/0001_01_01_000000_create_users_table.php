@@ -20,7 +20,9 @@ return new class extends Migration
             $table->date('dob');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
-            $table->enum('role', ['customer', 'admin'])->default('customer');
+            $table->string('city')->nullable();
+            $table->foreignId('role_id')->nullable()->constrained()->nullOnDelete();
+            $table->boolean('is_on_duty')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
