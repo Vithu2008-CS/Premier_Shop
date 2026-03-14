@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('shipping_settings', function (Blueprint $table) {
             $table->id();
+            $table->string('origin_address')->nullable();
             $table->decimal('free_delivery_threshold', 10, 2)->default(50.00);
             $table->decimal('free_delivery_radius_miles', 10, 2)->default(10.00);
             $table->decimal('surcharge_per_mile', 10, 2)->default(1.50);
