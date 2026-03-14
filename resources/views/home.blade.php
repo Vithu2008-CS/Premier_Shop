@@ -49,40 +49,34 @@
             </div>
         </section>
     @else
-        <section class="hero-section">
-            <div class="orb orb-1"></div>
-            <div class="orb orb-2"></div>
-            <div class="container hero-content">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 fade-up">
-                        <div class="hero-promo-badge">Free delivery on orders over £50</div>
-                        <h1>Your One-Stop Shop<br>for <span class="gradient-text">Premium Quality</span></h1>
-                        <p class="hero-text">Discover amazing products from electronics to groceries — all at unbeatable prices
-                            with fast, reliable delivery to your door.</p>
-                        <div class="d-flex gap-3 mt-4 flex-wrap">
-                            <a href="{{ route('offers') }}" class="btn btn-add-cart"><i class="bi bi-tag me-2"></i>View
-                                Offers</a>
-                            <a href="{{ route('products.index') }}" class="btn btn-outline-light" style="border-radius:50px;"><i
-                                    class="bi bi-grid me-2"></i>Browse Products</a>
-                        </div>
-                        <div class="hero-stats tilt-3d">
-                            <div class="stat">
-                                <h3>{{ \App\Models\Product::where('is_active', true)->count() }}+</h3><span>Products</span>
-                            </div>
-                            <div class="stat">
-                                <h3>{{ \App\Models\Category::count() }}</h3><span>Categories</span>
-                            </div>
-                            <div class="stat">
-                                <h3>24/7</h3><span>Support</span>
-                            </div>
-                            <div class="stat">
-                                <h3>Free</h3><span>Over £50</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        @php
+        $dicedSlides = [
+            [
+                'title' => 'Premium Devices',
+                'image' => 'https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1080&auto=format&fit=crop',
+            ],
+            [
+                'title' => 'Accessories',
+                'image' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1080&auto=format&fit=crop',
+            ],
+            [
+                'title' => 'Smart Watches',
+                'image' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1080&auto=format&fit=crop',
+            ],
+            [
+                'title' => 'Lifestyle Quality',
+                'image' => 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1080&auto=format&fit=crop',
+            ]
+        ];
+        @endphp
+        <x-diced-hero 
+            topText="Discover Premier"
+            mainText="Quality Goods"
+            subMainText="Explore a curated selection of premium electronics, lifestyle accessories, and everyday essentials. Unveil a paramount collection sourced for those who demand the absolute best."
+            buttonText="Shop Now"
+            buttonLink="{{ route('products.index') }}"
+            :slides="$dicedSlides"
+        />
     @endif
 
     @push('styles')
