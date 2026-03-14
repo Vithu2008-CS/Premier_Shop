@@ -70,6 +70,11 @@
 
                 <form action="{{ route('driver.orders.complete', $order) }}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Delivery Date & Time</label>
+                        <input type="datetime-local" name="delivered_date" class="form-control" value="{{ now()->format('Y-m-d\TH:i') }}" required>
+                    </div>
+
                     <div class="mb-4">
                         <label class="form-label fw-bold small">Delivery Proof (Photo)</label>
                         <div class="input-group">

@@ -5,6 +5,33 @@
 // Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
+:root {
+  --diced-hero-section-top-text: #2c3e50;
+  --diced-hero-section-main-gradient-from: #6C5CE7; 
+  --diced-hero-section-main-gradient-to: #A29BFE;
+  --diced-hero-section-main-gradient-foreground: #6C5CE7;
+  --diced-hero-section-separator: #6C5CE7;
+  --diced-hero-section-sub-text: #34495e;
+  --diced-hero-section-button-bg: #6C5CE7;
+  --diced-hero-section-button-fg: #ffffff;
+  --diced-hero-section-button-hover-bg: #A29BFE;
+  --diced-hero-section-button-hover-fg: #fff;
+}
+
+[data-bs-theme="dark"], .dark {
+  --diced-hero-section-top-text: #f7f7ff;
+  --diced-hero-section-main-gradient-from: #9F4EFF;
+  --diced-hero-section-main-gradient-to: #00A6FB;
+  --diced-hero-section-main-gradient-foreground: #9F4EFF;
+  --diced-hero-section-separator: #086CA2;
+  --diced-hero-section-sub-text: #f7f7ff;
+  --diced-hero-section-button-bg: #00A6FB;
+  --diced-hero-section-button-fg: #0A0A0A;
+  --diced-hero-section-button-hover-bg: #9F4EFF;
+  --diced-hero-section-button-hover-fg: #FFFFFF;
+}
+
+
 // Bootstrap Overrides
 $primary: #6C5CE7;
 $secondary: #2D2D3F;
@@ -22,6 +49,9 @@ $border-radius-sm: 8px;
 $border-radius-lg: 16px;
 
 @import 'bootstrap/scss/bootstrap';
+
+// Components
+@import 'components/diced_hero';
 
 // ============================================================
 // CSS Custom Properties
