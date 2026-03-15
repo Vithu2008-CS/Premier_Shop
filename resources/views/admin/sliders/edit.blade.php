@@ -47,7 +47,7 @@
                 <div class="col-md-6">
                     <label class="form-label">Upload Image (Leave empty to keep current)</label>
                     <input type="file" name="image_file" class="form-control" accept="image/*">
-                    <small class="d-block mt-2">Current Image: <a href="{{ $slider->image_path }}" target="_blank">View image</a></small>
+                    <small class="d-block mt-2">Current Image: <a href="{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}" target="_blank">View image</a></small>
                 </div>
 
                 <div class="col-md-6">
@@ -66,7 +66,7 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Order Priority</label>
-                    <input type="number" name="order" class="form-control" value="{{ old('order', $slider->order) }}">
+                    <input type="number" name="order_priority" class="form-control" value="{{ old('order_priority', $slider->order_priority) }}">
                 </div>
 
                 <div class="col-md-6 d-flex align-items-center mt-auto">

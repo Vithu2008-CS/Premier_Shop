@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
-use App\Models\CartItem;
+use App\Models\UserItem;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
     public function index()
     {
-        $cart = Cart::firstOrCreate(['user_id' => auth()->id()]);
-        $cart->load('items.product');
-        return view('cart.index', compact('cart'));
+        $items = auth()->user()->cartItems()->with('product')->get();
+        return view('cart.index', compact('items'));
     }
 
     public function add(Request $request)
@@ -25,20 +24,17 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        // Age restriction check
         if ($product->is_age_restricted && auth()->user()->isUnder16()) {
             return back()->with('error', 'You must be 16 or older to purchase this product.');
         }
 
-        // Stock check
         if ($product->stock < $request->quantity) {
             return back()->with('error', 'Not enough stock available.');
         }
 
-        $cart = Cart::firstOrCreate(['user_id' => auth()->id()]);
-
-        $cartItem = CartItem::where('cart_id', $cart->id)
+        $cartItem = UserItem::where('user_id', auth()->id())
             ->where('product_id', $product->id)
+            ->where('type', 'cart')
             ->first();
 
         if ($cartItem) {
@@ -48,10 +44,11 @@ class CartController extends Controller
             }
             $cartItem->update(['quantity' => $newQty]);
         } else {
-            CartItem::create([
-                'cart_id' => $cart->id,
+            UserItem::create([
+                'user_id' => auth()->id(),
                 'product_id' => $product->id,
                 'quantity' => $request->quantity,
+                'type' => 'cart',
             ]);
         }
 
@@ -75,12 +72,9 @@ class CartController extends Controller
             return back()->with('error', 'Not enough stock available.');
         }
 
-        $cart = Cart::firstOrCreate(['user_id' => auth()->id()]);
-
-        // Optional: clear cart for true "buy now" experience, or just append. 
-        // We'll just append and redirect to checkout.
-        $cartItem = CartItem::where('cart_id', $cart->id)
+        $cartItem = UserItem::where('user_id', auth()->id())
             ->where('product_id', $product->id)
+            ->where('type', 'cart')
             ->first();
 
         if ($cartItem) {
@@ -90,19 +84,20 @@ class CartController extends Controller
             }
             $cartItem->update(['quantity' => $newQty]);
         } else {
-            CartItem::create([
-                'cart_id' => $cart->id,
+            UserItem::create([
+                'user_id' => auth()->id(),
                 'product_id' => $product->id,
                 'quantity' => $request->quantity,
+                'type' => 'cart',
             ]);
         }
 
         return redirect()->route('checkout.index');
     }
 
-    public function update(Request $request, CartItem $cartItem)
+    public function update(Request $request, UserItem $cartItem)
     {
-        if ($cartItem->cart->user_id !== auth()->id()) {
+        if ($cartItem->user_id !== auth()->id() || $cartItem->type !== 'cart') {
             abort(403, 'Unauthorized action.');
         }
 
@@ -118,56 +113,63 @@ class CartController extends Controller
         $cartItem->update(['quantity' => $request->quantity]);
 
         if ($request->wantsJson()) {
-            $cartLevel = \App\Models\Cart::with('items.product')->find($cartItem->cart_id);
-            $settings = \App\Models\ShippingSetting::first();
+            $user = auth()->user();
+            $items = $user->cartItems()->with('product')->get();
+            $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+            $totalItems = $items->sum('quantity');
+            
+            $settings = Setting::first();
             $threshold = $settings ? $settings->free_delivery_threshold : 50;
             $baseFee = $settings ? $settings->flat_rate_fee : 5.99;
             
-            $shippingCost = $cartLevel->subtotal >= $threshold ? 0 : $baseFee;
+            $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
             
             return response()->json([
                 'success' => true,
                 'message' => 'Cart updated.',
                 'lineTotal' => number_format($cartItem->line_total, 2),
-                'subtotal' => number_format($cartLevel->subtotal, 2),
-                'totalItems' => $cartLevel->totalItems,
+                'subtotal' => number_format($subtotal, 2),
+                'totalItems' => $totalItems,
                 'shipping' => $shippingCost == 0 ? 'Free' : '£' . number_format($baseFee, 2),
-                'total' => number_format($cartLevel->subtotal + $shippingCost, 2)
+                'total' => number_format($subtotal + $shippingCost, 2)
             ]);
         }
 
         return back()->with('success', 'Cart updated.');
     }
 
-    public function remove(Request $request, CartItem $cartItem)
+    public function remove(Request $request, UserItem $cartItem)
     {
-        if ($cartItem->cart->user_id !== auth()->id()) {
+        if ($cartItem->user_id !== auth()->id() || $cartItem->type !== 'cart') {
             abort(403, 'Unauthorized action.');
         }
 
-        $cartId = $cartItem->cart_id;
         $cartItem->delete();
 
         if ($request->wantsJson()) {
-            $cartLevel = \App\Models\Cart::with('items.product')->find($cartId);
-            if (!$cartLevel || $cartLevel->items->isEmpty()) {
+            $user = auth()->user();
+            $items = $user->cartItems()->with('product')->get();
+            if ($items->isEmpty()) {
                 return response()->json(['success' => true, 'empty' => true]);
             }
             
-            $settings = \App\Models\ShippingSetting::first();
+            $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+            $totalItems = $items->sum('quantity');
+            
+            $settings = Setting::first();
             $threshold = $settings ? $settings->free_delivery_threshold : 50;
             $baseFee = $settings ? $settings->flat_rate_fee : 5.99;
             
-            $shippingCost = $cartLevel->subtotal >= $threshold ? 0 : $baseFee;
+            $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
             
             return response()->json([
                 'success' => true,
                 'empty' => false,
                 'message' => 'Item removed from cart.',
-                'subtotal' => number_format($cartLevel->subtotal, 2),
-                'totalItems' => $cartLevel->totalItems,
+                'subtotal' => number_format($subtotal, 2),
+                'totalItems' => $totalItems,
                 'shipping' => $shippingCost == 0 ? 'Free' : '£' . number_format($baseFee, 2),
-                'total' => number_format($cartLevel->subtotal + $shippingCost, 2)
+                'total' => number_format($subtotal + $shippingCost, 2)
             ]);
         }
 

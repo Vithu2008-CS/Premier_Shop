@@ -2,6 +2,19 @@
 @section('title', 'Dashboard — Admin')
 
 @section('content')
+@push('styles')
+<style>
+    .stat-card-link {
+        text-decoration: none;
+        display: block;
+        transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .stat-card-link:hover {
+        transform: translateY(-5px) scale(1.02);
+        filter: brightness(1.1);
+    }
+</style>
+@endpush
 <div class="admin-topbar">
     <div>
         <h2>Dashboard</h2>
@@ -20,48 +33,56 @@
 {{-- Stat Cards --}}
 <div class="row g-4 mb-4">
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card bg-gradient-primary">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-number">{{ $stats['totalProducts'] }}</div>
-                    <div class="stat-label">Total Products</div>
+        <a href="{{ route('admin.products.index') }}" class="stat-card-link">
+            <div class="stat-card bg-gradient-primary">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-number">{{ $stats['totalProducts'] }}</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#00B894,#00CEC9);">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-number">{{ $stats['totalOrders'] }}</div>
-                    <div class="stat-label">Total Orders</div>
+        <a href="{{ route('admin.orders.index') }}" class="stat-card-link">
+            <div class="stat-card" style="background:linear-gradient(135deg,#00B894,#00CEC9);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-number">{{ $stats['totalOrders'] }}</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-receipt"></i></div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-receipt"></i></div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#0984E3,#74B9FF);">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-number">£{{ number_format($stats['totalRevenue'], 0) }}</div>
-                    <div class="stat-label">Revenue</div>
+        <a href="{{ route('admin.reports.index') }}" class="stat-card-link">
+            <div class="stat-card" style="background:linear-gradient(135deg,#0984E3,#74B9FF);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-number">£{{ number_format($stats['totalRevenue'], 0) }}</div>
+                        <div class="stat-label">Revenue</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-currency-pound"></i></div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-currency-pound"></i></div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#E17055,#FDCB6E);">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <div class="stat-number">{{ $stats['totalCustomers'] }}</div>
-                    <div class="stat-label">Customers</div>
+        <a href="{{ route('admin.customers.index') }}" class="stat-card-link">
+            <div class="stat-card" style="background:linear-gradient(135deg,#E17055,#FDCB6E);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-number">{{ $stats['totalCustomers'] }}</div>
+                        <div class="stat-label">Customers</div>
+                    </div>
+                    <div class="stat-icon"><i class="bi bi-people"></i></div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-people"></i></div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 

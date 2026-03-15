@@ -7,9 +7,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Product;
-use App\Models\Cart;
-use App\Models\CartItem;
-use App\Models\ShippingSetting;
+use App\Models\UserItem;
+use App\Models\Setting;
 
 class ShippingCalculationTest extends TestCase
 {
@@ -17,7 +16,6 @@ class ShippingCalculationTest extends TestCase
 
     protected User $user;
     protected Product $product;
-    protected Cart $cart;
 
     protected function setUp(): void
     {
@@ -27,22 +25,20 @@ class ShippingCalculationTest extends TestCase
         $category = \App\Models\Category::create(['name' => 'Test Category', 'slug' => 'test-category']);
         $this->product = Product::factory()->create(['price' => 10.00, 'stock' => 50, 'category_id' => $category->id]);
 
-        ShippingSetting::create([
-            'origin_postal_code' => 'SW1A 1AA',
+        Setting::create([
+            'shop_name' => 'Test Shop',
+            'origin_address' => 'Buckingham Palace, London, SW1A 1AA, UK',
             'free_delivery_threshold' => 100.00,
             'free_delivery_radius_miles' => 5.00,
             'surcharge_per_mile' => 1.50,
             'flat_rate_fee' => 5.99,
-            'origin_address' => 'Buckingham Palace, London, SW1A 1AA, UK',
         ]);
 
-        $this->cart = Cart::create(['user_id' => $this->user->id, 'subtotal' => 10.00]);
-        CartItem::create([
-            'cart_id' => $this->cart->id,
+        UserItem::create([
+            'user_id' => $this->user->id,
             'product_id' => $this->product->id,
             'quantity' => 1,
-            'price' => 10.00,
-            'line_total' => 10.00,
+            'type' => 'cart',
         ]);
 
         // Mock Google Maps API - return flat rate for all addresses
@@ -70,10 +66,8 @@ class ShippingCalculationTest extends TestCase
     public function test_free_shipping_over_threshold()
     {
         // Update existing cart with high subtotal to test free shipping threshold
-        $this->cart->update(['subtotal' => 150.00]);
-        $this->cart->items()->first()->update([
+        UserItem::where('user_id', $this->user->id)->first()->update([
             'quantity' => 15,
-            'line_total' => 150.00,
         ]);
 
         $response = $this->actingAs($this->user)
@@ -109,4 +103,3 @@ class ShippingCalculationTest extends TestCase
         $response->assertStatus(422); // Validation error
     }
 }
-

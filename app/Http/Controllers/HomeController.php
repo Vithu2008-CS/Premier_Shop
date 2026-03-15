@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Promotion;
-use App\Models\Category;
-use App\Models\Slider; // Added this use statement for Slider
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -15,48 +15,41 @@ class HomeController extends Controller
             return redirect()->route('driver.dashboard');
         }
 
-        $promotions = Promotion::active()->get();
-        $categories = Category::withCount('products')->get();
-        $sliders = Slider::where('is_active', true)->orderBy('order')->get(); // Modified this line based on instruction's snippet
-
-        // 1. Offers
-        $offerProducts = Product::withActiveOffers()
-            ->where('is_active', true)
-            ->limit(4)
+        $sliders = Promotion::sliders()->active()->orderBy('order_priority')->get();
+        $categories = Category::all();
+        
+        $offerProducts = Product::where('is_active', true)
+            ->withActiveOffers()
+            ->take(4)
             ->get();
-
-        // 2. Popular Products
+            
         $popularProducts = Product::where('is_active', true)
             ->withCount('orderItems')
-            ->orderByDesc('order_items_count')
-            ->limit(4)
+            ->orderBy('order_items_count', 'desc')
+            ->take(4)
             ->get();
-
-        // 3. New Products
+            
         $newProducts = Product::where('is_active', true)
             ->latest()
-            ->limit(4)
+            ->take(4)
             ->get();
-
-        // 4. Random Products
+            
         $randomProducts = Product::where('is_active', true)
             ->inRandomOrder()
-            ->limit(8)
+            ->take(4)
             ->get();
 
-        return view('home', compact(
-            'promotions', 'categories', 'sliders', 
-            'offerProducts', 'popularProducts', 'newProducts', 'randomProducts'
-        ));
+        $promotions = Promotion::banners()->active()->take(3)->get();
+
+        return view('home', compact('sliders', 'categories', 'offerProducts', 'popularProducts', 'newProducts', 'randomProducts', 'promotions'));
     }
 
     public function offers()
     {
-        $offerProducts = Product::withActiveOffers()
-            ->where('is_active', true)
-            ->with('category')
+        $offerProducts = Product::where('is_active', true)
+            ->withActiveOffers()
             ->paginate(12);
-
+            
         return view('offers', compact('offerProducts'));
     }
 }

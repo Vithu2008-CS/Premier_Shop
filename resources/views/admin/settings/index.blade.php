@@ -37,26 +37,24 @@
                                 $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                             @endphp
                             @foreach($days as $day)
-                                @php
-                                    $openKey = "shop_hours_{$day}_open";
-                                    $closeKey = "shop_hours_{$day}_close";
-                                    $closedKey = "shop_hours_{$day}_closed";
-                                    $openTime = $settings[$openKey] ?? '';
-                                    $closeTime = $settings[$closeKey] ?? '';
-                                    $isClosed = filter_var($settings[$closedKey] ?? 'false', FILTER_VALIDATE_BOOLEAN);
-                                @endphp
                                 <tr>
                                     <td class="fw-bold text-capitalize align-middle">{{ $day }}</td>
+                                    @php
+                                        $hours = $settings->other_settings['shop_hours'][$day] ?? [];
+                                        $openTime = $hours['open'] ?? '';
+                                        $closeTime = $hours['close'] ?? '';
+                                        $isClosed = $hours['closed'] ?? false;
+                                    @endphp
                                     <td>
-                                        <input type="time" name="{{ $openKey }}" class="form-control form-control-sm" value="{{ $openTime }}" {{ $isClosed ? 'disabled' : '' }}>
+                                        <input type="time" name="shop_hours[{{ $day }}][open]" class="form-control form-control-sm" value="{{ $openTime }}" {{ $isClosed ? 'disabled' : '' }}>
                                     </td>
                                     <td>
-                                        <input type="time" name="{{ $closeKey }}" class="form-control form-control-sm" value="{{ $closeTime }}" {{ $isClosed ? 'disabled' : '' }}>
+                                        <input type="time" name="shop_hours[{{ $day }}][close]" class="form-control form-control-sm" value="{{ $closeTime }}" {{ $isClosed ? 'disabled' : '' }}>
                                     </td>
                                     <td class="align-middle">
                                         <div class="form-check form-switch mb-0">
-                                            <input type="hidden" name="{{ $closedKey }}" value="false">
-                                            <input class="form-check-input closed-toggle" type="checkbox" name="{{ $closedKey }}" value="true" {{ $isClosed ? 'checked' : '' }}>
+                                            <input type="hidden" name="shop_hours[{{ $day }}][closed]" value="0">
+                                            <input class="form-check-input closed-toggle" type="checkbox" name="shop_hours[{{ $day }}][closed]" value="1" {{ $isClosed ? 'checked' : '' }}>
                                         </div>
                                     </td>
                                 </tr>
@@ -67,7 +65,7 @@
 
                 <div class="mb-4">
                     <label class="form-label">Shop Notice Banner (Optional, displayed on homepage)</label>
-                    <textarea name="shop_notice" class="form-control" rows="2" placeholder="E.g., Special holiday hours in effect!">{{ $settings['shop_notice'] ?? '' }}</textarea>
+                    <textarea name="shop_notice" class="form-control" rows="2" placeholder="E.g., Special holiday hours in effect!">{{ $settings->other_settings['shop_notice'] ?? '' }}</textarea>
                 </div>
 
                 <div class="d-flex justify-content-end">

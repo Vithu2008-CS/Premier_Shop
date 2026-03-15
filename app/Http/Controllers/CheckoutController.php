@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
-use App\Models\CartItem;
+use App\Models\UserItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Coupon;
+use App\Models\Setting;
 use App\Mail\OrderReceipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-
 use Illuminate\Support\Facades\DB;
 use App\Services\ShippingService;
 
@@ -25,22 +24,21 @@ class CheckoutController extends Controller
 
     public function index(Request $request)
     {
-        $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
-        if (!$cart || $cart->items->isEmpty()) {
+        $items = auth()->user()->cartItems()->with('product')->get();
+        if ($items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Filter items if specifically requested from cart checkboxes
         if ($request->has('items')) {
             $selectedIds = $request->items;
-            $cart->setRelation('items', $cart->items->whereIn('id', $selectedIds));
+            $items = $items->whereIn('id', $selectedIds);
             
-            if ($cart->items->isEmpty()) {
+            if ($items->isEmpty()) {
                 return redirect()->route('cart.index')->with('error', 'Please select at least one item to checkout.');
             }
         }
 
-        return view('checkout.index', compact('cart'));
+        return view('checkout.index', compact('items'));
     }
 
     public function applyCoupon(Request $request)
@@ -52,20 +50,20 @@ class CheckoutController extends Controller
             return back()->with('error', 'Invalid coupon code.');
         }
 
-        $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
-        
-        // Handle filtered items if passed in request
+        $items = auth()->user()->cartItems()->with('product')->get();
         if ($request->has('items')) {
-            $cart->setRelation('items', $cart->items->whereIn('id', $request->items));
+            $items = $items->whereIn('id', $request->items);
         }
 
-        if (!$coupon->isValid($cart->subtotal)) {
+        $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+
+        if (!$coupon->isValid($subtotal)) {
             return back()->with('error', 'This coupon is not valid for your order.');
         }
 
         session(['coupon' => [
             'code' => $coupon->code,
-            'discount' => $coupon->calculateDiscount($cart->subtotal),
+            'discount' => $coupon->calculateDiscount($subtotal),
             'id' => $coupon->id,
         ]]);
 
@@ -87,42 +85,39 @@ class CheckoutController extends Controller
             'items' => 'nullable|array',
         ]);
 
-        $cart = Cart::where('user_id', auth()->id())->with('items.product')->first();
-        if (!$cart || $cart->items->isEmpty()) {
+        $allCartItems = auth()->user()->cartItems()->with('product')->get();
+        if ($allCartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Filter items if specific IDs were passed
-        $purchasedItems = $cart->items;
+        $purchasedItems = $allCartItems;
         if ($request->has('items')) {
-            $purchasedItems = $cart->items->whereIn('id', $request->items);
+            $purchasedItems = $allCartItems->whereIn('id', $request->items);
             if ($purchasedItems->isEmpty()) {
                 return redirect()->route('cart.index')->with('error', 'No items selected for checkout.');
             }
         }
 
-        // Fetch shipping settings
-        $shippingSettings = \App\Models\ShippingSetting::first();
+        $settings = Setting::first();
 
-        // Calculate totals based on purchased items only
-        $subtotal = $purchasedItems->sum('line_total');
-        $shippingCost = $shippingSettings ? $shippingSettings->flat_rate_fee : 5.99;
+        $subtotal = $purchasedItems->sum(fn($i) => $i->product->price * $i->quantity);
+        $shippingCost = $settings ? $settings->flat_rate_fee : 5.99;
         $distance = null;
 
-        if ($shippingSettings) {
-            $origin = $shippingSettings->origin_address ?? config('app.address', 'United Kingdom');
+        if ($settings) {
+            $origin = $settings->origin_address ?? config('app.address', 'United Kingdom');
             $destination = "{$request->address_line}, {$request->city}, UK";
             $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
 
-            if ($subtotal >= $shippingSettings->free_delivery_threshold) {
+            if ($subtotal >= $settings->free_delivery_threshold) {
                 $shippingCost = 0.00;
             } elseif ($distance !== null) {
                 $distanceInMiles = $distance * 0.621371;
-                if ($distanceInMiles <= $shippingSettings->free_delivery_radius_miles) {
+                if ($distanceInMiles <= $settings->free_delivery_radius_miles) {
                     $shippingCost = 0.00;
                 } else {
-                    $extraMiles = max(0, $distanceInMiles - $shippingSettings->free_delivery_radius_miles);
-                    $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
+                    $extraMiles = max(0, $distanceInMiles - $settings->free_delivery_radius_miles);
+                    $shippingCost = $settings->flat_rate_fee + ($extraMiles * $settings->surcharge_per_mile);
                 }
             }
         }
@@ -130,7 +125,6 @@ class CheckoutController extends Controller
         $discount = 0;
         $couponCode = null;
 
-        // Apply coupon if exists
         if (session('coupon')) {
             $coupon = Coupon::find(session('coupon.id'));
             if ($coupon && $coupon->isValid($subtotal)) {
@@ -143,18 +137,15 @@ class CheckoutController extends Controller
 
         try {
             $order = DB::transaction(function () use ($request, $purchasedItems, $subtotal, $discount, $couponCode, $shippingCost, $distance, $total) {
-                // Re-validate stock and age restriction inside transaction
                 foreach ($purchasedItems as $item) {
                     if ($item->quantity > $item->product->stock) {
                         throw new \Exception("Not enough stock for {$item->product->name}.");
                     }
-                    
                     if ($item->product->is_age_restricted && auth()->user()->isUnder16()) {
                         throw new \Exception("You must be 16 or older to purchase {$item->product->name}.");
                     }
                 }
 
-                // Create order
                 $order = Order::create([
                     'user_id' => auth()->id(),
                     'order_number' => Order::generateOrderNumber(),
@@ -173,21 +164,13 @@ class CheckoutController extends Controller
                     'payment_status' => 'completed',
                 ]);
 
-                // Create order items and reduce stock
                 foreach ($purchasedItems as $item) {
-                    // Calculate effective price (accounting for offers)
-                    $effectivePrice = $item->product->price;
-                    if ($item->product->has_offer && $item->quantity >= $item->product->offer_min_qty) {
-                        $effectivePrice = $item->product->offer_price;
-                    }
-
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product_id,
                         'quantity' => $item->quantity,
-                        'price' => $effectivePrice,
+                        'price' => $item->product->price,
                     ]);
-
                     $item->product->decrement('stock', $item->quantity);
                 }
 
@@ -204,12 +187,9 @@ class CheckoutController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        // Clear only purchased items from cart
-        $purchasedIds = $purchasedItems->pluck('id');
-        CartItem::whereIn('id', $purchasedIds)->delete();
+        UserItem::whereIn('id', $purchasedItems->pluck('id'))->delete();
         session()->forget('coupon');
 
-        // Send order receipt email
         $order->load('items.product', 'user');
         try {
             Mail::to($order->user->email)->send(new OrderReceipt($order));
@@ -217,54 +197,43 @@ class CheckoutController extends Controller
             \Log::error('Failed to send order receipt: ' . $e->getMessage());
         }
 
-        return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully! A receipt has been sent to your email.');
+        return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
     }
 
     public function calculateShipping(Request $request)
     {
-        // For distance calculation, address_line or city is now required as we removed postcode
         $request->validate([
             'address_line' => 'required|string',
             'city' => 'required|string'
         ]);
 
-        $shippingSettings = \App\Models\ShippingSetting::first();
-        if (!$shippingSettings) {
+        $settings = Setting::first();
+        if (!$settings) {
             return response()->json(['cost' => 5.99, 'distance' => null, 'message' => 'Flat rate typical shipping.']);
         }
 
-        $cart = Cart::where('user_id', auth()->id())->first();
-        if (!$cart) {
-            return response()->json(['error' => 'Cart not found'], 400);
-        }
+        $items = auth()->user()->cartItems()->with('product')->get();
+        $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
 
-        $origin = $shippingSettings->origin_address ?? config('app.address', 'United Kingdom');
-
-        // Use full address for precision
-        $addressParts = array_filter([
-            $request->address_line ?? null,
-            $request->city ?? null
-        ]);
-        $destination = implode(', ', $addressParts) . ', UK';
-
+        $origin = $settings->origin_address ?? config('app.address', 'United Kingdom');
+        $destination = "{$request->address_line}, {$request->city}, UK";
         $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
 
-        $shippingCost = $shippingSettings->flat_rate_fee;
+        $shippingCost = $settings->flat_rate_fee;
         $message = "Flat rate shipping.";
 
-        if ($cart->subtotal >= $shippingSettings->free_delivery_threshold) {
+        if ($subtotal >= $settings->free_delivery_threshold) {
             $shippingCost = 0.00;
-            $message = "Free shipping (Over £{$shippingSettings->free_delivery_threshold})";
+            $message = "Free shipping (Over £{$settings->free_delivery_threshold})";
         } elseif ($distance !== null) {
             $distanceInMiles = $distance * 0.621371;
-
-            if ($distanceInMiles <= $shippingSettings->free_delivery_radius_miles) {
+            if ($distanceInMiles <= $settings->free_delivery_radius_miles) {
                 $shippingCost = 0.00;
                 $message = "Free local delivery (" . number_format($distanceInMiles, 1) . " miles)";
             } else {
-                $extraMiles = $distanceInMiles - $shippingSettings->free_delivery_radius_miles;
-                $shippingCost = $shippingSettings->flat_rate_fee + ($extraMiles * $shippingSettings->surcharge_per_mile);
-                $message = "Distance: " . number_format($distanceInMiles, 1) . " miles. Includes £" . number_format($shippingSettings->surcharge_per_mile, 2) . "/mile surcharge outside free radius.";
+                $extraMiles = $distanceInMiles - $settings->free_delivery_radius_miles;
+                $shippingCost = $settings->flat_rate_fee + ($extraMiles * $settings->surcharge_per_mile);
+                $message = "Distance: " . number_format($distanceInMiles, 1) . " miles.";
             }
         }
 

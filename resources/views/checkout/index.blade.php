@@ -11,7 +11,7 @@
                     <h5 class="fw-bold mb-3">Shipping Address</h5>
                     <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
                         @csrf
-                        @foreach($cart->items as $item)
+                        @foreach($items as $item)
                             <input type="hidden" name="items[]" value="{{ $item->id }}">
                         @endforeach
                         <div class="mb-3">
@@ -55,7 +55,7 @@
                     @else
                     <form action="{{ route('checkout.applyCoupon') }}" method="POST" class="d-flex gap-2">
                         @csrf
-                        @foreach($cart->items as $item)
+                        @foreach($items as $item)
                             <input type="hidden" name="items[]" value="{{ $item->id }}">
                         @endforeach
                         <input type="text" name="coupon_code" class="form-control" placeholder="Enter coupon code">
@@ -69,7 +69,7 @@
             <div class="card shadow-sm" style="position:sticky;top:100px;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">Order Summary</h5>
-                    @foreach($cart->items as $item)
+                    @foreach($items as $item)
                     <div class="d-flex justify-content-between mb-2">
                         <span>{{ Str::limit($item->product->name, 25) }} x{{ $item->quantity }}</span>
                         <span>£{{ number_format($item->line_total, 2) }}</span>
@@ -78,7 +78,7 @@
                     <hr>
                     <div class="d-flex justify-content-between mb-2">
                         <span>Subtotal</span>
-                        <span>£{{ number_format($cart->subtotal, 2) }}</span>
+                        <span>£{{ number_format($items->sum('line_total'), 2) }}</span>
                     </div>
                     @if(session('coupon'))
                     <div class="d-flex justify-content-between mb-2 text-success">
@@ -93,7 +93,8 @@
                     <div id="shippingMessageDisplay" class="text-muted small text-end fst-italic mb-2"></div>
                     <hr>
                     @php
-                    $subtotalMinusDiscount = $cart->subtotal - (session('coupon.discount') ?? 0);
+                    $subtotal = $items->sum('line_total');
+                    $subtotalMinusDiscount = $subtotal - (session('coupon.discount') ?? 0);
                     @endphp
                     <div class="d-flex justify-content-between">
                         <span class="fw-bold fs-5">Total</span>

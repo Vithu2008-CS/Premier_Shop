@@ -6,7 +6,7 @@
     <div class="container">
         <h2 class="section-title mb-4 reveal-3d"><i class="bi bi-bag me-2"></i>Shopping <span class="gradient-text">Cart</span></h2>
 
-        @if(!$cart || $cart->items->isEmpty())
+        @if($items->isEmpty())
             <div class="text-center py-5 fade-up">
                 <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(108,92,231,0.08);border-radius:50%;">
                     <i class="bi bi-bag-x text-primary" style="font-size:3rem;"></i>
@@ -28,12 +28,12 @@
                                     <input class="form-check-input border-primary" type="checkbox" id="selectAll" checked>
                                     <label class="form-check-label fw-bold ms-2" for="selectAll">Select All Items</label>
                                 </div>
-                                <span class="text-muted small" id="selected-count">{{ $cart->items->count() }} item(s) selected</span>
+                                <span class="text-muted small" id="selected-count">{{ $items->count() }} item(s) selected</span>
                             </div>
                         </div>
 
                         <div id="cart-items-container" class="stagger-children">
-                            @foreach($cart->items as $item)
+                            @foreach($items as $item)
                                 <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" id="cart-item-{{ $item->id }}" data-price="{{ $item->product->price }}" data-id="{{ $item->id }}">
                                     <div class="card-body p-3">
                                         <div class="row align-items-center g-3">

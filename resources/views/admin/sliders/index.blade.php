@@ -35,7 +35,7 @@
                     @forelse($sliders as $slider)
                         <tr>
                             <td>
-                                <img src="{{ $slider->image_path }}" alt="Slider"
+                                <img src="{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}" alt="Slider"
                                     style="width:80px;height:40px;object-fit:cover;border-radius:6px;background:rgba(255,255,255,0.05);">
                             </td>
                             <td>
@@ -52,7 +52,7 @@
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td>{{ $slider->order }}</td>
+                            <td>{{ $slider->order_priority }}</td>
                             <td>
                                 @if($slider->is_active)
                                     <span class="badge bg-success badge-status">Active</span>

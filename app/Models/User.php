@@ -74,9 +74,9 @@ class User extends Authenticatable
         return $this->age < 16;
     }
 
-    public function cart()
+    public function cartItems()
     {
-        return $this->hasOne(Cart::class);
+        return $this->hasMany(UserItem::class)->cart();
     }
 
     public function orders()
@@ -86,7 +86,7 @@ class User extends Authenticatable
 
     public function wishlists()
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->hasMany(UserItem::class)->wishlist();
     }
 
     public function assignedOrders()
