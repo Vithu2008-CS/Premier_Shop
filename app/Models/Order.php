@@ -69,6 +69,44 @@ class Order extends Model
     }
 
     /**
+     * Update order status and manage tracking dates robustly.
+     */
+    public function updateStatusAndTracking(string $status, ?string $processingDate = null, ?string $shippedDate = null, ?string $deliveredDate = null)
+    {
+        $oldStatus = $this->status;
+        $updates = ['status' => $status];
+
+        // Ensure dates are parsed correctly
+        $proc = $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date;
+        $ship = $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date;
+        $del = $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date;
+
+        // Auto-fill preceding dates if status is advanced
+        if ($status === 'processing' || $status === 'shipped' || $status === 'delivered') {
+            $proc = $proc ?: now();
+        }
+        if ($status === 'shipped' || $status === 'delivered') {
+            $ship = $ship ?: now();
+        }
+        if ($status === 'delivered') {
+            $del = $del ?: now();
+        }
+
+        $updates['processing_date'] = $proc;
+        $updates['shipped_date'] = $ship;
+        $updates['delivered_date'] = $del;
+
+        $this->update($updates);
+
+        // Restore stock if cancelled
+        if ($status === 'cancelled' && $oldStatus !== 'cancelled') {
+            $this->restoreStock();
+        }
+
+        return $oldStatus !== $status;
+    }
+
+    /**
      * Restore stock for all products in this order.
      */
     public function restoreStock()

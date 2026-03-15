@@ -82,10 +82,19 @@
             </select>
         </div>
         <div>
-            <label class="form-label mb-1" style="font-size: 0.75rem;">Sort By Sold</label>
-            <select name="sort" class="form-select form-select-sm" style="min-width: 140px;">
-                <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Highest to Lowest</option>
-                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Lowest to Highest</option>
+            <label class="form-label mb-1" style="font-size: 0.75rem;">Sort By</label>
+            <select name="sort_by" class="form-select form-select-sm" style="min-width: 120px;">
+                <option value="sold" {{ request('sort_by') == 'sold' ? 'selected' : '' }}>Sold</option>
+                <option value="price" {{ request('sort_by') == 'price' ? 'selected' : '' }}>Price</option>
+                <option value="stock" {{ request('sort_by') == 'stock' ? 'selected' : '' }}>Stock</option>
+                <option value="wishlist" {{ request('sort_by') == 'wishlist' ? 'selected' : '' }}>Wishlist</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label mb-1" style="font-size: 0.75rem;">Order</label>
+            <select name="order" class="form-select form-select-sm" style="min-width: 140px;">
+                <option value="desc" {{ request('order') == 'desc' || !request('order') ? 'selected' : '' }}>Highest to Lowest</option>
+                <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Lowest to Highest</option>
             </select>
         </div>
         <button type="submit" class="btn btn-admin btn-sm h-100 px-3">Filter</button>
@@ -109,6 +118,7 @@
                     <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
+                    <th>Wishlist</th>
                     <th>Total Sold</th>
                 </tr>
             </thead>
@@ -148,6 +158,11 @@
                             @else
                                 <span class="badge badge-status bg-success">{{ $product->stock }}</span>
                             @endif
+                        </td>
+                        <td>
+                            <span class="fw-bold" style="color: #A29BFE;">
+                                <i class="bi bi-heart-fill me-1"></i>{{ number_format($product->total_wishlist ?? 0) }}
+                            </span>
                         </td>
                         <td>
                             <span class="fw-bold" style="font-size: 1.1em; color: {{ $product->total_sold > 0 ? '#00CEC9' : 'var(--admin-muted)' }};">

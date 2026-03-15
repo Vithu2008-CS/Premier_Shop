@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('is_active', true);
+        $query = Product::with('category')->where('is_active', true);
 
         // Filter by category
         if ($request->has('category')) {
@@ -72,7 +72,7 @@ class ProductController extends Controller
             return response()->json([]);
         }
 
-        $products = Product::where('is_active', true)
+        $products = Product::with('category')->where('is_active', true)
             ->where(function ($query) use ($q) {
                 $query->where('name', 'ilike', '%' . $q . '%')
                       ->orWhereHas('category', function ($cq) use ($q) {

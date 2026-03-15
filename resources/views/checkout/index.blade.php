@@ -45,15 +45,15 @@
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3"><i class="bi bi-tag me-1"></i> Got a Coupon?</h5>
                     @if(session('coupon'))
-                    <div class="alert alert-success d-flex justify-content-between align-items-center">
-                        <span><strong>{{ session('coupon.code') }}</strong> — £{{ number_format(session('coupon.discount'), 2) }} off</span>
-                        <form action="{{ route('checkout.removeCoupon') }}" method="POST">
+                    <div class="alert alert-success d-flex justify-content-between align-items-center" id="couponInfoAlert">
+                        <span id="couponText"><strong>{{ session('coupon.code') }}</strong> — £{{ number_format(session('coupon.discount'), 2) }} off</span>
+                        <form action="{{ route('checkout.removeCoupon') }}" method="POST" class="ajax-form" id="removeCouponForm">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x"></i></button>
                         </form>
                     </div>
                     @else
-                    <form action="{{ route('checkout.applyCoupon') }}" method="POST" class="d-flex gap-2">
+                    <form action="{{ route('checkout.applyCoupon') }}" method="POST" class="d-flex gap-2 ajax-form" id="applyCouponForm" style="{{ session('coupon') ? 'display:none !important;' : '' }}" data-clear-on-success="true">
                         @csrf
                         @foreach($items as $item)
                             <input type="hidden" name="items[]" value="{{ $item->id }}">
@@ -81,9 +81,14 @@
                         <span>£{{ number_format($items->sum('line_total'), 2) }}</span>
                     </div>
                     @if(session('coupon'))
-                    <div class="d-flex justify-content-between mb-2 text-success">
+                    <div class="d-flex justify-content-between mb-2 text-success" id="discountRow">
                         <span>Discount</span>
-                        <span>-£{{ number_format(session('coupon.discount'), 2) }}</span>
+                        <span id="discountValueDisplay">-£{{ number_format(session('coupon.discount'), 2) }}</span>
+                    </div>
+                    @else
+                    <div class="d-flex justify-content-between mb-2 text-success d-none" id="discountRow">
+                        <span>Discount</span>
+                        <span id="discountValueDisplay">-£0.00</span>
                     </div>
                     @endif
                     <div class="d-flex justify-content-between mb-2">
@@ -167,6 +172,49 @@
         if (addressInput.value.trim() !== '' && cityInput.value.trim() !== '') {
             calculateShipping();
         }
+
+        // Coupon AJAX Success Listener
+        document.addEventListener('ajax-form-success', function(e) {
+            const { form, data } = e.detail;
+            
+            if (form.id === 'applyCouponForm' || form.id === 'removeCouponForm') {
+                const discountRow = document.getElementById('discountRow');
+                const discountValueDisplay = document.getElementById('discountValueDisplay');
+                const cartTotalDisplay = document.getElementById('cartTotalDisplay');
+                const couponText = document.getElementById('couponText');
+                const couponInfoAlert = document.getElementById('couponInfoAlert');
+                const applyCouponForm = document.getElementById('applyCouponForm');
+
+                if (data.coupon) {
+                    // Applied
+                    discountRow.classList.remove('d-none');
+                    discountValueDisplay.textContent = `-£${parseFloat(data.coupon.discount).toFixed(2)}`;
+                    
+                    if (couponInfoAlert) {
+                        couponInfoAlert.classList.remove('d-none');
+                        couponInfoAlert.style.display = 'flex';
+                        couponText.innerHTML = `<strong>${data.coupon.code}</strong> — £${parseFloat(data.coupon.discount).toFixed(2)} off`;
+                    } else {
+                        // If it didn't exist in the DOM (unlikely due to initial state, but safe), we might need to refresh or have a placeholder
+                        location.reload(); // Fallback for complex state
+                    }
+                    applyCouponForm.style.setProperty('display', 'none', 'important');
+                } else {
+                    // Removed
+                    discountRow.classList.add('d-none');
+                    if (couponInfoAlert) {
+                        couponInfoAlert.style.display = 'none';
+                    }
+                    applyCouponForm.style.setProperty('display', 'flex', 'important');
+                }
+
+                // Update totals
+                if (data.total) {
+                    cartTotalDisplay.dataset.baseTotal = data.total.replace(/,/g, '');
+                    calculateShipping(); // Recalculate full total with shipping
+                }
+            }
+        });
     });
 </script>
 @endsection

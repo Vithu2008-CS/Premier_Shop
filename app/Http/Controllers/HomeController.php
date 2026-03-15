@@ -18,23 +18,23 @@ class HomeController extends Controller
         $sliders = Promotion::sliders()->active()->orderBy('order_priority')->get();
         $categories = Category::all();
         
-        $offerProducts = Product::where('is_active', true)
+        $offerProducts = Product::with('category')->where('is_active', true)
             ->withActiveOffers()
             ->take(4)
             ->get();
             
-        $popularProducts = Product::where('is_active', true)
+        $popularProducts = Product::with('category')->where('is_active', true)
             ->withCount('orderItems')
             ->orderBy('order_items_count', 'desc')
             ->take(4)
             ->get();
             
-        $newProducts = Product::where('is_active', true)
+        $newProducts = Product::with('category')->where('is_active', true)
             ->latest()
             ->take(4)
             ->get();
             
-        $randomProducts = Product::where('is_active', true)
+        $randomProducts = Product::with('category')->where('is_active', true)
             ->inRandomOrder()
             ->take(4)
             ->get();
@@ -46,7 +46,7 @@ class HomeController extends Controller
 
     public function offers()
     {
-        $offerProducts = Product::where('is_active', true)
+        $offerProducts = Product::with('category')->where('is_active', true)
             ->withActiveOffers()
             ->paginate(12);
             

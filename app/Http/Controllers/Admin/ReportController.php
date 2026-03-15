@@ -15,14 +15,33 @@ class ReportController extends Controller
     {
         $categories = Category::all();
         $query = Product::with('category')
-            ->withSum('orderItems as total_sold', 'quantity');
+            ->withSum('orderItems as total_sold', 'quantity')
+            ->withCount(['wishlistedBy as total_wishlist']);
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        $sort = $request->get('sort', 'desc');
-        $query->orderBy('total_sold', $sort);
+        $sortBy = $request->get('sort_by', 'sold');
+        $order = $request->get('order', 'desc');
+
+        switch ($sortBy) {
+            case 'price':
+                $query->orderBy('price', $order);
+                break;
+            case 'stock':
+                $query->orderBy('stock', $order);
+                break;
+            case 'wishlist':
+                $query->orderBy('total_wishlist', $order);
+                break;
+            case 'sold':
+            default:
+                $query->orderBy('total_sold', $order);
+                break;
+        }
+
+        $query->orderBy('id', 'desc');
         $products = $query->get();
 
         $pdf = Pdf::loadView('admin.reports.print', compact('products', 'categories'));
@@ -36,29 +55,37 @@ class ReportController extends Controller
         $query = Product::with('category')
             ->withSum(['orderItems as total_sold' => function ($query) {
                 // You can add conditions here if you only want to count paid/completed orders
-                // $query->whereHas('order', function($q) {
-                //      $q->whereIn('status', ['paid', 'completed', 'shipped']);
-                // });
-            }], 'quantity');
+            }], 'quantity')
+            ->withCount(['wishlistedBy as total_wishlist']);
 
         // Apply Category Filter
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        // Apply Sorting
-        $sort = $request->get('sort', 'desc'); // default to highest sold
-        if ($sort === 'asc') {
-            $query->orderBy('total_sold', 'asc');
-        } else {
-            $query->orderBy('total_sold', 'desc');
+        // Apply Dynamic Sorting
+        $sortBy = $request->get('sort_by', 'sold');
+        $order = $request->get('order', 'desc');
+
+        switch ($sortBy) {
+            case 'price':
+                $query->orderBy('price', $order);
+                break;
+            case 'stock':
+                $query->orderBy('stock', $order);
+                break;
+            case 'wishlist':
+                $query->orderBy('total_wishlist', $order);
+                break;
+            case 'sold':
+            default:
+                $query->orderBy('total_sold', $order);
+                break;
         }
 
         // Also order by id as a secondary sort
         $query->orderBy('id', 'desc');
 
-        // Note: For printing, we might want to show all records or paginate with a large number
-        // Instead of pagination, if the request is for print, we can return all or a very large pagination limit.
         if ($request->has('print')) {
             $products = $query->get();
         } else {

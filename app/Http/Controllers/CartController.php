@@ -40,6 +40,9 @@ class CartController extends Controller
         if ($cartItem) {
             $newQty = $cartItem->quantity + $request->quantity;
             if ($newQty > $product->stock) {
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Cannot add more. Stock limit reached.']);
+                }
                 return back()->with('error', 'Cannot add more. Stock limit reached.');
             }
             $cartItem->update(['quantity' => $newQty]);
@@ -49,6 +52,14 @@ class CartController extends Controller
                 'product_id' => $product->id,
                 'quantity' => $request->quantity,
                 'type' => 'cart',
+            ]);
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "{$product->name} added to cart!",
+                'cartCount' => auth()->user()->cartItems()->sum('quantity')
             ]);
         }
 

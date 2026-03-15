@@ -122,7 +122,7 @@
 
                 {{-- Add to Cart --}}
                 @if($product->stock > 0)
-                    <form action="{{ route('cart.add') }}" method="POST">
+                    <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <div class="d-flex gap-3 mb-4">

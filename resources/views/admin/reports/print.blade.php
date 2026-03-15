@@ -55,6 +55,7 @@
                     <th>Category</th>
                     <th class="text-right">Price</th>
                     <th class="text-right">Stock</th>
+                    <th class="text-right">Wishlist</th>
                     <th class="text-right">Units Sold</th>
                     <th class="text-right">Revenue</th>
                 </tr>
@@ -69,6 +70,7 @@
                     <td><span class="badge">{{ $product->category->name ?? 'N/A' }}</span></td>
                     <td class="text-right">£{{ number_format($product->price, 2) }}</td>
                     <td class="text-right">{{ $product->stock }}</td>
+                    <td class="text-right">{{ number_format($product->total_wishlist ?? 0) }}</td>
                     <td class="text-right" style="font-weight: bold;">{{ number_format($product->total_sold ?? 0) }}</td>
                     <td class="text-right">£{{ number_format($product->price * ($product->total_sold ?? 0), 2) }}</td>
                 </tr>
@@ -77,6 +79,7 @@
             <tfoot>
                 <tr style="background: #f8f9fa; font-weight: bold;">
                     <td colspan="4">GRAND TOTAL</td>
+                    <td class="text-right">{{ number_format($products->sum('total_wishlist')) }}</td>
                     <td class="text-right">{{ number_format($products->sum('total_sold')) }}</td>
                     <td class="text-right">£{{ number_format($products->sum(fn($p) => $p->price * $p->total_sold), 2) }}</td>
                 </tr>

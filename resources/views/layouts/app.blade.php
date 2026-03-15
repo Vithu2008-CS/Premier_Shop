@@ -14,6 +14,15 @@
 </head>
 
 <body>
+    {{-- Toast Container --}}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+        <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
     {{-- Top Bar --}}
     <div class="top-bar d-none d-md-block">
         <div class="container d-flex justify-content-between align-items-center">
@@ -54,7 +63,7 @@
                     <a href="{{ route('cart.index') }}" class="btn btn-link text-white p-2 cart-badge">
                         <i class="bi bi-bag fs-5"></i>
                         @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
-                        @if($cartCount > 0)<span class="badge">{{ $cartCount }}</span>@endif
+                        <span class="badge cart-count-badge" id="cartCountBadgeMobile" style="{{ $cartCount > 0 ? '' : 'display:none;' }}">{{ $cartCount }}</span>
                     </a>
                     @endif
                 @endauth
@@ -90,7 +99,7 @@
                         <li class="nav-item">
                             <a class="nav-link cart-badge" href="{{ route('cart.index') }}">
                                 <i class="bi bi-bag"></i> Cart
-                                @if($cartCount ?? 0 > 0)<span class="badge">{{ $cartCount }}</span>@endif
+                                <span class="badge cart-count-badge" id="cartCountBadge" style="{{ ($cartCount ?? 0) > 0 ? '' : 'display:none;' }}">{{ $cartCount ?? 0 }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -355,6 +364,8 @@
     <script>
     document.addEventListener('submit', function(e) {
         const form = e.target;
+        
+        // Wishlist Toggle Handler
         if (form && form.action && form.action.includes('/wishlists/') && form.action.includes('/toggle')) {
             e.preventDefault();
             
@@ -369,7 +380,8 @@
                 body: new FormData(form),
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
             .then(res => res.json())
@@ -391,23 +403,99 @@
                             if(icon.classList.contains('bi-heart')) icon.classList.remove('bi-heart');
                             icon.classList.add('bi-heart-fill', 'text-danger');
                             btn.title = 'Remove from wishlist';
+                            showToast('Added to wishlist', 'bg-success');
                         } else {
                             if(icon.classList.contains('bi-heart-fill')) icon.classList.remove('bi-heart-fill');
                             if(icon.classList.contains('text-danger')) icon.classList.remove('text-danger');
                             icon.classList.add('bi-heart');
                             btn.title = 'Add to wishlist';
+                            showToast('Removed from wishlist', 'bg-info');
                         }
                     }
                 } else {
-                    alert(data.message || 'Error updating wishlist.');
+                    showToast(data.message || 'Error updating wishlist.', 'bg-danger');
                 }
             })
             .catch(err => {
                 btn.disabled = false;
                 console.error(err);
+                showToast('Something went wrong.', 'bg-danger');
+            });
+            return;
+        }
+
+        // Global AJAX Form Handler (Cart, Coupons, etc.)
+        if (form && form.classList.contains('ajax-form')) {
+            e.preventDefault();
+            
+            const btn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = btn ? btn.innerHTML : null;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            }
+
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: form.method || 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                }
+
+                if (data.success) {
+                    showToast(data.message, 'bg-success');
+                    
+                    // Update Cart Badge globally
+                    if (data.cartCount !== undefined) {
+                        document.querySelectorAll('.cart-count-badge').forEach(el => {
+                            el.textContent = data.cartCount;
+                            el.style.display = data.cartCount > 0 ? 'inline-block' : 'none';
+                        });
+                    }
+
+                    // Custom Event for page-specific logic
+                    const event = new CustomEvent('ajax-form-success', { detail: { form, data } });
+                    document.dispatchEvent(event);
+                    
+                    // Clear input if needed
+                    if (form.dataset.clearOnSuccess) {
+                        form.reset();
+                    }
+                } else {
+                    showToast(data.message || 'An error occurred.', 'bg-danger');
+                }
+            })
+            .catch(err => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                }
+                console.error(err);
+                showToast('Something went wrong. Please try again.', 'bg-danger');
             });
         }
     });
+
+    function showToast(message, bgColor) {
+        const toastEl = document.getElementById('liveToast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toast = new bootstrap.Toast(toastEl);
+        
+        toastEl.className = `toast align-items-center text-white border-0 ${bgColor}`;
+        toastMessage.textContent = message;
+        toast.show();
+    }
     </script>
     @endpush
     <script>

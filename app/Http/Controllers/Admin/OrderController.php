@@ -54,39 +54,15 @@ class OrderController extends Controller
             'shipped_date' => 'nullable|date',
             'delivered_date' => 'nullable|date',
         ]);
-        
-        $oldStatus = $order->status;
-        
-        // Convert empty strings to null for dates
-        $processingDate = $request->filled('processing_date') ? $request->processing_date : null;
-        $shippedDate = $request->filled('shipped_date') ? $request->shipped_date : null;
-        $deliveredDate = $request->filled('delivered_date') ? $request->delivered_date : null;
 
-        $updates = [
-            'status' => $request->status,
-            'processing_date' => $processingDate,
-            'shipped_date' => $shippedDate,
-            'delivered_date' => $deliveredDate,
-        ];
+        $statusChanged = $order->updateStatusAndTracking(
+            $request->status,
+            $request->processing_date,
+            $request->shipped_date,
+            $request->delivered_date
+        );
 
-        // Auto-set dates if status changes and date is currently null
-        if ($request->status === 'processing' && !$processingDate && !$order->processing_date) {
-            $updates['processing_date'] = now();
-        }
-        if ($request->status === 'shipped' && !$shippedDate && !$order->shipped_date) {
-            $updates['shipped_date'] = now();
-        }
-        if ($request->status === 'delivered' && !$deliveredDate && !$order->delivered_date) {
-            $updates['delivered_date'] = now();
-        }
-
-        $order->update($updates);
-
-        if ($request->status === 'cancelled' && $oldStatus !== 'cancelled') {
-            $order->restoreStock();
-        }
-
-        if ($oldStatus !== $request->status) {
+        if ($statusChanged) {
             try {
                 \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
             } catch (\Exception $e) {

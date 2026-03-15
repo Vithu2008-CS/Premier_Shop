@@ -239,7 +239,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('line-total-' + id).textContent = '£' + data.lineTotal;
                     calculateTotals();
                     // Update header badge
-                    document.querySelectorAll('.cart-badge .badge').forEach(b => b.textContent = data.totalItems);
+                    document.querySelectorAll('.cart-count-badge').forEach(b => {
+                        b.textContent = data.totalItems;
+                        b.style.display = data.totalItems > 0 ? 'inline-block' : 'none';
+                    });
                 } else {
                     alert(data.message);
                 }
@@ -267,7 +270,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     else {
                         document.getElementById('cart-item-' + id).remove();
                         calculateTotals();
-                        document.querySelectorAll('.cart-badge .badge').forEach(b => b.textContent = data.totalItems);
+                        document.querySelectorAll('.cart-count-badge').forEach(b => {
+                            b.textContent = data.totalItems;
+                            b.style.display = data.totalItems > 0 ? 'inline-block' : 'none';
+                        });
                     }
                 }
             });
