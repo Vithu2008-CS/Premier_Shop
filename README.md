@@ -90,4 +90,3 @@ Our platform isn't just a shop; it's a visual experience.
 
 ---
 
-<p align="center">Built with ❤️ for a modern shopping experience.</p>
