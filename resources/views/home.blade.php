@@ -19,7 +19,7 @@
                         <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
                             <a href="{{ $slider->link_url ?? '#' }}" class="d-block w-100 position-relative text-decoration-none">
                                 <div class="slider-image-wrapper">
-                                    <img src="{{ $slider->image_path }}" class="d-block w-100 hero-slider-img" alt="{{ $slider->title ? $slider->title . ' - ' . $slider->subtitle : 'Promotional Offer Slide' }}">
+                                    <img src="{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}" class="d-block w-100 hero-slider-img" alt="{{ $slider->title ? $slider->title . ' - ' . $slider->subtitle : 'Promotional Offer Slide' }}">
                                     <div class="slider-overlay"></div>
                                 </div>
                                 @if($slider->title || $slider->subtitle)
@@ -220,7 +220,7 @@
                             <div class="product-card position-relative">
                                 @auth
                                     @php
-                                        $inWishlist = \App\Models\Wishlist::where('user_id', auth()->id())->where('product_id', $product->id)->exists();
+                                        $inWishlist = \App\Models\UserItem::where('user_id', auth()->id())->where('product_id', $product->id)->where('type', 'wishlist')->exists();
                                     @endphp
                                     <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST" class="position-absolute" style="top:10px; right:10px; z-index:10;">
                                         @csrf

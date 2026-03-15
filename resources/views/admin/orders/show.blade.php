@@ -163,6 +163,17 @@
 
                 <button type="submit" class="btn btn-admin w-100">Update Order</button>
             </form>
+        </div>
+
+        @if($order->status === 'delivered' && $order->delivery_proof)
+            <div class="card border-0 shadow-sm rounded-4 p-4 reveal-3d">
+                <h5 class="fw-bold mb-3">Delivery Proof</h5>
+                <img src="{{ (str_starts_with($order->delivery_proof, 'data:image') || str_starts_with($order->delivery_proof, 'http')) ? $order->delivery_proof : asset('storage/' . $order->delivery_proof) }}" class="img-fluid rounded-3 shadow-sm" alt="Delivery Proof">
+                <div class="mt-2 small text-muted">
+                    Delivered on: {{ $order->delivered_date ? $order->delivered_date->format('M d, Y H:i') : 'N/A' }}
+                </div>
+            </div>
+        @endif
         <div class="admin-card mb-4">
             <div class="card-title">Assigned Driver</div>
             @if($order->driver)

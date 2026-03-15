@@ -109,8 +109,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Order Print
     Route::get('orders/{order}/print', [AdminOrderController::class, 'print'])->name('orders.print');
 
-    // Drivers Monitoring
-    Route::get('drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
+    // Drivers Monitoring & Management
+    Route::resource('drivers', AdminDriverController::class);
 });
 
 // Driver Routes

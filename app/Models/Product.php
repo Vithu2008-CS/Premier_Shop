@@ -55,7 +55,7 @@ class Product extends Model
 
     public function wishlistedBy()
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->hasMany(UserItem::class)->wishlist();
     }
 
     public function isInStock(): bool

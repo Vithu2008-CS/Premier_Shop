@@ -6,9 +6,8 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ShippingSetting;
+use App\Models\Setting;
 use App\Models\Promotion;
-
 use App\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -259,16 +258,36 @@ class DatabaseSeeder extends Seeder
             'is_age_restricted' => true,
         ]);
 
-        // Shipping Settings
-        $this->call(ShippingSettingSeeder::class);
+        // Settings
+        Setting::updateOrCreate(
+            ['id' => 1],
+            [
+                'shop_name' => 'Premier Shop',
+                'origin_address' => 'GQ6Q+WH London, United Kingdom',
+                'free_delivery_threshold' => 100.00,
+                'free_delivery_radius_miles' => 20.00,
+                'surcharge_per_mile' => 1.50,
+                'flat_rate_fee' => 5.99,
+            ]
+        );
 
-        // Sample Promotion
+        // Sample Promotion (Slider)
         Promotion::create([
             'title' => 'Spring Sale — Up to 30% Off!',
+            'subtitle' => 'Limited Time Offer',
             'description' => 'Enjoy massive discounts on selected items this spring season.',
+            'type' => 'slider',
             'is_active' => true,
             'start_date' => now(),
             'end_date' => now()->addMonths(2),
+        ]);
+
+        // Sample Promotion (Banner)
+        Promotion::create([
+            'title' => 'Free Local Delivery',
+            'description' => 'On orders over £100 within 20 miles.',
+            'type' => 'banner',
+            'is_active' => true,
         ]);
     }
 }

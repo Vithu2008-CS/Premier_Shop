@@ -35,7 +35,7 @@
             <div class="row g-4">
                 <div class="col-md-6">
                     <label class="form-label">Title</label>
-                    <input type="text" name="title" class="form-control" placeholder="e.g. Free delivery" value="{{ old('title') }}">
+                    <input type="text" name="title" class="form-control" placeholder="e.g. New Seasonal Collection" value="{{ old('title') }}">
                 </div>
 
                 <div class="col-md-6">
@@ -65,7 +65,7 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Order Priority</label>
-                    <input type="number" name="order" class="form-control" value="{{ old('order', 0) }}">
+                    <input type="number" name="order_priority" class="form-control" value="{{ old('order_priority', 0) }}">
                 </div>
 
                 <div class="col-md-6 d-flex align-items-center mt-auto">

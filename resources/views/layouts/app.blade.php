@@ -17,7 +17,7 @@
     {{-- Top Bar --}}
     <div class="top-bar d-none d-md-block">
         <div class="container d-flex justify-content-between align-items-center">
-            <span><i class="bi bi-truck me-1"></i> Free delivery on orders over £50</span>
+            <span></span>
             <div class="d-flex gap-3">
                 <a href="#"><i class="bi bi-telephone me-1"></i> +44 770 000 0000</a>
                 <a href="#"><i class="bi bi-envelope me-1"></i> info@premiershop.com</a>
@@ -32,6 +32,7 @@
                 <i class="bi bi-shop"></i> Premier Shop
             </a>
 
+            @if(!auth()->user()?->isDriver())
             {{-- Search Bar - Center --}}
             <div class="search-wrapper d-none d-lg-block flex-grow-1 mx-4">
                 <div class="search-container position-relative">
@@ -41,6 +42,7 @@
                     <div id="searchSuggestions" class="search-suggestions"></div>
                 </div>
             </div>
+            @endif
 
             {{-- Mobile Icons --}}
             <div class="d-flex align-items-center gap-2 d-lg-none">
@@ -48,11 +50,13 @@
                     <i class="bi bi-search fs-5"></i>
                 </button>
                 @auth
+                    @if(!auth()->user()->isDriver())
                     <a href="{{ route('cart.index') }}" class="btn btn-link text-white p-2 cart-badge">
                         <i class="bi bi-bag fs-5"></i>
-                        @php $cartCount = \App\Models\Cart::where('user_id', auth()->id())->first()?->totalItems ?? 0; @endphp
+                        @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
                         @if($cartCount > 0)<span class="badge">{{ $cartCount }}</span>@endif
                     </a>
+                    @endif
                 @endauth
                 <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#mobileMenu">
@@ -63,6 +67,7 @@
             {{-- Desktop Nav --}}
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+                    @if(!auth()->user()?->isDriver())
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('offers') ? 'active' : '' }}"
                             href="{{ route('offers') }}">
@@ -79,7 +84,9 @@
                         <a class="nav-link {{ request()->routeIs('products.*') && !request('category') ? 'active' : '' }}"
                             href="{{ route('products.index') }}">Products</a>
                     </li>
+                    @endif
                     @auth
+                        @if(!auth()->user()->isDriver())
                         <li class="nav-item">
                             <a class="nav-link cart-badge" href="{{ route('cart.index') }}">
                                 <i class="bi bi-bag"></i> Cart
@@ -89,8 +96,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('wishlists.index') }}"><i class="bi bi-heart"></i> Wishlist</a>
                         </li>
+                        @endif
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('orders.index') }}"><i class="bi bi-receipt"></i> Orders</a>
+                            <a class="nav-link" href="{{ auth()->user()->isDriver() ? route('driver.dashboard') : route('orders.index') }}">
+                                <i class="bi bi-receipt"></i> 
+                                {{ auth()->user()->isDriver() ? 'My Deliveries' : 'Orders' }}
+                            </a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
@@ -125,6 +136,7 @@
     </nav>
 
     {{-- Category Mega Menu --}}
+    @if(!auth()->user()?->isDriver())
     <div class="collapse category-mega-menu sticky-top" id="categoryMegaMenu" style="top: 72px; z-index: 1030;">
         <div class="container">
             <div class="mega-cat-grid stagger-children tilt-3d">
@@ -144,6 +156,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Mobile Off-Canvas Menu --}}
     <div class="offcanvas offcanvas-end" id="mobileMenu" style="background:var(--ps-gradient-dark);color:#fff;">
@@ -153,6 +166,7 @@
         </div>
         <div class="offcanvas-body">
             <ul class="nav flex-column gap-1">
+                @if(!auth()->user()?->isDriver())
                 <li><a class="nav-link text-white" href="{{ route('offers') }}"><i class="bi bi-tag me-2"></i>Offers</a>
                 </li>
                 <li><a class="nav-link text-white" href="{{ route('products.index') }}"><i
@@ -171,16 +185,21 @@
                         </a>
                     </li>
                 @endforeach
+                @endif
                 @auth
                     <li>
                         <hr class="border-secondary">
                     </li>
+                    @if(!auth()->user()->isDriver())
                     <li><a class="nav-link text-white" href="{{ route('cart.index') }}"><i
                                 class="bi bi-bag me-2"></i>Cart</a></li>
-                    <li><a class="nav-link text-white" href="{{ route('orders.index') }}"><i
-                                class="bi bi-receipt me-2"></i>Orders</a></li>
+                    @endif
+                    <li><a class="nav-link text-white" href="{{ auth()->user()->isDriver() ? route('driver.dashboard') : route('orders.index') }}">
+                        <i class="bi bi-receipt me-2"></i>{{ auth()->user()->isDriver() ? 'My Deliveries' : 'Orders' }}</a></li>
+                    @if(!auth()->user()->isDriver())
                     <li><a class="nav-link text-white" href="{{ route('wishlists.index') }}"><i
                                 class="bi bi-heart me-2"></i>Wishlist</a></li>
+                    @endif
                     <li><a class="nav-link text-white" href="{{ route('profile.edit') }}"><i
                                 class="bi bi-gear me-2"></i>Profile</a></li>
                     @if(auth()->user()->isAdmin())
@@ -288,13 +307,15 @@
                      <ul class="footer-links" style="font-size:0.85rem;">
                         @php
                             $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                            $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+                            $settings = \App\Models\Setting::first();
+                            $shopHours = $settings->other_settings['shop_hours'] ?? [];
                         @endphp
                         @foreach($days as $day)
                             @php
-                                $open = $settings["shop_hours_{$day}_open"] ?? '';
-                                $close = $settings["shop_hours_{$day}_close"] ?? '';
-                                $isClosed = filter_var($settings["shop_hours_{$day}_closed"] ?? 'false', FILTER_VALIDATE_BOOLEAN);
+                                $hours = $shopHours[$day] ?? [];
+                                $open = $hours['open'] ?? '';
+                                $close = $hours['close'] ?? '';
+                                $isClosed = $hours['closed'] ?? false;
                             @endphp
                             <li class="d-flex justify-content-between mb-1">
                                 <span class="text-capitalize text-muted">{{ substr($day, 0, 3) }}:</span>
@@ -389,6 +410,19 @@
     });
     </script>
     @endpush
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navbar = document.querySelector('.navbar-premium');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 

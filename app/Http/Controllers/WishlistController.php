@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Product;
-use App\Models\Wishlist;
+use App\Models\UserItem;
 
 class WishlistController extends Controller
 {
@@ -17,8 +16,9 @@ class WishlistController extends Controller
 
     public function toggle(Request $request, Product $product)
     {
-        $wishlist = Wishlist::where('user_id', auth()->id())
+        $wishlist = UserItem::where('user_id', auth()->id())
             ->where('product_id', $product->id)
+            ->where('type', 'wishlist')
             ->first();
 
         if ($wishlist) {
@@ -28,9 +28,10 @@ class WishlistController extends Controller
             }
             return back()->with('success', 'Product removed from wishlist.');
         } else {
-            Wishlist::create([
+            UserItem::create([
                 'user_id' => auth()->id(),
                 'product_id' => $product->id,
+                'type' => 'wishlist',
             ]);
             if ($request->wantsJson()) {
                 return response()->json(['success' => true, 'status' => 'added', 'message' => 'Product added to wishlist.']);

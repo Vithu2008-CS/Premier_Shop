@@ -71,7 +71,7 @@
                     </div>
                     @auth
                         @php
-                            $inWishlist = \App\Models\Wishlist::where('user_id', auth()->id())->where('product_id', $product->id)->exists();
+                            $inWishlist = \App\Models\UserItem::where('user_id', auth()->id())->where('product_id', $product->id)->where('type', 'wishlist')->exists();
                         @endphp
                         <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST">
                             @csrf
@@ -147,12 +147,6 @@
 
                 {{-- Features --}}
                 <div class="row g-3">
-                    <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:#f8f9fe;">
-                            <i class="bi bi-truck text-primary"></i>
-                            <small class="fw-600">Free delivery over £50</small>
-                        </div>
-                    </div>
                     <div class="col-6">
                         <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:#f8f9fe;">
                             <i class="bi bi-shield-check text-primary"></i>
