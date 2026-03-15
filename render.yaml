@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: premier-shop
+    env: php
+    plan: free # or your preferred plan
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      npm install && npm run build
+      php artisan migrate --force
+    startCommand: vendor/bin/heroku-php-apache2 public/
+    envVars:
+      - key: APP_SERVICE_NAME
+        value: premier-shop
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql # Render provides PostgreSQL easily
