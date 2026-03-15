@@ -23,16 +23,6 @@
             </div>
         </div>
     </div>
-    {{-- Top Bar --}}
-    <div class="top-bar d-none d-md-block">
-        <div class="container d-flex justify-content-between align-items-center">
-            <span></span>
-            <div class="d-flex gap-3">
-                <a href="#"><i class="bi bi-telephone me-1"></i> +44 770 000 0000</a>
-                <a href="#"><i class="bi bi-envelope me-1"></i> info@premiershop.com</a>
-            </div>
-        </div>
-    </div>
 
     {{-- Main Navbar --}}
     <nav class="navbar navbar-expand-lg navbar-premium sticky-top">
