@@ -39,10 +39,10 @@ Route::middleware('auth')->group(function () {
 
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon');
+    Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon')->middleware('throttle:checkout');
     Route::delete('/checkout/coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon');
-    Route::post('/checkout/shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculateShipping');
-    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/checkout/shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculateShipping')->middleware('throttle:checkout');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process')->middleware('throttle:checkout');
 
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
