@@ -71,42 +71,38 @@ class Order extends Model
     /**
      * Update order status and manage tracking dates robustly.
      */
-    public function updateStatusAndTracking(string $status, ?string $processingDate = null, ?string $shippedDate = null, ?string $deliveredDate = null)
+    public function updateStatusAndTracking(string $status, $processingDate = null, $shippedDate = null, $deliveredDate = null)
     {
         $oldStatus = $this->status;
-        $updates = ['status' => $status];
+        
+        $updates = [
+            'status' => $status,
+            'processing_date' => $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date,
+            'shipped_date' => $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date,
+            'delivered_date' => $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date,
+        ];
 
-        // Ensure dates are parsed correctly
-        try {
-            $proc = $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date;
-            $ship = $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date;
-            $del = $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date;
-        } catch (\Exception $e) {
-            \Log::error("Order Date Parsing Error: " . $e->getMessage());
-            // Fallback to existing dates if parsing fails
-            $proc = $this->processing_date;
-            $ship = $this->shipped_date;
-            $del = $this->delivered_date;
+        // Ensure dates are not invalid early years (0026 vs 2026)
+        foreach(['processing_date', 'shipped_date', 'delivered_date'] as $dateField) {
+            if ($updates[$dateField] && $updates[$dateField]->year < 1000) {
+                $updates[$dateField] = $updates[$dateField]->addYears(2000);
+            }
         }
 
-        // Auto-fill preceding dates if status is advanced
-        if ($status === 'processing' || $status === 'shipped' || $status === 'delivered') {
-            $proc = $proc ?: now();
-        }
-        if ($status === 'shipped' || $status === 'delivered') {
-            $ship = $ship ?: now();
+        // Auto-fill logic
+        if ($status === 'processing' && !$updates['processing_date']) $updates['processing_date'] = now();
+        if ($status === 'shipped') {
+            if (!$updates['processing_date']) $updates['processing_date'] = now();
+            if (!$updates['shipped_date']) $updates['shipped_date'] = now();
         }
         if ($status === 'delivered') {
-            $del = $del ?: now();
+            if (!$updates['processing_date']) $updates['processing_date'] = now();
+            if (!$updates['shipped_date']) $updates['shipped_date'] = now();
+            if (!$updates['delivered_date']) $updates['delivered_date'] = now();
         }
-
-        $updates['processing_date'] = $proc;
-        $updates['shipped_date'] = $ship;
-        $updates['delivered_date'] = $del;
 
         $this->update($updates);
 
-        // Restore stock if cancelled
         if ($status === 'cancelled' && $oldStatus !== 'cancelled') {
             $this->restoreStock();
         }
