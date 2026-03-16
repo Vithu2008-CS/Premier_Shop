@@ -52,67 +52,7 @@
 
                     <div class="row g-4 stagger-children">
                         @forelse($products as $index => $product)
-                            <div class="col-6 col-md-4 fade-up delay-{{ ($index % 6) + 1 }}">
-                                <div class="product-card position-relative">
-                                    @auth
-                                        @php
-                                            $inWishlist = \App\Models\UserItem::where('user_id', auth()->id())->where('product_id', $product->id)->where('type', 'wishlist')->exists();
-                                        @endphp
-                                        <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST" class="position-absolute" style="top:10px; right:10px; z-index:10;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:35px;height:35px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
-                                                <i class="bi bi-heart{{ $inWishlist ? '-fill text-danger' : '' }} fs-6"></i>
-                                            </button>
-                                        </form>
-                                    @endauth
-                                    @if($product->is_age_restricted)
-                                        <span class="product-badge bg-danger">🔞 16+</span>
-                                    @elseif($product->created_at->diffInDays(now()) < 7)
-                                        <span class="product-badge bg-success">NEW</span>
-                                    @endif
-                                    <div class="product-img-wrap">
-                                        @if($product->images && count($product->images) > 0)
-                                            <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy">
-                                        @else
-                                            <div class="d-flex align-items-center justify-content-center h-100"
-                                                style="background:linear-gradient(135deg,#f0f0f5,#e8e8f0);">
-                                                <i class="bi bi-image text-muted" style="font-size:3rem;"></i>
-                                            </div>
-                                        @endif
-                                        <div class="product-overlay">
-                                            <a href="{{ route('products.show', $product->slug) }}"
-                                                class="btn btn-light btn-sm"><i class="bi bi-eye"></i></a>
-                                            <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button class="btn btn-primary btn-sm btn-add-to-cart" title="Add to Cart"><i
-                                                        class="bi bi-bag-plus"></i></button>
-                                            </form>
-                                            <form action="{{ route('cart.buyNow') }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <button class="btn btn-sm text-white" style="background: linear-gradient(135deg, #0ba360, #3cba92); border: none;" title="Buy Now"><i
-                                                        class="bi bi-lightning-charge"></i></button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="product-body">
-                                        <div class="product-category">{{ $product->category?->name }}</div>
-                                        <h5 class="product-title">
-                                            <a href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a>
-                                        </h5>
-                                        <div class="product-price">£{{ number_format($product->price, 2) }}</div>
-                                    </div>
-                                    <div class="product-footer">
-                                        <div class="stock-indicator">
-                                            <span class="dot {{ $product->stock > 0 ? 'dot-green' : 'dot-red' }}"></span>
-                                            {{ $product->stock > 0 ? 'In Stock' : 'Out of Stock' }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            @include('partials.product_card', ['delay' => ($index % 6) + 1])
                         @empty
                             <div class="col-12 text-center py-5">
                                 <i class="bi bi-search text-muted" style="font-size:4rem;"></i>

@@ -31,55 +31,55 @@
 </div>
 
 {{-- Stat Cards --}}
-<div class="row g-4 mb-4">
-    <div class="col-sm-6 col-xl-3">
+<div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
         <a href="{{ route('admin.products.index') }}" class="stat-card-link">
-            <div class="stat-card bg-gradient-primary">
+            <div class="stat-card bg-gradient-primary h-100 p-3 p-md-4">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="stat-number">{{ $stats['totalProducts'] }}</div>
-                        <div class="stat-label">Total Products</div>
+                        <div class="stat-number fs-4 fs-md-2">{{ $stats['totalProducts'] }}</div>
+                        <div class="stat-label small">Total Products</div>
                     </div>
-                    <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                    <div class="stat-icon d-none d-md-block"><i class="bi bi-box-seam"></i></div>
                 </div>
             </div>
         </a>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <a href="{{ route('admin.orders.index') }}" class="stat-card-link">
-            <div class="stat-card" style="background:linear-gradient(135deg,#00B894,#00CEC9);">
+            <div class="stat-card h-100 p-3 p-md-4" style="background:linear-gradient(135deg,#00B894,#00CEC9);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="stat-number">{{ $stats['totalOrders'] }}</div>
-                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-number fs-4 fs-md-2">{{ $stats['totalOrders'] }}</div>
+                        <div class="stat-label small">Total Orders</div>
                     </div>
-                    <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+                    <div class="stat-icon d-none d-md-block"><i class="bi bi-receipt"></i></div>
                 </div>
             </div>
         </a>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <a href="{{ route('admin.reports.index') }}" class="stat-card-link">
-            <div class="stat-card" style="background:linear-gradient(135deg,#0984E3,#74B9FF);">
+            <div class="stat-card h-100 p-3 p-md-4" style="background:linear-gradient(135deg,#0984E3,#74B9FF);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="stat-number">£{{ number_format($stats['totalRevenue'], 0) }}</div>
-                        <div class="stat-label">Revenue</div>
+                        <div class="stat-number fs-4 fs-md-2">£{{ number_format($stats['totalRevenue'], 0) }}</div>
+                        <div class="stat-label small">Revenue</div>
                     </div>
-                    <div class="stat-icon"><i class="bi bi-currency-pound"></i></div>
+                    <div class="stat-icon d-none d-md-block"><i class="bi bi-currency-pound"></i></div>
                 </div>
             </div>
         </a>
     </div>
-    <div class="col-sm-6 col-xl-3">
+    <div class="col-6 col-xl-3">
         <a href="{{ route('admin.customers.index') }}" class="stat-card-link">
-            <div class="stat-card" style="background:linear-gradient(135deg,#E17055,#FDCB6E);">
+            <div class="stat-card h-100 p-3 p-md-4" style="background:linear-gradient(135deg,#E17055,#FDCB6E);">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="stat-number">{{ $stats['totalCustomers'] }}</div>
-                        <div class="stat-label">Customers</div>
+                        <div class="stat-number fs-4 fs-md-2">{{ $stats['totalCustomers'] }}</div>
+                        <div class="stat-label small">Customers</div>
                     </div>
-                    <div class="stat-icon"><i class="bi bi-people"></i></div>
+                    <div class="stat-icon d-none d-md-block"><i class="bi bi-people"></i></div>
                 </div>
             </div>
         </a>

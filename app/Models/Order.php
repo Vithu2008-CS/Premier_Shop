@@ -77,9 +77,17 @@ class Order extends Model
         $updates = ['status' => $status];
 
         // Ensure dates are parsed correctly
-        $proc = $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date;
-        $ship = $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date;
-        $del = $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date;
+        try {
+            $proc = $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date;
+            $ship = $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date;
+            $del = $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date;
+        } catch (\Exception $e) {
+            \Log::error("Order Date Parsing Error: " . $e->getMessage());
+            // Fallback to existing dates if parsing fails
+            $proc = $this->processing_date;
+            $ship = $this->shipped_date;
+            $del = $this->delivered_date;
+        }
 
         // Auto-fill preceding dates if status is advanced
         if ($status === 'processing' || $status === 'shipped' || $status === 'delivered') {

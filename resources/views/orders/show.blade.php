@@ -3,12 +3,11 @@
 
 @section('content')
 <div class="container section-padding">
-    <nav aria-label="breadcrumb" class="mb-5 reveal-3d">
-        <ol class="breadcrumb bg-light p-3 rounded-pill shadow-sm px-4">
-            <li class="breadcrumb-item"><a href="{{ route('orders.index') }}" class="text-decoration-none text-primary fw-bold">My Orders</a></li>
-            <li class="breadcrumb-item active fw-bold text-muted">{{ $order->order_number }}</li>
-        </ol>
-    </nav>
+    <div class="mb-4 reveal-3d">
+        <a href="{{ route('orders.index') }}" class="btn btn-link text-decoration-none text-primary ps-0">
+            <i class="bi bi-arrow-left me-2"></i>Back to Orders
+        </a>
+    </div>
 
     <div class="row g-5">
         {{-- Left Column: Order Items & Details --}}
@@ -67,46 +66,42 @@
             </div>
 
             <div class="row g-4 mt-1">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius:20px;">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-3 d-flex align-items-center">
-                                <i class="bi bi-geo-alt text-primary me-2"></i> Shipping Address
-                            </h5>
-                            <div class="p-3 bg-light rounded-3">
-                                <p class="mb-0 fw-bold">{{ auth()->user()->name }}</p>
-                                <p class="mb-0 text-muted">{{ $order->shipping_address['address_line'] ?? 'N/A' }}</p>
-                                <p class="mb-0 text-muted">{{ $order->shipping_address['city'] ?? '' }}</p>
-                                <p class="mt-2 mb-0"><i class="bi bi-telephone small me-1"></i> {{ $order->shipping_address['phone'] ?? 'N/A' }}</p>
-                            </div>
+                <div class="col-md-6 col-lg-5">
+                    <div class="h-100">
+                        <h6 class="fw-bold mb-3 text-uppercase small letter-spacing-1">
+                            <i class="bi bi-geo-alt-fill text-primary me-2"></i>Delivery To
+                        </h6>
+                        <div class="p-3 bg-light rounded-4 border">
+                            <p class="mb-1 fw-bold small">{{ auth()->user()->name }}</p>
+                            <p class="mb-0 text-muted small">{{ $order->shipping_address['address_line'] ?? 'N/A' }}</p>
+                            <p class="mb-0 text-muted small">{{ $order->shipping_address['city'] ?? '' }}</p>
+                            <p class="mt-2 mb-0 small text-primary"><i class="bi bi-telephone-fill me-1"></i> {{ $order->shipping_address['phone'] ?? 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius:20px;">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-3 d-flex align-items-center">
-                                <i class="bi bi-credit-card text-primary me-2"></i> Payment Summary
-                            </h5>
-                            <div class="order-summary-list">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">Subtotal</span>
-                                    <span class="fw-bold">£{{ number_format($order->subtotal, 2) }}</span>
-                                </div>
-                                @if($order->discount_amount > 0)
-                                <div class="d-flex justify-content-between mb-2 text-success">
-                                    <span>Discount ({{ $order->coupon_code }})</span>
-                                    <span class="fw-bold">-£{{ number_format($order->discount_amount, 2) }}</span>
-                                </div>
-                                @endif
-                                <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
-                                    <span class="text-muted">Shipping Fee</span>
-                                    <span class="fw-bold">£{{ number_format($order->shipping_cost, 2) }}</span>
-                                </div>
-                                <div class="d-flex justify-content-between pt-1">
-                                    <span class="fw-bold fs-5">Total Paid</span>
-                                    <span class="fw-bold fs-5 text-primary gradient-text">£{{ number_format($order->total, 2) }}</span>
-                                </div>
+                <div class="col-md-6 col-lg-7">
+                    <div class="h-100">
+                        <h6 class="fw-bold mb-3 text-uppercase small letter-spacing-1">
+                            <i class="bi bi-receipt-cutoff text-primary me-2"></i>Summary
+                        </h6>
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Subtotal</span>
+                                <span class="fw-bold small">£{{ number_format($order->subtotal, 2) }}</span>
+                            </div>
+                            @if($order->discount_amount > 0)
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span class="small">Discount</span>
+                                <span class="fw-bold small">-£{{ number_format($order->discount_amount, 2) }}</span>
+                            </div>
+                            @endif
+                            <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+                                <span class="text-muted small">Shipping</span>
+                                <span class="fw-bold small">£{{ number_format($order->shipping_cost, 2) }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between pt-1">
+                                <span class="fw-bold text-primary">Total Paid</span>
+                                <span class="fw-bold text-primary">£{{ number_format($order->total, 2) }}</span>
                             </div>
                         </div>
                     </div>

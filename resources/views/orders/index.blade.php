@@ -3,16 +3,9 @@
 
 @section('content')
 <div class="container section-padding">
-    <div class="d-flex align-items-center mb-5 reveal-3d">
-        <div>
-            <h2 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">My <span class="gradient-text">Orders</span></h2>
-            <p class="text-muted mb-0">Track and manage your recent purchases</p>
-        </div>
-        <div class="ms-auto">
-            <a href="{{ route('products.index') }}" class="btn btn-outline-primary rounded-pill px-4 shadow-sm hover-up">
-                <i class="bi bi-plus-lg me-2"></i>New Order
-            </a>
-        </div>
+    <div class="mb-5 reveal-3d">
+        <h2 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">My <span class="gradient-text">Orders</span></h2>
+        <p class="text-muted mb-0">Track and manage your recent purchases</p>
     </div>
 
     @if($orders->count() > 0)
@@ -20,41 +13,38 @@
             @foreach($orders as $order)
                 <div class="col-12 fade-up">
                     <div class="order-card h-100">
-                        <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="bg-primary bg-opacity-10 p-2 rounded-3">
-                                    <i class="bi bi-hash text-primary fs-5"></i>
-                                </div>
+                        <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-hash text-primary fs-5"></i>
                                 <div>
                                     <h6 class="fw-bold mb-0">{{ $order->order_number }}</h6>
-                                    <small class="text-muted">{{ $order->created_at->format('d M Y, H:i') }}</small>
+                                    <small class="text-muted">{{ $order->created_at->format('d M Y') }}</small>
                                 </div>
                             </div>
                             
                             <div class="d-flex align-items-center gap-3 ms-md-auto">
                                 <div class="text-md-end text-start order-1 order-md-0">
-                                    <div class="text-muted small">Total Amount</div>
                                     <h5 class="fw-bold text-primary mb-0">£{{ number_format($order->total, 2) }}</h5>
                                 </div>
                                 
                                 @php
                                     $statusIcons = [
-                                        'pending' => 'bi-clock-history',
-                                        'processing' => 'bi-gear-wide-connected',
+                                        'pending' => 'bi-clock',
+                                        'processing' => 'bi-gear',
                                         'shipped' => 'bi-truck',
-                                        'delivered' => 'bi-check2-circle',
+                                        'delivered' => 'bi-check2',
                                         'cancelled' => 'bi-x-circle'
                                     ];
                                     $statusClass = $order->status;
                                 @endphp
-                                <span class="status-badge status-{{ $statusClass }}">
+                                <span class="status-badge status-{{ $statusClass }} py-1 px-3">
                                     <i class="bi {{ $statusIcons[$order->status] ?? 'bi-info-circle' }}"></i>
                                     {{ ucfirst($order->status) }}
                                 </span>
                             </div>
                         </div>
                         
-                        <div class="p-4">
+                        <div class="p-3">
                             <div class="row align-items-center">
                                 <div class="col-lg-8 border-end-lg mb-4 mb-lg-0">
                                     <div class="d-flex flex-wrap gap-2">

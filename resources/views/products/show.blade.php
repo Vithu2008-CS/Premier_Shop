@@ -19,30 +19,34 @@
         <div class="row g-5">
             {{-- Product Images --}}
             <div class="col-lg-6 reveal-slide-left">
-                <div class="card border-0" style="border-radius:20px;overflow:hidden;">
+                <div class="product-gallery-wrapper">
                     @if($product->images && count($product->images) > 0)
-                        <div id="productCarousel" class="carousel slide" data-bs-ride="false">
+                        <div id="productCarousel" class="carousel slide carousel-fade shadow-sm rounded-4 overflow-hidden bg-white" data-bs-ride="false">
                             <div class="carousel-inner">
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                                        <img src="{{ $img }}" class="d-block w-100" alt="{{ $product->name }}" style="aspect-ratio:1;object-fit:cover;">
+                                        <div class="product-img-main-wrap">
+                                            <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit:contain;">
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
                             @if(count($product->images) > 1)
                                 <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon"></span>
+                                    <span class="carousel-control-prev-icon bg-dark rounded-circle" style="width:30px;height:30px;"></span>
                                 </button>
                                 <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon"></span>
+                                    <span class="carousel-control-next-icon bg-dark rounded-circle" style="width:30px;height:30px;"></span>
                                 </button>
                             @endif
                         </div>
                         {{-- Thumbnail Strip --}}
                         @if(count($product->images) > 1)
-                            <div class="d-flex gap-2 mt-3">
+                            <div class="d-flex gap-2 mt-3 overflow-auto pb-2 custom-scrollbar">
                                 @foreach($product->images as $i => $img)
-                                    <img src="{{ $img }}" class="rounded-3" style="width:70px;height:70px;object-fit:cover;cursor:pointer;opacity:{{ $i === 0 ? '1' : '0.5' }};border:2px solid {{ $i === 0 ? '#6C5CE7' : 'transparent' }};" onclick="document.querySelector('#productCarousel').querySelectorAll('.carousel-item')[{{ $i }}].classList.add('active'); bootstrap.Carousel.getOrCreateInstance(document.querySelector('#productCarousel')).to({{ $i }});">
+                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" onclick="bootstrap.Carousel.getOrCreateInstance('#productCarousel').to({{ $i }})">
+                                        <img src="{{ $img }}" class="rounded-3" alt="Thumb {{ $i + 1 }}">
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
@@ -122,29 +126,31 @@
 
                 {{-- Add to Cart --}}
                 @if($product->stock > 0)
-                    <form action="{{ route('cart.add') }}" method="POST" class="ajax-form reveal-fade delay-2">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <div class="qty-stepper d-flex align-items-center border rounded-pill p-1">
-                                    <button type="button" class="btn btn-light qty-minus rounded-circle p-0" style="width:36px;height:36px;">−</button>
-                                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="form-control text-center border-0 bg-transparent fw-bold" style="width:50px;">
-                                    <button type="button" class="btn btn-light qty-plus rounded-circle p-0" style="width:36px;height:36px;">+</button>
+                    <div class="desktop-action-bar reveal-fade delay-2">
+                        <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <div class="qty-stepper d-flex align-items-center border rounded-pill p-1 bg-light">
+                                        <button type="button" class="btn btn-white qty-minus shadow-sm rounded-circle p-0" style="width:36px;height:36px;">−</button>
+                                        <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="form-control text-center border-0 bg-transparent fw-bold" style="width:50px;" readonly>
+                                        <button type="button" class="btn btn-white qty-plus shadow-sm rounded-circle p-0" style="width:36px;height:36px;">+</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-add-cart w-100 h-100 py-3 rounded-pill shadow-sm">
+                                        <i class="bi bi-bag-plus-fill me-2"></i> Add to Cart
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" formaction="{{ route('cart.buyNow') }}" class="btn btn-primary w-100 h-100 py-3 rounded-pill shadow-sm" style="background: var(--ps-gradient); border: none;">
+                                        <i class="bi bi-lightning-charge-fill me-2"></i> Buy Now
+                                    </button>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-add-cart w-100 h-100 py-3 rounded-pill shadow-sm">
-                                    <i class="bi bi-bag-plus me-2"></i> Add
-                                </button>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" formaction="{{ route('cart.buyNow') }}" class="btn btn-success w-100 h-100 py-3 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #0ba360, #3cba92); border: none;">
-                                    <i class="bi bi-lightning-charge me-2"></i> Buy Now
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 @else
                     <button class="btn btn-secondary btn-lg w-100 mb-4" disabled style="border-radius:50px;">
                         <i class="bi bi-x-circle me-2"></i> Out of Stock
@@ -265,31 +271,45 @@
 
         {{-- Related Products --}}
         @if(isset($relatedProducts) && $relatedProducts->count() > 0)
-            <div class="mt-5 pt-5 border-top">
-                <h3 class="section-title fade-up">You May Also <span class="gradient-text">Like</span></h3>
-                <div class="row g-4 mt-2 stagger-children">
+            <div class="mt-5 pt-5 border-top reveal-3d">
+                <h3 class="section-title fade-up mb-4">You May Also <span class="gradient-text">Like</span></h3>
+                <div class="row g-4 stagger-children">
                     @foreach($relatedProducts as $i => $rel)
-                        <div class="col-6 col-md-3 fade-up delay-{{ $i + 1 }}">
-                            <div class="product-card">
-                                <div class="product-img-wrap">
-                                    @if($rel->images && count($rel->images) > 0)
-                                        <img src="{{ $rel->images[0] }}" alt="{{ $rel->name }}" loading="lazy">
-                                    @else
-                                        <div class="d-flex align-items-center justify-content-center h-100" style="background:#f0f0f5;">
-                                            <i class="bi bi-image text-muted" style="font-size:2rem;"></i>
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="product-body">
-                                    <h5 class="product-title"><a href="{{ route('products.show', $rel->slug) }}">{{ $rel->name }}</a></h5>
-                                    <div class="product-price">£{{ number_format($rel->price, 2) }}</div>
-                                </div>
-                            </div>
-                        </div>
+                        @include('partials.product_card', ['product' => $rel, 'delay' => ($i % 4) + 1])
                     @endforeach
                 </div>
             </div>
         @endif
     </div>
+
+    {{-- Mobile Sticky Action Bar --}}
+    @if($product->stock > 0)
+        <div class="mobile-sticky-action-bar d-md-none glass-card shadow-lg">
+            <div class="container d-flex align-items-center justify-content-between py-2 px-3">
+                <div class="product-info-minimal">
+                    <div class="fw-bold text-dark truncate-1" style="font-size: 0.85rem; max-width: 140px;">{{ $product->name }}</div>
+                    <div class="text-primary fw-bold" style="font-size: 1rem;">£{{ number_format($product->price, 2) }}</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill p-2" style="width:42px; height:42px;">
+                            <i class="bi bi-bag-plus-fill fs-5"></i>
+                        </button>
+                    </form>
+                    <form action="{{ route('cart.buyNow') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" style="background: var(--ps-gradient); border: none; height: 42px;">
+                            Buy Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 </section>
 @endsection

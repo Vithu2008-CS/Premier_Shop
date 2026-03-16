@@ -36,15 +36,24 @@
                             @foreach($items as $item)
                                 <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" id="cart-item-{{ $item->id }}" data-price="{{ $item->product->price }}" data-id="{{ $item->id }}">
                                     <div class="card-body p-3">
+                                        <div class="d-flex d-md-none align-items-center mb-3">
+                                            <div class="form-check me-2">
+                                                <input class="form-check-input item-checkbox border-primary" type="checkbox" name="items[]" value="{{ $item->id }}" checked>
+                                            </div>
+                                            <h6 class="fw-bold mb-0 truncate-1">
+                                                <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-dark">{{ $item->product->name }}</a>
+                                            </h6>
+                                        </div>
+
                                         <div class="row align-items-center g-3">
-                                            {{-- Checkbox --}}
-                                            <div class="col-auto">
+                                            {{-- Checkbox (Desktop only) --}}
+                                            <div class="col-auto d-none d-md-block">
                                                 <div class="form-check">
                                                     <input class="form-check-input item-checkbox border-primary" type="checkbox" name="items[]" value="{{ $item->id }}" checked>
                                                 </div>
                                             </div>
                                             {{-- Image --}}
-                                            <div class="col-3 col-md-2">
+                                            <div class="col-4 col-md-2">
                                                 <div class="rounded-3 overflow-hidden shadow-sm" style="aspect-ratio:1;">
                                                     @if($item->product->images && count($item->product->images) > 0)
                                                         <img src="{{ $item->product->images[0] }}" class="w-100 h-100" style="object-fit:cover;" alt="{{ $item->product->name }}">
@@ -56,29 +65,35 @@
                                                 </div>
                                             </div>
                                             {{-- Details --}}
-                                            <div class="col-7 col-md-3">
-                                                <h6 class="fw-bold mb-1">
-                                                    <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-dark">{{ $item->product->name }}</a>
-                                                </h6>
-                                                <p class="text-muted small mb-0">{{ $item->product->category?->name }}</p>
-                                                <div class="fw-bold text-primary mt-1">£{{ number_format($item->product->price, 2) }}</div>
+                                            <div class="col-8 col-md-3">
+                                                <div class="d-none d-md-block">
+                                                    <h6 class="fw-bold mb-1">
+                                                        <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-dark">{{ $item->product->name }}</a>
+                                                    </h6>
+                                                    <p class="text-muted small mb-0">{{ $item->product->category?->name }}</p>
+                                                </div>
+                                                <div class="d-md-none">
+                                                    <p class="text-muted small mb-1">{{ $item->product->category?->name }}</p>
+                                                    <div class="fw-bold text-primary">£{{ number_format($item->product->price, 2) }}</div>
+                                                </div>
+                                                <div class="d-none d-md-block fw-bold text-primary mt-1">£{{ number_format($item->product->price, 2) }}</div>
                                             </div>
                                             {{-- Quantity --}}
-                                            <div class="col-6 col-md-3">
-                                                <div class="mb-1 small fw-bold text-muted">Quantity:</div>
-                                                <div class="qty-stepper d-flex align-items-center border rounded-3 bg-white">
-                                                    <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-2" data-item-id="{{ $item->id }}">−</button>
-                                                    <input type="number" id="qty-{{ $item->id }}" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control form-control-sm text-center border-0 qty-input fw-bold" style="width:45px;" readonly>
-                                                    <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-2" data-item-id="{{ $item->id }}">+</button>
+                                            <div class="col-7 col-md-3">
+                                                <div class="mb-1 small fw-bold text-muted d-none d-md-block">Quantity:</div>
+                                                <div class="qty-stepper d-flex align-items-center border rounded-3 bg-white shadow-sm p-1">
+                                                    <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 40px; border-radius: 8px;">−</button>
+                                                    <input type="number" id="qty-{{ $item->id }}" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control text-center border-0 qty-input fw-bold" style="width:50px; font-size: 1.1rem;" readonly>
+                                                    <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 40px; border-radius: 8px;">+</button>
                                                 </div>
-                                                <small class="text-muted" style="font-size: 0.7rem;">Stock: {{ $item->product->stock }}</small>
+                                                <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Stock: {{ $item->product->stock }}</small>
                                             </div>
                                             {{-- Line Total + Remove --}}
-                                            <div class="col-6 col-md-2 text-end">
-                                                <div class="small fw-bold text-muted mb-1">Item Total:</div>
-                                                <div class="fw-bold mb-2 item-line-total text-dark" id="line-total-{{ $item->id }}" style="font-size:1.1rem;">£{{ number_format($item->line_total, 2) }}</div>
-                                                <button type="button" class="btn btn-link text-danger p-0 text-decoration-none small remove-item-btn" data-item-id="{{ $item->id }}">
-                                                    <i class="bi bi-trash3 me-1"></i>Remove
+                                            <div class="col-5 col-md-2 text-end">
+                                                <div class="small fw-bold text-muted mb-1 d-none d-md-block">Item Total:</div>
+                                                <div class="fw-bold mb-2 item-line-total text-dark" id="line-total-{{ $item->id }}" style="font-size:1.15rem;">£{{ number_format($item->line_total, 2) }}</div>
+                                                <button type="button" class="btn btn-link text-danger p-0 text-decoration-none small remove-item-btn fw-bold" data-item-id="{{ $item->id }}">
+                                                    <i class="bi bi-trash3-fill me-1"></i>Remove
                                                 </button>
                                             </div>
                                         </div>

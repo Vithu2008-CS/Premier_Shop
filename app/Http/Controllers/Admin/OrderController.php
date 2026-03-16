@@ -50,9 +50,9 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
-            'processing_date' => 'nullable|date',
-            'shipped_date' => 'nullable|date',
-            'delivered_date' => 'nullable|date',
+            'processing_date' => 'nullable|date|after:2020-01-01|before:2050-01-01',
+            'shipped_date' => 'nullable|date|after:2020-01-01|before:2050-01-01',
+            'delivered_date' => 'nullable|date|after:2020-01-01|before:2050-01-01',
         ]);
 
         $statusChanged = $order->updateStatusAndTracking(

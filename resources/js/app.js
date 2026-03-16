@@ -158,8 +158,44 @@ function initSearch(inputId, suggestionsId) {
 
 // Init desktop and mobile search
 initSearch('searchInput', 'searchSuggestions');
-initSearch('mobileSearchInput', 'mobileSearchSuggestions');
+if (document.getElementById('mobileSearchInput')) {
+    initSearch('mobileSearchInput', 'mobileSearchSuggestions');
+}
 
+// Category Floating Box Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const trigger = document.getElementById('categoryMenuTrigger');
+    const menu = document.getElementById('categoryMegaMenu');
+    const backdrop = document.getElementById('menuBackdrop');
+
+    if (trigger && menu) {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.classList.toggle('show');
+            trigger.classList.toggle('active');
+            if (backdrop) backdrop.classList.toggle('show');
+        });
+
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                menu.classList.remove('show');
+                trigger.classList.remove('active');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                menu.classList.remove('show');
+                trigger.classList.remove('active');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+        });
+    }
+});
 // ============================================================
 // Auto-dismiss Alerts
 // ============================================================
