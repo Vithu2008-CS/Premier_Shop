@@ -22,7 +22,7 @@ class ProductController extends Controller
 
         // Search
         if ($request->has('search') && $request->search) {
-            $query->where('name', 'ilike', '%' . $request->search . '%');
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
 
         // Sort
@@ -72,26 +72,28 @@ class ProductController extends Controller
             return response()->json([]);
         }
 
-        $products = Product::with('category')->where('is_active', true)
-            ->where(function ($query) use ($q) {
-                $query->where('name', 'ilike', '%' . $q . '%')
-                      ->orWhereHas('category', function ($cq) use ($q) {
-                          $cq->where('name', 'ilike', '%' . $q . '%');
-                      });
-            })
-            ->limit(8)
-            ->get(['id', 'name', 'slug', 'price', 'images', 'category_id'])
-            ->map(function ($p) {
-                return [
-                    'name' => $p->name,
-                    'slug' => $p->slug,
-                    'price' => '£' . number_format($p->price, 2),
-                    'image' => $p->first_image,
-                    'category' => $p->category?->name,
-                    'url' => route('products.show', $p->slug),
-                ];
-            });
-
-        return response()->json($products);
+        // Cache suggestions for 5 minutes for identical queries
+        return cache()->remember("search_suggest_{$q}", 300, function () use ($q) {
+            return Product::with('category:id,name')
+                ->where('is_active', true)
+                ->where(function ($query) use ($q) {
+                    $query->where('name', 'like', '%' . $q . '%')
+                          ->orWhereHas('category', function ($cq) use ($q) {
+                              $cq->where('name', 'like', '%' . $q . '%');
+                          });
+                })
+                ->limit(6)
+                ->get(['id', 'name', 'slug', 'price', 'images', 'category_id'])
+                ->map(function ($p) {
+                    return [
+                        'name' => $p->name,
+                        'slug' => $p->slug,
+                        'price' => '£' . number_format($p->price, 2),
+                        'image' => $p->first_image,
+                        'category' => $p->category?->name,
+                        'url' => route('products.show', $p->slug),
+                    ];
+                });
+        });
     }
 }

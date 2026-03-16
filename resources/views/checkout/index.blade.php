@@ -2,8 +2,9 @@
 @section('title', 'Checkout - Premier Shop')
 
 @section('content')
-<div class="container py-5">
-    <h2 class="fw-bold mb-4"><i class="bi bi-bag-check me-2"></i>Checkout</h2>
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-title mb-4 reveal-3d"><i class="bi bi-bag-check me-2"></i>Check<span class="gradient-text">out</span></h2>
     <div class="row g-4">
         <div class="col-lg-7 reveal-slide-left">
             <div class="card shadow-sm mb-4">

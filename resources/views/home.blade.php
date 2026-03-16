@@ -100,14 +100,14 @@
         .slider-image-wrapper {
             position: relative;
             width: 100%;
-            height: 45vh; /* Controlled height for mobile */
+            height: clamp(300px, 45vh, 600px); /* Controlled height for mobile */
             display: block;
             overflow: hidden;
             background-color: #1a1d24; /* Fallback for networks */
         }
         .hero-slider-img {
             width: 100%;
-            height: 45vh; /* Match container */
+            height: clamp(300px, 45vh, 600px); /* Match container */
             object-fit: cover; /* Prevents squishing */
             display: block; 
             transform: scale(1); /* stable scale for mobile */
@@ -203,7 +203,7 @@
 
     {{-- Offers Banner --}}
     @if(isset($offerProducts) && $offerProducts->count() > 0)
-        <section class="py-5 reveal-3d">
+        <section class="section-padding reveal-3d">
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -267,7 +267,7 @@
 
     {{-- Popular Products --}}
     @if(isset($popularProducts) && $popularProducts->count() > 0)
-    <section class="py-5 bg-light reveal-3d">
+    <section class="section-padding bg-light reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title"><i class="bi bi-star-fill text-warning me-2"></i>Most <span class="gradient-text">Popular</span></h2>
@@ -284,7 +284,7 @@
 
     {{-- New Arrivals --}}
     @if(isset($newProducts) && $newProducts->count() > 0)
-    <section class="py-5 reveal-3d">
+    <section class="section-padding reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title"><i class="bi bi-rocket-takeoff-fill text-primary me-2"></i>New <span class="text-primary">Arrivals</span></h2>
@@ -301,7 +301,7 @@
 
     {{-- Random Products --}}
     @if(isset($randomProducts) && $randomProducts->count() > 0)
-    <section class="py-5 bg-light reveal-3d">
+    <section class="section-padding bg-light reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title">Discover <span class="gradient-text">More</span></h2>

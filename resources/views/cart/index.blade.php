@@ -2,7 +2,7 @@
 @section('title', 'Shopping Cart — Premier Shop')
 
 @section('content')
-<section class="py-5">
+<section class="section-padding">
     <div class="container">
         <h2 class="section-title mb-4 reveal-3d"><i class="bi bi-bag me-2"></i>Shopping <span class="gradient-text">Cart</span></h2>
 

@@ -137,20 +137,38 @@
     {{-- Category Mega Menu --}}
     @if(!auth()->user()?->isDriver())
     <div class="collapse category-mega-menu sticky-top" id="categoryMegaMenu" style="top: 72px; z-index: 1030;">
-        <div class="container">
-            <div class="mega-cat-grid stagger-children tilt-3d">
-                @foreach(\App\Models\Category::withCount('products')->get() as $cat)
-                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}"
-                        class="mega-cat-card {{ request('category') == $cat->slug ? 'active' : '' }}">
-                        @if($cat->image)
-                            <img src="{{ $cat->image }}" alt="{{ $cat->name }}"
-                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 12px; margin-bottom: 10px;">
-                        @else
-                            <i class="bi bi-tag"></i>
-                        @endif
-                        <h6>{{ $cat->name }}</h6>
-                        <small>{{ $cat->products_count }} Items</small>
-                    </a>
+        <div class="container py-4">
+            <div class="row g-4 stagger-children">
+                @foreach($globalCategories as $cat)
+                    <div class="col-6 col-md-4 col-lg-3 fade-up">
+                        <div class="category-list-group">
+                            <h6 class="fw-bold mb-3 border-bottom pb-2">
+                                <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-dark text-decoration-none hover-primary d-flex align-items-center">
+                                    @if($cat->image)
+                                        <img src="{{ $cat->image }}" alt="" style="width:20px;height:20px;object-fit:cover;margin-right:8px;border-radius:4px;">
+                                    @endif
+                                    {{ $cat->name }}
+                                </a>
+                            </h6>
+                            <ul class="list-unstyled ps-0" style="font-size: 0.85rem;">
+                                @php
+                                    $topProducts = $cat->products()->where('is_active', true)->take(5)->get();
+                                @endphp
+                                @foreach($topProducts as $prod)
+                                    <li class="mb-2">
+                                        <a href="{{ route('products.show', $prod->slug) }}" class="text-muted text-decoration-none hover-link">
+                                            {{ Str::limit($prod->name, 28) }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                                <li class="mt-2">
+                                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-primary text-decoration-none fw-bold small">
+                                        View all results <i class="bi bi-chevron-right small"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -329,12 +347,12 @@
                         @endforeach
                     </ul>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0 text-md-start text-center">
                     <h6 class="footer-heading">Get In Touch</h6>
-                    <ul class="footer-links">
-                        <li><i class="bi bi-geo-alt me-2 text-primary"></i>London, United Kingdom</li>
-                        <li><i class="bi bi-envelope me-2 text-primary"></i>info@premiershop.com</li>
-                        <li><i class="bi bi-telephone me-2 text-primary"></i>+44 770 000 0000</li>
+                    <ul class="footer-links list-unstyled">
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i>London, United Kingdom</li>
+                        <li class="mb-2"><i class="bi bi-envelope me-2 text-primary"></i>info@premiershop.com</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2 text-primary"></i>+44 770 000 0000</li>
                     </ul>
                 </div>
             </div>

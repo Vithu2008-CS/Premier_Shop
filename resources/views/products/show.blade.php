@@ -2,7 +2,7 @@
 @section('title', $product->name . ' — Premier Shop')
 
 @section('content')
-<section class="py-5">
+<section class="section-padding">
     <div class="container">
         {{-- Breadcrumb --}}
         <nav aria-label="breadcrumb" class="mb-4 fade-up">
@@ -85,10 +85,10 @@
                 <h1 class="fw-bold mb-3" style="font-size:2rem;letter-spacing:-0.5px;">{{ $product->name }}</h1>
 
                 {{-- Price --}}
-                <div class="d-flex align-items-baseline gap-3 mb-4">
-                    <span class="gradient-text" style="font-size:2.5rem;font-weight:800;font-family:'Outfit',sans-serif;">£{{ number_format($product->price, 2) }}</span>
-                    @if($product->wholesale_price)
-                        <span class="text-muted" style="text-decoration:line-through;">£{{ number_format($product->wholesale_price, 2) }}</span>
+                <div class="d-flex align-items-baseline gap-3 mb-4 reveal-fade delay-1">
+                    <span class="gradient-text" style="font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -1px;">£{{ number_format($product->price, 2) }}</span>
+                    @if($product->wholesale_price && $product->wholesale_price > $product->price)
+                        <span class="text-muted" style="text-decoration: line-through; font-size: 1.1rem;">£{{ number_format($product->wholesale_price, 2) }}</span>
                     @endif
                 </div>
 
@@ -122,21 +122,27 @@
 
                 {{-- Add to Cart --}}
                 @if($product->stock > 0)
-                    <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
+                    <form action="{{ route('cart.add') }}" method="POST" class="ajax-form reveal-fade delay-2">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <div class="d-flex gap-3 mb-4">
-                            <div class="qty-stepper d-flex align-items-center border rounded-3">
-                                <button type="button" class="btn btn-light qty-minus px-3 border-0">−</button>
-                                <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="form-control text-center border-0" style="width:60px;">
-                                <button type="button" class="btn btn-light qty-plus px-3 border-0">+</button>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="qty-stepper d-flex align-items-center border rounded-pill p-1">
+                                    <button type="button" class="btn btn-light qty-minus rounded-circle p-0" style="width:36px;height:36px;">−</button>
+                                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="form-control text-center border-0 bg-transparent fw-bold" style="width:50px;">
+                                    <button type="button" class="btn btn-light qty-plus rounded-circle p-0" style="width:36px;height:36px;">+</button>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-add-cart flex-grow-1">
-                                <i class="bi bi-bag-plus me-2"></i> Add to Cart
-                            </button>
-                            <button type="submit" formaction="{{ route('cart.buyNow') }}" class="btn btn-success flex-grow-1" style="background: linear-gradient(135deg, #0ba360, #3cba92); border: none;">
-                                <i class="bi bi-lightning-charge me-2"></i> Buy Now
-                            </button>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-add-cart w-100 h-100 py-3 rounded-pill shadow-sm">
+                                    <i class="bi bi-bag-plus me-2"></i> Add
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" formaction="{{ route('cart.buyNow') }}" class="btn btn-success w-100 h-100 py-3 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #0ba360, #3cba92); border: none;">
+                                    <i class="bi bi-lightning-charge me-2"></i> Buy Now
+                                </button>
+                            </div>
                         </div>
                     </form>
                 @else
