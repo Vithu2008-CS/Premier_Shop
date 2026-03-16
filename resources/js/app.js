@@ -82,9 +82,23 @@ if (parallaxElements.length > 0) {
 function initSearch(inputId, suggestionsId) {
     const input = document.getElementById(inputId);
     const suggestions = document.getElementById(suggestionsId);
+    const container = input?.closest('.search-container');
+    const searchBtn = container?.querySelector('.search-btn');
+    
     if (!input || !suggestions) return;
 
     let debounceTimer;
+
+    const performSearch = () => {
+        const query = input.value.trim();
+        if (query) {
+            window.location.href = `/products?search=${encodeURIComponent(query)}`;
+        }
+    };
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', performSearch);
+    }
 
     input.addEventListener('input', function () {
         const query = this.value.trim();
@@ -97,40 +111,40 @@ function initSearch(inputId, suggestionsId) {
         }
 
         debounceTimer = setTimeout(async () => {
+            // Add loading indicator
+            suggestions.innerHTML = '<div class="suggest-loading"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2">Searching...</span></div>';
+            suggestions.classList.add('show');
+
             try {
                 const response = await axios.get('/products/suggest', { params: { q: query } });
                 const data = response.data;
 
                 if (data.length === 0) {
                     suggestions.innerHTML = `<div class="suggest-empty"><i class="bi bi-search me-2"></i>No products found for "${query}"</div>`;
-                    suggestions.classList.add('show');
                     return;
                 }
 
                 suggestions.innerHTML = data.map(item => `
                     <a href="${item.url}" class="suggest-item">
-                        <img src="${item.image}" alt="" class="suggest-img" onerror="this.style.display='none'">
+                        <img src="${item.image}" alt="" class="suggest-img" onerror="this.src='/images/placeholder-product.png'">
                         <div class="suggest-info">
                             <div class="suggest-name">${item.name}</div>
                             <div class="suggest-meta">${item.category || ''} · ${item.price}</div>
                         </div>
                     </a>
                 `).join('');
-                suggestions.classList.add('show');
             } catch (e) {
                 console.error('Search error:', e);
+                suggestions.innerHTML = '<div class="suggest-empty text-danger">Search failed. Please try again.</div>';
             }
-        }, 300);
+        }, 400); // 400ms debounce
     });
 
     // Submit search on Enter
     input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const query = this.value.trim();
-            if (query) {
-                window.location.href = `/products?search=${encodeURIComponent(query)}`;
-            }
+            performSearch();
         }
     });
 
@@ -144,8 +158,44 @@ function initSearch(inputId, suggestionsId) {
 
 // Init desktop and mobile search
 initSearch('searchInput', 'searchSuggestions');
-initSearch('mobileSearchInput', 'mobileSearchSuggestions');
+if (document.getElementById('mobileSearchInput')) {
+    initSearch('mobileSearchInput', 'mobileSearchSuggestions');
+}
 
+// Category Floating Box Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const trigger = document.getElementById('categoryMenuTrigger');
+    const menu = document.getElementById('categoryMegaMenu');
+    const backdrop = document.getElementById('menuBackdrop');
+
+    if (trigger && menu) {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.classList.toggle('show');
+            trigger.classList.toggle('active');
+            if (backdrop) backdrop.classList.toggle('show');
+        });
+
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                menu.classList.remove('show');
+                trigger.classList.remove('active');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                menu.classList.remove('show');
+                trigger.classList.remove('active');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+        });
+    }
+});
 // ============================================================
 // Auto-dismiss Alerts
 // ============================================================

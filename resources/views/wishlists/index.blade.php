@@ -39,7 +39,7 @@
                                     <a href="{{ route('products.show', $product->slug) }}" class="btn btn-light btn-sm"><i class="bi bi-eye"></i></a>
                                     
                                     @if($product->stock > 0)
-                                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline">
+                                    <form action="{{ route('cart.add') }}" method="POST" class="d-inline ajax-form">
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                                         <input type="hidden" name="quantity" value="1">

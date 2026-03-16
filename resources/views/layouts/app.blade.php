@@ -14,13 +14,12 @@
 </head>
 
 <body>
-    {{-- Top Bar --}}
-    <div class="top-bar d-none d-md-block">
-        <div class="container d-flex justify-content-between align-items-center">
-            <span></span>
-            <div class="d-flex gap-3">
-                <a href="#"><i class="bi bi-telephone me-1"></i> +44 770 000 0000</a>
-                <a href="#"><i class="bi bi-envelope me-1"></i> info@premiershop.com</a>
+    {{-- Toast Container --}}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+        <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
@@ -54,7 +53,7 @@
                     <a href="{{ route('cart.index') }}" class="btn btn-link text-white p-2 cart-badge">
                         <i class="bi bi-bag fs-5"></i>
                         @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
-                        @if($cartCount > 0)<span class="badge">{{ $cartCount }}</span>@endif
+                        <span class="badge cart-count-badge" id="cartCountBadgeMobile" style="{{ $cartCount > 0 ? '' : 'display:none;' }}">{{ $cartCount }}</span>
                     </a>
                     @endif
                 @endauth
@@ -75,8 +74,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request('category') ? 'active' : '' }}" href="#categoryMegaMenu"
-                            data-bs-toggle="collapse" role="button">
+                        <a class="nav-link {{ request('category') ? 'active' : '' }}" href="javascript:void(0)"
+                            id="categoryMenuTrigger">
                             <i class="bi bi-grid-3x3-gap me-1"></i>Categories
                         </a>
                     </li>
@@ -90,7 +89,7 @@
                         <li class="nav-item">
                             <a class="nav-link cart-badge" href="{{ route('cart.index') }}">
                                 <i class="bi bi-bag"></i> Cart
-                                @if($cartCount ?? 0 > 0)<span class="badge">{{ $cartCount }}</span>@endif
+                                <span class="badge cart-count-badge" id="cartCountBadge" style="{{ ($cartCount ?? 0) > 0 ? '' : 'display:none;' }}">{{ $cartCount ?? 0 }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -133,96 +132,157 @@
                 </ul>
             </div>
         </div>
-    </nav>
 
-    {{-- Category Mega Menu --}}
-    @if(!auth()->user()?->isDriver())
-    <div class="collapse category-mega-menu sticky-top" id="categoryMegaMenu" style="top: 72px; z-index: 1030;">
-        <div class="container">
-            <div class="mega-cat-grid stagger-children tilt-3d">
-                @foreach(\App\Models\Category::withCount('products')->get() as $cat)
-                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}"
-                        class="mega-cat-card {{ request('category') == $cat->slug ? 'active' : '' }}">
-                        @if($cat->image)
-                            <img src="{{ $cat->image }}" alt="{{ $cat->name }}"
-                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 12px; margin-bottom: 10px;">
-                        @else
-                            <i class="bi bi-tag"></i>
-                        @endif
-                        <h6>{{ $cat->name }}</h6>
-                        <small>{{ $cat->products_count }} Items</small>
-                    </a>
-                @endforeach
+        {{-- Category Mega Menu (Moved inside nav for relative positioning) --}}
+        @if(!auth()->user()?->isDriver())
+        <div class="category-mega-menu" id="categoryMegaMenu">
+            <div class="container py-4">
+                <div class="row g-4 stagger-children">
+                    @foreach($globalCategories as $cat)
+                        <div class="col-6 col-md-4 col-lg-3 fade-up">
+                            <div class="category-list-group">
+                                <h6 class="fw-bold mb-3 border-bottom pb-2">
+                                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-dark text-decoration-none hover-primary d-flex align-items-center">
+                                        @if($cat->image)
+                                            <img src="{{ $cat->image }}" alt="" style="width:20px;height:20px;object-fit:cover;margin-right:8px;border-radius:4px;">
+                                        @endif
+                                        {{ $cat->name }}
+                                    </a>
+                                </h6>
+                                <ul class="list-unstyled ps-0" style="font-size: 0.85rem;">
+                                    @php
+                                        $topProducts = $cat->products()->where('is_active', true)->take(5)->get();
+                                    @endphp
+                                    @foreach($topProducts as $prod)
+                                        <li class="mb-2">
+                                            <a href="{{ route('products.show', $prod->slug) }}" class="text-muted text-decoration-none hover-link">
+                                                {{ Str::limit($prod->name, 28) }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                    <li class="mt-2">
+                                        <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-primary text-decoration-none fw-bold small">
+                                            View all results <i class="bi bi-chevron-right small"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
-    </div>
-    @endif
+        @endif
+    </nav>
+
+    {{-- Full-Page Menu Backdrop --}}
+    <div class="menu-backdrop-overlay" id="menuBackdrop"></div>
 
     {{-- Mobile Off-Canvas Menu --}}
-    <div class="offcanvas offcanvas-end" id="mobileMenu" style="background:var(--ps-gradient-dark);color:#fff;">
-        <div class="offcanvas-header border-bottom border-secondary">
-            <h5 class="offcanvas-title gradient-text fw-bold">Premier Shop</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul class="nav flex-column gap-1">
-                @if(!auth()->user()?->isDriver())
-                <li><a class="nav-link text-white" href="{{ route('offers') }}"><i class="bi bi-tag me-2"></i>Offers</a>
-                </li>
-                <li><a class="nav-link text-white" href="{{ route('products.index') }}"><i
-                            class="bi bi-grid me-2"></i>Products</a></li>
-                @foreach(\App\Models\Category::all() as $cat)
-                    <li>
-                        <a class="nav-link text-white-50 ps-4 d-flex align-items-center"
-                            href="{{ route('products.index', ['category' => $cat->slug]) }}">
-                            @if($cat->image)
-                                <img src="{{ $cat->image }}" alt=""
-                                    style="width: 18px; height: 18px; object-fit: cover; border-radius: 4px; margin-right: 8px;">
-                            @else
-                                <i class="bi bi-tag me-2" style="font-size: 0.9rem;"></i>
-                            @endif
-                            {{ $cat->name }}
-                        </a>
-                    </li>
-                @endforeach
-                @endif
+    {{-- Mobile Off-Canvas Menu (Premium Redesign) --}}
+    <div class="offcanvas offcanvas-end mobile-offcanvas" id="mobileMenu" tabindex="-1">
+        <div class="offcanvas-header border-bottom border-white border-opacity-10 py-4">
+            <div class="d-flex align-items-center gap-3">
                 @auth
-                    <li>
-                        <hr class="border-secondary">
-                    </li>
-                    @if(!auth()->user()->isDriver())
-                    <li><a class="nav-link text-white" href="{{ route('cart.index') }}"><i
-                                class="bi bi-bag me-2"></i>Cart</a></li>
-                    @endif
-                    <li><a class="nav-link text-white" href="{{ auth()->user()->isDriver() ? route('driver.dashboard') : route('orders.index') }}">
-                        <i class="bi bi-receipt me-2"></i>{{ auth()->user()->isDriver() ? 'My Deliveries' : 'Orders' }}</a></li>
-                    @if(!auth()->user()->isDriver())
-                    <li><a class="nav-link text-white" href="{{ route('wishlists.index') }}"><i
-                                class="bi bi-heart me-2"></i>Wishlist</a></li>
-                    @endif
-                    <li><a class="nav-link text-white" href="{{ route('profile.edit') }}"><i
-                                class="bi bi-gear me-2"></i>Profile</a></li>
-                    @if(auth()->user()->isAdmin())
-                        <li><a class="nav-link text-warning" href="{{ route('admin.dashboard') }}"><i
-                                    class="bi bi-speedometer2 me-2"></i>Admin Panel</a></li>
-                    @endif
-                    <li>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button class="nav-link text-danger border-0 bg-transparent"><i
-                                    class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                        </form>
-                    </li>
+                    <div class="user-avatar-mini bg-primary bg-opacity-20 text-primary border border-primary border-opacity-25 shadow-sm">
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-white small">Hello, {{ explode(' ', auth()->user()->name)[0] }}</h6>
+                        <span class="text-white-50 x-small">Welcome back</span>
+                    </div>
                 @else
-                    <li>
-                        <hr class="border-secondary">
-                    </li>
-                    <li><a class="nav-link text-white" href="{{ route('login') }}"><i
-                                class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
-                    <li><a class="nav-link text-primary" href="{{ route('register') }}"><i
-                                class="bi bi-person-plus me-2"></i>Sign Up</a></li>
+                    <div class="user-avatar-mini bg-white bg-opacity-10 text-white">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-white small">Guest User</h6>
+                        <a href="{{ route('login') }}" class="text-primary text-decoration-none x-small fw-bold">Login / Sign Up</a>
+                    </div>
                 @endauth
-            </ul>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            {{-- Mobile Search --}}
+            <div class="px-4 py-3">
+                <form action="{{ route('products.index') }}" method="GET" class="mobile-search-form">
+                    <div class="input-group bg-white bg-opacity-10 rounded-pill overflow-hidden border border-white border-opacity-10">
+                        <span class="input-group-text bg-transparent border-0 text-white-50 ps-3">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control bg-transparent border-0 text-white small py-2 ps-1" placeholder="Search products...">
+                    </div>
+                </form>
+            </div>
+
+            <div class="mobile-nav-groups px-4 pb-5">
+                {{-- Main Links --}}
+                <div class="nav-group mb-4">
+                    <h6 class="nav-group-title">Main Menu</h6>
+                    <ul class="nav flex-column gap-2 mt-2">
+                        <li><a class="mobile-nav-link" href="{{ route('home') }}"><i class="bi bi-house-door"></i>Home</a></li>
+                        <li><a class="mobile-nav-link" href="{{ route('products.index') }}"><i class="bi bi-grid-fill"></i>All Products</a></li>
+                        <li><a class="mobile-nav-link" href="{{ route('offers') }}"><i class="bi bi-brightness-high-fill text-warning"></i>Hot Offers</a></li>
+                    </ul>
+                </div>
+
+                {{-- Shopping --}}
+                <div class="nav-group mb-4">
+                    <h6 class="nav-group-title">Shopping Tools</h6>
+                    <ul class="nav flex-column gap-2 mt-2">
+                        @auth
+                            <li><a class="mobile-nav-link" href="{{ route('cart.index') }}"><i class="bi bi-bag-check"></i>My Cart</a></li>
+                            <li><a class="mobile-nav-link" href="{{ route('wishlists.index') }}"><i class="bi bi-heart"></i>Wishlist</a></li>
+                            <li><a class="mobile-nav-link" href="{{ route('orders.index') }}"><i class="bi bi-receipt"></i>My Orders</a></li>
+                        @else
+                            <li><a class="mobile-nav-link" href="{{ route('login') }}"><i class="bi bi-bag"></i>View Cart</a></li>
+                        @endauth
+                    </ul>
+                </div>
+
+                {{-- Categories Section --}}
+                <div class="nav-group mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="nav-group-title">Top Categories</h6>
+                        <a href="{{ route('products.index') }}" class="text-primary x-small text-decoration-none fw-bold">See All</a>
+                    </div>
+                    <div class="mobile-cat-grid mt-3">
+                        @foreach($globalCategories->take(6) as $cat)
+                            <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="mobile-cat-pill">
+                                @if($cat->image)
+                                    <img src="{{ $cat->image }}" alt="">
+                                @else
+                                    <div class="pill-icon-fallback"><i class="bi bi-tag"></i></div>
+                                @endif
+                                <span>{{ $cat->name }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Account & Settings --}}
+                <div class="nav-group mt-5 border-top border-white border-opacity-10 pt-4">
+                    <ul class="nav flex-column gap-2">
+                        @auth
+                            <li><a class="mobile-nav-link" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear"></i>Settings</a></li>
+                            @if(auth()->user()->isAdmin())
+                                <li><a class="mobile-nav-link text-warning" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2"></i>Admin Dashboard</a></li>
+                            @endif
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="mobile-nav-link w-100 text-start border-0 bg-transparent text-danger">
+                                        <i class="bi bi-box-arrow-right"></i>Sign Out
+                                    </button>
+                                </form>
+                            </li>
+                        @else
+                            <li><a class="mobile-nav-link" href="{{ route('login') }}"><i class="bi bi-shield-lock"></i>Sign In</a></li>
+                        @endauth
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -330,12 +390,12 @@
                         @endforeach
                     </ul>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0 text-md-start text-center">
                     <h6 class="footer-heading">Get In Touch</h6>
-                    <ul class="footer-links">
-                        <li><i class="bi bi-geo-alt me-2 text-primary"></i>London, United Kingdom</li>
-                        <li><i class="bi bi-envelope me-2 text-primary"></i>info@premiershop.com</li>
-                        <li><i class="bi bi-telephone me-2 text-primary"></i>+44 770 000 0000</li>
+                    <ul class="footer-links list-unstyled">
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i>London, United Kingdom</li>
+                        <li class="mb-2"><i class="bi bi-envelope me-2 text-primary"></i>info@premiershop.com</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2 text-primary"></i>+44 770 000 0000</li>
                     </ul>
                 </div>
             </div>
@@ -355,6 +415,8 @@
     <script>
     document.addEventListener('submit', function(e) {
         const form = e.target;
+        
+        // Wishlist Toggle Handler
         if (form && form.action && form.action.includes('/wishlists/') && form.action.includes('/toggle')) {
             e.preventDefault();
             
@@ -369,7 +431,8 @@
                 body: new FormData(form),
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
             .then(res => res.json())
@@ -391,23 +454,99 @@
                             if(icon.classList.contains('bi-heart')) icon.classList.remove('bi-heart');
                             icon.classList.add('bi-heart-fill', 'text-danger');
                             btn.title = 'Remove from wishlist';
+                            showToast('Added to wishlist', 'bg-success');
                         } else {
                             if(icon.classList.contains('bi-heart-fill')) icon.classList.remove('bi-heart-fill');
                             if(icon.classList.contains('text-danger')) icon.classList.remove('text-danger');
                             icon.classList.add('bi-heart');
                             btn.title = 'Add to wishlist';
+                            showToast('Removed from wishlist', 'bg-info');
                         }
                     }
                 } else {
-                    alert(data.message || 'Error updating wishlist.');
+                    showToast(data.message || 'Error updating wishlist.', 'bg-danger');
                 }
             })
             .catch(err => {
                 btn.disabled = false;
                 console.error(err);
+                showToast('Something went wrong.', 'bg-danger');
+            });
+            return;
+        }
+
+        // Global AJAX Form Handler (Cart, Coupons, etc.)
+        if (form && form.classList.contains('ajax-form')) {
+            e.preventDefault();
+            
+            const btn = form.querySelector('button[type="submit"]');
+            const originalBtnHtml = btn ? btn.innerHTML : null;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            }
+
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: form.method || 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                }
+
+                if (data.success) {
+                    showToast(data.message, 'bg-success');
+                    
+                    // Update Cart Badge globally
+                    if (data.cartCount !== undefined) {
+                        document.querySelectorAll('.cart-count-badge').forEach(el => {
+                            el.textContent = data.cartCount;
+                            el.style.display = data.cartCount > 0 ? 'inline-block' : 'none';
+                        });
+                    }
+
+                    // Custom Event for page-specific logic
+                    const event = new CustomEvent('ajax-form-success', { detail: { form, data } });
+                    document.dispatchEvent(event);
+                    
+                    // Clear input if needed
+                    if (form.dataset.clearOnSuccess) {
+                        form.reset();
+                    }
+                } else {
+                    showToast(data.message || 'An error occurred.', 'bg-danger');
+                }
+            })
+            .catch(err => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                }
+                console.error(err);
+                showToast('Something went wrong. Please try again.', 'bg-danger');
             });
         }
     });
+
+    function showToast(message, bgColor) {
+        const toastEl = document.getElementById('liveToast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toast = new bootstrap.Toast(toastEl);
+        
+        toastEl.className = `toast align-items-center text-white border-0 ${bgColor}`;
+        toastMessage.textContent = message;
+        toast.show();
+    }
     </script>
     @endpush
     <script>

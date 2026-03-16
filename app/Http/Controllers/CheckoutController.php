@@ -57,8 +57,9 @@ class CheckoutController extends Controller
 
         $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
 
-        if (!$coupon->isValid($subtotal)) {
-            return back()->with('error', 'This coupon is not valid for your order.');
+        $error = $coupon->getValidationError($subtotal);
+        if ($error) {
+            return back()->with('error', $error);
         }
 
         session(['coupon' => [
@@ -67,12 +68,35 @@ class CheckoutController extends Controller
             'id' => $coupon->id,
         ]]);
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Coupon '{$coupon->code}' applied!",
+                'coupon' => session('coupon'),
+                'subtotal' => number_format($subtotal, 2),
+                'total' => number_format($subtotal - session('coupon.discount'), 2)
+            ]);
+        }
+
         return back()->with('success', "Coupon '{$coupon->code}' applied!");
     }
 
-    public function removeCoupon()
+    public function removeCoupon(Request $request)
     {
         session()->forget('coupon');
+
+        if ($request->wantsJson()) {
+            $items = auth()->user()->cartItems()->with('product')->get();
+            $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Coupon removed.',
+                'subtotal' => number_format($subtotal, 2),
+                'total' => number_format($subtotal, 2)
+            ]);
+        }
+
         return back()->with('success', 'Coupon removed.');
     }
 

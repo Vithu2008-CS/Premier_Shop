@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
+        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+            $view->with('globalCategories', \App\Models\Category::withCount('products')->get());
+        });
+
         \Illuminate\Validation\Rules\Password::defaults(function () {
             return \Illuminate\Validation\Rules\Password::min(12)
                 ->letters()
@@ -54,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('checkout', function (Request $request) {
-            return Limit::perMinute(3)->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
         });
     }
 }

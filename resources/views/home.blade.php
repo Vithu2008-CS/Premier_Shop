@@ -100,14 +100,14 @@
         .slider-image-wrapper {
             position: relative;
             width: 100%;
-            height: 45vh; /* Controlled height for mobile */
+            height: clamp(300px, 45vh, 600px); /* Controlled height for mobile */
             display: block;
             overflow: hidden;
             background-color: #1a1d24; /* Fallback for networks */
         }
         .hero-slider-img {
             width: 100%;
-            height: 45vh; /* Match container */
+            height: clamp(300px, 45vh, 600px); /* Match container */
             object-fit: cover; /* Prevents squishing */
             display: block; 
             transform: scale(1); /* stable scale for mobile */
@@ -203,7 +203,7 @@
 
     {{-- Offers Banner --}}
     @if(isset($offerProducts) && $offerProducts->count() > 0)
-        <section class="py-5 reveal-3d">
+        <section class="section-padding reveal-3d">
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -216,48 +216,7 @@
                 </div>
                 <div class="row g-4 stagger-children">
                     @foreach($offerProducts as $i => $product)
-                        <div class="col-6 col-md-3 fade-up delay-{{ $i + 1 }}">
-                            <div class="product-card position-relative">
-                                @auth
-                                    @php
-                                        $inWishlist = \App\Models\UserItem::where('user_id', auth()->id())->where('product_id', $product->id)->where('type', 'wishlist')->exists();
-                                    @endphp
-                                    <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST" class="position-absolute" style="top:10px; right:10px; z-index:10;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:35px;height:35px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
-                                            <i class="bi bi-heart{{ $inWishlist ? '-fill text-danger' : '' }} fs-6"></i>
-                                        </button>
-                                    </form>
-                                @endauth
-                                <span class="product-badge bg-danger"><i class="bi bi-lightning-fill"></i>
-                                    {{ number_format($product->offer_discount_percent) }}% OFF</span>
-                                <div class="product-img-wrap">
-                                    @if($product->images && count($product->images) > 0)
-                                        <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy">
-                                    @else
-                                        <div class="d-flex align-items-center justify-content-center h-100" style="background:#f0f0f5;">
-                                            <i class="bi bi-image text-muted" style="font-size:2.5rem;"></i></div>
-                                    @endif
-                                    <div class="product-overlay">
-                                        <a href="{{ route('products.show', $product->slug) }}" class="btn btn-light btn-sm"><i
-                                                class="bi bi-eye"></i> View</a>
-                                    </div>
-                                </div>
-                                <div class="product-body">
-                                    <div class="product-category">{{ $product->category?->name }}</div>
-                                    <h5 class="product-title"><a
-                                            href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a></h5>
-                                    <div class="product-price">
-                                        £{{ number_format($product->offer_price, 2) }}
-                                        <span class="original-price">£{{ number_format($product->price, 2) }}</span>
-                                    </div>
-                                    <span class="badge mt-1"
-                                        style="background:rgba(0,206,201,0.1);color:#00CEC9;font-size:0.7rem;">Buy
-                                        {{ $product->offer_min_qty }}+ save
-                                        {{ number_format($product->offer_discount_percent) }}%</span>
-                                </div>
-                            </div>
-                        </div>
+                        @include('partials.product_card', ['delay' => $i + 1])
                     @endforeach
                 </div>
             </div>
@@ -267,7 +226,7 @@
 
     {{-- Popular Products --}}
     @if(isset($popularProducts) && $popularProducts->count() > 0)
-    <section class="py-5 bg-light reveal-3d">
+    <section class="section-padding bg-light reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title"><i class="bi bi-star-fill text-warning me-2"></i>Most <span class="gradient-text">Popular</span></h2>
@@ -284,7 +243,7 @@
 
     {{-- New Arrivals --}}
     @if(isset($newProducts) && $newProducts->count() > 0)
-    <section class="py-5 reveal-3d">
+    <section class="section-padding reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title"><i class="bi bi-rocket-takeoff-fill text-primary me-2"></i>New <span class="text-primary">Arrivals</span></h2>
@@ -301,7 +260,7 @@
 
     {{-- Random Products --}}
     @if(isset($randomProducts) && $randomProducts->count() > 0)
-    <section class="py-5 bg-light reveal-3d">
+    <section class="section-padding bg-light reveal-3d">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="section-title">Discover <span class="gradient-text">More</span></h2>

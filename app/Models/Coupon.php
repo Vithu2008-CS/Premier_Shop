@@ -24,12 +24,27 @@ class Coupon extends Model
 
     public function isValid(float $orderAmount = 0): bool
     {
-        if (!$this->is_active) return false;
-        if ($this->valid_from && now()->lt($this->valid_from)) return false;
-        if ($this->valid_until && now()->gt($this->valid_until)) return false;
-        if ($this->usage_limit && $this->times_used >= $this->usage_limit) return false;
-        if ($this->min_order_amount && $orderAmount < $this->min_order_amount) return false;
-        return true;
+        return $this->getValidationError($orderAmount) === null;
+    }
+
+    public function getValidationError(float $orderAmount = 0): ?string
+    {
+        if (!$this->is_active) {
+            return 'This coupon is no longer active.';
+        }
+        if ($this->valid_from && now()->lt($this->valid_from)) {
+            return 'This coupon is not yet active (starts ' . $this->valid_from->format('M d, Y') . ').';
+        }
+        if ($this->valid_until && now()->gt($this->valid_until)) {
+            return 'This coupon has expired.';
+        }
+        if ($this->usage_limit && $this->times_used >= $this->usage_limit) {
+            return 'This coupon has reached its usage limit.';
+        }
+        if ($this->min_order_amount && $orderAmount < $this->min_order_amount) {
+            return 'Your order total must be at least £' . number_format($this->min_order_amount, 2) . ' to use this coupon.';
+        }
+        return null;
     }
 
     public function calculateDiscount(float $subtotal): float

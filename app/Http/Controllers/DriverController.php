@@ -66,11 +66,14 @@ class DriverController extends Controller
             ? Carbon::parse($request->delivered_date) 
             : now();
 
-        $order->update([
-            'status' => 'delivered',
-            'delivered_date' => $deliveredDate,
-            'delivery_proof' => $path,
-        ]);
+        $order->updateStatusAndTracking(
+            'delivered',
+            null,
+            null,
+            $deliveredDate
+        );
+
+        $order->update(['delivery_proof' => $path]);
 
         // Notify user
         try {

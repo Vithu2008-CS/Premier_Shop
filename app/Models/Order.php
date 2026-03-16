@@ -69,6 +69,48 @@ class Order extends Model
     }
 
     /**
+     * Update order status and manage tracking dates robustly.
+     */
+    public function updateStatusAndTracking(string $status, $processingDate = null, $shippedDate = null, $deliveredDate = null)
+    {
+        $oldStatus = $this->status;
+        
+        $updates = [
+            'status' => $status,
+            'processing_date' => $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date,
+            'shipped_date' => $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date,
+            'delivered_date' => $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date,
+        ];
+
+        // Ensure dates are not invalid early years (0026 vs 2026)
+        foreach(['processing_date', 'shipped_date', 'delivered_date'] as $dateField) {
+            if ($updates[$dateField] && $updates[$dateField]->year < 1000) {
+                $updates[$dateField] = $updates[$dateField]->addYears(2000);
+            }
+        }
+
+        // Auto-fill logic
+        if ($status === 'processing' && !$updates['processing_date']) $updates['processing_date'] = now();
+        if ($status === 'shipped') {
+            if (!$updates['processing_date']) $updates['processing_date'] = now();
+            if (!$updates['shipped_date']) $updates['shipped_date'] = now();
+        }
+        if ($status === 'delivered') {
+            if (!$updates['processing_date']) $updates['processing_date'] = now();
+            if (!$updates['shipped_date']) $updates['shipped_date'] = now();
+            if (!$updates['delivered_date']) $updates['delivered_date'] = now();
+        }
+
+        $this->update($updates);
+
+        if ($status === 'cancelled' && $oldStatus !== 'cancelled') {
+            $this->restoreStock();
+        }
+
+        return $oldStatus !== $status;
+    }
+
+    /**
      * Restore stock for all products in this order.
      */
     public function restoreStock()
