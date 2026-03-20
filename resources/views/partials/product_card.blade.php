@@ -55,6 +55,18 @@
                     {{ $product->name }}
                 </a>
             </h6>
+            {{-- Star Ratings --}}
+            @if($product->reviews && $product->reviews->count() > 0)
+                @php $avgRating = round($product->reviews->avg('rating'), 1); @endphp
+                <div class="d-flex align-items-center gap-1 mb-2" style="font-size: 0.72rem;">
+                    <div class="text-warning d-flex gap-0">
+                        @for($s = 1; $s <= 5; $s++)
+                            <i class="bi {{ $s <= round($avgRating) ? 'bi-star-fill' : ($s - 0.5 <= $avgRating ? 'bi-star-half' : 'bi-star') }}"></i>
+                        @endfor
+                    </div>
+                    <span class="text-muted ms-1">({{ $product->reviews->count() }})</span>
+                </div>
+            @endif
             <div class="d-flex align-items-center gap-2 mt-auto">
                 <div class="product-price fw-bold text-primary fs-5">
                     £{{ number_format($product->price, 2) }}

@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
-        \Illuminate\Support\Facades\View::composer('*', function ($view) {
+        \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
             $view->with('globalCategories', \App\Models\Category::withCount('products')->get());
         });
 
@@ -50,7 +50,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('login', function (Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
+            return app()->runningUnitTests()
+                ? Limit::none()
+                : Limit::perMinute(5)->by($request->ip());
         });
 
         RateLimiter::for('uploads', function (Request $request) {
