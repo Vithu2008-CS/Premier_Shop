@@ -326,6 +326,7 @@
     </main>
 
     {{-- Newsletter Section --}}
+    @if(request()->routeIs('home'))
     <section class="newsletter-section">
         <div class="container">
             <div class="newsletter-card">
@@ -356,6 +357,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     {{-- Footer --}}
     <footer class="footer-premium">
