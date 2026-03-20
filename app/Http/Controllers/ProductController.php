@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category')->where('is_active', true);
+        $query = Product::with(['category', 'reviews'])->where('is_active', true);
 
         // Filter by category
         if ($request->has('category')) {
@@ -53,11 +53,18 @@ class ProductController extends Controller
             abort(403, 'You must be 16 or older to view this product.');
         }
 
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        $relatedProducts = Product::with(['category', 'reviews'])->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
             ->limit(4)
             ->get();
+
+        // Track recently viewed products in session (max 12, most recent first)
+        $recentIds = session('recently_viewed', []);
+        $recentIds = array_diff($recentIds, [$product->id]); // remove duplicate
+        array_unshift($recentIds, $product->id); // add to front
+        $recentIds = array_slice($recentIds, 0, 12); // keep max 12
+        session(['recently_viewed' => $recentIds]);
 
         return view('products.show', compact('product', 'relatedProducts'));
     }

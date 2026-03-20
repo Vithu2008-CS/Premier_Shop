@@ -325,6 +325,38 @@
         @yield('content')
     </main>
 
+    {{-- Newsletter Section --}}
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-card">
+                <div class="newsletter-glow"></div>
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-5">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-envelope-heart-fill text-primary fs-4"></i>
+                            <span class="badge rounded-pill" style="background: rgba(108,92,231,0.2); color: #A29BFE; font-size: 0.75rem;">Newsletter</span>
+                        </div>
+                        <h3 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Stay in the loop</h3>
+                        <p class="text-muted small mb-0">Get exclusive offers, new arrivals, and special discounts delivered to your inbox.</p>
+                    </div>
+                    <div class="col-lg-7">
+                        <form id="newsletterForm" class="newsletter-form">
+                            <div class="input-group newsletter-input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" name="email" class="form-control" placeholder="Enter your email address" required id="newsletterEmail">
+                                <button type="submit" class="btn btn-newsletter" id="newsletterBtn">
+                                    <span class="newsletter-btn-text">Subscribe</span>
+                                    <i class="bi bi-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                            <div id="newsletterMsg" class="newsletter-msg mt-2 small" style="display:none;"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- Footer --}}
     <footer class="footer-premium">
         <div class="container">
@@ -345,7 +377,8 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('offers') }}">Offers</a></li>
                         <li><a href="{{ route('products.index') }}">All Products</a></li>
-                        @foreach(\App\Models\Category::take(4)->get() as $cat)
+                        <li><a href="{{ route('categories') }}">Categories</a></li>
+                        @foreach(\App\Models\Category::take(3)->get() as $cat)
                             <li><a href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a>
                             </li>
                         @endforeach
@@ -356,6 +389,7 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('login') }}">Login</a></li>
                         <li><a href="{{ route('register') }}">Sign Up</a></li>
+                        <li><a href="{{ route('contact') }}">Contact Us</a></li>
                         @auth
                             <li><a href="{{ route('orders.index') }}">My Orders</a></li>
                             <li><a href="{{ route('cart.index') }}">My Cart</a></li>
@@ -560,6 +594,52 @@
                     navbar.classList.remove('scrolled');
                 }
             });
+
+            // Newsletter AJAX
+            const nlForm = document.getElementById('newsletterForm');
+            if (nlForm) {
+                nlForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const btn = document.getElementById('newsletterBtn');
+                    const msgDiv = document.getElementById('newsletterMsg');
+                    const email = document.getElementById('newsletterEmail').value;
+                    
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+                    
+                    fetch('{{ route("newsletter.subscribe") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="newsletter-btn-text">Subscribe</span><i class="bi bi-arrow-right ms-1"></i>';
+                        msgDiv.style.display = 'block';
+                        if (data.success) {
+                            msgDiv.className = 'newsletter-msg mt-2 small text-success';
+                            msgDiv.textContent = data.message;
+                            nlForm.reset();
+                        } else {
+                            msgDiv.className = 'newsletter-msg mt-2 small text-warning';
+                            msgDiv.textContent = data.message;
+                        }
+                        setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
+                    })
+                    .catch(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = '<span class="newsletter-btn-text">Subscribe</span><i class="bi bi-arrow-right ms-1"></i>';
+                        msgDiv.style.display = 'block';
+                        msgDiv.className = 'newsletter-msg mt-2 small text-danger';
+                        msgDiv.textContent = 'Something went wrong. Please try again.';
+                    });
+                });
+            }
         });
     </script>
     @stack('scripts')

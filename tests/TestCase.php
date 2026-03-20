@@ -13,6 +13,7 @@ abstract class TestCase extends BaseTestCase
         
         $this->withoutMiddleware([
             ValidateCsrfToken::class,
+            'throttle:*',
         ]);
     }
 }

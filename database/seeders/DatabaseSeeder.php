@@ -86,6 +86,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Beer, Cider & Alcoholic RTD's"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => true,
+            'images' => ['https://images.unsplash.com/photo-1518176259641-0f3399a8e0f6?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -96,6 +97,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Biscuits"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -106,6 +108,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Bread & Cakes"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1590127883220-41315573431d?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -116,6 +119,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Confectionery"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1511381939415-e44015466834?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -126,6 +130,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Crisps, Snacks & Dips"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1566478989037-eec170784d0b?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -136,6 +141,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Food & Drink Disposables"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1517094857443-3957597f8040?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -146,6 +152,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Fresh Food"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1563636619-e910bd29339a?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -156,6 +163,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Frozen Food"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -166,6 +174,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Greengrocery"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1603833665858-e61d17a86224?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -176,6 +185,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Grocery - Retail"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1516711696515-992e1069f20e?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -186,6 +196,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Grocery - Catering"]->id,
             'product_type' => 'wholesale',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -196,6 +207,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Hot Drinks"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -206,6 +218,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Household, Cleaning & Paper"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -216,6 +229,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Meat, Fish & Poultry"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1604503468506-a8da13d82791?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -226,6 +240,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Pet Food"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1585846416120-3a73c3945937?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -236,6 +251,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Soft Drinks"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => false,
+            'images' => ['https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -246,6 +262,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Spirits & Liqueurs"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => true,
+            'images' => ['https://images.unsplash.com/photo-1551538597-27153a1d6249?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         Product::create([
@@ -256,6 +273,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $categories["Wine"]->id,
             'product_type' => 'normal',
             'is_age_restricted' => true,
+            'images' => ['https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=600&auto=format&fit=crop'],
         ]);
 
         // Settings
@@ -276,6 +294,7 @@ class DatabaseSeeder extends Seeder
             'title' => 'Spring Sale — Up to 30% Off!',
             'subtitle' => 'Limited Time Offer',
             'description' => 'Enjoy massive discounts on selected items this spring season.',
+            'image_path' => 'https://images.unsplash.com/photo-1540959733332-e94e7bf9b102?q=80&w=1080&auto=format&fit=crop',
             'type' => 'slider',
             'is_active' => true,
             'start_date' => now(),
@@ -286,6 +305,7 @@ class DatabaseSeeder extends Seeder
         Promotion::create([
             'title' => 'Free Local Delivery',
             'description' => 'On orders over £100 within 20 miles.',
+            'image_path' => 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=600&auto=format&fit=crop',
             'type' => 'banner',
             'is_active' => true,
         ]);

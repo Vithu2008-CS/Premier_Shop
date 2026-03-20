@@ -275,6 +275,38 @@
     </section>
     @endif
 
+    {{-- Recently Viewed --}}
+    @if(isset($recentlyViewed) && $recentlyViewed->count() > 0)
+    <section class="section-padding reveal-3d">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title"><i class="bi bi-clock-history text-primary me-2"></i>Recently <span class="gradient-text">Viewed</span></h2>
+            </div>
+            <div class="recently-viewed-scroll">
+                @foreach($recentlyViewed as $product)
+                    <div class="recently-viewed-item">
+                        <a href="{{ route('products.show', $product->slug) }}" class="recently-viewed-card d-block text-decoration-none">
+                            <div class="recently-viewed-img">
+                                @if($product->images && count($product->images) > 0)
+                                    <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy">
+                                @else
+                                    <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-light">
+                                        <i class="bi bi-image text-muted" style="font-size:1.5rem;"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="recently-viewed-body">
+                                <h6 class="recently-viewed-title">{{ Str::limit($product->name, 30) }}</h6>
+                                <span class="recently-viewed-price">£{{ number_format($product->price, 2) }}</span>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     {{-- Trust Bar --}}
     <section class="trust-bar reveal-3d">
         <div class="container">
