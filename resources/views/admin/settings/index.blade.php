@@ -16,8 +16,28 @@
 
 <div class="row g-4">
     <div class="col-lg-8">
+        <div class="admin-card mb-4">
+            <h5 class="card-title mb-4"><i class="bi bi-gear me-2"></i>General Shop Settings</h5>
+            <form action="{{ route('admin.settings.store') }}" method="POST">
+                @csrf
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Shop Name</label>
+                        <input type="text" name="shop_name" class="form-control" value="{{ $settings->shop_name }}" placeholder="E.g., Premier Shop">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Store Address (Origin)</label>
+                        <input type="text" name="origin_address" class="form-control" value="{{ $settings->origin_address }}" placeholder="Full store address">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-admin"><i class="bi bi-save me-2"></i>Update General Info</button>
+                </div>
+            </form>
+        </div>
+
         <div class="admin-card">
-            <h5 class="card-title mb-4"><i class="bi bi-shop me-2"></i>Shop Opening Hours</h5>
+            <h5 class="card-title mb-4"><i class="bi bi-clock me-2"></i>Shop Opening Hours</h5>
             
             <form action="{{ route('admin.settings.store') }}" method="POST">
                 @csrf
