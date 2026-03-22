@@ -116,7 +116,7 @@
 
     <div class="auth-side-illustration">
         <div class="illustration-bg-decor"></div>
-        <img src="{{ asset('images/login_3d_safe.png') }}" alt="Premier Shop Security" class="auth-illustration-img">
+        <img src="{{ asset('images/shopping_bag_3d.png') }}" alt="Premier Shop" class="auth-illustration-img">
     </div>
 </div>
 @endsection
