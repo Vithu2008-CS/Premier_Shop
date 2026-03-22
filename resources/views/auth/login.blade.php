@@ -5,9 +5,9 @@
 @section('content')
 <div class="auth-wrapper">
     <div class="auth-side-form">
-        <div class="auth-brand">
+        <a href="{{ url('/') }}" class="auth-brand">
             <i class="bi bi-shop"></i> Premier<span>Shop</span>
-        </div>
+        </a>
 
         <div class="auth-card">
             <h2 class="auth-title">Welcome Back</h2>

@@ -47,10 +47,18 @@
             align-items: center;
             justify-content: center;
             background: #fff;
-            padding: 2rem;
+            padding: 2.5rem;
             position: relative;
             overflow-y: auto;
             max-height: 100vh;
+        }
+
+        @media (max-width: 576px) {
+            .auth-side-form {
+                padding: 1.5rem;
+                align-items: flex-start;
+                padding-top: 80px;
+            }
         }
 
         .auth-side-form::-webkit-scrollbar {
@@ -80,7 +88,7 @@
 
         .auth-card {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
         }
 
         .auth-brand {
@@ -94,6 +102,15 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--auth-text-dark);
+            text-decoration: none;
+        }
+
+        @media (max-width: 576px) {
+            .auth-brand {
+                left: 24px;
+                top: 24px;
+                font-size: 1.25rem;
+            }
         }
 
         .auth-brand i {
@@ -107,12 +124,20 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
             color: var(--auth-text-dark);
+            text-align: center;
+        }
+
+        @media (max-width: 576px) {
+            .auth-title {
+                font-size: 2rem;
+            }
         }
 
         .auth-subtitle {
             color: var(--auth-text-muted);
             margin-bottom: 2.5rem;
             font-size: 0.95rem;
+            text-align: center;
         }
 
         .auth-tabs {
