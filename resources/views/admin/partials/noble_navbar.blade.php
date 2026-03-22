@@ -95,14 +95,9 @@
           </div>
         </div>
       </li>
-      <li class="nav-item">
-        <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
-            @csrf
-        </form>
-        <a href="javascript:;" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Log Out">
-          <i data-feather="log-out"></i>
-        </a>
-      </li>
+      <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
+        @csrf
+      </form>
     </ul>
   </div>
 </nav>
