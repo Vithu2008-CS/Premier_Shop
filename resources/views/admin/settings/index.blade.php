@@ -1,111 +1,116 @@
-@extends('layouts.admin')
-@section('title', 'Settings — Admin Dashboard')
+@extends('layouts.admin_noble')
+@section('title', 'System Settings')
 
 @section('content')
-<div class="admin-topbar">
-    <div>
-        <h2>System Settings</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Settings</li>
-            </ol>
-        </nav>
-    </div>
-</div>
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item active" aria-current="page">System Settings</li>
+  </ol>
+</nav>
 
-<div class="row g-4">
+<div class="row">
     <div class="col-lg-8">
-        <div class="admin-card mb-4">
-            <h5 class="card-title mb-4"><i class="bi bi-gear me-2"></i>General Shop Settings</h5>
-            <form action="{{ route('admin.settings.store') }}" method="POST">
-                @csrf
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Shop Name</label>
-                        <input type="text" name="shop_name" class="form-control" value="{{ $settings->shop_name }}" placeholder="E.g., Premier Shop">
+        <div class="card grid-margin stretch-card">
+            <div class="card-body">
+                <h6 class="card-title">General Shop Settings</h6>
+                <form action="{{ route('admin.settings.store') }}" method="POST">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Shop Name</label>
+                            <input type="text" name="shop_name" class="form-control" value="{{ $settings->shop_name }}" placeholder="E.g., Premier Shop">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Store Address (Origin)</label>
+                            <input type="text" name="origin_address" class="form-control" value="{{ $settings->origin_address }}" placeholder="Full store address">
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Store Address (Origin)</label>
-                        <input type="text" name="origin_address" class="form-control" value="{{ $settings->origin_address }}" placeholder="Full store address">
+                    <div class="d-flex justify-content-end mt-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="save" class="icon-sm mr-2"></i> Update General Info
+                        </button>
                     </div>
-                </div>
-                <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" class="btn btn-admin"><i class="bi bi-save me-2"></i>Update General Info</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
-        <div class="admin-card">
-            <h5 class="card-title mb-4"><i class="bi bi-clock me-2"></i>Shop Opening Hours</h5>
-            
-            <form action="{{ route('admin.settings.store') }}" method="POST">
-                @csrf
+        <div class="card grid-margin stretch-card">
+            <div class="card-body">
+                <h6 class="card-title">Shop Opening Hours</h6>
                 
-                <div class="table-responsive">
-                    <table class="table admin-table mb-4">
-                        <thead>
-                            <tr>
-                                <th>Day</th>
-                                <th>Opening Time</th>
-                                <th>Closing Time</th>
-                                <th>Closed</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                            @endphp
-                            @foreach($days as $day)
+                <form action="{{ route('admin.settings.store') }}" method="POST">
+                    @csrf
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-4">
+                            <thead>
                                 <tr>
-                                    <td class="fw-bold text-capitalize align-middle">{{ $day }}</td>
-                                    @php
-                                        $hours = $settings->other_settings['shop_hours'][$day] ?? [];
-                                        $openTime = $hours['open'] ?? '';
-                                        $closeTime = $hours['close'] ?? '';
-                                        $isClosed = $hours['closed'] ?? false;
-                                    @endphp
-                                    <td>
-                                        <input type="time" name="shop_hours[{{ $day }}][open]" class="form-control form-control-sm" value="{{ $openTime }}" {{ $isClosed ? 'disabled' : '' }}>
-                                    </td>
-                                    <td>
-                                        <input type="time" name="shop_hours[{{ $day }}][close]" class="form-control form-control-sm" value="{{ $closeTime }}" {{ $isClosed ? 'disabled' : '' }}>
-                                    </td>
-                                    <td class="align-middle">
-                                        <div class="form-check form-switch mb-0">
-                                            <input type="hidden" name="shop_hours[{{ $day }}][closed]" value="0">
-                                            <input class="form-check-input closed-toggle" type="checkbox" name="shop_hours[{{ $day }}][closed]" value="1" {{ $isClosed ? 'checked' : '' }}>
-                                        </div>
-                                    </td>
+                                    <th>Day</th>
+                                    <th>Opening Time</th>
+                                    <th>Closing Time</th>
+                                    <th>Closed</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                                @endphp
+                                @foreach($days as $day)
+                                    <tr>
+                                        <td class="font-weight-bold text-capitalize align-middle">{{ $day }}</td>
+                                        @php
+                                            $hours = $settings->other_settings['shop_hours'][$day] ?? [];
+                                            $openTime = $hours['open'] ?? '';
+                                            $closeTime = $hours['close'] ?? '';
+                                            $isClosed = $hours['closed'] ?? false;
+                                        @endphp
+                                        <td>
+                                            <input type="time" name="shop_hours[{{ $day }}][open]" class="form-control form-control-sm" value="{{ $openTime }}" {{ $isClosed ? 'disabled' : '' }}>
+                                        </td>
+                                        <td>
+                                            <input type="time" name="shop_hours[{{ $day }}][close]" class="form-control form-control-sm" value="{{ $closeTime }}" {{ $isClosed ? 'disabled' : '' }}>
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="form-check form-switch mb-0">
+                                                <input type="hidden" name="shop_hours[{{ $day }}][closed]" value="0">
+                                                <input class="form-check-input closed-toggle" type="checkbox" name="shop_hours[{{ $day }}][closed]" value="1" {{ $isClosed ? 'checked' : '' }}>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="mb-4">
-                    <label class="form-label">Shop Notice Banner (Optional, displayed on homepage)</label>
-                    <textarea name="shop_notice" class="form-control" rows="2" placeholder="E.g., Special holiday hours in effect!">{{ $settings->other_settings['shop_notice'] ?? '' }}</textarea>
-                </div>
+                    <div class="mb-4">
+                        <label class="form-label">Shop Notice Banner (Optional, displayed on homepage)</label>
+                        <textarea name="shop_notice" class="form-control" rows="2" placeholder="E.g., Special holiday hours in effect!">{{ $settings->other_settings['shop_notice'] ?? '' }}</textarea>
+                    </div>
 
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-admin"><i class="bi bi-save me-2"></i>Save Settings</button>
-                </div>
-            </form>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="save" class="icon-sm mr-2"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     
     <div class="col-lg-4">
-        <div class="admin-card text-center py-5">
-            <div class="mb-4">
-                <div class="d-inline-flex align-items-center justify-content-center" style="width:80px;height:80px;border-radius:50%;background:rgba(108,92,231,0.1);color:#6C5CE7;">
-                    <i class="bi bi-info-circle fs-1"></i>
+        <div class="card grid-margin stretch-card text-center">
+            <div class="card-body py-5">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-soft-primary text-primary" style="width:80px;height:80px;border-radius:50%;">
+                        <i data-feather="clock" class="icon-lg"></i>
+                    </div>
                 </div>
+                <h5 class="font-weight-bold mb-3">Shop Hours Format</h5>
+                <p class="text-muted small mb-0 px-3">
+                    Toggle "Closed" if the shop is closed for the entire day. These hours are displayed on the welcome page for customers. Use 24-hour format or AM/PM depending on your browser.
+                </p>
             </div>
-            <h5 class="fw-bold text-white mb-3">Shop Hours Format</h5>
-            <p class="text-muted small mb-0 px-3">
-                Toggle "Closed" if the shop is closed for the entire day. These hours are displayed on the welcome page for customers. Use 24-hour format or AM/PM depending on your browser.
-            </p>
         </div>
     </div>
 </div>
@@ -129,3 +134,4 @@
     });
 </script>
 @endpush
+

@@ -20,6 +20,17 @@ class DashboardController extends Controller
             'recentOrders' => Order::with('user')->latest()->limit(5)->get(),
         ];
 
-        return view('admin.dashboard', compact('stats'));
+        // Get sales for last 7 days
+        $salesData = [];
+        $salesLabels = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $salesLabels[] = $date->format('M d');
+            $salesData[] = (float) Order::whereDate('created_at', $date->toDateString())
+                ->where('payment_status', 'completed')
+                ->sum('total');
+        }
+
+        return view('admin.dashboard', compact('stats', 'salesData', 'salesLabels'));
     }
 }

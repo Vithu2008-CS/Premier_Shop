@@ -1,161 +1,176 @@
-@extends('layouts.admin')
-@section('title', 'Edit Product — Admin')
+@extends('layouts.admin_noble')
+@section('title', 'Edit Product')
 
 @section('content')
-<div class="admin-topbar">
-    <div>
-        <h2>Edit Product</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-                <li class="breadcrumb-item active">{{ Str::limit($product->name, 20) }}</li>
-            </ol>
-        </nav>
-    </div>
-</div>
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($product->name, 30) }}</li>
+  </ol>
+</nav>
 
 <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
     @csrf @method('PUT')
-    <div class="row g-4">
-        <div class="col-lg-8">
-            {{-- Basic Details --}}
-            <div class="admin-card mb-4">
-                <div class="card-title"><i class="bi bi-info-circle me-2"></i>Product Details</div>
-                <div class="row g-3">
-                    <div class="col-md-8">
-                        <label class="form-label">Product Name *</label>
-                        <input type="text" name="name" class="form-control" value="{{ old('name', $product->name) }}" required>
+    <div class="row">
+        <div class="col-lg-8 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Product Details</h6>
+                    <div class="row">
+                        <div class="col-md-9 mb-3">
+                            <label class="form-label">Product Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $product->name) }}" required>
+                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Barcode</label>
+                            <input type="text" name="barcode" class="form-control" value="{{ old('barcode', $product->barcode) }}">
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Barcode</label>
-                        <input type="text" name="barcode" class="form-control" value="{{ old('barcode', $product->barcode) }}">
-                    </div>
-                    <div class="col-12">
+                    <div class="mb-3">
                         <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="4">{{ old('description', $product->description) }}</textarea>
+                        <textarea name="description" class="form-control" rows="8">{{ old('description', $product->description) }}</textarea>
                     </div>
-                </div>
-            </div>
-
-            {{-- Pricing --}}
-            <div class="admin-card mb-4">
-                <div class="card-title"><i class="bi bi-currency-pound me-2"></i>Pricing & Inventory</div>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Price (£) *</label>
-                        <input type="number" name="price" class="form-control" value="{{ old('price', $product->price) }}" step="0.01" required>
+                    
+                    <hr class="my-4">
+                    
+                    <h6 class="card-title">Pricing & Inventory</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Retail Price (£) <span class="text-danger">*</span></label>
+                            <input type="number" name="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
+                            @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Wholesale Price (£)</label>
+                            <input type="number" name="wholesale_price" class="form-control" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
+                            @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Wholesale Price (£)</label>
-                        <input type="number" name="wholesale_price" class="form-control" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Stock Quantity *</label>
-                        <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" min="0" required>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Offer --}}
-            <div class="admin-card mb-4" style="border-color:rgba(225,112,85,0.2);">
-                <div class="card-title"><i class="bi bi-lightning-fill text-warning me-2"></i>Bulk Offer Configuration</div>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Min Quantity for Offer</label>
-                        <input type="number" name="offer_min_qty" class="form-control" value="{{ old('offer_min_qty', $product->offer_min_qty) }}" min="1" placeholder="e.g. 10">
-                        <small style="color:var(--admin-muted);">Customers must buy this many to get discount</small>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Discount Percentage (%)</label>
-                        <input type="number" name="offer_discount_percent" class="form-control" value="{{ old('offer_discount_percent', $product->offer_discount_percent) }}" min="0" max="100" step="0.01" placeholder="e.g. 15">
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="offer_active" id="offerActive" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="offerActive">Activate Offer</label>
+                    
+                    <hr class="my-4">
+                    
+                    <h6 class="card-title">Bulk Offer Configuration</h6>
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Min Quantity for Offer</label>
+                            <input type="number" name="offer_min_qty" class="form-control" value="{{ old('offer_min_qty', $product->offer_min_qty) }}" min="1">
+                            <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Discount Percentage (%)</label>
+                            <input type="number" name="offer_discount_percent" class="form-control" value="{{ old('offer_discount_percent', $product->offer_discount_percent) }}" min="0" max="100" step="0.01">
+                        </div>
+                        <div class="col-md-3 mb-3 d-flex align-items-end">
+                            <div class="form-check mb-2">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="offer_active" class="form-check-input" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
+                                    Activate Offer
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4">
-            {{-- Classification --}}
-            <div class="admin-card mb-4">
-                <div class="card-title"><i class="bi bi-tags me-2"></i>Classification</div>
-                <div class="mb-3">
-                    <label class="form-label">Category</label>
-                    <select name="category_id" class="form-select">
-                        <option value="">Select Category</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ $product->category_id == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Product Type</label>
-                    <select name="product_type" class="form-select">
-                        <option value="normal" {{ $product->product_type == 'normal' ? 'selected' : '' }}>Normal</option>
-                        <option value="wholesale" {{ $product->product_type == 'wholesale' ? 'selected' : '' }}>Wholesale</option>
-                    </select>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" name="is_age_restricted" id="ageRestricted" value="1" {{ $product->is_age_restricted ? 'checked' : '' }}>
-                    <label class="form-check-label" for="ageRestricted">🔞 Age Restricted (16+)</label>
+        <div class="col-lg-4 grid-margin">
+            {{-- QR Code Section --}}
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    <h6 class="card-title text-left">Product QR Code</h6>
+                    @if($product->qr_code)
+                        <div class="bg-light p-3 rounded mb-3">
+                            <img src="{{ $product->qr_code }}" alt="QR Code" class="img-fluid wd-150 mx-auto d-block" style="mix-blend-mode: multiply;">
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ $product->qr_code }}" download class="btn btn-outline-primary btn-sm btn-block mb-2">
+                                <i data-feather="download" class="icon-sm mr-2"></i> Download QR
+                            </a>
+                            <button type="submit" form="regenerate-qr-form" class="btn btn-link btn-sm text-muted">
+                                <i data-feather="refresh-cw" class="icon-xs mr-1"></i> Regenerate QR Code
+                            </button>
+                        </div>
+                    @else
+                        <div class="py-4 text-muted">
+                            <i data-feather="slash" class="icon-xxl mb-2"></i>
+                            <p>No QR Code</p>
+                            <button type="submit" form="regenerate-qr-form" class="btn btn-primary btn-sm mt-3">Generate Now</button>
+                        </div>
+                    @endif
                 </div>
             </div>
 
-            {{-- QR Code --}}
-            <div class="admin-card mb-4 text-center">
-                <div class="card-title"><i class="bi bi-qr-code me-2"></i>QR Code</div>
-                @if($product->qr_code)
-                    <img src="{{ $product->qr_code }}" alt="QR Code" class="img-fluid mb-3" style="max-width:180px;border-radius:12px;background:#fff;padding:10px;">
-                    <div class="d-grid gap-2">
-                        <a href="{{ $product->qr_code }}" download class="btn btn-admin btn-sm"><i class="bi bi-download me-1"></i>Download QR</a>
-                        <form action="{{ route('admin.products.regenerateQr', $product) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-admin-outline btn-sm w-100"><i class="bi bi-arrow-clockwise me-1"></i>Regenerate</button>
-                        </form>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">Classification</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category_id" class="form-control @error('category_id') is-invalid @enderror">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                @else
-                    <div class="py-3" style="color:var(--admin-muted);">
-                        <i class="bi bi-qr-code" style="font-size:2rem;display:block;margin-bottom:8px;"></i>
-                        No QR code generated yet
+                    <div class="mb-3">
+                        <label class="form-label">Product Type</label>
+                        <select name="product_type" class="form-control">
+                            <option value="normal" {{ old('product_type', $product->product_type) == 'normal' ? 'selected' : '' }}>Normal / Retail</option>
+                            <option value="wholesale" {{ old('product_type', $product->product_type) == 'wholesale' ? 'selected' : '' }}>Wholesale Only</option>
+                        </select>
                     </div>
-                    <form action="{{ route('admin.products.regenerateQr', $product) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-admin btn-sm"><i class="bi bi-qr-code me-1"></i>Generate QR</button>
-                    </form>
-                @endif
-            </div>
-
-            {{-- Current Images --}}
-            @if($product->images && count($product->images) > 0)
-                <div class="admin-card mb-4">
-                    <div class="card-title"><i class="bi bi-images me-2"></i>Current Images</div>
-                    <div class="row g-2">
-                        @foreach($product->images as $img)
-                            <div class="col-6">
-                                <img src="{{ $img }}" class="w-100" style="height:90px;object-fit:cover;border-radius:10px;" alt="">
-                            </div>
-                        @endforeach
+                    <div class="form-check mb-2">
+                        <label class="form-check-label">
+                            <input type="checkbox" name="is_age_restricted" class="form-check-input" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
+                            Age Restricted (16+)
+                        </label>
                     </div>
                 </div>
-            @endif
-
-            {{-- Upload Images --}}
-            <div class="admin-card mb-4">
-                <div class="card-title"><i class="bi bi-cloud-upload me-2"></i>Add More Images</div>
-                <input type="file" name="product_images[]" class="form-control" multiple accept="image/*">
             </div>
 
-            {{-- Actions --}}
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-admin btn-lg"><i class="bi bi-save me-2"></i>Update Product</button>
-                <a href="{{ route('admin.products.index') }}" class="btn btn-admin-outline">Cancel</a>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">Product Media</h6>
+                    @if($product->images && count($product->images) > 0)
+                        <div class="row no-gutters mb-3">
+                            @foreach($product->images as $img)
+                                <div class="col-4 p-1">
+                                    <img src="{{ $img }}" class="img-fluid rounded border" style="height: 60px; width: 100%; object-fit: cover;">
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="mb-3">
+                        <label class="form-label">Add More Images</label>
+                        <input type="file" name="product_images[]" class="form-control" multiple accept="image/*">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <button type="submit" class="btn btn-primary btn-block mb-2">
+                        <i data-feather="check-square" class="icon-sm mr-2"></i> Update Product
+                    </button>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-block">
+                        Cancel
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </form>
+
+{{-- Hidden Regenerate Form --}}
+<form id="regenerate-qr-form" action="{{ route('admin.products.regenerateQr', $product) }}" method="POST" style="display: none;">
+    @csrf
+</form>
+
 @endsection

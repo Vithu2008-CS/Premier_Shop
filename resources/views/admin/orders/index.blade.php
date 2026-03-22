@@ -1,55 +1,85 @@
-@extends('layouts.admin')
-@section('title', 'Orders — Admin')
+@extends('layouts.admin_noble')
+@section('title', 'Orders')
 
 @section('content')
-<div class="admin-topbar">
-    <div>
-        <h2>Orders</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-                <li class="breadcrumb-item active">Orders</li>
-            </ol>
-        </nav>
-    </div>
-</div>
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Orders</li>
+  </ol>
+</nav>
 
-<div class="admin-card">
-    <div class="table-responsive">
-        <table class="admin-table">
+<div class="row">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title">Order Management</h6>
+        
+        <div class="table-responsive">
+          <table class="table table-hover">
             <thead>
-                <tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th class="text-right">Actions</th>
+              </tr>
             </thead>
             <tbody>
-                @forelse($orders as $order)
-                    <tr>
-                        <td><a href="{{ route('admin.orders.show', $order) }}" style="color:#A29BFE;text-decoration:none;font-weight:600;">{{ $order->order_number }}</a></td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#A29BFE);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:700;">{{ substr($order->user->name, 0, 1) }}</div>
-                                {{ $order->user->name }}
-                            </div>
-                        </td>
-                        <td class="fw-bold">£{{ number_format($order->total, 2) }}</td>
-                        <td>
-                            <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" class="d-inline">
-                                @csrf @method('PATCH')
-                                <select name="status" class="form-select form-select-sm d-inline" style="width:auto;background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;border-radius:8px;" onchange="this.form.submit()">
-                                    @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
-                                        <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        </td>
-                        <td style="color:var(--admin-muted);">{{ $order->created_at->format('d M Y') }}</td>
-                        <td><a href="{{ route('admin.orders.show', $order) }}" class="btn-icon"><i class="bi bi-eye"></i></a></td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6" class="text-center py-5" style="color:var(--admin-muted);"><i class="bi bi-receipt" style="font-size:2rem;display:block;margin-bottom:8px;"></i>No orders yet</td></tr>
-                @endforelse
+              @forelse($orders as $order)
+                <tr>
+                  <td>
+                      <a href="{{ route('admin.orders.show', $order) }}" class="font-weight-bold text-primary">
+                          {{ $order->order_number }}
+                      </a>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                        <div class="wd-30 h-30 rounded-circle bg-light-primary d-flex align-items-center justify-content-center mr-2 text-primary font-weight-bold" style="font-size: 0.7rem;">
+                            {{ substr($order->user->name, 0, 1) }}
+                        </div>
+                        {{ $order->user->name }}
+                    </div>
+                  </td>
+                  <td class="font-weight-bold">£{{ number_format($order->total, 2) }}</td>
+                  <td>
+                    <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" class="d-inline">
+                        @csrf @method('PATCH')
+                        <select name="status" class="form-control form-control-sm border-0 bg-light wd-120" onchange="this.form.submit()">
+                            @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
+                                <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                  </td>
+                  <td class="text-muted">{{ $order->created_at->format('d M Y') }}</td>
+                  <td class="text-right">
+                    <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline-primary btn-icon btn-sm" title="View Details">
+                        <i data-feather="eye"></i>
+                    </a>
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="6" class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i data-feather="file-text" class="icon-xxl text-muted mb-3"></i>
+                        <p class="text-muted">No orders found in the system.</p>
+                    </div>
+                  </td>
+                </tr>
+              @endforelse
             </tbody>
-        </table>
+          </table>
+        </div>
+
+        <div class="mt-4">
+            {{ $orders->links('pagination::bootstrap-4') }}
+        </div>
+      </div>
     </div>
+  </div>
 </div>
-<div class="mt-3">{{ $orders->links() }}</div>
 @endsection

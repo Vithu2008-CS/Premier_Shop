@@ -1,288 +1,276 @@
 @extends('layouts.app')
 @section('title', 'Premier Shop — Your One-Stop Shop for Quality Products')
 
-@section('content')
-    {{-- Hero --}}
-    {{-- Hero --}}
-    @if(isset($sliders) && $sliders->count() > 0)
-        <section class="hero-slider-section py-0">
-            <div class="container px-0 px-md-3 mt-md-4 mb-md-3">
-                <div id="heroCarousel" class="carousel slide carousel-fade hero-carousel-wrapper" data-bs-ride="carousel" data-bs-interval="5000">
-                    <div class="carousel-indicators">
-                        @foreach($sliders as $i => $slider)
-                            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $i }}" class="{{ $i == 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}"></button>
-                        @endforeach
-                    </div>
+@push('seo')
+{{-- JSON-LD Structured Data --}}
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "WebSite",
+  "name": "Premier Shop",
+  "url": "{{ url('/') }}",
+  "description": "Your one-stop destination for quality products at unbeatable prices.",
+  "potentialAction": {
+    "@@type": "SearchAction",
+    "target": "{{ route('products.index') }}?search={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+@endpush
 
+@section('content')
+
+    {{-- ═══════════════════════════════════════════════════════════
+         PARALLAX HERO SECTION
+    ═══════════════════════════════════════════════════════════ --}}
+    @if(isset($sliders) && $sliders->count() > 0)
+        <section class="parallax-hero" id="heroSection">
+            {{-- Background Carousel (parallax-driven) --}}
+            <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6000">
                 <div class="carousel-inner">
                     @foreach($sliders as $i => $slider)
                         <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
-                            <a href="{{ $slider->link_url ?? '#' }}" class="d-block w-100 position-relative text-decoration-none">
-                                <div class="slider-image-wrapper">
-                                    <img src="{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}" class="d-block w-100 hero-slider-img" alt="{{ $slider->title ? $slider->title . ' - ' . $slider->subtitle : 'Promotional Offer Slide' }}">
-                                    <div class="slider-overlay"></div>
-                                </div>
-                                @if($slider->title || $slider->subtitle)
-                                <div class="carousel-caption">
-                                    <div class="caption-content fade-up">
-                                        @if($slider->title)<h1 class="slider-title">{{ \Illuminate\Support\Str::words($slider->title, 7, '...') }}</h1>@endif
-                                        @if($slider->subtitle)<p class="slider-subtitle">{{ $slider->subtitle }}</p>@endif
-                                    </div>
-                                </div>
-                                @endif
-                            </a>
+                            <div class="parallax-bg" style="background-image: url('{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}');" aria-label="{{ $slider->title ?? 'Promotional slide' }}"></div>
                         </div>
                     @endforeach
                 </div>
+            </div>
 
-                @if($sliders->count() > 1)
-                    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" style="width: 5%;">
-                        <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: rgba(0,0,0,0.5); border-radius: 50%; padding: 1.5rem;"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" style="width: 5%;">
-                        <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: rgba(0,0,0,0.5); border-radius: 50%; padding: 1.5rem;"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                @endif
+            {{-- Gradient Overlay --}}
+            <div class="hero-overlay"></div>
+
+            {{-- Floating Particles --}}
+            <div class="hero-particles">
+                <div class="particle particle-1"></div>
+                <div class="particle particle-2"></div>
+                <div class="particle particle-3"></div>
+                <div class="particle particle-4"></div>
+                <div class="particle particle-5"></div>
             </div>
+
+            {{-- Hero Content --}}
+            <div class="hero-content">
+                <div class="container text-center">
+                    <div class="hero-badge scroll-reveal" data-delay="0">
+                        <span class="badge-dot"></span>
+                        <span>Curated Selection</span>
+                    </div>
+                    <h1 class="hero-title scroll-reveal" data-delay="100">
+                        Elevate Your<br>
+                        <span class="hero-title-accent">Shopping Experience</span>
+                    </h1>
+                    <p class="hero-subtitle scroll-reveal" data-delay="200">
+                        Premium products, unbeatable prices, and fast delivery straight to your door.
+                    </p>
+                    <div class="hero-actions scroll-reveal" data-delay="300">
+                        <a href="{{ route('products.index') }}" class="btn-hero-primary">
+                            <span>Shop Now</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="{{ route('offers') }}" class="btn-hero-glass">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            <span>View Offers</span>
+                        </a>
+                    </div>
+                </div>
             </div>
+
+            {{-- Scroll Indicator --}}
+            <div class="scroll-indicator">
+                <div class="mouse">
+                    <div class="wheel"></div>
+                </div>
+                <span>Scroll to explore</span>
+            </div>
+
+            {{-- Carousel Indicators --}}
+            @if($sliders->count() > 1)
+            <div class="hero-carousel-dots">
+                @foreach($sliders as $i => $slider)
+                    <button data-bs-target="#heroCarousel" data-bs-slide-to="{{ $i }}" class="{{ $i == 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}"></button>
+                @endforeach
+            </div>
+            @endif
         </section>
     @else
-        @php
-        $dicedSlides = [
-            [
-                'title' => 'Premium Devices',
-                'image' => 'https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1080&auto=format&fit=crop',
-            ],
-            [
-                'title' => 'Accessories',
-                'image' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1080&auto=format&fit=crop',
-            ],
-            [
-                'title' => 'Smart Watches',
-                'image' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1080&auto=format&fit=crop',
-            ],
-            [
-                'title' => 'Lifestyle Quality',
-                'image' => 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1080&auto=format&fit=crop',
-            ]
-        ];
-        @endphp
-        <x-diced-hero 
-            topText="Discover Premier"
-            mainText="Quality Goods"
-            subMainText="Explore a curated selection of premium electronics, lifestyle accessories, and everyday essentials. Unveil a paramount collection sourced for those who demand the absolute best."
-            buttonText="Shop Now"
-            buttonLink="{{ route('products.index') }}"
-            :slides="$dicedSlides"
-        />
-    @endif
-
-    @push('styles')
-    <style>
-        .hero-slider-section {
-            width: 100%;
-            margin-top: 0;
-            padding: 0 !important;
-            max-width: 100% !important;
-        }
-        .hero-carousel-wrapper {
-            border-radius: 0;
-            overflow: hidden;
-            box-shadow: none;
-            background-color: #1a1d24; /* Fallback background for network issues */
-        }
-        .hero-slider-section .hero-section {
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }
-        .slider-image-wrapper {
-            position: relative;
-            width: 100%;
-            height: clamp(300px, 45vh, 600px); /* Controlled height for mobile */
-            display: block;
-            overflow: hidden;
-            background-color: #1a1d24; /* Fallback for networks */
-        }
-        .hero-slider-img {
-            width: 100%;
-            height: clamp(300px, 45vh, 600px); /* Match container */
-            object-fit: cover; /* Prevents squishing */
-            display: block; 
-            transform: scale(1); /* stable scale for mobile */
-            transition: transform 6s ease;
-            color: rgba(255, 255, 255, 0.7); 
-            font-size: 1.1rem;
-            text-align: center;
-        }
-        .slider-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to top, rgba(15, 17, 23, 0.9) 0%, rgba(15, 17, 23, 0.2) 60%, rgba(0, 0, 0, 0.1) 100%);
-        }
-        .carousel-caption {
-            bottom: 10%;
-            left: 10%;
-            right: 10%;
-            text-align: left;
-            padding-bottom: 30px;
-        }
-        .slider-title {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 2.2rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            line-height: 1.2;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .slider-subtitle {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.85);
-            max-width: 600px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-        .slider-btn {
-            border-radius: 50px;
-            padding: 12px 28px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #6C5CE7, #A29BFE);
-            border: none;
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
-        }
-        
-        /* Carousel indicator styling */
-        .carousel-indicators {
-            margin-bottom: 1.5rem;
-        }
-        .carousel-indicators button {
-            width: 10px !important;
-            height: 10px !important;
-            border-radius: 50%;
-            margin: 0 6px;
-            background-color: rgba(255, 255, 255, 0.5) !important;
-            border: none !important;
-        }
-        .carousel-indicators button.active {
-            background-color: #6C5CE7 !important;
-            transform: scale(1.3);
-        }
-
-        @media (min-width: 768px) {
-            .hero-slider-section {
-                padding: 0 !important;
-            }
-            .hero-carousel-wrapper {
-                border-radius: 20px;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            }
-            .slider-image-wrapper {
-                height: 400px; /* Reduced desktop height */
-            }
-            .hero-slider-img {
-                height: 400px; /* Reduced desktop height */
-                object-fit: cover; 
-                transform: scale(1.02); /* very subtle initial zoom for life, won't cut aggressively */
-            }
-            .carousel-item.active .hero-slider-img {
-                transform: scale(1);
-            }
-            .carousel-caption {
-                bottom: 15%;
-            }
-            .slider-title {
-                font-size: 3.5rem;
-            }
-            .slider-subtitle {
-                font-size: 1.25rem;
-            }
-        }
-    </style>
-    @endpush
-
-    {{-- Offers Banner --}}
-    @if(isset($offerProducts) && $offerProducts->count() > 0)
-        <section class="section-padding reveal-3d">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="section-title"><i class="bi bi-lightning-fill text-warning me-2"></i>Hot <span
-                                class="gradient-text">Offers</span></h2>
-                        <p class="section-subtitle mb-0">Buy in bulk and save big!</p>
+        {{-- Fallback Hero --}}
+        <section class="parallax-hero" id="heroSection">
+            <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1920&auto=format&fit=crop');"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-particles">
+                <div class="particle particle-1"></div>
+                <div class="particle particle-2"></div>
+                <div class="particle particle-3"></div>
+            </div>
+            <div class="hero-content">
+                <div class="container text-center">
+                    <div class="hero-badge scroll-reveal" data-delay="0">
+                        <span class="badge-dot"></span>
+                        <span>Curated Selection</span>
                     </div>
-                    <a href="{{ route('offers') }}" class="btn btn-outline-primary" style="border-radius:50px;">See All Offers
-                        <i class="bi bi-arrow-right ms-1"></i></a>
+                    <h1 class="hero-title scroll-reveal" data-delay="100">
+                        Discover<br>
+                        <span class="hero-title-accent">Quality Goods</span>
+                    </h1>
+                    <p class="hero-subtitle scroll-reveal" data-delay="200">
+                        Explore a curated selection of premium electronics, lifestyle accessories, and everyday essentials.
+                    </p>
+                    <div class="hero-actions scroll-reveal" data-delay="300">
+                        <a href="{{ route('products.index') }}" class="btn-hero-primary">
+                            <span>Shop Now</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a href="{{ route('offers') }}" class="btn-hero-glass">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            <span>View Offers</span>
+                        </a>
+                    </div>
                 </div>
-                <div class="row g-4 stagger-children">
-                    @foreach($offerProducts as $i => $product)
-                        @include('partials.product_card', ['delay' => $i + 1])
-                    @endforeach
-                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="mouse"><div class="wheel"></div></div>
+                <span>Scroll to explore</span>
             </div>
         </section>
     @endif
 
 
-    {{-- Popular Products --}}
+    {{-- ═══════════════════════════════════════════════════════════
+         CATEGORY SHOWCASE
+    ═══════════════════════════════════════════════════════════ --}}
+    @if(isset($categories) && $categories->count() > 0)
+    <section class="category-showcase-section" aria-label="Shop by Category">
+        <div class="container">
+            <div class="section-header scroll-reveal">
+                <h2 class="section-title"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Shop by <span class="gradient-text">Category</span></h2>
+                <a href="{{ route('categories') }}" class="section-link">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="category-scroll-track">
+                @foreach($categories as $i => $cat)
+                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-showcase-card scroll-reveal" data-delay="{{ ($i % 6) * 80 }}">
+                        <div class="cat-card-glow"></div>
+                        <div class="cat-card-icon">
+                            @if($cat->image)
+                                <img src="{{ $cat->image }}" alt="{{ $cat->name }}" loading="lazy">
+                            @else
+                                <i class="bi bi-tag-fill"></i>
+                            @endif
+                        </div>
+                        <span class="cat-card-name">{{ $cat->name }}</span>
+                        <span class="cat-card-count">{{ $cat->products_count ?? $cat->products()->where('is_active', true)->count() }} items</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+
+    {{-- ═══════════════════════════════════════════════════════════
+         HOT OFFERS
+    ═══════════════════════════════════════════════════════════ --}}
+    @if(isset($offerProducts) && $offerProducts->count() > 0)
+    <section class="section-padding" aria-label="Hot Offers">
+        <div class="section-blob section-blob-left"></div>
+        <div class="container">
+            <div class="section-header scroll-reveal">
+                <div>
+                    <h2 class="section-title"><i class="bi bi-lightning-fill text-warning me-2"></i>Hot <span class="gradient-text">Offers</span></h2>
+                    <p class="section-subtitle mb-0">Buy in bulk and save big!</p>
+                </div>
+                <a href="{{ route('offers') }}" class="btn btn-outline-primary rounded-pill">See All Offers <i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+            <div class="row g-4">
+                @foreach($offerProducts as $i => $product)
+                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
+                        @include('partials.product_card', ['delay' => $i + 1])
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+
+    {{-- ═══════════════════════════════════════════════════════════
+         MOST POPULAR
+    ═══════════════════════════════════════════════════════════ --}}
     @if(isset($popularProducts) && $popularProducts->count() > 0)
-    <section class="section-padding bg-light reveal-3d">
+    <section class="section-padding bg-light" aria-label="Most Popular Products">
+        <div class="section-blob section-blob-right"></div>
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-header scroll-reveal">
                 <h2 class="section-title"><i class="bi bi-star-fill text-warning me-2"></i>Most <span class="gradient-text">Popular</span></h2>
-                <a href="{{ route('products.index', ['sort' => 'popular']) }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
+                <a href="{{ route('products.index', ['sort' => 'popular']) }}" class="btn btn-outline-primary rounded-pill">View All</a>
             </div>
-            <div class="row g-4 stagger-children">
+            <div class="row g-4">
                 @foreach($popularProducts as $i => $product)
-                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
+                        @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                    </div>
                 @endforeach
             </div>
         </div>
     </section>
     @endif
 
-    {{-- New Arrivals --}}
+
+    {{-- ═══════════════════════════════════════════════════════════
+         NEW ARRIVALS
+    ═══════════════════════════════════════════════════════════ --}}
     @if(isset($newProducts) && $newProducts->count() > 0)
-    <section class="section-padding reveal-3d">
+    <section class="section-padding" aria-label="New Arrivals">
+        <div class="section-blob section-blob-center"></div>
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-header scroll-reveal">
                 <h2 class="section-title"><i class="bi bi-rocket-takeoff-fill text-primary me-2"></i>New <span class="text-primary">Arrivals</span></h2>
-                <a href="{{ route('products.index', ['sort' => 'newest']) }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
+                <a href="{{ route('products.index', ['sort' => 'newest']) }}" class="btn btn-outline-primary rounded-pill">View All</a>
             </div>
-            <div class="row g-4 stagger-children">
+            <div class="row g-4">
                 @foreach($newProducts as $i => $product)
-                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
+                        @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                    </div>
                 @endforeach
             </div>
         </div>
     </section>
     @endif
 
-    {{-- Random Products --}}
+
+    {{-- ═══════════════════════════════════════════════════════════
+         DISCOVER MORE
+    ═══════════════════════════════════════════════════════════ --}}
     @if(isset($randomProducts) && $randomProducts->count() > 0)
-    <section class="section-padding bg-light reveal-3d">
+    <section class="section-padding bg-light" aria-label="Discover More Products">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-header scroll-reveal">
                 <h2 class="section-title">Discover <span class="gradient-text">More</span></h2>
-                <a href="{{ route('products.index') }}" class="btn btn-outline-primary" style="border-radius:50px;">View All</a>
+                <a href="{{ route('products.index') }}" class="btn btn-outline-primary rounded-pill">View All</a>
             </div>
-            <div class="row g-4 stagger-children">
+            <div class="row g-4">
                 @foreach($randomProducts as $i => $product)
-                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
+                        @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
+                    </div>
                 @endforeach
             </div>
         </div>
     </section>
     @endif
 
-    {{-- Recently Viewed --}}
+
+    {{-- ═══════════════════════════════════════════════════════════
+         RECENTLY VIEWED
+    ═══════════════════════════════════════════════════════════ --}}
     @if(isset($recentlyViewed) && $recentlyViewed->count() > 0)
-    <section class="section-padding reveal-3d">
+    <section class="section-padding" aria-label="Recently Viewed Products">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="section-header scroll-reveal">
                 <h2 class="section-title"><i class="bi bi-clock-history text-primary me-2"></i>Recently <span class="gradient-text">Viewed</span></h2>
             </div>
-            <div class="recently-viewed-scroll">
+            <div class="recently-viewed-scroll scroll-reveal">
                 @foreach($recentlyViewed as $product)
                     <div class="recently-viewed-item">
                         <a href="{{ route('products.show', $product->slug) }}" class="recently-viewed-card d-block text-decoration-none">
@@ -307,34 +295,45 @@
     </section>
     @endif
 
-    {{-- Trust Bar --}}
-    <section class="trust-bar reveal-3d">
+
+    {{-- ═══════════════════════════════════════════════════════════
+         ANIMATED TRUST BAR
+    ═══════════════════════════════════════════════════════════ --}}
+    <section class="trust-bar-modern" aria-label="Why Shop With Us">
         <div class="container">
-            <div class="row g-4 stagger-children">
-                <div class="col-6 col-md-3">
-                    <div class="trust-item">
-                        <div class="trust-icon"><i class="bi bi-truck"></i></div>
+            <div class="row g-4">
+                <div class="col-6 col-md-3 scroll-reveal" data-delay="0">
+                    <div class="trust-card">
+                        <div class="trust-card-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
                         <h6>Fast Delivery</h6>
-                        <small>we deliver your order within 24 hours</small>
+                        <small>We deliver within 24 hours</small>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="trust-item">
-                        <div class="trust-icon"><i class="bi bi-shield-check"></i></div>
+                <div class="col-6 col-md-3 scroll-reveal" data-delay="100">
+                    <div class="trust-card">
+                        <div class="trust-card-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
                         <h6>Secure Checkout</h6>
                         <small>100% secure payments</small>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="trust-item">
-                        <div class="trust-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <div class="col-6 col-md-3 scroll-reveal" data-delay="200">
+                    <div class="trust-card">
+                        <div class="trust-card-icon">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </div>
                         <h6>Easy Returns</h6>
                         <small>30-day return policy</small>
                     </div>
                 </div>
-                <div class="col-6 col-md-3">
-                    <div class="trust-item">
-                        <div class="trust-icon"><i class="bi bi-headset"></i></div>
+                <div class="col-6 col-md-3 scroll-reveal" data-delay="300">
+                    <div class="trust-card">
+                        <div class="trust-card-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
                         <h6>24/7 Support</h6>
                         <small>Dedicated customer care</small>
                     </div>
@@ -343,21 +342,105 @@
         </div>
     </section>
 
+
+    {{-- ═══════════════════════════════════════════════════════════
+         SCRIPTS — Parallax + Scroll Reveal + Counter
+    ═══════════════════════════════════════════════════════════ --}}
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var myCarousel = document.querySelector('#heroCarousel');
-            if(myCarousel) {
-                // Explicitly initialize Bootstrap carousel for automatic sliding
-                var carousel = new bootstrap.Carousel(myCarousel, {
-                    interval: 1000,
-                    ride: 'carousel',
-                    pause: 'hover'
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // ── Parallax Hero ──────────────────────────────────────
+        const heroSection = document.getElementById('heroSection');
+        if (heroSection && window.innerWidth > 768) {
+            const parallaxBgs = heroSection.querySelectorAll('.parallax-bg');
+            let ticking = false;
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(function() {
+                        const scrolled = window.pageYOffset;
+                        const heroHeight = heroSection.offsetHeight;
+
+                        if (scrolled < heroHeight) {
+                            const yPos = scrolled * 0.4;
+                            parallaxBgs.forEach(bg => {
+                                bg.style.transform = 'translate3d(0, ' + yPos + 'px, 0) scale(1.1)';
+                            });
+
+                            // Fade hero content on scroll
+                            const heroContent = heroSection.querySelector('.hero-content');
+                            if (heroContent) {
+                                const opacity = 1 - (scrolled / (heroHeight * 0.6));
+                                const translateY = scrolled * 0.2;
+                                heroContent.style.opacity = Math.max(0, opacity);
+                                heroContent.style.transform = 'translateY(' + translateY + 'px)';
+                            }
+                        }
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        }
+
+        // ── Scroll Reveal (IntersectionObserver) ───────────────
+        const revealElements = document.querySelectorAll('.scroll-reveal');
+        if (revealElements.length > 0) {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const delay = parseInt(entry.target.getAttribute('data-delay') || '0');
+                        setTimeout(function() {
+                            entry.target.classList.add('revealed');
+                        }, delay);
+                        observer.unobserve(entry.target);
+                    }
                 });
-                // Force cycle immediately after load
-                carousel.cycle();
-            }
-        });
+            }, {
+                threshold: 0.08,
+                rootMargin: '0px 0px -40px 0px'
+            });
+
+            revealElements.forEach(function(el) {
+                observer.observe(el);
+            });
+        }
+
+        // ── Bootstrap Carousel Init ────────────────────────────
+        var myCarousel = document.querySelector('#heroCarousel');
+        if (myCarousel) {
+            var carousel = new bootstrap.Carousel(myCarousel, {
+                interval: 6000,
+                ride: 'carousel',
+                pause: false
+            });
+            carousel.cycle();
+        }
+
+        // ── Smooth Scroll Indicator ────────────────────────────
+        const scrollIndicator = document.querySelector('.scroll-indicator');
+        if (scrollIndicator) {
+            scrollIndicator.addEventListener('click', function() {
+                const nextSection = heroSection.nextElementSibling;
+                if (nextSection) {
+                    nextSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            // Hide on scroll
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 100) {
+                    scrollIndicator.style.opacity = '0';
+                    scrollIndicator.style.pointerEvents = 'none';
+                } else {
+                    scrollIndicator.style.opacity = '1';
+                    scrollIndicator.style.pointerEvents = 'auto';
+                }
+            });
+        }
+    });
     </script>
     @endpush
+
 @endsection

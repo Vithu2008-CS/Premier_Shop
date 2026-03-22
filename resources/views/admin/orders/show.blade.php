@@ -1,208 +1,220 @@
-@extends('layouts.admin')
-@section('title', 'Order ' . $order->order_number . ' — Admin')
-
-@push('styles')
-<style>
-    @media print {
-        body {
-            background: #fff !important;
-            color: #000 !important;
-        }
-        .admin-sidebar, .admin-topbar form, .btn-admin, .btn-admin-outline, .d-lg-none, .alert, .admin-card form, .card-title:contains('Update Status') {
-            display: none !important;
-        }
-        .admin-content {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        .admin-card {
-            border: none !important;
-            background: #fff !important;
-            box-shadow: none !important;
-            padding: 10px 0 !important;
-        }
-        .col-lg-4 .admin-card:last-child {
-            display: none !important; /* Hide update status card completely */
-        }
-        .print-header {
-            display: block !important;
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 20px;
-        }
-        .print-header h1 { margin: 0; color: #000; font-size: 24px; }
-        .print-header p { margin: 5px 0 0; color: #555; }
-        
-        /* Typography adjustments for print */
-        .fw-bold { color: #000 !important; }
-        .text-success { color: #000 !important; }
-        small, p { color: #333 !important; }
-        i.bi { display: none !important; } /* Hide icons in print for cleaner look */
-        .admin-card .card-title {
-            color: #000 !important;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-    }
-    .print-header { display: none; }
-</style>
-@endpush
+@extends('layouts.admin_noble')
+@section('title', 'Order ' . $order->order_number)
 
 @section('content')
-<div class="print-header">
-    <h1>Premier Shop Invoice</h1>
-    <p>Order #{{ $order->order_number }} | Date: {{ $order->created_at->format('M d, Y') }}</p>
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.orders.index') }}">Orders</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ $order->order_number }}</li>
+  </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+  <div>
+    <h4 class="mb-3 mb-md-0">Order: <span class="text-primary">#{{ $order->order_number }}</span></h4>
+  </div>
+  <div class="d-flex align-items-center flex-wrap text-nowrap">
+    <a href="{{ route('admin.orders.print', $order) }}" class="btn btn-outline-primary btn-icon-text mr-2 mb-2 mb-md-0">
+      <i class="btn-icon-prepend" data-feather="printer"></i>
+      Download PDF
+    </a>
+    <a href="{{ route('admin.orders.index') }}" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
+      <i class="btn-icon-prepend" data-feather="arrow-left"></i>
+      Back to List
+    </a>
+  </div>
 </div>
 
-<div class="admin-topbar">
-    <div>
-        <h2>Order {{ $order->order_number }}</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.orders.index') }}">Orders</a></li>
-                <li class="breadcrumb-item active">{{ $order->order_number }}</li>
-            </ol>
-        </nav>
-    </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('admin.orders.print', $order) }}" class="btn btn-admin"><i class="bi bi-file-earmark-pdf me-1"></i> Download PDF</a>
-        <a href="{{ route('admin.orders.index') }}" class="btn btn-admin-outline"><i class="bi bi-arrow-left me-1"></i> Back</a>
-    </div>
-</div>
+<div class="row">
+    <div class="col-lg-8 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Order Items</h6>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($order->items as $item)
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="wd-35 h-35 rounded bg-light-primary d-flex align-items-center justify-content-center mr-2 text-primary">
+                                            <i data-feather="package" class="icon-sm"></i>
+                                        </div>
+                                        <span class="font-weight-bold">{{ $item->product->name }}</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">{{ $item->quantity }}</td>
+                                <td class="text-right">£{{ number_format($item->price, 2) }}</td>
+                                <td class="text-right font-weight-bold">£{{ number_format($item->price * $item->quantity, 2) }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="admin-card">
-            <div class="card-title">Order Items</div>
-            @foreach($order->items as $item)
-            <div class="d-flex justify-content-between align-items-center py-3" style="border-bottom:1px solid var(--admin-border);">
-                <div class="d-flex align-items-center gap-3">
-                    <div style="width:44px;height:44px;border-radius:10px;background:rgba(108,92,231,0.1);display:flex;align-items:center;justify-content:center;">
-                        <i class="bi bi-box-seam" style="color:#A29BFE;"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold">{{ $item->product->name }}</div>
-                        <small style="color:var(--admin-muted);">{{ $item->quantity }} × £{{ number_format($item->price, 2) }}</small>
+                <div class="row mt-4 justify-content-end">
+                    <div class="col-md-5">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal:</span>
+                            <span>£{{ number_format($order->subtotal, 2) }}</span>
+                        </div>
+                        @if($order->discount_amount > 0)
+                        <div class="d-flex justify-content-between mb-2 text-success font-weight-bold">
+                            <span>Discount ({{ $order->coupon_code }}):</span>
+                            <span>-£{{ number_format($order->discount_amount, 2) }}</span>
+                        </div>
+                        @endif
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Shipping:</span>
+                            <span>£{{ number_format($order->shipping_cost, 2) }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <h4 class="font-weight-bold">Total:</h4>
+                            <h4 class="text-primary font-weight-bold">£{{ number_format($order->total, 2) }}</h4>
+                        </div>
                     </div>
                 </div>
-                <strong>£{{ number_format($item->price * $item->quantity, 2) }}</strong>
-            </div>
-            @endforeach
-            <div class="pt-3 mt-2">
-                <div class="d-flex justify-content-between py-1"><span style="color:var(--admin-muted);">Subtotal</span><span>£{{ number_format($order->subtotal, 2) }}</span></div>
-                @if($order->discount_amount > 0)
-                <div class="d-flex justify-content-between py-1 text-success"><span>Discount ({{ $order->coupon_code }})</span><span>-£{{ number_format($order->discount_amount, 2) }}</span></div>
-                @endif
-                <div class="d-flex justify-content-between py-1"><span style="color:var(--admin-muted);">Shipping</span><span>£{{ number_format($order->shipping_cost, 2) }}</span></div>
-                <hr style="border-color:var(--admin-border);">
-                <div class="d-flex justify-content-between fs-5 fw-bold"><span>Total</span><span style="color:#A29BFE;">£{{ number_format($order->total, 2) }}</span></div>
             </div>
         </div>
     </div>
 
     <div class="col-lg-4">
-        <div class="admin-card mb-4">
-            <div class="card-title">Customer</div>
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#A29BFE);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">{{ substr($order->user->name, 0, 1) }}</div>
-                <div>
-                    <div class="fw-bold">{{ $order->user->name }}</div>
-                    <div style="color:var(--admin-muted);font-size:0.85rem;">{{ $order->user->email }}</div>
+        {{-- Customer Info --}}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Customer Information</h6>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="wd-45 h-45 rounded-circle bg-light-info d-flex align-items-center justify-content-center mr-3 text-info font-weight-bold" style="font-size: 1rem;">
+                        {{ substr($order->user->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <h6 class="mb-0">{{ $order->user->name }}</h6>
+                        <p class="text-muted small">{{ $order->user->email }}</p>
+                    </div>
                 </div>
+                @if($order->user->phone)
+                <p class="text-muted small mb-0"><i data-feather="phone" class="icon-xs mr-2"></i>{{ $order->user->phone }}</p>
+                @endif
             </div>
-            @if($order->user->phone)
-            <div style="color:var(--admin-muted);font-size:0.85rem;"><i class="bi bi-telephone me-2"></i>{{ $order->user->phone }}</div>
-            @endif
         </div>
 
-        <div class="admin-card mb-4">
-            <div class="card-title">Shipping</div>
-            @if(isset($order->shipping_address['address_line']))
-                <p style="color:var(--admin-muted);font-size:0.9rem;">
-                    {{ $order->shipping_address['address_line'] }}<br>
-                    {{ $order->shipping_address['city'] ?? '' }}
+        {{-- Shipping Info --}}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Shipping Details</h6>
+                @if(isset($order->shipping_address['address_line']))
+                    <p class="text-muted small mb-2">{{ $order->shipping_address['address_line'] }}</p>
+                    <p class="text-muted small mb-3">{{ $order->shipping_address['city'] ?? '' }}</p>
                     @if(isset($order->shipping_address['phone']))
-                        <br><i class="bi bi-telephone me-1"></i> {{ $order->shipping_address['phone'] }}
+                        <p class="text-muted small mb-0 font-weight-bold">
+                            <i data-feather="truck" class="icon-xs mr-2 text-primary"></i> 
+                            {{ $order->shipping_address['phone'] }}
+                        </p>
                     @endif
-                </p>
-            @else
-                <p style="color:var(--admin-muted);">No address provided</p>
-            @endif
+                @else
+                    <p class="text-muted small italic">No shipping address recorded</p>
+                @endif
+            </div>
         </div>
 
-        <div class="admin-card">
-            <div class="card-title">Update Status & Tracking</div>
-            <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST">
-                @csrf @method('PATCH')
-                <div class="mb-3">
-                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Status</label>
-                    <select name="status" class="form-select" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;">
-                        @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
-                        <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                        @endforeach
-                    </select>
-                </div>
+        {{-- Status Update --}}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Update Status & Tracking</h6>
+                <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST">
+                    @csrf @method('PATCH')
+                    <div class="form-group">
+                        <label class="small text-muted font-weight-bold">Current Status</label>
+                        <select name="status" class="form-control">
+                            @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
+                            <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Processing Date</label>
-                    <input type="datetime-local" name="processing_date" class="form-control" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;" value="{{ $order->processing_date ? $order->processing_date->format('Y-m-d\TH:i') : '' }}">
-                </div>
+                    <div class="form-group">
+                        <label class="small text-muted font-weight-bold">Processing Date</label>
+                        <input type="datetime-local" name="processing_date" class="form-control" value="{{ $order->processing_date ? $order->processing_date->format('Y-m-d\TH:i') : '' }}">
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Shipped Date</label>
-                    <input type="datetime-local" name="shipped_date" class="form-control" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;" value="{{ $order->shipped_date ? $order->shipped_date->format('Y-m-d\TH:i') : '' }}">
-                </div>
+                    <div class="form-group">
+                        <label class="small text-muted font-weight-bold">Shipped Date</label>
+                        <input type="datetime-local" name="shipped_date" class="form-control" value="{{ $order->shipped_date ? $order->shipped_date->format('Y-m-d\TH:i') : '' }}">
+                    </div>
 
-                <div class="mb-4">
-                    <label class="form-label" style="color:var(--admin-muted);font-size:0.85rem;">Delivered Date</label>
-                    <input type="datetime-local" name="delivered_date" class="form-control" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;" value="{{ $order->delivered_date ? $order->delivered_date->format('Y-m-d\TH:i') : '' }}">
-                </div>
+                    <div class="form-group">
+                        <label class="small text-muted font-weight-bold">Delivered Date</label>
+                        <input type="datetime-local" name="delivered_date" class="form-control" value="{{ $order->delivered_date ? $order->delivered_date->format('Y-m-d\TH:i') : '' }}">
+                    </div>
 
-                <button type="submit" class="btn btn-admin w-100">Update Order</button>
-            </form>
+                    <button type="submit" class="btn btn-primary btn-block mt-3">
+                        <i data-feather="refresh-ccw" class="icon-sm mr-2"></i> Update Order
+                    </button>
+                </form>
+            </div>
         </div>
 
+        {{-- Delivery Proof --}}
         @if($order->status === 'delivered' && $order->delivery_proof)
-            <div class="card border-0 shadow-sm rounded-4 p-4 reveal-3d">
-                <h5 class="fw-bold mb-3">Delivery Proof</h5>
-                <img src="{{ (str_starts_with($order->delivery_proof, 'data:image') || str_starts_with($order->delivery_proof, 'http')) ? $order->delivery_proof : asset('storage/' . $order->delivery_proof) }}" class="img-fluid rounded-3 shadow-sm" alt="Delivery Proof">
-                <div class="mt-2 small text-muted">
-                    Delivered on: {{ $order->delivered_date ? $order->delivered_date->format('M d, Y H:i') : 'N/A' }}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">Delivery Proof</h6>
+                    <img src="{{ (str_starts_with($order->delivery_proof, 'data:image') || str_starts_with($order->delivery_proof, 'http')) ? $order->delivery_proof : asset('storage/' . $order->delivery_proof) }}" class="img-fluid rounded border shadow-sm" alt="Delivery Proof">
+                    <p class="text-muted small mt-2 text-center italic">
+                        Delivered: {{ $order->delivered_date ? $order->delivered_date->format('M d, Y H:i') : 'N/A' }}
+                    </p>
                 </div>
             </div>
         @endif
-        <div class="admin-card mb-4">
-            <div class="card-title">Assigned Driver</div>
-            @if($order->driver)
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:40px;height:40px;border-radius:50%;background:#FDCB6E;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">{{ substr($order->driver->name, 0, 1) }}</div>
-                    <div>
-                        <div class="fw-bold">{{ $order->driver->name }}</div>
-                        <div style="color:var(--admin-muted);font-size:0.8rem;">Status: <span class="text-success">On Duty</span></div>
+
+        {{-- Driver Assignment --}}
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Driver Assignment</h6>
+                @if($order->driver)
+                    <div class="d-flex align-items-center mb-4 p-2 rounded bg-light">
+                        <div class="wd-40 h-40 rounded bg-warning d-flex align-items-center justify-content-center mr-3 text-white font-weight-bold">
+                            {{ substr($order->driver->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ $order->driver->name }}</h6>
+                            <span class="text-success small">On Duty</span>
+                        </div>
                     </div>
-                </div>
-            @else
-                <p style="color:var(--admin-muted);font-size:0.9rem;">No driver assigned yet.</p>
-            @endif
+                @else
+                    <div class="alert alert-light border mb-4">
+                        <p class="text-muted small mb-0">No driver assigned yet.</p>
+                    </div>
+                @endif
 
-            <form action="{{ route('admin.orders.assignDriver', $order) }}" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <select name="driver_id" class="form-select" style="background:rgba(255,255,255,0.05);border-color:var(--admin-border);color:#fff;">
-                        <option value="">Select Driver...</option>
-                        @foreach($drivers as $driver)
-                            <option value="{{ $driver->id }}" {{ $order->driver_id == $driver->id ? 'selected' : '' }}>
-                                {{ $driver->name }} ({{ $driver->assigned_orders_count ?? 0 }} active)
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-admin w-100">Assign Driver</button>
-            </form>
+                <form action="{{ route('admin.orders.assignDriver', $order) }}" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <select name="driver_id" class="form-control">
+                            <option value="">Select Driver...</option>
+                            @foreach($drivers as $driver)
+                                <option value="{{ $driver->id }}" {{ $order->driver_id == $driver->id ? 'selected' : '' }}>
+                                    {{ $driver->name }} ({{ $driver->assigned_orders_count ?? 0 }} active)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary btn-block mt-2">
+                        <i data-feather="user-plus" class="icon-sm mr-2"></i> Assign Driver
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <div class="admin-card">
+    </div>
+</div>
 @endsection
