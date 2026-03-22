@@ -1,70 +1,112 @@
-@extends('layouts.admin')
-@section('title', 'Customers — Admin')
+@extends('layouts.admin_noble')
+@section('title', 'Customers')
 
 @section('content')
-<div class="admin-topbar">
-    <div>
-        <h2>Customers</h2>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-                <li class="breadcrumb-item active">Customers</li>
-            </ol>
-        </nav>
-    </div>
-    <span class="badge badge-status bg-gradient-primary" style="font-size:0.85rem;">{{ $customers->total() }} total</span>
-</div>
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Customers</li>
+  </ol>
+</nav>
 
-<div class="admin-card">
-    <div class="table-responsive">
-        <table class="admin-table">
+<div class="row">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h6 class="card-title mb-0">Customer Management</h6>
+            <div class="d-flex align-items-center">
+                <span class="badge badge-light-primary mr-2">{{ $customers->total() }} total</span>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-hover">
             <thead>
-                <tr><th>Customer</th><th>Email</th><th>Role</th><th>Phone</th><th>Age</th><th>Orders</th><th>Joined</th><th>Actions</th></tr>
+              <tr>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Phone</th>
+                <th>Age</th>
+                <th>Orders</th>
+                <th>Joined</th>
+                <th class="text-right">Actions</th>
+              </tr>
             </thead>
             <tbody>
-                @forelse($customers as $customer)
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#00B894,#00CEC9);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.75rem;font-weight:700;">{{ substr($customer->name, 0, 1) }}</div>
-                                <div>
-                                    <div class="fw-bold" style="color:#fff;">{{ $customer->name }}</div>
-                                    @if($customer->isUnder16()) <small class="text-warning">Under 16</small> @endif
-                                </div>
-                            </div>
-                        </td>
-                        <td style="color:var(--admin-muted);">{{ $customer->email }}</td>
-                        <td>
-                            <span class="badge badge-status" style="background:rgba(108,92,231,0.15);color:#A29BFE;">{{ $customer->role?->display_name ?? '—' }}</span>
-                        </td>
-                        <td>{{ $customer->phone ?? '—' }}</td>
-                        <td>
-                            @if($customer->dob)
-                                {{ $customer->age }} yrs
-                            @else
-                                —
+              @forelse($customers as $customer)
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                        <div class="wd-35 h-35 rounded-circle bg-light-success d-flex align-items-center justify-content-center mr-2 text-success font-weight-bold" style="font-size: 0.8rem;">
+                            {{ substr($customer->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <span class="font-weight-bold d-block">{{ $customer->name }}</span>
+                            @if($customer->isUnder16()) 
+                                <span class="badge badge-warning py-0" style="font-size: 0.6rem;">UNDER 16</span>
                             @endif
-                        </td>
-                        <td>
-                            <span class="badge badge-status" style="background:rgba({{ $customer->orders_count > 0 ? '0,184,148' : '255,255,255' }},0.12);color:{{ $customer->orders_count > 0 ? '#00B894' : 'var(--admin-muted)' }};">{{ $customer->orders_count }}</span>
-                        </td>
-                        <td style="color:var(--admin-muted);font-size:0.85rem;">{{ $customer->created_at->format('d M Y') }}</td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <a href="{{ route('admin.customers.show', $customer) }}" class="btn-icon"><i class="bi bi-eye"></i></a>
-                                <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this customer?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn-icon btn-icon-danger"><i class="bi bi-trash3"></i></button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="8" class="text-center py-5" style="color:var(--admin-muted);"><i class="bi bi-people" style="font-size:2rem;display:block;margin-bottom:8px;"></i>No customers yet</td></tr>
-                @endforelse
+                        </div>
+                    </div>
+                  </td>
+                  <td class="text-muted small">{{ $customer->email }}</td>
+                  <td>
+                    <span class="badge badge-outline-primary">{{ $customer->role?->display_name ?? 'User' }}</span>
+                  </td>
+                  <td class="small">{{ $customer->phone ?? '—' }}</td>
+                  <td>
+                    @if($customer->dob)
+                        <span class="font-weight-bold">{{ $customer->age }}</span> <small class="text-muted">yrs</small>
+                    @else
+                        <span class="text-muted small">—</span>
+                    @endif
+                  </td>
+                  <td>
+                    <span class="badge badge-{{ $customer->orders_count > 0 ? 'success' : 'light' }}">
+                        {{ $customer->orders_count }}
+                    </span>
+                  </td>
+                  <td class="text-muted small">{{ $customer->created_at->format('d M Y') }}</td>
+                  <td class="text-right">
+                    <div class="dropdown">
+                        <button class="btn btn-link p-0" type="button" id="dropCust-{{ $customer->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropCust-{{ $customer->id }}">
+                          <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.customers.show', $customer) }}">
+                              <i data-feather="eye" class="icon-sm mr-2"></i> View Profile
+                          </a>
+                          <div class="dropdown-divider"></div>
+                          <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" onsubmit="return confirm('Truly delete this customer?')">
+                              @csrf @method('DELETE')
+                              <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
+                                  <i data-feather="trash-2" class="icon-sm mr-2"></i> Delete
+                              </button>
+                          </form>
+                        </div>
+                    </div>
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="8" class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center">
+                        <i data-feather="users" class="icon-xxl text-muted mb-3"></i>
+                        <p class="text-muted">No customers registered yet.</p>
+                    </div>
+                  </td>
+                </tr>
+              @endforelse
             </tbody>
-        </table>
+          </table>
+        </div>
+
+        <div class="mt-4">
+            {{ $customers->links('pagination::bootstrap-4') }}
+        </div>
+      </div>
     </div>
+  </div>
 </div>
-<div class="mt-3">{{ $customers->links() }}</div>
 @endsection

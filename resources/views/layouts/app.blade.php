@@ -7,8 +7,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description"
         content="Premier Shop — Your one-stop destination for quality products at unbeatable prices.">
+    <meta property="og:title" content="@yield('title', 'Premier Shop — Quality Products')">
+    <meta property="og:description" content="Your one-stop destination for quality products at unbeatable prices.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'Premier Shop — Quality Products')">
+    <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    @stack('seo')
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
 </head>
