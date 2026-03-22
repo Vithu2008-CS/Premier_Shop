@@ -14,6 +14,12 @@
       </div>
     </form>
     <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-nowrap" href="{{ route('home') }}" target="_blank" title="Visit Store">
+          <i data-feather="globe"></i>
+          <span class="ml-1 d-none d-md-inline-block">Visit Store</span>
+        </a>
+      </li>
       <li class="nav-item dropdown nav-notifications">
         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell"></i>
@@ -53,12 +59,12 @@
       </li>
       <li class="nav-item dropdown nav-profile">
         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.src='https://via.placeholder.com/30x30'" alt="profile">
+          <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.onerror=null; this.src='{{ asset('admin_assets/images/placeholder.jpg') }}'" alt="profile">
         </a>
         <div class="dropdown-menu" aria-labelledby="profileDropdown">
           <div class="dropdown-header d-flex flex-column align-items-center">
             <div class="figure mb-3">
-              <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.src='https://via.placeholder.com/80x80'" alt="">
+              <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.onerror=null; this.src='{{ asset('admin_assets/images/placeholder.jpg') }}'" alt="">
             </div>
             <div class="info text-center">
               <p class="name font-weight-bold mb-0">{{ Auth::user()->name }}</p>
@@ -80,9 +86,6 @@
                 </a>
               </li>
               <li class="nav-item">
-                <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
-                    @csrf
-                </form>
                 <a href="javascript:;" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i data-feather="log-out"></i>
                   <span>Log Out</span>
@@ -91,6 +94,14 @@
             </ul>
           </div>
         </div>
+      </li>
+      <li class="nav-item">
+        <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
+            @csrf
+        </form>
+        <a href="javascript:;" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Log Out">
+          <i data-feather="log-out"></i>
+        </a>
       </li>
     </ul>
   </div>

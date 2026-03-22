@@ -45,7 +45,7 @@
                         <div class="d-flex align-items-center gap-3">
                             <img src="{{ $item->product->first_image }}" alt="" 
                                  style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px;" 
-                                 class="shadow-sm" onerror="this.src='/images/placeholder-product.png'">
+                                 class="shadow-sm" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
                             <div>
                                 <h6 class="fw-bold mb-1">{{ $item->product->name }}</h6>
                                 <p class="text-muted small mb-0">Quantity: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}</p>
