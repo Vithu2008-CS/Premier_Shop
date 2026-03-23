@@ -50,7 +50,7 @@
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach($order->items->take(4) as $item)
                                             <div class="order-item-mini" title="{{ $item->product->name }}">
-                                                <img src="{{ $item->product->first_image }}" alt="" class="mini-img shadow-sm" onerror="this.src='/images/placeholder-product.png'">
+                                                <img src="{{ $item->product->first_image }}" alt="" class="mini-img shadow-sm" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
                                                 @if($loop->last && $order->items->count() > 4)
                                                     <div class="bg-light rounded-circle ms-1 d-flex align-items-center justify-content-center" style="width:44px; height:44px; font-size: 0.8rem; font-weight: 700; border: 1px dashed #ddd;">
                                                         +{{ $order->items->count() - 4 }}

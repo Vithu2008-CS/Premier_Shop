@@ -183,9 +183,7 @@
             </div>
             <div class="row g-4">
                 @foreach($offerProducts as $i => $product)
-                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
-                        @include('partials.product_card', ['delay' => $i + 1])
-                    </div>
+                    @include('partials.product_card', ['delay' => $i + 1])
                 @endforeach
             </div>
         </div>
@@ -206,9 +204,7 @@
             </div>
             <div class="row g-4">
                 @foreach($popularProducts as $i => $product)
-                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
-                        @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
-                    </div>
+                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
             </div>
         </div>
@@ -229,9 +225,7 @@
             </div>
             <div class="row g-4">
                 @foreach($newProducts as $i => $product)
-                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
-                        @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
-                    </div>
+                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
             </div>
         </div>
@@ -251,9 +245,7 @@
             </div>
             <div class="row g-4">
                 @foreach($randomProducts as $i => $product)
-                    <div class="scroll-reveal" data-delay="{{ $i * 100 }}">
-                        @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
-                    </div>
+                    @include('partials.product_card', ['product' => $product, 'delay' => ($i % 4) + 1])
                 @endforeach
             </div>
         </div>

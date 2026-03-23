@@ -1,7 +1,7 @@
 <nav class="sidebar">
   <div class="sidebar-header">
     <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-      Noble<span>UI</span>
+      Premier<span>Shop</span>
     </a>
     <div class="sidebar-toggler not-active">
       <span></span>
@@ -90,12 +90,6 @@
       </li>
 
 
-      <li class="nav-item">
-        <a href="https://www.nobleui.com/html/documentation/docs.html" target="_blank" class="nav-link">
-          <i class="link-icon" data-feather="hash"></i>
-          <span class="link-title">Documentation</span>
-        </a>
-      </li>
     </ul>
   </div>
 </nav>
