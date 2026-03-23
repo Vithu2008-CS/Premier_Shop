@@ -14,51 +14,64 @@
       </div>
     </form>
     <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link d-flex align-items-center text-nowrap" href="{{ route('home') }}" target="_blank" title="Visit Store">
+          <i data-feather="globe"></i>
+          <span class="ml-1 d-none d-md-inline-block">Visit Store</span>
+        </a>
+      </li>
       <li class="nav-item dropdown nav-notifications">
         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell"></i>
+          @if($notificationData['pendingOrdersCount'] > 0)
           <div class="indicator">
             <div class="circle"></div>
           </div>
+          @endif
         </a>
         <div class="dropdown-menu" aria-labelledby="notificationDropdown">
           <div class="dropdown-header d-flex align-items-center justify-content-between">
-            <p class="mb-0 font-weight-medium">New Notifications</p>
+            <p class="mb-0 font-weight-medium">{{ $notificationData['pendingOrdersCount'] }} New Notifications</p>
             <a href="javascript:;" class="text-muted">Clear all</a>
           </div>
           <div class="dropdown-body">
-            <a href="javascript:;" class="dropdown-item">
+            @foreach($notificationData['recentOrders'] as $order)
+            <a href="{{ route('admin.orders.show', $order) }}" class="dropdown-item">
+              <div class="icon">
+                <i data-feather="shopping-cart"></i>
+              </div>
+              <div class="content">
+                <p>Order {{ $order->order_number }}</p>
+                <p class="sub-text text-muted">{{ $order->created_at->diffForHumans() }}</p>
+              </div>
+            </a>
+            @endforeach
+            
+            @foreach($notificationData['recentCustomers'] as $customer)
+            <a href="{{ route('admin.customers.show', $customer) }}" class="dropdown-item">
               <div class="icon">
                 <i data-feather="user-plus"></i>
               </div>
               <div class="content">
-                <p>New customer registered</p>
-                <p class="sub-text text-muted">2 sec ago</p>
+                <p>New customer: {{ $customer->name }}</p>
+                <p class="sub-text text-muted">{{ $customer->created_at->diffForHumans() }}</p>
               </div>
             </a>
-            <a href="javascript:;" class="dropdown-item">
-              <div class="icon">
-                <i data-feather="gift"></i>
-              </div>
-              <div class="content">
-                <p>New Order Received</p>
-                <p class="sub-text text-muted">30 min ago</p>
-              </div>
-            </a>
+            @endforeach
           </div>
           <div class="dropdown-footer d-flex align-items-center justify-content-center">
-            <a href="javascript:;">View all</a>
+            <a href="{{ route('admin.orders.index') }}">View all orders</a>
           </div>
         </div>
       </li>
       <li class="nav-item dropdown nav-profile">
         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.src='https://via.placeholder.com/30x30'" alt="profile">
+          <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.onerror=null; this.src='{{ asset('admin_assets/images/placeholder.jpg') }}'" alt="profile">
         </a>
         <div class="dropdown-menu" aria-labelledby="profileDropdown">
           <div class="dropdown-header d-flex flex-column align-items-center">
             <div class="figure mb-3">
-              <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.src='https://via.placeholder.com/80x80'" alt="">
+              <img src="{{ asset('admin_assets/images/user.png') }}" onerror="this.onerror=null; this.src='{{ asset('admin_assets/images/placeholder.jpg') }}'" alt="">
             </div>
             <div class="info text-center">
               <p class="name font-weight-bold mb-0">{{ Auth::user()->name }}</p>
@@ -68,21 +81,18 @@
           <div class="dropdown-body">
             <ul class="profile-nav p-0 pt-3">
               <li class="nav-item">
-                <a href="{{ route('admin.settings.index') }}" class="nav-link">
+                <a href="{{ route('admin.profile') }}" class="nav-link">
                   <i data-feather="user"></i>
                   <span>Profile</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('admin.settings.index') }}" class="nav-link">
+                <a href="{{ route('admin.profile') }}" class="nav-link">
                   <i data-feather="edit"></i>
                   <span>Edit Profile</span>
                 </a>
               </li>
               <li class="nav-item">
-                <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
-                    @csrf
-                </form>
                 <a href="javascript:;" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i data-feather="log-out"></i>
                   <span>Log Out</span>
@@ -92,6 +102,9 @@
           </div>
         </div>
       </li>
+      <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none;">
+        @csrf
+      </form>
     </ul>
   </div>
 </nav>

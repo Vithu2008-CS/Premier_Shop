@@ -138,7 +138,7 @@
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="mr-3">
-                        @if($product->images && count($product->images) > 0)
+                        @if($product->images && is_array($product->images) && count($product->images) > 0)
                           <img src="{{ $product->images[0] }}" class="wd-40 ht-40 rounded-circle" alt="">
                         @else
                           <div class="wd-40 ht-40 rounded-circle bg-soft-primary d-flex align-items-center justify-content-center">

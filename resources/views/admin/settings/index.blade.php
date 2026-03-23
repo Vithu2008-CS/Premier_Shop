@@ -60,7 +60,9 @@
                                     <tr>
                                         <td class="font-weight-bold text-capitalize align-middle">{{ $day }}</td>
                                         @php
-                                            $hours = $settings->other_settings['shop_hours'][$day] ?? [];
+                                            $otherSettings = $settings->other_settings ?? [];
+                                            $shopHours = $otherSettings['shop_hours'] ?? [];
+                                            $hours = $shopHours[$day] ?? [];
                                             $openTime = $hours['open'] ?? '';
                                             $closeTime = $hours['close'] ?? '';
                                             $isClosed = $hours['closed'] ?? false;
@@ -85,7 +87,7 @@
 
                     <div class="mb-4">
                         <label class="form-label">Shop Notice Banner (Optional, displayed on homepage)</label>
-                        <textarea name="shop_notice" class="form-control" rows="2" placeholder="E.g., Special holiday hours in effect!">{{ $settings->other_settings['shop_notice'] ?? '' }}</textarea>
+                        <textarea name="shop_notice" class="form-control" rows="2" placeholder="E.g., Special holiday hours in effect!">{{ ($settings->other_settings['shop_notice'] ?? '') }}</textarea>
                     </div>
 
                     <div class="d-flex justify-content-end">

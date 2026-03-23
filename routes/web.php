@@ -109,6 +109,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
 
+    // Admin Profile
+    Route::get('profile', [ProfileController::class, 'editAdmin'])->name('profile');
+
     // Roles & Permissions
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
 
