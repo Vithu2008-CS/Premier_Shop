@@ -218,11 +218,13 @@ class CheckoutController extends Controller
         try {
             Mail::to($order->user->email)->send(new OrderReceipt($order));
             
+            $htmlContent = view('emails.order-receipt', compact('order'))->render();
+
             \App\Models\ContactMessage::create([
                 'name' => 'System (Checkout)',
                 'email' => $order->user->email,
                 'subject' => 'Your Premier Shop Order #' . $order->order_number,
-                'message' => "Receipt for Order #{$order->order_number} has been sent.\n(Automated system email)",
+                'message' => $htmlContent,
                 'is_read' => true,
                 'folder' => 'sent',
             ]);

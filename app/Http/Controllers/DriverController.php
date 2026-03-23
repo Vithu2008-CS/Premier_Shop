@@ -79,11 +79,13 @@ class DriverController extends Controller
         try {
             \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
             
+            $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
+
             \App\Models\ContactMessage::create([
                 'name' => 'System (Driver)',
                 'email' => $order->user->email,
                 'subject' => 'Your order #' . $order->order_number . ' status has been updated to ' . $order->status,
-                'message' => "Order #{$order->order_number} status was updated to {$order->status} by a driver.\n(Automated system email)",
+                'message' => $htmlContent,
                 'is_read' => true,
                 'folder' => 'sent',
             ]);

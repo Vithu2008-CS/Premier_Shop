@@ -145,11 +145,14 @@ class MailController extends Controller
 
         $emails = array_unique($emails);
 
+        $parsedMessage = \Illuminate\Support\Str::markdown($request->message);
+        $htmlContent = view('emails.admin_custom', ['mailMessage' => $parsedMessage])->render();
+
         $isDraft = $request->has('save_draft');
 
         if (!$isDraft) {
             foreach ($emails as $email) {
-                Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $request->message));
+                Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $parsedMessage));
             }
             \Log::info("Admin mail sent successfully to recipients: " . implode(', ', $emails));
         }
@@ -159,7 +162,7 @@ class MailController extends Controller
             'name' => 'Admin (' . auth()->user()->name . ')',
             'email' => implode(', ', $emails), // store all recipients in email column
             'subject' => $request->subject,
-            'message' => $request->message,
+            'message' => $isDraft ? $request->message : $htmlContent,
             'is_read' => true, // Outbound messages are inherently read
             'folder' => $isDraft ? 'draft' : 'sent',
         ]);

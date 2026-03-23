@@ -66,11 +66,13 @@ class OrderController extends Controller
             try {
                 \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
 
+                $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
+
                 \App\Models\ContactMessage::create([
                     'name' => 'System (' . (auth()->user()->name ?? 'Admin') . ')',
                     'email' => $order->user->email,
                     'subject' => 'Your order #' . $order->order_number . ' status has been updated to ' . $order->status,
-                    'message' => "Order #{$order->order_number} status was updated to {$order->status} by admin.\n(Automated system email)",
+                    'message' => $htmlContent,
                     'is_read' => true,
                     'folder' => 'sent',
                 ]);

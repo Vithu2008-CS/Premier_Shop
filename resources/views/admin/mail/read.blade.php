@@ -59,7 +59,11 @@
                             </div>
                         </div>
                         <div class="email-body">
-                            {!! nl2br(e($message->message)) !!}
+                            @if(\Illuminate\Support\Str::contains($message->message, ['<html', '<body', '<table']))
+                                <iframe srcdoc="{{ $message->message }}" style="width: 100%; height: 800px; border: none; overflow: hidden; border-radius: 8px;"></iframe>
+                            @else
+                                {!! nl2br(e($message->message)) !!}
+                            @endif
                             
                             @if($message->phone)
                                 <hr>
