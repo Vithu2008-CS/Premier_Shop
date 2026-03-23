@@ -120,6 +120,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Drivers Monitoring & Management
     Route::resource('drivers', AdminDriverController::class);
+
+    // Mail Service
+    Route::group(['prefix' => 'mail', 'as' => 'mail.'], function () {
+        Route::get('inbox', [\App\Http\Controllers\Admin\MailController::class, 'inbox'])->name('inbox');
+        Route::get('read/{id}', [\App\Http\Controllers\Admin\MailController::class, 'read'])->name('read');
+        Route::get('compose', [\App\Http\Controllers\Admin\MailController::class, 'compose'])->name('compose');
+        Route::post('send', [\App\Http\Controllers\Admin\MailController::class, 'send'])->name('send');
+        Route::delete('delete/{id}', [\App\Http\Controllers\Admin\MailController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // Driver Routes
