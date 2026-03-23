@@ -59,7 +59,7 @@
                                         <label class="col-md-1 control-label">To:</label>
                                         <div class="col-md-11">
                                             <div class="form-group">
-                                                <select name="to" class="compose-multiple-select form-control w-100" multiple="multiple">
+                                                <select name="to[]" class="compose-multiple-select form-control w-100" multiple="multiple">
                                                     @if($to)
                                                         <option value="{{ $to }}" selected>{{ $to }}</option>
                                                     @endif
@@ -125,6 +125,11 @@
       if ($("#simpleMdeEditor").length) {
         var simplemde = new SimpleMDE({
           element: $("#simpleMdeEditor")[0]
+        });
+
+        // Ensure SimpleMDE content is synced to the textarea on form submit
+        $('form').on('submit', function() {
+          $("#simpleMdeEditor").val(simplemde.value());
         });
       }
     });

@@ -61,10 +61,30 @@ class MailController extends Controller
             'message' => 'required',
         ]);
 
-        // For now, we simulate sending or use Laravel Mail if configured
-        // In a real app, you'd trigger a Mailable here.
+        $recipients = $request->to;
+        if (!is_array($recipients)) {
+            $recipients = explode(',', $recipients);
+        }
+
+        $emails = [];
+        foreach ($recipients as $recipient) {
+            if ($recipient === 'newsletter') {
+                $subscriberEmails = NewsletterSubscription::pluck('email')->toArray();
+                $emails = array_merge($emails, $subscriberEmails);
+            } else {
+                $emails[] = trim($recipient);
+            }
+        }
+
+        $emails = array_unique($emails);
+
+        foreach ($emails as $email) {
+            Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $request->message));
+        }
+
+        \Log::info("Admin mail sent successfully to recipients: " . implode(', ', $emails));
         
-        return redirect()->route('admin.mail.inbox')->with('success', 'Message sent successfully!');
+        return redirect()->route('admin.mail.inbox')->with('success', 'Message sent successfully to ' . count($emails) . ' recipient(s)!');
     }
 
     /**
