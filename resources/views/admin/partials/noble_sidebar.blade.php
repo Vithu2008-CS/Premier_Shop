@@ -18,6 +18,13 @@
           <span class="link-title">Dashboard</span>
         </a>
       </li>
+      <li class="nav-item nav-category">Web Apps</li>
+      <li class="nav-item {{ Request::is('admin/mail*') ? 'active' : '' }}">
+        <a href="{{ route('admin.mail.inbox') }}" class="nav-link">
+          <i class="link-icon" data-feather="mail"></i>
+          <span class="link-title">Email</span>
+        </a>
+      </li>
       <li class="nav-item nav-category">Shop Management</li>
       
       <li class="nav-item {{ Request::is('admin/categories*') ? 'active' : '' }}">
