@@ -28,6 +28,15 @@ class AppServiceProvider extends ServiceProvider
             $view->with('globalCategories', \App\Models\Category::withCount('products')->get());
         });
 
+        \Illuminate\Support\Facades\View::composer('layouts.admin_noble', function ($view) {
+            $view->with('notificationData', [
+                'pendingOrdersCount' => \App\Models\Order::where('status', 'pending')->count(),
+                'recentOrders' => \App\Models\Order::with('user')->latest()->limit(3)->get(),
+                'recentCustomers' => \App\Models\User::whereHas('role', fn($q) => $q->where('name', 'customer'))
+                    ->latest()->limit(3)->get(),
+            ]);
+        });
+
         \Illuminate\Validation\Rules\Password::defaults(function () {
             return \Illuminate\Validation\Rules\Password::min(12)
                 ->letters()

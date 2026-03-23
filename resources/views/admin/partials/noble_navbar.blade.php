@@ -23,37 +23,44 @@
       <li class="nav-item dropdown nav-notifications">
         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell"></i>
+          @if($notificationData['pendingOrdersCount'] > 0)
           <div class="indicator">
             <div class="circle"></div>
           </div>
+          @endif
         </a>
         <div class="dropdown-menu" aria-labelledby="notificationDropdown">
           <div class="dropdown-header d-flex align-items-center justify-content-between">
-            <p class="mb-0 font-weight-medium">New Notifications</p>
+            <p class="mb-0 font-weight-medium">{{ $notificationData['pendingOrdersCount'] }} New Notifications</p>
             <a href="javascript:;" class="text-muted">Clear all</a>
           </div>
           <div class="dropdown-body">
-            <a href="javascript:;" class="dropdown-item">
+            @foreach($notificationData['recentOrders'] as $order)
+            <a href="{{ route('admin.orders.show', $order) }}" class="dropdown-item">
+              <div class="icon">
+                <i data-feather="shopping-cart"></i>
+              </div>
+              <div class="content">
+                <p>Order {{ $order->order_number }}</p>
+                <p class="sub-text text-muted">{{ $order->created_at->diffForHumans() }}</p>
+              </div>
+            </a>
+            @endforeach
+            
+            @foreach($notificationData['recentCustomers'] as $customer)
+            <a href="{{ route('admin.customers.show', $customer) }}" class="dropdown-item">
               <div class="icon">
                 <i data-feather="user-plus"></i>
               </div>
               <div class="content">
-                <p>New customer registered</p>
-                <p class="sub-text text-muted">2 sec ago</p>
+                <p>New customer: {{ $customer->name }}</p>
+                <p class="sub-text text-muted">{{ $customer->created_at->diffForHumans() }}</p>
               </div>
             </a>
-            <a href="javascript:;" class="dropdown-item">
-              <div class="icon">
-                <i data-feather="gift"></i>
-              </div>
-              <div class="content">
-                <p>New Order Received</p>
-                <p class="sub-text text-muted">30 min ago</p>
-              </div>
-            </a>
+            @endforeach
           </div>
           <div class="dropdown-footer d-flex align-items-center justify-content-center">
-            <a href="javascript:;">View all</a>
+            <a href="{{ route('admin.orders.index') }}">View all orders</a>
           </div>
         </div>
       </li>
