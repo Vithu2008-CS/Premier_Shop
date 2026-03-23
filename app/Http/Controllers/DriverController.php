@@ -78,6 +78,15 @@ class DriverController extends Controller
         // Notify user
         try {
             \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+            
+            \App\Models\ContactMessage::create([
+                'name' => 'System (Driver)',
+                'email' => $order->user->email,
+                'subject' => 'Your order #' . $order->order_number . ' status has been updated to ' . $order->status,
+                'message' => "Order #{$order->order_number} status was updated to {$order->status} by a driver.\n(Automated system email)",
+                'is_read' => true,
+                'folder' => 'sent',
+            ]);
         } catch (\Exception $e) {
             \Log::error('Failed to send order status email: ' . $e->getMessage());
         }
