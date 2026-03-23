@@ -5,6 +5,12 @@
 @push('plugin-styles')
   <link rel="stylesheet" href="{{ asset('admin_assets/vendors/select2/select2.min.css') }}">
   <link rel="stylesheet" href="{{ asset('admin_assets/vendors/simplemde/simplemde.min.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .editor-toolbar a { color: #333 !important; }
+    .editor-toolbar a.active, .editor-toolbar a:hover { color: #000 !important; background: #f0f0f0; border-color: #f0f0f0; }
+    .editor-toolbar i { color: inherit !important; }
+  </style>
 @endpush
 
 @section('content')
@@ -13,37 +19,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-3 email-aside border-lg-right">
-                        <div class="aside-content">
-                            <div class="aside-header">
-                                <button class="navbar-toggle" data-target=".aside-nav" data-toggle="collapse" type="button">
-                                    <span class="icon"><i data-feather="chevron-down"></i></span>
-                                </button>
-                                <span class="title">Mail Service</span>
-                                <p class="description">{{ auth()->user()->email }}</p>
-                            </div>
-                            <div class="aside-compose">
-                                <a class="btn btn-primary btn-block" href="{{ route('admin.mail.compose') }}">Compose Email</a>
-                            </div>
-                            <div class="aside-nav collapse">
-                                <ul class="nav">
-                                    <li>
-                                        <a href="{{ route('admin.mail.inbox') }}">
-                                            <span class="icon"><i data-feather="inbox"></i></span>Inbox
-                                            @if($unreadCount > 0)
-                                                <span class="badge badge-danger-muted text-white font-weight-bold float-right">{{ $unreadCount }}</span>
-                                            @endif
-                                        </a>
-                                    </li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="mail"></i></span>Sent Mail</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="briefcase"></i></span>Important</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="file"></i></span>Drafts</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="star"></i></span>Tags</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="trash"></i></span>Trash</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    @include('admin.mail.partials.sidebar')
                     <div class="col-lg-9 email-content">
                         <div class="email-head">
                             <div class="email-head-title d-flex align-items-center">
@@ -89,7 +65,8 @@
                                     <div class="col-md-12">
                                         <div class="form-group mb-0">
                                             <button class="btn btn-primary btn-space" type="submit"><i class="icon s7-mail"></i> Send</button>
-                                            <a href="{{ route('admin.mail.inbox') }}" class="btn btn-secondary btn-space" type="button"><i class="icon s7-close"></i> Cancel</a>
+                                            <button type="submit" name="save_draft" value="1" class="btn btn-info btn-space"><i class="icon s7-file"></i> Save as Draft</button>
+                                            <a href="{{ route('admin.mail.inbox') }}" class="btn btn-secondary btn-space"><i class="icon s7-close"></i> Cancel</a>
                                         </div>
                                     </div>
                                 </div>

@@ -15,10 +15,77 @@ class MailController extends Controller
      */
     public function inbox()
     {
-        $messages = ContactMessage::orderBy('created_at', 'desc')->paginate(15);
-        $unreadCount = ContactMessage::where('is_read', false)->count();
+        $messages = ContactMessage::where('folder', 'inbox')
+            ->where('is_trash', false)
+            ->orderBy('created_at', 'desc')->paginate(15);
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
         
-        return view('admin.mail.inbox', compact('messages', 'unreadCount'));
+        $pageTitle = 'Inbox';
+        $pageIcon = 'inbox';
+        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+    }
+
+    public function sent()
+    {
+        $messages = ContactMessage::where('folder', 'sent')
+            ->where('is_trash', false)
+            ->orderBy('created_at', 'desc')->paginate(15);
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
+        
+        $pageTitle = 'Sent Mail';
+        $pageIcon = 'mail';
+        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+    }
+
+    public function important()
+    {
+        $messages = ContactMessage::where('is_starred', true)
+            ->where('is_trash', false)
+            ->orderBy('created_at', 'desc')->paginate(15);
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
+        
+        $pageTitle = 'Important';
+        $pageIcon = 'briefcase';
+        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+    }
+
+    public function drafts()
+    {
+        $messages = ContactMessage::where('folder', 'draft')
+            ->where('is_trash', false)
+            ->orderBy('created_at', 'desc')->paginate(15);
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
+        
+        $pageTitle = 'Drafts';
+        $pageIcon = 'file';
+        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+    }
+
+    public function trash()
+    {
+        $messages = ContactMessage::where('is_trash', true)
+            ->orderBy('created_at', 'desc')->paginate(15);
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
+        
+        $pageTitle = 'Trash';
+        $pageIcon = 'trash';
+        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+    }
+
+    public function tags($tag = null)
+    {
+        $query = ContactMessage::where('is_trash', false);
+        if ($tag) {
+            $query->where('tags', 'like', "%{$tag}%");
+        } else {
+            $query->whereNotNull('tags');
+        }
+        $messages = $query->orderBy('created_at', 'desc')->paginate(15);
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
+        
+        $pageTitle = $tag ? ucfirst($tag) : 'Tags';
+        $pageIcon = 'tag';
+        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
     }
 
     /**
@@ -78,13 +145,38 @@ class MailController extends Controller
 
         $emails = array_unique($emails);
 
-        foreach ($emails as $email) {
-            Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $request->message));
+        $isDraft = $request->has('save_draft');
+
+        if (!$isDraft) {
+            foreach ($emails as $email) {
+                Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $request->message));
+            }
+            \Log::info("Admin mail sent successfully to recipients: " . implode(', ', $emails));
         }
 
-        \Log::info("Admin mail sent successfully to recipients: " . implode(', ', $emails));
+        // Save to DB
+        ContactMessage::create([
+            'name' => 'Admin (' . auth()->user()->name . ')',
+            'email' => implode(', ', $emails), // store all recipients in email column
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'is_read' => true, // Outbound messages are inherently read
+            'folder' => $isDraft ? 'draft' : 'sent',
+        ]);
         
-        return redirect()->route('admin.mail.inbox')->with('success', 'Message sent successfully to ' . count($emails) . ' recipient(s)!');
+        if ($isDraft) {
+            return redirect()->route('admin.mail.drafts')->with('success', 'Draft saved successfully!');
+        }
+        return redirect()->route('admin.mail.sent')->with('success', 'Message sent successfully to ' . count($emails) . ' recipient(s)!');
+    }
+
+    public function toggleStar($id)
+    {
+        $message = ContactMessage::findOrFail($id);
+        $message->is_starred = !$message->is_starred;
+        $message->save();
+        
+        return back()->with('success', 'Message marked as ' . ($message->is_starred ? 'important' : 'unimportant') . '.');
     }
 
     /**
@@ -93,8 +185,13 @@ class MailController extends Controller
     public function destroy($id)
     {
         $message = ContactMessage::findOrFail($id);
-        $message->delete();
-        
-        return redirect()->route('admin.mail.inbox')->with('success', 'Message deleted successfully!');
+        if ($message->is_trash) {
+            $message->delete();
+            return redirect()->route('admin.mail.trash')->with('success', 'Message permanently deleted!');
+        } else {
+            $message->is_trash = true;
+            $message->save();
+            return back()->with('success', 'Message moved to trash!');
+        }
     }
 }

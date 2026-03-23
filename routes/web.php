@@ -124,9 +124,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Mail Service
     Route::group(['prefix' => 'mail', 'as' => 'mail.'], function () {
         Route::get('inbox', [\App\Http\Controllers\Admin\MailController::class, 'inbox'])->name('inbox');
+        Route::get('sent', [\App\Http\Controllers\Admin\MailController::class, 'sent'])->name('sent');
+        Route::get('important', [\App\Http\Controllers\Admin\MailController::class, 'important'])->name('important');
+        Route::get('drafts', [\App\Http\Controllers\Admin\MailController::class, 'drafts'])->name('drafts');
+        Route::get('trash', [\App\Http\Controllers\Admin\MailController::class, 'trash'])->name('trash');
+        Route::get('tags/{tag?}', [\App\Http\Controllers\Admin\MailController::class, 'tags'])->name('tags');
+        
         Route::get('read/{id}', [\App\Http\Controllers\Admin\MailController::class, 'read'])->name('read');
         Route::get('compose', [\App\Http\Controllers\Admin\MailController::class, 'compose'])->name('compose');
         Route::post('send', [\App\Http\Controllers\Admin\MailController::class, 'send'])->name('send');
+        Route::post('star/{id}', [\App\Http\Controllers\Admin\MailController::class, 'toggleStar'])->name('star');
         Route::delete('delete/{id}', [\App\Http\Controllers\Admin\MailController::class, 'destroy'])->name('destroy');
     });
 });

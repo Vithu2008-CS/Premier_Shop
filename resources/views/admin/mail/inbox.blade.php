@@ -8,56 +8,14 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-3 email-aside border-lg-right">
-                        <div class="aside-content">
-                            <div class="aside-header">
-                                <button class="navbar-toggle" data-target=".aside-nav" data-toggle="collapse" type="button">
-                                    <span class="icon"><i data-feather="chevron-down"></i></span>
-                                </button>
-                                <span class="title">Mail Service</span>
-                                <p class="description">{{ auth()->user()->email }}</p>
-                            </div>
-                            <div class="aside-compose">
-                                <a class="btn btn-primary btn-block" href="{{ route('admin.mail.compose') }}">Compose Email</a>
-                            </div>
-                            <div class="aside-nav collapse">
-                                <ul class="nav">
-                                    <li class="active">
-                                        <a href="{{ route('admin.mail.inbox') }}">
-                                            <span class="icon"><i data-feather="inbox"></i></span>Inbox
-                                            @if($unreadCount > 0)
-                                                <span class="badge badge-danger-muted text-white font-weight-bold float-right">{{ $unreadCount }}</span>
-                                            @endif
-                                        </a>
-                                    </li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="mail"></i></span>Sent Mail</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="briefcase"></i></span>Important</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="file"></i></span>Drafts</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="star"></i></span>Tags</a></li>
-                                    <li><a href="javascript:;"><span class="icon"><i data-feather="trash"></i></span>Trash</a></li>
-                                </ul>
-                                <span class="title">Labels</span>
-                                <ul class="nav nav-pills nav-stacked">
-                                    <li>
-                                        <a href="javascript:;"><i data-feather="tag" class="text-warning"></i> Important </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:;"><i data-feather="tag" class="text-primary"></i> Business </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:;"><i data-feather="tag" class="text-info"></i> Inspiration </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    @include('admin.mail.partials.sidebar')
                     <div class="col-lg-9 email-content">
                         <div class="email-inbox-header">
                             <div class="row align-items-center">
                                 <div class="col-lg-6">
                                     <div class="email-title mb-2 mb-md-0">
-                                        <span class="icon"><i data-feather="inbox"></i></span> Inbox 
-                                        @if($unreadCount > 0)
+                                        <span class="icon"><i data-feather="{{ $pageIcon ?? 'inbox' }}"></i></span> {{ $pageTitle ?? 'Inbox' }} 
+                                        @if($unreadCount > 0 && ($pageTitle ?? 'Inbox') === 'Inbox')
                                             <span class="new-messages">({{ $unreadCount }} new messages)</span>
                                         @endif
                                     </div>
@@ -114,7 +72,12 @@
                                                 <input type="checkbox" class="form-check-input">
                                             </label>
                                         </div>
-                                        <a class="favorite" href="javascript:;"><span><i data-feather="star"></i></span></a>
+                                        <form action="{{ route('admin.mail.star', $msg->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="favorite p-0 border-0 bg-transparent" style="cursor: pointer; outline: none;">
+                                                <span><i data-feather="star" class="{{ $msg->is_starred ? 'text-warning fill-warning' : '' }}"></i></span>
+                                            </button>
+                                        </form>
                                     </div>
                                     <a href="{{ route('admin.mail.read', $msg->id) }}" class="email-list-detail">
                                         <div class="content">
