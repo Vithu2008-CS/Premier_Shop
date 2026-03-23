@@ -1,58 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Order Status Update</title>
-    <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #f4f4f4; padding: 20px; color: #333; }
-        .container { background-color: #ffffff; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #6C5CE7; padding-bottom: 15px; }
-        .header h1 { color: #6C5CE7; margin: 0; }
-        .content { font-size: 16px; line-height: 1.6; }
-        .order-details { background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #777; }
-        .btn { display: inline-block; padding: 10px 20px; background-color: #6C5CE7; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Premier Shop</h1>
+@extends('emails.layouts.master')
+@section('title', 'Order Status Update')
+@section('header_subtitle', 'Update on Order #' . $order->order_number)
+
+@section('content')
+<tr>
+    <td style="padding:24px 40px 0;text-align:center;">
+        <h2 style="margin:0;font-size:22px;color:#2d3436;font-weight:700;">Hi {{ $order->user->name }},</h2>
+        <p style="margin:12px 0 0;font-size:15px;color:#636e72;line-height:1.6;">
+            The status of your order <strong>#{{ $order->order_number }}</strong> has been updated to:
+        </p>
+    </td>
+</tr>
+
+<tr>
+    <td style="padding:30px 40px;text-align:center;">
+        <div style="display:inline-block;background:linear-gradient(135deg,#00B894,#00CEC9);color:#fff;padding:10px 24px;border-radius:50px;font-size:18px;font-weight:700;text-transform:capitalize;">
+            {{ str_replace('_', ' ', $order->status) }}
         </div>
-        <div class="content">
-            <p>Hi {{ $order->user->name }},</p>
-            <p>The status of your order <strong>#{{ $order->order_number }}</strong> has been updated.</p>
-            
-            <div class="order-details">
-                <p><strong>New Status:</strong> <span style="text-transform: capitalize; color: #E17055; font-weight: bold;">{{ $order->status }}</span></p>
+    </td>
+</tr>
+
+<tr>
+    <td style="padding:0 40px 20px;">
+        <div style="background:#f8f9fa;border-radius:12px;padding:20px;border-left:4px solid #6C5CE7;text-align:left;">
+            <p style="margin:0;font-size:14px;color:#2d3436;line-height:1.8;">
                 @if($order->status === 'processing' && $order->processing_date)
-                    <p><strong>Processing Started:</strong> {{ $order->processing_date->format('M d, Y h:i A') }}</p>
+                    <strong>Processing Started:</strong> {{ $order->processing_date->format('M d, Y h:i A') }}<br>
                 @endif
                 @if($order->status === 'shipped' && $order->shipped_date)
-                    <p><strong>Shipped On:</strong> {{ $order->shipped_date->format('M d, Y h:i A') }}</p>
+                    <strong>Shipped On:</strong> {{ $order->shipped_date->format('M d, Y h:i A') }}<br>
                 @endif
                 @if($order->status === 'delivered' && $order->delivered_date)
-                    <p><strong>Delivered On:</strong> {{ $order->delivered_date->format('M d, Y h:i A') }}</p>
+                    <strong>Delivered On:</strong> {{ $order->delivered_date->format('M d, Y h:i A') }}<br>
                 @endif
                 @if($order->status === 'cancelled' && $order->cancellation_reason)
-                    <p><strong>Cancellation Reason:</strong> {{ $order->cancellation_reason }}</p>
+                    <strong>Cancellation Reason:</strong> {{ $order->cancellation_reason }}<br>
                 @endif
-            </div>
-            
-            <p>If you have any questions or concerns, please feel free to contact us.</p>
-            
-            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #eee;">
-                <img src="{{ $order->qr_code_url }}" alt="Scan to verify order" width="100" height="100" style="display:block; margin: 0 auto;">
-                <p style="font-size: 12px; color: #777; margin-top: 5px;">Scan to verify order status online</p>
-            </div>
-            
-            <div style="text-align: center;">
-                <a href="{{ route('orders.show', $order) }}" class="btn">View Order Details</a>
-            </div>
+            </p>
         </div>
-        <div class="footer">
-            &copy; {{ date('Y') }} Premier Shop. All rights reserved.
+    </td>
+</tr>
+
+<tr>
+    <td style="padding:20px 40px;text-align:center;border-top:1px dashed #eee;">
+        <div style="background:#fff;padding:15px;border-radius:12px;display:inline-block;border:1px solid #eee;">
+            <img src="{{ $order->qr_code_url }}" alt="Scan to verify order" width="120" height="120" style="display:block;margin:0 auto;">
+            <p style="margin:10px 0 0;font-size:12px;color:#636e72;font-weight:600;">Scan to verify status online</p>
         </div>
-    </div>
-</body>
-</html>
+    </td>
+</tr>
+
+<tr>
+    <td style="padding:10px 40px 40px;text-align:center;">
+        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:linear-gradient(135deg,#6C5CE7,#00CEC9);color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
+            View Order Details →
+        </a>
+    </td>
+</tr>
+@endsection

@@ -217,6 +217,17 @@ class CheckoutController extends Controller
         $order->load('items.product', 'user');
         try {
             Mail::to($order->user->email)->send(new OrderReceipt($order));
+            
+            $htmlContent = view('emails.order-receipt', compact('order'))->render();
+
+            \App\Models\ContactMessage::create([
+                'name' => 'System (Checkout)',
+                'email' => $order->user->email,
+                'subject' => 'Your Premier Shop Order #' . $order->order_number,
+                'message' => $htmlContent,
+                'is_read' => true,
+                'folder' => 'sent',
+            ]);
         } catch (\Exception $e) {
             \Log::error('Failed to send order receipt: ' . $e->getMessage());
         }

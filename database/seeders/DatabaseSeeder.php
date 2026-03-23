@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         // Admin user
         User::create([
             'name' => 'Shop Admin',
-            'email' => 'admin@premiershop.com',
+            'email' => 'tharunyathangavel@gmail.com',
             'password' => bcrypt('admin123'),
             'dob' => '1990-01-01',
             'phone' => '07700000000',

@@ -65,6 +65,17 @@ class OrderController extends Controller
         if ($statusChanged) {
             try {
                 \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+
+                $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
+
+                \App\Models\ContactMessage::create([
+                    'name' => 'System (' . (auth()->user()->name ?? 'Admin') . ')',
+                    'email' => $order->user->email,
+                    'subject' => 'Your order #' . $order->order_number . ' status has been updated to ' . $order->status,
+                    'message' => $htmlContent,
+                    'is_read' => true,
+                    'folder' => 'sent',
+                ]);
             } catch (\Exception $e) {
                 \Log::error('Failed to send order status email: ' . $e->getMessage());
             }
