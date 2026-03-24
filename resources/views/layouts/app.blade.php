@@ -16,6 +16,9 @@
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     @stack('seo')
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
@@ -89,53 +92,71 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('products.*') && !request('category') ? 'active' : '' }}"
-                            href="{{ route('products.index') }}">Products</a>
+                            href="{{ route('products.index') }}">
+                            <i class="bi bi-box-seam me-1"></i>Products
+                        </a>
                     </li>
-                    @endif
+                                       @endif
                     @auth
                         @if(!auth()->user()->isDriver())
                         <li class="nav-item">
                             <a class="nav-link cart-badge" href="{{ route('cart.index') }}">
-                                <i class="bi bi-bag"></i> Cart
+                                <i class="bi bi-bag"></i>
+                                <span class="d-none d-xl-inline">Cart</span>
                                 <span class="badge cart-count-badge" id="cartCountBadge" style="{{ ($cartCount ?? 0) > 0 ? '' : 'display:none;' }}">{{ $cartCount ?? 0 }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('wishlists.index') }}"><i class="bi bi-heart"></i> Wishlist</a>
-                        </li>
-                        @endif
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ auth()->user()->isDriver() ? route('driver.dashboard') : route('orders.index') }}">
-                                <i class="bi bi-receipt"></i> 
-                                {{ auth()->user()->isDriver() ? 'My Deliveries' : 'Orders' }}
+                            <a class="nav-link" href="{{ route('wishlists.index') }}" title="Wishlist">
+                                <i class="bi bi-heart"></i>
+                                <span class="d-none d-xl-inline">Wishlist</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ auth()->user()->isDriver() ? route('driver.dashboard') : route('orders.index') }}" title="Orders">
+                                <i class="bi bi-receipt"></i> 
+                                <span class="d-none d-xl-inline">{{ auth()->user()->isDriver() ? 'Deliveries' : 'Orders' }}</span>
+                            </a>
+                        </li>
+                        @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> {{ auth()->user()->name }}
+                                <i class="bi bi-person-circle"></i> 
+                                <span class="d-none d-lg-inline">{{ explode(' ', auth()->user()->name)[0] }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 @if(auth()->user()->isAdmin())
                                     <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i
-                                                class="bi bi-speedometer2 me-2"></i>Admin Panel</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
+                                                 class="bi bi-speedometer2 me-2"></i>Admin</a></li>
+                                    <li><hr class="dropdown-divider"></li>
                                 @endif
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i
-                                            class="bi bi-gear me-2"></i>Profile</a></li>
+                                             class="bi bi-gear me-2"></i>Profile</a></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <button class="dropdown-item text-danger"><i
-                                                class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                                 class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                     </form>
                                 </li>
                             </ul>
                         </li>
                     @else
-                        <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link btn-signup" href="{{ route('register') }}">Sign Up</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link cart-badge" href="{{ route('login') }}">
+                                <i class="bi bi-bag"></i>
+                                <span class="d-none d-xl-inline">Cart</span>
+                                <span class="badge cart-count-badge" style="display: none;">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-1">
+                             <a class="nav-link btn-signup px-3 py-2" href="{{ route('register') }}">Sign Up</a>
+                        </li>
                     @endauth
                 </ul>
             </div>
@@ -575,6 +596,10 @@
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = originalBtnHtml;
+                }
+                if (err.response && err.response.status === 401) {
+                    window.location.href = '/login';
+                    return;
                 }
                 console.error(err);
                 showToast('Something went wrong. Please try again.', 'bg-danger');

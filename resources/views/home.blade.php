@@ -53,28 +53,33 @@
             <div class="hero-content">
                 <div class="container text-center">
                     <div class="hero-badge scroll-reveal" data-delay="0">
-                        <span class="badge-dot"></span>
-                        <span>Curated Selection</span>
+                        <span class="badge-pill">
+                            <span class="badge-dot"></span>
+                            <span class="text-uppercase tracking-widest fw-bold" style="font-size: 0.7rem;">Curated Selection</span>
+                        </span>
                     </div>
                     <h1 class="hero-title scroll-reveal" data-delay="100">
-                        Elevate Your<br>
-                        <span class="hero-title-accent">Shopping Experience</span>
+                        <span class="fw-light">Elevate Your</span><br>
+                        <span class="hero-title-accent glass-text-wrap">Shopping Experience</span>
                     </h1>
                     <p class="hero-subtitle scroll-reveal" data-delay="200">
                         Premium products, unbeatable prices, and fast delivery straight to your door.
                     </p>
                     <div class="hero-actions scroll-reveal" data-delay="300">
-                        <a href="{{ route('products.index') }}" class="btn-hero-primary">
+                        <a href="{{ route('products.index') }}" class="btn-hero-primary premium-btn">
                             <span>Shop Now</span>
                             <i class="bi bi-arrow-right"></i>
                         </a>
                         <a href="{{ route('offers') }}" class="btn-hero-glass">
-                            <i class="bi bi-lightning-charge-fill"></i>
+                            <i class="bi bi-lightning-charge-fill text-warning"></i>
                             <span>View Offers</span>
                         </a>
                     </div>
                 </div>
             </div>
+
+            {{-- Frosted Section Divider --}}
+            <div class="frosted-divider"></div>
 
             {{-- Scroll Indicator --}}
             <div class="scroll-indicator">
@@ -142,25 +147,30 @@
     @if(isset($categories) && $categories->count() > 0)
     <section class="category-showcase-section" aria-label="Shop by Category">
         <div class="container">
-            <div class="section-header scroll-reveal">
-                <h2 class="section-title"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Shop by <span class="gradient-text">Category</span></h2>
-                <a href="{{ route('categories') }}" class="section-link">View All <i class="bi bi-arrow-right"></i></a>
+            <div class="premium-section-header scroll-reveal">
+                <div class="header-line"></div>
+                <h2 class="section-title">Shop by <span class="gradient-text">Category</span></h2>
+                <a href="{{ route('categories') }}" class="view-all-link">Explore All <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="category-scroll-track">
-                @foreach($categories as $i => $cat)
-                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-showcase-card scroll-reveal" data-delay="{{ ($i % 6) * 80 }}">
-                        <div class="cat-card-glow"></div>
-                        <div class="cat-card-icon">
-                            @if($cat->image)
-                                <img src="{{ $cat->image }}" alt="{{ $cat->name }}" loading="lazy">
-                            @else
-                                <i class="bi bi-tag-fill"></i>
-                            @endif
-                        </div>
-                        <span class="cat-card-name">{{ $cat->name }}</span>
-                        <span class="cat-card-count">{{ $cat->products_count ?? $cat->products()->where('is_active', true)->count() }} items</span>
-                    </a>
-                @endforeach
+            <div class="category-scroll-container">
+                <div class="category-grid-premium">
+                    @foreach($categories as $i => $cat)
+                        <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-glass-card scroll-reveal" data-delay="{{ ($i % 6) * 60 }}">
+                            <div class="category-glow"></div>
+                            <div class="category-icon-wrap">
+                                @if($cat->image)
+                                    <img src="{{ $cat->image }}" alt="{{ $cat->name }}" loading="lazy">
+                                @else
+                                    <div class="icon-fallback"><i class="bi bi-box-seam"></i></div>
+                                @endif
+                            </div>
+                            <div class="category-info">
+                                <span class="category-name">{{ $cat->name }}</span>
+                                <span class="category-meta">{{ $cat->products_count ?? $cat->products()->where('is_active', true)->count() }} Products</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </div>
     </section>
