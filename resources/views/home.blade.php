@@ -205,7 +205,7 @@
          MOST POPULAR
     ═══════════════════════════════════════════════════════════ --}}
     @if(isset($popularProducts) && $popularProducts->count() > 0)
-    <section class="section-padding bg-light" aria-label="Most Popular Products">
+    <section class="section-padding bg-dynamic-light" aria-label="Most Popular Products">
         <div class="section-blob section-blob-right"></div>
         <div class="container">
             <div class="section-header scroll-reveal">
@@ -247,7 +247,7 @@
          DISCOVER MORE
     ═══════════════════════════════════════════════════════════ --}}
     @if(isset($randomProducts) && $randomProducts->count() > 0)
-    <section class="section-padding bg-light" aria-label="Discover More Products">
+    <section class="section-padding bg-dynamic-light" aria-label="Discover More Products">
         <div class="container">
             <div class="section-header scroll-reveal">
                 <h2 class="section-title">Discover <span class="gradient-text">More</span></h2>
@@ -280,7 +280,7 @@
                                 @if($product->images && count($product->images) > 0)
                                     <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" loading="lazy">
                                 @else
-                                    <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-light">
+                                    <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-dynamic-light">
                                         <i class="bi bi-image text-muted" style="font-size:1.5rem;"></i>
                                     </div>
                                 @endif

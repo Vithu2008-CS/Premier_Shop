@@ -20,6 +20,11 @@
           <span class="ml-1 d-none d-md-inline-block">Visit Store</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="adminThemeToggle" title="Toggle Theme">
+          <i data-feather="moon"></i>
+        </a>
+      </li>
       <li class="nav-item dropdown nav-notifications">
         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell"></i>

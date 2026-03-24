@@ -21,8 +21,19 @@
     <!-- endinject -->
     
     <!-- Layout styles -->  
-    <link rel="stylesheet" href="{{ asset('admin_assets/css/demo_1/style.css') }}">
+    <link rel="stylesheet" id="main-stylesheet" href="{{ asset('admin_assets/css/demo_1/style.css') }}">
     <!-- End layout styles -->
+    
+    {{-- Pre-render Theme Logic --}}
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('admin_theme') || 'light';
+            const stylesheet = document.getElementById('main-stylesheet');
+            if (savedTheme === 'dark') {
+                stylesheet.href = "{{ asset('admin_assets/css/demo_2/style.css') }}";
+            }
+        })();
+    </script>
     
     <link rel="shortcut icon" href="{{ asset('admin_assets/images/favicon.png') }}" />
 
@@ -95,6 +106,35 @@
             if ($('i[data-feather]').length > 0) {
                 feather.replace();
             }
+
+            // Theme Switcher Logic
+            const themeToggle = $('#adminThemeToggle');
+            const stylesheet = $('#main-stylesheet');
+            
+            function updateThemeIcon(theme) {
+                const icon = themeToggle.find('i');
+                if (theme === 'dark') {
+                    icon.attr('data-feather', 'sun');
+                } else {
+                    icon.attr('data-feather', 'moon');
+                }
+                if (window.feather) feather.replace();
+            }
+
+            const currentTheme = localStorage.getItem('admin_theme') || 'light';
+            updateThemeIcon(currentTheme);
+
+            themeToggle.on('click', function(e) {
+                e.preventDefault();
+                const newTheme = localStorage.getItem('admin_theme') === 'dark' ? 'light' : 'dark';
+                const newSheet = newTheme === 'dark' 
+                    ? "{{ asset('admin_assets/css/demo_2/style.css') }}" 
+                    : "{{ asset('admin_assets/css/demo_1/style.css') }}";
+                
+                stylesheet.attr('href', newSheet);
+                localStorage.setItem('admin_theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
         });
     </script>
     @stack('scripts')
