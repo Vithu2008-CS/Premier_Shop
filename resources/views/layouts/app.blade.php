@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -22,6 +22,14 @@
     @stack('seo')
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
+    
+    {{-- Pre-render Theme Logic --}}
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
 </head>
 
 <body>
@@ -158,6 +166,11 @@
                              <a class="nav-link btn-signup px-3 py-2" href="{{ route('register') }}">Sign Up</a>
                         </li>
                     @endauth
+                    <li class="nav-item ms-lg-2">
+                        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Dark/Light Mode">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -312,6 +325,12 @@
                     </ul>
                 </div>
             </div>
+        </div>
+        <div class="px-4 py-3 border-top border-white border-opacity-10">
+            <button class="btn btn-outline-light w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" id="mobileThemeToggle">
+                <i class="bi bi-moon-stars"></i>
+                <span id="mobileThemeText">Switch Theme</span>
+            </button>
         </div>
     </div>
 
@@ -621,6 +640,37 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const navbar = document.querySelector('.navbar-premium');
+            const themeToggle = document.getElementById('themeToggle');
+            const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+            const htmlElement = document.documentElement;
+            const themeIcon = themeToggle.querySelector('i');
+            const mobileThemeIcon = mobileThemeToggle.querySelector('i');
+            const mobileThemeText = document.getElementById('mobileThemeText');
+
+            function updateThemeUI(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'bi bi-sun';
+                    mobileThemeIcon.className = 'bi bi-sun';
+                    mobileThemeText.textContent = 'Light Mode';
+                } else {
+                    themeIcon.className = 'bi bi-moon-stars';
+                    mobileThemeIcon.className = 'bi bi-moon-stars';
+                    mobileThemeText.textContent = 'Dark Mode';
+                }
+            }
+
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            updateThemeUI(currentTheme);
+
+            function toggleTheme() {
+                const newTheme = htmlElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                htmlElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            }
+
+            themeToggle.addEventListener('click', toggleTheme);
+            if(mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
             
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 20) {

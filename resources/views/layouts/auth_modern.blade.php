@@ -17,14 +17,24 @@
     <!-- Styles -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+    {{-- Pre-render Theme Logic --}}
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
     <style>
         :root {
-            --auth-primary: #0066FF;
-            --auth-bg-light: #F8F9FA;
-            --auth-text-dark: #1A1A1A;
-            --auth-text-muted: #6C757D;
-            --auth-input-bg: #FFFFFF;
-            --auth-border: #E9ECEF;
+            --auth-primary: #6C5CE7;
+            --auth-bg-light: var(--ps-surface-secondary);
+            --auth-text-dark: var(--ps-text);
+            --auth-text-muted: var(--ps-text-muted);
+            --auth-input-bg: var(--ps-card-bg);
+            --auth-border: var(--ps-border);
+            --auth-form-bg: var(--ps-surface-bg);
+            --auth-glass-bg: var(--ps-surface-glass);
         }
 
         body, html {
@@ -46,7 +56,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #fff;
+            background: var(--auth-form-bg);
             padding: 2.5rem;
             position: relative;
             overflow-y: auto;
@@ -142,7 +152,7 @@
 
         .auth-tabs {
             display: flex;
-            background: #F1F3F5;
+            background: var(--auth-bg-light);
             padding: 5px;
             border-radius: 12px;
             margin-bottom: 2rem;
@@ -161,7 +171,7 @@
         }
 
         .auth-tab.active {
-            background: #fff;
+            background: var(--auth-input-bg);
             color: var(--auth-text-dark);
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
@@ -248,5 +258,12 @@
 </head>
 <body>
     @yield('content')
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Re-apply theme checks if needed, but pre-render script handles it.
+            // This is mainly to ensure all components react if we added switchers here.
+        });
+    </script>
 </body>
 </html>
