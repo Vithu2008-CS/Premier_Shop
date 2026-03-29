@@ -40,14 +40,7 @@
             {{-- Gradient Overlay --}}
             <div class="hero-overlay"></div>
 
-            {{-- Floating Particles --}}
-            <div class="hero-particles">
-                <div class="particle particle-1"></div>
-                <div class="particle particle-2"></div>
-                <div class="particle particle-3"></div>
-                <div class="particle particle-4"></div>
-                <div class="particle particle-5"></div>
-            </div>
+
 
             {{-- Hero Content --}}
             <div class="hero-content">
@@ -103,11 +96,7 @@
         <section class="parallax-hero" id="heroSection">
             <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1920&auto=format&fit=crop');"></div>
             <div class="hero-overlay"></div>
-            <div class="hero-particles">
-                <div class="particle particle-1"></div>
-                <div class="particle particle-2"></div>
-                <div class="particle particle-3"></div>
-            </div>
+
             <div class="hero-content">
                 <div class="container text-center">
                     <div class="hero-badge scroll-reveal" data-delay="0">
