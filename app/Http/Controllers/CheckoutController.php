@@ -232,6 +232,14 @@ class CheckoutController extends Controller
             \Log::error('Failed to send order receipt: ' . $e->getMessage());
         }
 
+        // Trigger Notifications
+        \App\Models\AppNotification::notifyNewOrder($order);
+        foreach ($purchasedItems as $item) {
+            if ($item->product->stock < 10) {
+                \App\Models\AppNotification::notifyLowStock($item->product);
+            }
+        }
+
         return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
     }
 
