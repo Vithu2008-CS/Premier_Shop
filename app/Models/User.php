@@ -102,4 +102,29 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'driver_id');
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function defaultAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
+    }
+
+    public function recentlyViewed()
+    {
+        return $this->hasMany(RecentlyViewed::class)->orderByDesc('viewed_at');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(AppNotification::class)->orderByDesc('created_at');
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->notifications()->whereNull('read_at');
+    }
 }
