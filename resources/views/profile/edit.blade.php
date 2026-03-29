@@ -141,6 +141,12 @@
                 </div>
                 <span>My Orders</span>
             </a>
+            <a href="{{ route('addresses.index') }}" class="quick-action-card">
+                <div class="quick-action-icon">
+                    <i class="bi bi-geo-alt"></i>
+                </div>
+                <span>Addresses</span>
+            </a>
             <a href="{{ route('wishlists.index') }}" class="quick-action-card">
                 <div class="quick-action-icon">
                     <i class="bi bi-heart"></i>

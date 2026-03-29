@@ -135,7 +135,20 @@
                 localStorage.setItem('admin_theme', newTheme);
                 updateThemeIcon(newTheme);
             });
+
+            // Notifications Logic
+            $('#adminNotificationMenuTrigger').on('show.bs.dropdown', function () {
+                $.get('{{ route("notifications.latest") }}', function(html) {
+                    $('#adminNotificationListContent').html(html);
+                }).fail(function() {
+                    $('#adminNotificationListContent').html('<div class="p-3 text-center text-danger">Failed to load.</div>');
+                });
+            });
         });
+        
+        function showToast(message, type = 'success') {
+            alert(message); // fallback for admin
+        }
     </script>
     @stack('scripts')
     <!-- end custom js for this page -->

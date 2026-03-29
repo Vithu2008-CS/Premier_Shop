@@ -46,27 +46,44 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::with(['reviews.user'])->where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $product = Product::with(['category', 'reviews' => function($q) {
+            $q->where('is_approved', true)->latest()->take(5);
+        }, 'reviews.user'])->where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         // Block age-restricted products for underage users
         if ($product->is_age_restricted && auth()->check() && auth()->user()->isUnder16()) {
             abort(403, 'You must be 16 or older to view this product.');
         }
+        
+        $relatedProducts = Product::where('category_id', $product->category_id)
+                                  ->where('id', '!=', $product->id)
+                                  ->where('is_active', true)
+                                  ->limit(4)->get();
 
-        $relatedProducts = Product::with(['category', 'reviews'])->where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->where('is_active', true)
-            ->limit(4)
-            ->get();
+        $recentlyViewed = collect();
+        if (auth()->check()) {
+            \App\Models\RecentlyViewed::track(auth()->id(), $product->id);
+            $recentlyViewed = \App\Models\RecentlyViewed::getForUser(auth()->id(), 5);
+        } else {
+            // Track recently viewed products in session (max 12, most recent first)
+            $recentIds = session('recently_viewed', []);
+            $recentIds = array_diff($recentIds, [$product->id]); // remove duplicate
+            array_unshift($recentIds, $product->id); // add to front
+            $recentIds = array_slice($recentIds, 0, 12); // keep max 12
+            session(['recently_viewed' => $recentIds]);
+            
+            if (!empty($recentIds)) {
+                $recentlyViewed = Product::with(['category', 'reviews'])
+                    ->where('is_active', true)
+                    ->whereIn('id', $recentIds)
+                    ->get()
+                    ->sortBy(function ($p) use ($recentIds) {
+                        return array_search($p->id, $recentIds);
+                    })->take(5);
+            }
+        }
 
-        // Track recently viewed products in session (max 12, most recent first)
-        $recentIds = session('recently_viewed', []);
-        $recentIds = array_diff($recentIds, [$product->id]); // remove duplicate
-        array_unshift($recentIds, $product->id); // add to front
-        $recentIds = array_slice($recentIds, 0, 12); // keep max 12
-        session(['recently_viewed' => $recentIds]);
-
-        return view('products.show', compact('product', 'relatedProducts'));
+        return view('products.show', compact('product', 'relatedProducts', 'recentlyViewed'));
     }
 
     /**

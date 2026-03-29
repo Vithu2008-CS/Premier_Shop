@@ -67,6 +67,17 @@ Route::middleware('auth')->group(function () {
     // Wishlist
     Route::get('/wishlists', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlists.index');
     Route::post('/wishlists/{product}/toggle', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlists.toggle');
+
+    // Addresses
+    Route::resource('addresses', \App\Http\Controllers\AddressController::class)->except(['create', 'edit', 'show']);
+    Route::patch('/addresses/{address}/set-default', [\App\Http\Controllers\AddressController::class, 'setDefault'])->name('addresses.setDefault');
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/count', [\App\Http\Controllers\NotificationController::class, 'count'])->name('notifications.count');
+    Route::get('/notifications/latest', [\App\Http\Controllers\NotificationController::class, 'latest'])->name('notifications.latest');
+    Route::get('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
 });
 
 // Admin routes

@@ -26,46 +26,21 @@
         </a>
       </li>
       <li class="nav-item dropdown nav-notifications">
-        <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" href="#" id="adminNotificationMenuTrigger" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell"></i>
-          @if($notificationData['pendingOrdersCount'] > 0)
-          <div class="indicator">
+          @php $unreadAdminNotifs = auth()->user()->unreadNotifications()->count(); @endphp
+          @if($unreadAdminNotifs > 0)
+          <div class="indicator" id="adminNotificationIndicator">
             <div class="circle"></div>
           </div>
           @endif
         </a>
-        <div class="dropdown-menu" aria-labelledby="notificationDropdown">
+        <div class="dropdown-menu" aria-labelledby="adminNotificationMenuTrigger" style="width: 350px;">
           <div class="dropdown-header d-flex align-items-center justify-content-between">
-            <p class="mb-0 font-weight-medium">{{ $notificationData['pendingOrdersCount'] }} New Notifications</p>
-            <a href="javascript:;" class="text-muted">Clear all</a>
+            <p class="mb-0 font-weight-medium">Notifications</p>
           </div>
-          <div class="dropdown-body">
-            @foreach($notificationData['recentOrders'] as $order)
-            <a href="{{ route('admin.orders.show', $order) }}" class="dropdown-item">
-              <div class="icon">
-                <i data-feather="shopping-cart"></i>
-              </div>
-              <div class="content">
-                <p>Order {{ $order->order_number }}</p>
-                <p class="sub-text text-muted">{{ $order->created_at->diffForHumans() }}</p>
-              </div>
-            </a>
-            @endforeach
-            
-            @foreach($notificationData['recentCustomers'] as $customer)
-            <a href="{{ route('admin.customers.show', $customer) }}" class="dropdown-item">
-              <div class="icon">
-                <i data-feather="user-plus"></i>
-              </div>
-              <div class="content">
-                <p>New customer: {{ $customer->name }}</p>
-                <p class="sub-text text-muted">{{ $customer->created_at->diffForHumans() }}</p>
-              </div>
-            </a>
-            @endforeach
-          </div>
-          <div class="dropdown-footer d-flex align-items-center justify-content-center">
-            <a href="{{ route('admin.orders.index') }}">View all orders</a>
+          <div class="dropdown-body" id="adminNotificationListContent" style="max-height: 400px; overflow-y: auto;">
+             <div class="text-center p-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>
           </div>
         </div>
       </li>

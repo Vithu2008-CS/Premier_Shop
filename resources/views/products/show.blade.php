@@ -271,13 +271,23 @@
 
         {{-- Related Products --}}
         @if(isset($relatedProducts) && $relatedProducts->count() > 0)
-            <div class="mt-5 pt-5 border-top reveal-3d">
-                <h3 class="section-title fade-up mb-4">You May Also <span class="gradient-text">Like</span></h3>
-                <div class="row g-4 stagger-children">
-                    @foreach($relatedProducts as $i => $rel)
-                        @include('partials.product_card', ['product' => $rel, 'delay' => ($i % 4) + 1])
-                    @endforeach
-                </div>
+            <div class="row mt-5 pt-5 border-top">
+                <h3 class="fw-bold mb-4">You May Also Like</h3>
+                @foreach($relatedProducts as $related)
+                    @include('partials.product_card', ['product' => $related])
+                @endforeach
+            </div>
+        @endif
+
+        {{-- Recently Viewed Products --}}
+        @if(isset($recentlyViewed) && $recentlyViewed->count() > 1) 
+            <div class="row mt-5 pt-5 border-top">
+                <h3 class="fw-bold mb-4">Recently Viewed</h3>
+                @foreach($recentlyViewed as $recent)
+                    @if($recent->id !== $product->id)
+                        @include('partials.product_card', ['product' => $recent])
+                    @endif
+                @endforeach
             </div>
         @endif
     </div>

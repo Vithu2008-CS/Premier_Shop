@@ -9,30 +9,55 @@
         <div class="col-lg-7 reveal-slide-left">
             <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
                 <div class="card-body p-4 p-md-5">
-                    <h5 class="fw-bold mb-4 d-flex align-items-center">
-                        <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle me-3" style="width:32px;height:32px;font-size:0.9rem;">1</span>
-                        Shipping Address
+                    <h5 class="fw-bold mb-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle me-3" style="width:32px;height:32px;font-size:0.9rem;">1</span>
+                            Shipping Address
+                        </div>
+                        @if(auth()->user()->addresses->isNotEmpty())
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-geo-alt me-1"></i> Saved Addresses
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 bg-white" style="border-radius: 12px; min-width: 250px;">
+                                @foreach(auth()->user()->addresses as $address)
+                                <li>
+                                    <a class="dropdown-item py-2 address-selector" href="#" 
+                                       data-line="{{ $address->address_line }}" 
+                                       data-city="{{ $address->city }}" 
+                                       data-phone="{{ $address->phone }}">
+                                        <div class="fw-bold small {{ $address->is_default ? 'text-primary' : '' }}">{{ $address->label }} {!! $address->is_default ? '<i class="bi bi-check-circle-fill"></i>' : '' !!}</div>
+                                        <div class="small text-muted text-truncate" style="max-width: 200px;">{{ $address->address_line }}, {{ $address->city }}</div>
+                                    </a>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
                     </h5>
                     <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
                         @csrf
                         @foreach($items as $item)
                             <input type="hidden" name="items[]" value="{{ $item->id }}">
                         @endforeach
+                        @php
+                            $defaultAddress = auth()->user()->defaultAddress ?? auth()->user()->addresses->first();
+                        @endphp
                         <div class="mb-4">
                             <label class="form-label fw-bold text-muted small px-1">STREET ADDRESS</label>
-                            <input type="text" name="address_line" class="form-control form-control-lg @error('address_line') is-invalid @enderror" value="{{ old('address_line', auth()->user()->address) }}" placeholder="e.g. 123 High Street" required style="border-radius: 12px; padding: 14px 20px;">
+                            <input type="text" name="address_line" id="address_line" class="form-control form-control-lg @error('address_line') is-invalid @enderror" value="{{ old('address_line', $defaultAddress->address_line ?? auth()->user()->address) }}" placeholder="e.g. 123 High Street" required style="border-radius: 12px; padding: 14px 20px;">
                             @error('address_line') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-12">
                                 <label class="form-label fw-bold text-muted small px-1">CITY / TOWN</label>
-                                <input type="text" name="city" class="form-control form-control-lg @error('city') is-invalid @enderror" value="{{ old('city', auth()->user()->city) }}" placeholder="e.g. London" required style="border-radius: 12px; padding: 14px 20px;">
+                                <input type="text" name="city" id="city" class="form-control form-control-lg @error('city') is-invalid @enderror" value="{{ old('city', $defaultAddress->city ?? auth()->user()->city) }}" placeholder="e.g. London" required style="border-radius: 12px; padding: 14px 20px;">
                                 @error('city') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-bold text-muted small px-1">PHONE NUMBER</label>
-                            <input type="text" name="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone', auth()->user()->phone) }}" placeholder="e.g. 07123456789" required style="border-radius: 12px; padding: 14px 20px;">
+                            <input type="text" name="phone" id="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone', $defaultAddress->phone ?? auth()->user()->phone) }}" placeholder="e.g. 07123456789" required style="border-radius: 12px; padding: 14px 20px;">
                             @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="d-none d-lg-block">
@@ -136,13 +161,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const addressInput = document.querySelector('input[name="address_line"]');
-        const cityInput = document.querySelector('input[name="city"]');
+        const addressInput = document.getElementById('address_line');
+        const cityInput = document.getElementById('city');
+        const phoneInput = document.getElementById('phone');
         const shippingCostDisplay = document.getElementById('shippingCostDisplay');
         const shippingMessageDisplay = document.getElementById('shippingMessageDisplay');
         const cartTotalDisplay = document.getElementById('cartTotalDisplay');
         const baseTotal = parseFloat(cartTotalDisplay.dataset.baseTotal);
         const shippingUrl = "{{ route('checkout.calculateShipping') }}";
+
+        // Handle Saved Address Selection
+        document.querySelectorAll('.address-selector').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                addressInput.value = this.dataset.line;
+                cityInput.value = this.dataset.city;
+                phoneInput.value = this.dataset.phone;
+                calculateShipping();
+            });
+        });
 
         function calculateShipping() {
             const address = addressInput.value.trim();

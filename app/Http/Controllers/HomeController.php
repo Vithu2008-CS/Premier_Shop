@@ -56,17 +56,21 @@ class HomeController extends Controller
             return Promotion::banners()->active()->take(3)->get();
         });
 
-        // Recently viewed products (session-specific, not cached)
+        // Recently viewed products
         $recentlyViewed = collect();
-        $recentIds = session('recently_viewed', []);
-        if (!empty($recentIds)) {
-            $recentlyViewed = Product::with(['category', 'reviews'])
-                ->where('is_active', true)
-                ->whereIn('id', $recentIds)
-                ->get()
-                ->sortBy(function ($product) use ($recentIds) {
-                    return array_search($product->id, $recentIds);
-                });
+        if (auth()->check()) {
+            $recentlyViewed = \App\Models\RecentlyViewed::getForUser(auth()->id(), 8);
+        } else {
+            $recentIds = session('recently_viewed', []);
+            if (!empty($recentIds)) {
+                $recentlyViewed = Product::with(['category', 'reviews'])
+                    ->where('is_active', true)
+                    ->whereIn('id', $recentIds)
+                    ->get()
+                    ->sortBy(function ($product) use ($recentIds) {
+                        return array_search($product->id, $recentIds);
+                    });
+            }
         }
 
         return view('home', compact('sliders', 'categories', 'offerProducts', 'popularProducts', 'newProducts', 'randomProducts', 'promotions', 'recentlyViewed'));

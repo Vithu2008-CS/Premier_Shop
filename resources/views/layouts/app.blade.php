@@ -16,6 +16,37 @@
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
+            const notificationListContent = document.getElementById('notificationListContent');
+            
+            if (notificationMenuTrigger && notificationListContent) {
+                notificationMenuTrigger.addEventListener('show.bs.dropdown', function () {
+                    // Fetch latest notifications
+                    fetch('{{ route("notifications.latest") }}')
+                        .then(response => response.text())
+                        .then(html => {
+                            notificationListContent.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching notifications:', error);
+                            notificationListContent.innerHTML = '<div class="p-3 text-center text-danger">Failed to load.</div>';
+                        });
+                });
+            }
+        });
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('liveToast');
+            const toastBody = document.getElementById('toastMessage');
+            toastBody.innerText = message;
+            toastEl.classList.remove('bg-success', 'bg-danger');
+            toastEl.classList.add(type === 'success' ? 'bg-success' : 'bg-danger');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -127,6 +158,24 @@
                             </a>
                         </li>
                         @endif
+
+                        {{-- Notifications Dropdown --}}
+                        <li class="nav-item dropdown notification-dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" id="notificationMenuTrigger">
+                                <i class="bi bi-bell"></i>
+                                @php $unreadNotifs = auth()->user()->unreadNotifications()->count(); @endphp
+                                <span class="badge notification-count badge-danger bg-danger rounded-circle position-absolute top-0 start-100 translate-middle" style="font-size: 0.6rem; padding: 0.25em 0.4em; {{ $unreadNotifs > 0 ? '' : 'display:none;' }}" id="notificationBadgeBadge">{{ $unreadNotifs }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0" style="width: 350px; border-radius: 12px; overflow: hidden;" id="notificationDropdownMenu">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+                                    <h6 class="mb-0 fw-bold">Notifications</h6>
+                                </div>
+                                <div id="notificationListContent">
+                                    <div class="text-center p-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>
+                                </div>
+                            </div>
+                        </li>
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle"></i> 

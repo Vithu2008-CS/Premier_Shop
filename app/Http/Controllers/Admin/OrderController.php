@@ -64,7 +64,10 @@ class OrderController extends Controller
 
         if ($statusChanged) {
             try {
-                \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+                if ($request->send_email ?? true) {
+                     \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+                }
+                \App\Models\AppNotification::notifyOrderStatus($order);
 
                 $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
 
