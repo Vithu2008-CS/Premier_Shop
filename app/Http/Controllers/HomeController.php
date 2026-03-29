@@ -15,33 +15,48 @@ class HomeController extends Controller
             return redirect()->route('driver.dashboard');
         }
 
-        $sliders = Promotion::sliders()->active()->orderBy('order_priority')->get();
-        $categories = Category::all();
+        $sliders = cache()->remember('home_sliders', 300, function () {
+            return Promotion::sliders()->active()->orderBy('order_priority')->get();
+        });
+
+        $categories = cache()->remember('home_categories', 300, function () {
+            return Category::all();
+        });
         
-        $offerProducts = Product::with(['category', 'reviews'])->where('is_active', true)
-            ->withActiveOffers()
-            ->take(4)
-            ->get();
+        $offerProducts = cache()->remember('home_offers', 300, function () {
+            return Product::with(['category', 'reviews'])->where('is_active', true)
+                ->withActiveOffers()
+                ->take(4)
+                ->get();
+        });
             
-        $popularProducts = Product::with(['category', 'reviews'])->where('is_active', true)
-            ->withCount('orderItems')
-            ->orderBy('order_items_count', 'desc')
-            ->take(4)
-            ->get();
+        $popularProducts = cache()->remember('home_popular', 300, function () {
+            return Product::with(['category', 'reviews'])->where('is_active', true)
+                ->withCount('orderItems')
+                ->orderBy('order_items_count', 'desc')
+                ->take(4)
+                ->get();
+        });
             
-        $newProducts = Product::with(['category', 'reviews'])->where('is_active', true)
-            ->latest()
-            ->take(4)
-            ->get();
+        $newProducts = cache()->remember('home_new', 300, function () {
+            return Product::with(['category', 'reviews'])->where('is_active', true)
+                ->latest()
+                ->take(4)
+                ->get();
+        });
             
-        $randomProducts = Product::with(['category', 'reviews'])->where('is_active', true)
-            ->inRandomOrder()
-            ->take(4)
-            ->get();
+        $randomProducts = cache()->remember('home_random', 60, function () {
+            return Product::with(['category', 'reviews'])->where('is_active', true)
+                ->inRandomOrder()
+                ->take(4)
+                ->get();
+        });
 
-        $promotions = Promotion::banners()->active()->take(3)->get();
+        $promotions = cache()->remember('home_promotions', 300, function () {
+            return Promotion::banners()->active()->take(3)->get();
+        });
 
-        // Recently viewed products
+        // Recently viewed products (session-specific, not cached)
         $recentlyViewed = collect();
         $recentIds = session('recently_viewed', []);
         if (!empty($recentIds)) {

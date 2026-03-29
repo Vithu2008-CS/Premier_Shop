@@ -1506,8 +1506,6 @@ h3 { font-size: var(--fs-h3); }
     width: 200px;
     padding: 30px 20px;
     background: var(--ps-surface-secondary);
-    backdrop-filter: blur(var(--ps-glass-blur, 15px)) saturate(1.8);
-    -webkit-backdrop-filter: blur(var(--ps-glass-blur, 15px)) saturate(1.8);
     border: 1px solid var(--ps-border);
     border-radius: 28px;
     position: relative;
@@ -1605,8 +1603,6 @@ h3 { font-size: var(--fs-h3); }
 // ============================================================
 .glass-premium-card {
     background: var(--ps-card-bg) !important;
-    backdrop-filter: blur(var(--ps-glass-blur, 15px)) saturate(1.8);
-    -webkit-backdrop-filter: blur(var(--ps-glass-blur, 15px)) saturate(1.8);
     border: 1px solid var(--ps-border);
     border-radius: 20px;
     overflow: hidden;
@@ -1843,30 +1839,7 @@ h3 { font-size: var(--fs-h3); }
   50% { box-shadow: 0 0 20px rgba(108, 92, 231, 0.4); }
 }
 
-// Float on trust icons
-.trust-icon {
-  animation: gentleFloat 3s ease-in-out infinite;
 
-  &:nth-child(2) { animation-delay: -0.5s; }
-  &:nth-child(3) { animation-delay: -1s; }
-  &:nth-child(4) { animation-delay: -1.5s; }
-}
-
-// Pulse on badges
-.product-badge {
-  animation: softPulse 2s ease-in-out infinite;
-}
-
-// Shimmer on gradient text
-.gradient-text {
-  background-size: 200% auto;
-  animation: shimmer 4s linear infinite;
-}
-
-// Glow on profile avatar
-.profile-avatar {
-  animation: glowPulse 3s ease-in-out infinite;
-}
 
 // ============================================================
 // 3D Button Effects
