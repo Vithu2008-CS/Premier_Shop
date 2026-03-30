@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
 
     // Shipping Settings API
     Route::get('/api/shipping-settings', function() {
-        return \App\Models\ShippingSetting::first();
+        return \App\Models\Setting::first();
     });
 
     // Checkout

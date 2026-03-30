@@ -55,7 +55,7 @@ class CheckoutController extends Controller
             $items = $items->whereIn('id', $request->items);
         }
 
-        $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+        $subtotal = $items->sum('line_total');
 
         $error = $coupon->getValidationError($subtotal);
         if ($error) {
@@ -87,7 +87,7 @@ class CheckoutController extends Controller
 
         if ($request->wantsJson()) {
             $items = auth()->user()->cartItems()->with('product')->get();
-            $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+            $subtotal = $items->sum('line_total');
             
             return response()->json([
                 'success' => true,
@@ -124,7 +124,7 @@ class CheckoutController extends Controller
 
         $settings = Setting::first();
 
-        $subtotal = $purchasedItems->sum(fn($i) => $i->product->price * $i->quantity);
+        $subtotal = $purchasedItems->sum('line_total');
         $shippingCost = $settings ? $settings->flat_rate_fee : 5.99;
         $distance = null;
 
@@ -308,7 +308,7 @@ class CheckoutController extends Controller
         }
 
         $items = auth()->user()->cartItems()->with('product')->get();
-        $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+        $subtotal = $items->sum('line_total');
 
         $origin = $settings->origin_address ?? config('app.address', 'United Kingdom');
         $destination = "{$request->address_line}, {$request->city}, UK";
