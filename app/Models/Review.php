@@ -10,7 +10,16 @@ class Review extends Model
         'user_id',
         'product_id',
         'rating',
+        'title',
         'comment',
+        'is_approved',
+        'photos',
+        'admin_reply',
+    ];
+
+    protected $casts = [
+        'is_approved' => 'boolean',
+        'photos' => 'array',
     ];
 
     public function user()
