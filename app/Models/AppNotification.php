@@ -122,4 +122,47 @@ class AppNotification extends Model
             ]);
         }
     }
+
+    public static function notifyNewReturnRequest(ReturnRequest $return): void
+    {
+        // Notify all admin/staff users
+        $staffUsers = User::whereHas('role', fn($q) => $q->where('is_staff', true))->get();
+
+        foreach ($staffUsers as $user) {
+            self::create([
+                'user_id' => $user->id,
+                'type' => 'new_return',
+                'title' => 'New Return Request',
+                'message' => "Return request submitted for Order #{$return->order->order_number} by {$return->user->name}.",
+                'icon' => 'bi-arrow-return-left',
+                'url' => route('returns.show', $return), // Admin route
+            ]);
+        }
+    }
+
+    public static function notifyReturnStatus(ReturnRequest $return): void
+    {
+        $statusMessages = [
+            'approved' => 'Your return request has been approved!',
+            'rejected' => 'Your return request has been rejected.',
+            'refunded' => 'Your refund of £' . number_format($return->refund_amount, 2) . ' has been processed.',
+        ];
+
+        $statusIcons = [
+            'approved' => 'bi-check-circle',
+            'rejected' => 'bi-x-circle',
+            'refunded' => 'bi-cash',
+        ];
+
+        if (!isset($statusMessages[$return->status])) return;
+
+        self::create([
+            'user_id' => $return->user_id,
+            'type' => 'return_status',
+            'title' => "Return #{$return->id} Updated",
+            'message' => $statusMessages[$return->status],
+            'icon' => $statusIcons[$return->status] ?? 'bi-info-circle',
+            'url' => route('returns.show', $return), // Customer route
+        ]);
+    }
 }

@@ -57,10 +57,22 @@
                     </div>
                     @endforeach
 
-                    <div class="mt-4 pt-3 d-flex justify-content-between align-items-center">
+                    <div class="mt-4 pt-3 d-flex flex-wrap gap-2 justify-content-between align-items-center">
                         <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-dark rounded-pill px-4 hover-up shadow-sm">
-                            <i class="bi bi-printer me-2"></i>Download PDF Invoice
+                            <i class="bi bi-printer me-2"></i>Invoice
                         </a>
+                        
+                        @if($order->status === 'delivered')
+                            @if($order->returnRequest)
+                                <a href="{{ route('returns.show', $order->returnRequest) }}" class="btn btn-primary rounded-pill px-4 hover-up shadow-sm">
+                                    <i class="bi bi-arrow-return-left me-2"></i>View Return Status
+                                </a>
+                            @else
+                                <a href="{{ route('returns.create', $order) }}" class="btn btn-outline-danger rounded-pill px-4 hover-up shadow-sm">
+                                    <i class="bi bi-box-seam me-2"></i>Request Return
+                                </a>
+                            @endif
+                        @endif
                     </div>
                 </div>
             </div>

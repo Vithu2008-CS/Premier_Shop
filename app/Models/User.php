@@ -127,4 +127,9 @@ class User extends Authenticatable
     {
         return $this->notifications()->whereNull('read_at');
     }
+
+    public function returnRequests()
+    {
+        return $this->hasMany(ReturnRequest::class);
+    }
 }
