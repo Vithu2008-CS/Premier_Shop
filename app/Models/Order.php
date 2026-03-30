@@ -62,6 +62,11 @@ class Order extends Model
         return $this->hasOne(ReturnRequest::class);
     }
 
+    public function rewardPointTransactions()
+    {
+        return $this->hasMany(RewardPointTransaction::class);
+    }
+
     public function getQrCodeUrlAttribute()
     {
         $data = route('orders.show', $this);
@@ -122,6 +127,33 @@ class Order extends Model
     {
         foreach ($this->items as $item) {
             $item->product->increment('stock', $item->quantity);
+        }
+
+        // Clawback any points earned from this order
+        $earnedTx = $this->rewardPointTransactions()->where('type', 'earned')->first();
+        if ($earnedTx) {
+            $this->user->decrement('loyalty_points', $earnedTx->amount);
+            RewardPointTransaction::create([
+                'user_id' => $this->user_id,
+                'amount' => -$earnedTx->amount,
+                'type' => 'refunded',
+                'description' => "Clawback for cancelled Order #{$this->order_number}",
+                'order_id' => $this->id,
+            ]);
+        }
+
+        // Refund any points spent on this order
+        $spentTx = $this->rewardPointTransactions()->where('type', 'redeemed')->first();
+        if ($spentTx) {
+            $refundAmount = abs($spentTx->amount);
+            $this->user->increment('loyalty_points', $refundAmount);
+            RewardPointTransaction::create([
+                'user_id' => $this->user_id,
+                'amount' => $refundAmount,
+                'type' => 'refunded',
+                'description' => "Refunded points for cancelled Order #{$this->order_number}",
+                'order_id' => $this->id,
+            ]);
         }
     }
 

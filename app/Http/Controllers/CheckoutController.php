@@ -157,10 +157,30 @@ class CheckoutController extends Controller
             }
         }
 
-        $total = $subtotal - $discount + $shippingCost;
+        $subtotalAfterCoupon = $subtotal - $discount;
+        $pointsDiscount = 0;
+        $pointsUsed = 0;
+
+        if ($request->has('use_points') && $settings && isset($settings->other_settings['loyalty_enabled']) && $settings->other_settings['loyalty_enabled']) {
+            $userPoints = auth()->user()->loyalty_points;
+            if ($userPoints > 0) {
+                $redemptionValue = $settings->other_settings['points_redemption_value'] ?? 0.01;
+                $maxPointsValue = $userPoints * $redemptionValue;
+                
+                if ($maxPointsValue > $subtotalAfterCoupon) {
+                    $pointsDiscount = $subtotalAfterCoupon;
+                    $pointsUsed = (int) ceil($subtotalAfterCoupon / $redemptionValue);
+                } else {
+                    $pointsDiscount = $maxPointsValue;
+                    $pointsUsed = $userPoints;
+                }
+            }
+        }
+
+        $total = $subtotalAfterCoupon - $pointsDiscount + $shippingCost;
 
         try {
-            $order = DB::transaction(function () use ($request, $purchasedItems, $subtotal, $discount, $couponCode, $shippingCost, $distance, $total) {
+            $order = DB::transaction(function () use ($request, $purchasedItems, $subtotal, $discount, $couponCode, $shippingCost, $distance, $total, $settings, $pointsDiscount, $pointsUsed) {
                 foreach ($purchasedItems as $item) {
                     if ($item->quantity > $item->product->stock) {
                         throw new \Exception("Not enough stock for {$item->product->name}.");
@@ -177,6 +197,8 @@ class CheckoutController extends Controller
                     'subtotal' => $subtotal,
                     'discount_amount' => $discount,
                     'coupon_code' => $couponCode,
+                    'points_discount' => $pointsDiscount,
+                    'points_used' => $pointsUsed,
                     'shipping_cost' => $shippingCost,
                     'distance' => $distance,
                     'total' => $total,
@@ -202,6 +224,36 @@ class CheckoutController extends Controller
                     $coupon = Coupon::find(session('coupon.id'));
                     if ($coupon) {
                         $coupon->increment('times_used');
+                    }
+                }
+
+                // Deduct redeemed points
+                if ($pointsUsed > 0) {
+                    auth()->user()->decrement('loyalty_points', $pointsUsed);
+                    \App\Models\RewardPointTransaction::create([
+                        'user_id' => auth()->id(),
+                        'amount' => -$pointsUsed,
+                        'type' => 'redeemed',
+                        'description' => "Redeemed for Order #{$order->order_number}",
+                        'order_id' => $order->id,
+                    ]);
+                }
+
+                // Award earned points
+                if ($settings && isset($settings->other_settings['loyalty_enabled']) && $settings->other_settings['loyalty_enabled']) {
+                    $ptsPerPound = $settings->other_settings['points_per_pound'] ?? 1;
+                    $earnableSubtotal = $subtotal - $discount - $pointsDiscount;
+                    $pointsEarned = floor($earnableSubtotal * $ptsPerPound);
+                    
+                    if ($pointsEarned > 0) {
+                        auth()->user()->increment('loyalty_points', $pointsEarned);
+                        \App\Models\RewardPointTransaction::create([
+                            'user_id' => auth()->id(),
+                            'amount' => $pointsEarned,
+                            'type' => 'earned',
+                            'description' => "Earned from Order #{$order->order_number}",
+                            'order_id' => $order->id,
+                        ]);
                     }
                 }
 

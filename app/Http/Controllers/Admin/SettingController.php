@@ -25,6 +25,9 @@ class SettingController extends Controller
             'flat_rate_fee' => 'nullable|numeric|min:0',
             'shop_hours' => 'nullable|array',
             'shop_notice' => 'nullable|string',
+            'loyalty_enabled' => 'nullable|boolean',
+            'points_per_pound' => 'nullable|integer|min:1',
+            'points_redemption_value' => 'nullable|numeric|min:0',
         ]);
 
         $settings = Setting::first() ?? new Setting();
@@ -43,6 +46,16 @@ class SettingController extends Controller
         if ($request->has('shop_notice')) {
             $other['shop_notice'] = $request->shop_notice;
         }
+        
+        // Loyalty Configuration
+        $other['loyalty_enabled'] = $request->has('loyalty_enabled');
+        if ($request->has('points_per_pound')) {
+            $other['points_per_pound'] = $request->points_per_pound;
+        }
+        if ($request->has('points_redemption_value')) {
+            $other['points_redemption_value'] = $request->points_redemption_value;
+        }
+
         $settings->other_settings = $other;
         
         $settings->save();
