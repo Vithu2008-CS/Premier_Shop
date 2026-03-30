@@ -38,6 +38,9 @@ class UserItem extends Model
 
     public function getLineTotalAttribute()
     {
+        if ($this->type === 'cart' && $this->product->has_offer && $this->quantity >= $this->product->offer_min_qty) {
+            return $this->product->offer_price * $this->quantity;
+        }
         return $this->product->price * $this->quantity;
     }
 }

@@ -17,6 +17,8 @@ class Product extends Model
         'offer_min_qty', 'offer_discount_percent', 'offer_active',
     ];
 
+    protected $appends = ['first_image', 'has_offer', 'offer_price'];
+
     protected function casts(): array
     {
         return [
@@ -55,12 +57,12 @@ class Product extends Model
 
     public function getAverageRatingAttribute()
     {
-        return $this->reviews()->where('is_approved', true)->avg('rating') ?? 0;
+        return $this->reviews()->approved()->avg('rating') ?? 0;
     }
 
     public function getReviewsCountAttribute()
     {
-        return $this->reviews()->where('is_approved', true)->count();
+        return $this->reviews()->approved()->count();
     }
 
     public function wishlistedBy()

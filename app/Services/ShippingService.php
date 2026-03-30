@@ -43,7 +43,13 @@ class ShippingService
                         return $element['distance']['value'] / 1000;
                     }
 
-                    Log::warning('Google Maps Distance Matrix element status: ' . ($element['status'] ?? 'UNKNOWN'));
+                    if (($element['status'] ?? '') === 'ZERO_RESULTS') {
+                        Log::warning('Google Maps Distance Matrix: No route found between origin and destination.');
+                    } else {
+                        Log::warning('Google Maps Distance Matrix element status: ' . ($element['status'] ?? 'UNKNOWN'));
+                    }
+                } elseif (($data['status'] ?? '') === 'ZERO_RESULTS') {
+                    Log::warning('Google Maps Distance Matrix: API returned ZERO_RESULTS.');
                 } else {
                     Log::error('Google Maps Distance Matrix API status: ' . ($data['status'] ?? 'UNKNOWN'));
                 }
