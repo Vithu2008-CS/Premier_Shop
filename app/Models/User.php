@@ -30,6 +30,7 @@ class User extends Authenticatable
         'city',
         'role_id',
         'is_on_duty',
+        'loyalty_points',
     ];
 
     protected $hidden = [
@@ -131,5 +132,10 @@ class User extends Authenticatable
     public function returnRequests()
     {
         return $this->hasMany(ReturnRequest::class);
+    }
+
+    public function rewardPointTransactions()
+    {
+        return $this->hasMany(RewardPointTransaction::class)->orderByDesc('created_at');
     }
 }

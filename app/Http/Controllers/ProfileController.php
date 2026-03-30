@@ -90,4 +90,14 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function rewards()
+    {
+        $user = auth()->user();
+        $transactions = $user->rewardPointTransactions()->paginate(15);
+        $totalEarned = $user->rewardPointTransactions()->where('type', 'earned')->sum('amount');
+        $totalSaved = $user->rewardPointTransactions()->where('type', 'redeemed')->sum('amount');
+        
+        return view('profile.rewards', compact('user', 'transactions', 'totalEarned', 'totalSaved'));
+    }
 }
