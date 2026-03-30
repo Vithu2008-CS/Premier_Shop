@@ -48,6 +48,13 @@
         </a>
       </li>
 
+      <li class="nav-item {{ Request::is('admin/returns*') ? 'active' : '' }}">
+        <a href="{{ route('returns.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="corner-down-left"></i>
+          <span class="link-title">Returns</span>
+        </a>
+      </li>
+
       <li class="nav-item {{ Request::is('admin/customers*') ? 'active' : '' }}">
         <a href="{{ route('admin.customers.index') }}" class="nav-link">
           <i class="link-icon" data-feather="users"></i>

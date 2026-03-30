@@ -78,6 +78,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications/latest', [\App\Http\Controllers\NotificationController::class, 'latest'])->name('notifications.latest');
     Route::get('/notifications/{notification}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+
+    // Returns
+    Route::get('/orders/{order}/returns/create', [\App\Http\Controllers\ReturnRequestController::class, 'create'])->name('returns.create');
+    Route::post('/orders/{order}/returns', [\App\Http\Controllers\ReturnRequestController::class, 'store'])->name('returns.store');
+    Route::get('/returns/{return}', [\App\Http\Controllers\ReturnRequestController::class, 'show'])->name('returns.show');
 });
 
 // Admin routes
@@ -99,6 +104,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Coupons
     Route::resource('coupons', CouponController::class);
+
+    // Returns
+    Route::get('/returns', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'index'])->name('returns.index');
+    Route::get('/returns/{return}', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'show'])->name('returns.show');
+    Route::put('/returns/{return}', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'update'])->name('returns.update');
 
     // Orders
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
