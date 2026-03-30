@@ -96,6 +96,33 @@
                 </div>
             </div>
 
+            {{-- Loyalty Points --}}
+            @php 
+                $loyaltyEnabled = \App\Models\Setting::get('loyalty_enabled', false);
+                $userPoints = auth()->user()->loyalty_points ?? 0;
+                $redemptionValue = \App\Models\Setting::get('points_redemption_value', 0.01);
+                $maxDiscount = $userPoints * $redemptionValue;
+            @endphp
+            
+            @if($loyaltyEnabled && $userPoints > 0)
+            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 20px; background: linear-gradient(135deg, rgba(253, 203, 110, 0.1) 0%, rgba(255, 255, 255, 1) 100%); border-left: 4px solid #fdcb6e !important;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Loyalty Points</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="d-block fw-bold text-dark fs-5">{{ number_format($userPoints) }} Pts</span>
+                            <span class="small text-muted">Value: £{{ number_format($maxDiscount, 2) }}</span>
+                        </div>
+                        <div class="form-check form-switch form-switch-lg mt-0">
+                            <input class="form-check-input" type="checkbox" id="usePointsToggle" form="checkoutForm" name="use_points" value="1" style="transform: scale(1.3);">
+                            <label class="form-check-label ms-2 fw-bold text-primary" for="usePointsToggle">Apply Discount</label>
+                        </div>
+                    </div>
+                    <small class="text-muted fst-italic"><i class="bi bi-info-circle me-1"></i>Points are applied dynamically against your remaining pre-shipping subtotal.</small>
+                </div>
+            </div>
+            @endif
+
             {{-- Order Summary --}}
             <div class="card border-0 shadow-sm" style="position:sticky;top:100px; border-radius: 20px;">
                 <div class="card-body p-4">
@@ -126,6 +153,10 @@
                         <span id="discountValueDisplay" class="small fw-bold">-£0.00</span>
                     </div>
                     @endif
+                    <div class="d-flex justify-content-between mb-2 text-warning d-none" id="pointsRow">
+                        <span class="small">Loyalty Points</span>
+                        <span id="pointsValueDisplay" class="small fw-bold">-£0.00</span>
+                    </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted small">Shipping</span>
                         <span id="shippingCostDisplay" class="small fw-bold text-primary">£0.00</span>
@@ -167,7 +198,13 @@
         const shippingCostDisplay = document.getElementById('shippingCostDisplay');
         const shippingMessageDisplay = document.getElementById('shippingMessageDisplay');
         const cartTotalDisplay = document.getElementById('cartTotalDisplay');
-        const baseTotal = parseFloat(cartTotalDisplay.dataset.baseTotal);
+        const usePointsToggle = document.getElementById('usePointsToggle');
+        const pointsRow = document.getElementById('pointsRow');
+        const pointsValueDisplay = document.getElementById('pointsValueDisplay');
+        
+        let baseTotal = parseFloat(cartTotalDisplay.dataset.baseTotal);
+        const userPointsValue = {{ isset($maxDiscount) ? $maxDiscount : 0 }};
+        let currentShippingCost = 0;
         const shippingUrl = "{{ route('checkout.calculateShipping') }}";
 
         // Handle Saved Address Selection
@@ -180,6 +217,29 @@
                 calculateShipping();
             });
         });
+
+        function updateTotal() {
+            let finalTotal = baseTotal + currentShippingCost;
+            let pointsDiscountApplied = 0;
+
+            if (usePointsToggle && usePointsToggle.checked) {
+                // Ensure points discount doesn't exceed baseTotal (so they still pay shipping, or minimum £1)
+                // Actually, let's allow it to cover the entire subtotal 
+                pointsDiscountApplied = Math.min(baseTotal, userPointsValue);
+                finalTotal = finalTotal - pointsDiscountApplied;
+                
+                pointsRow.classList.remove('d-none');
+                pointsValueDisplay.textContent = `-£${pointsDiscountApplied.toFixed(2)}`;
+            } else if (pointsRow) {
+                pointsRow.classList.add('d-none');
+            }
+
+            cartTotalDisplay.textContent = `£${Math.max(0, finalTotal).toFixed(2)}`;
+        }
+
+        if (usePointsToggle) {
+            usePointsToggle.addEventListener('change', updateTotal);
+        }
 
         function calculateShipping() {
             const address = addressInput.value.trim();
@@ -205,12 +265,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.cost !== undefined) {
-                        const shippingCost = parseFloat(data.cost);
-                        shippingCostDisplay.textContent = shippingCost === 0 ? 'FREE' : `£${shippingCost.toFixed(2)}`;
+                        currentShippingCost = parseFloat(data.cost);
+                        shippingCostDisplay.textContent = currentShippingCost === 0 ? 'FREE' : `£${currentShippingCost.toFixed(2)}`;
                         shippingMessageDisplay.textContent = data.message || '';
-
-                        const newTotal = baseTotal + shippingCost;
-                        cartTotalDisplay.textContent = `£${newTotal.toFixed(2)}`;
+                        updateTotal();
                     } else {
                         shippingCostDisplay.textContent = 'Error';
                         shippingMessageDisplay.textContent = 'Could not calculate shipping.';
@@ -218,9 +276,10 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    currentShippingCost = 5.99;
                     shippingCostDisplay.textContent = '£5.99';
                     shippingMessageDisplay.textContent = 'Flat rate applied due to network error.';
-                    cartTotalDisplay.textContent = `£${(baseTotal + 5.99).toFixed(2)}`;
+                    updateTotal();
                 });
         }
 
@@ -270,8 +329,9 @@
 
                 // Update totals
                 if (data.total) {
-                    cartTotalDisplay.dataset.baseTotal = data.total.replace(/,/g, '');
-                    calculateShipping(); // Recalculate full total with shipping
+                    baseTotal = parseFloat(data.total.replace(/,/g, ''));
+                    cartTotalDisplay.dataset.baseTotal = baseTotal;
+                    updateTotal(); // Recalculate full total with shipping and points
                 }
             }
         });

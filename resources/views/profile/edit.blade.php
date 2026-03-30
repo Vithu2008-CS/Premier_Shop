@@ -159,6 +159,15 @@
                 </div>
                 <span>My Cart</span>
             </a>
+            @php $loyaltyEnabled = \App\Models\Setting::get('loyalty_enabled', false); @endphp
+            @if($loyaltyEnabled)
+            <a href="{{ route('profile.rewards') }}" class="quick-action-card">
+                <div class="quick-action-icon">
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <span>Rewards ({{ auth()->user()->loyalty_points }})</span>
+            </a>
+            @endif
             <a href="#profileSettings" class="quick-action-card" data-bs-toggle="collapse">
                 <div class="quick-action-icon">
                     <i class="bi bi-person-gear"></i>

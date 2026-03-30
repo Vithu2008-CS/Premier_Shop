@@ -101,7 +101,48 @@
     </div>
     
     <div class="col-lg-4">
-        <div class="card grid-margin stretch-card text-center">
+        <div class="card grid-margin stretch-card">
+            <div class="card-body">
+                <h6 class="card-title text-primary"><i class="bi bi-star flex-shrink-0 me-2"></i> Loyalty Rewards System</h6>
+                
+                <form action="{{ route('admin.settings.store') }}" method="POST">
+                    @csrf
+                    
+                    @php $otherSettings = $settings->other_settings ?? []; @endphp
+                    
+                    <div class="form-check form-switch mb-3 mt-3">
+                        <input type="hidden" name="loyalty_enabled" value="0">
+                        <input class="form-check-input" type="checkbox" name="loyalty_enabled" value="1" id="loyaltyEnabledToggle" {{ isset($otherSettings['loyalty_enabled']) && $otherSettings['loyalty_enabled'] ? 'checked' : '' }}>
+                        <label class="form-check-label fw-bold" for="loyaltyEnabledToggle">Enable Loyalty Points</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">POINTS EARNED PER £1 SPENT</label>
+                        <div class="input-group">
+                            <input type="number" name="points_per_pound" class="form-control fw-bold fs-5" value="{{ $otherSettings['points_per_pound'] ?? 1 }}" min="1">
+                            <span class="input-group-text bg-light text-muted">Pts</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">VALUE OF 1 POINT (£)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted">£</span>
+                            <input type="number" step="0.01" name="points_redemption_value" class="form-control fw-bold fs-5 text-primary" value="{{ $otherSettings['points_redemption_value'] ?? 0.01 }}" min="0.01">
+                        </div>
+                        <small class="form-text text-muted mt-2 d-block">Example: 0.01 means 100 points = £1.00 discount.</small>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill fw-bold pb-2 pt-2">
+                            Save Loyalty Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card grid-margin stretch-card text-center d-none d-lg-flex">
             <div class="card-body py-5">
                 <div class="mb-4">
                     <div class="d-inline-flex align-items-center justify-content-center bg-soft-primary text-primary" style="width:80px;height:80px;border-radius:50%;">
@@ -110,7 +151,7 @@
                 </div>
                 <h5 class="font-weight-bold mb-3">Shop Hours Format</h5>
                 <p class="text-muted small mb-0 px-3">
-                    Toggle "Closed" if the shop is closed for the entire day. These hours are displayed on the welcome page for customers. Use 24-hour format or AM/PM depending on your browser.
+                    Toggle "Closed" if the shop is closed for the entire day.
                 </p>
             </div>
         </div>
