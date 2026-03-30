@@ -88,6 +88,27 @@
 
                 <h1 class="fw-bold mb-3" style="font-size:2rem;letter-spacing:-0.5px;">{{ $product->name }}</h1>
 
+                {{-- Rating Summary --}}
+                @if($product->reviews_count > 0)
+                <div class="d-flex align-items-center mb-3 text-warning">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= round($product->average_rating))
+                            <i class="bi bi-star-fill"></i>
+                        @else
+                            <i class="bi bi-star"></i>
+                        @endif
+                    @endfor
+                    <a href="#reviewsSection" class="ms-2 text-muted text-decoration-none small">
+                        {{ number_format($product->average_rating, 1) }} ({{ $product->reviews_count }} reviews)
+                    </a>
+                </div>
+                @else
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-light text-muted border"><i class="bi bi-star me-1"></i>No reviews yet</span>
+                    <a href="#reviewsSection" class="ms-2 text-primary small text-decoration-none fw-bold">Be the first to review!</a>
+                </div>
+                @endif
+
                 {{-- Price --}}
                 <div class="d-flex align-items-baseline gap-3 mb-4 reveal-fade delay-1">
                     <span class="gradient-text" style="font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -1px;">£{{ number_format($product->price, 2) }}</span>
@@ -181,90 +202,236 @@
             </div>
         </div>
 
-        {{-- Customer Reviews --}}
-        <div class="mt-5 pt-5 border-top reveal-3d">
-            <div class="row">
-                <div class="col-lg-8">
-                    <h3 class="fw-bold mb-4">Customer Reviews</h3>
-                    
-                    @if($product->reviews->count() > 0)
-                        <div class="mb-4">
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                <h4 class="mb-0 fw-bold">{{ number_format($product->reviews->avg('rating'), 1) }}</h4>
-                                <div class="text-warning">
+        {{-- Customer Reviews (Advanced) --}}
+        <div id="reviewsSection" class="mt-5 pt-5 border-top reveal-3d">
+            <h3 class="fw-bold mb-4">Customer Reviews</h3>
+            <div class="row g-5">
+                {{-- Left Col: Summary & Write Review --}}
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top:100px;">
+                        @if($product->reviews_count > 0)
+                            <div class="text-center mb-4">
+                                <h1 class="display-3 fw-bold gradient-text mb-0">{{ number_format($product->average_rating, 1) }}</h1>
+                                <div class="text-warning fs-4 mb-2">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <i class="bi {{ $i <= round($product->reviews->avg('rating')) ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                        <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill' : 'bi-star' }}"></i>
                                     @endfor
                                 </div>
-                                <span class="text-muted">Based on {{ $product->reviews->count() }} {{ Str::plural('review', $product->reviews->count()) }}</span>
+                                <span class="text-muted small">Based on {{ $product->reviews_count }} {{ Str::plural('review', $product->reviews_count) }}</span>
                             </div>
-                        </div>
 
-                        <div class="d-flex flex-column gap-4 mb-5">
-                            @foreach($product->reviews as $review)
-                                <div class="card border-0 bg-light rounded-4 p-4">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong class="d-block mb-1">{{ $review->user->name }}</strong>
-                                            <div class="text-warning" style="font-size: 0.9rem;">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
-                                                @endfor
-                                            </div>
+                            @php
+                                $totalReviews = $product->reviews()->where('is_approved', true)->count();
+                                $ratings = $product->reviews()->where('is_approved', true)->selectRaw('rating, count(*) as count')->groupBy('rating')->get()->keyBy('rating');
+                            @endphp
+
+                            <div class="rating-bars mb-4">
+                                @for($i = 5; $i >= 1; $i--)
+                                    @php
+                                        $count = isset($ratings[$i]) ? $ratings[$i]->count : 0;
+                                        $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+                                    @endphp
+                                    <div class="d-flex align-items-center mb-2" style="font-size:0.85rem;">
+                                        <span class="text-muted me-2" style="width:12px;">{{ $i }}</span>
+                                        <i class="bi bi-star-fill text-warning me-2"></i>
+                                        <div class="progress flex-grow-1 mx-2" style="height:8px; border-radius:10px; background:#f0f2f5;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percentage }}%; border-radius:10px;"></div>
                                         </div>
-                                        <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                        <span class="text-muted ms-2" style="width:30px; text-align:right;">{{ $count }}</span>
                                     </div>
+                                @endfor
+                            </div>
+                        @else
+                            <div class="text-center mb-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-star text-muted" style="font-size:3rem;"></i>
+                                </div>
+                                <h5>No reviews yet</h5>
+                                <p class="text-muted small">Buy this product and be the first to share your thoughts!</p>
+                            </div>
+                        @endif
+
+                        <hr class="opacity-10 mb-4">
+
+                        @auth
+                            @php
+                                $hasReviewed = $product->reviews()->where('user_id', auth()->id())->exists();
+                                $hasPurchased = \App\Models\Order::where('user_id', auth()->id())
+                                    ->whereIn('status', ['delivered', 'shipped', 'processing'])
+                                    ->whereHas('items', function ($query) use ($product) {
+                                        $query->where('product_id', $product->id);
+                                    })->exists();
+                            @endphp
+                            
+                            @if($hasReviewed)
+                                <div class="alert alert-success rounded-3 text-center mb-0 py-3">
+                                    <i class="bi bi-check-circle-fill d-block fs-4 mb-2"></i>
+                                    <strong class="d-block">Review Submitted</strong>
+                                    <span class="small">Thanks for your feedback!</span>
+                                </div>
+                            @elseif($hasPurchased)
+                                <button type="button" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#writeReviewModal">
+                                    <i class="bi bi-pencil-square me-2"></i> Write a Review
+                                </button>
+                                <div class="text-center mt-3">
+                                    <span class="badge bg-light text-success border border-success border-opacity-25 rounded-pill px-3 py-2">
+                                        <i class="bi bi-gift-fill me-1"></i> Earn 50 Pts
+                                    </span>
+                                </div>
+                            @else
+                                <div class="alert alert-light text-center border rounded-3 mb-0 small">
+                                    <i class="bi bi-lock-fill text-muted d-block fs-5 mb-1"></i>
+                                    You must purchase this product before reviewing it.
+                                </div>
+                            @endif
+                        @else
+                            <div class="text-center">
+                                <a href="{{ route('login') }}" class="btn btn-outline-primary w-100 rounded-pill py-2">Log in to Review</a>
+                            </div>
+                        @endauth
+                    </div>
+                </div>
+
+                {{-- Right Col: Review List --}}
+                <div class="col-lg-8">
+                    @php
+                        $approvedReviews = $product->reviews()->with('user')->where('is_approved', true)->latest()->paginate(5);
+                    @endphp
+
+                    @if($approvedReviews->count() > 0)
+                        <div class="d-flex flex-column gap-4">
+                            @foreach($approvedReviews as $review)
+                                <div class="card border-0 rounded-4 p-4" style="background:#f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <div class="text-warning lh-1" style="font-size:1.1rem;">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                                    @endfor
+                                                </div>
+                                                <strong class="ms-2">{{ $review->user->name }}</strong>
+                                                <span class="badge bg-success bg-opacity-10 text-success ms-2 rounded-pill" style="font-size:0.7rem;">
+                                                    <i class="bi bi-patch-check-fill me-1"></i>Verified Buyer
+                                                </span>
+                                            </div>
+                                            <small class="text-muted">{{ $review->created_at->format('M j, Y') }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    @if($review->title)
+                                        <h6 class="fw-bold mb-2">{{ $review->title }}</h6>
+                                    @endif
+                                    
                                     @if($review->comment)
-                                        <p class="mb-0 text-dark">{{ $review->comment }}</p>
+                                        <p class="mb-3 text-dark">{{ $review->comment }}</p>
+                                    @endif
+
+                                    @if($review->photos && count($review->photos) > 0)
+                                        <div class="d-flex gap-2 mb-3 overflow-auto custom-scrollbar pb-2">
+                                            @foreach($review->photos as $photo)
+                                                <a href="{{ Storage::url($photo) }}" target="_blank">
+                                                    <img src="{{ Storage::url($photo) }}" class="rounded-3" style="width:80px;height:80px;object-fit:cover;border:1px solid #dee2e6;" alt="Review Image">
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if($review->admin_reply)
+                                        <div class="p-3 mt-2 rounded-3" style="background:rgba(108, 92, 231, 0.05); border-left:3px solid var(--ps-primary);">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <i class="bi bi-shop text-primary"></i>
+                                                <strong class="text-dark small">Response from Premier Shop</strong>
+                                            </div>
+                                            <p class="mb-0 small text-muted">{{ $review->admin_reply }}</p>
+                                        </div>
                                     @endif
                                 </div>
                             @endforeach
                         </div>
+                        
+                        <div class="mt-4">
+                            {{ $approvedReviews->fragment('reviewsSection')->links('pagination::bootstrap-5') }}
+                        </div>
                     @else
-                        <div class="alert alert-light text-center py-4 mb-5 text-muted rounded-4">
-                            <i class="bi bi-chat-square-text fs-1 mb-2 d-block"></i>
-                            No reviews yet. Be the first to review this product!
+                        <div class="d-flex flex-column align-items-center justify-content-center py-5 rounded-4 border border-dashed text-muted">
+                            <i class="bi bi-chat-dots fs-1 mb-3 opacity-50"></i>
+                            <h5>No customer reviews yet</h5>
+                            <p class="small">We're waiting for our first verified review.</p>
                         </div>
                     @endif
+                </div>
+            </div>
+        </div>
 
-                    @auth
-                        @php
-                            $hasReviewed = $product->reviews->where('user_id', auth()->id())->first();
-                        @endphp
-                        
-                        @if(!$hasReviewed)
-                            <div class="card border-0 shadow-sm rounded-4 p-4 mt-4">
-                                <h4 class="fw-bold mb-3">Write a Review</h4>
-                                <form action="{{ route('reviews.store', $product->id) }}" method="POST">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Rating</label>
-                                        <select name="rating" class="form-select w-auto" required>
-                                            <option value="">Select a rating</option>
-                                            <option value="5">5 - Excellent</option>
-                                            <option value="4">4 - Very Good</option>
-                                            <option value="3">3 - Average</option>
-                                            <option value="2">2 - Poor</option>
-                                            <option value="1">1 - Terrible</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Review (Optional)</label>
-                                        <textarea name="comment" class="form-control" rows="3" placeholder="What did you think about this product?"></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary px-4 rounded-pill">Submit Review</button>
-                                </form>
+        {{-- Write Review Modal --}}
+        @auth
+        <div class="modal fade" id="writeReviewModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 border-0 shadow-lg">
+                    <div class="modal-header border-bottom-0 pb-0">
+                        <h5 class="modal-title fw-bold">Write a Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('reviews.store', $product->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:#f8f9fa;">
+                                <img src="{{ $product->images[0] ?? '' }}" class="rounded" style="width:50px;height:50px;object-fit:cover;">
+                                <div>
+                                    <div class="fw-bold fs-6 lh-sm">{{ $product->name }}</div>
+                                </div>
                             </div>
-                        @else
-                            <div class="alert alert-success rounded-4 mt-4">
-                                <i class="bi bi-check-circle me-2"></i> You have already submitted a review for this product. Thank you!
+
+                            <div class="mb-4 text-center">
+                                <label class="form-label fw-bold d-block mb-2">Overall Rating</label>
+                                <div class="rating-input d-inline-flex flex-row-reverse justify-content-center gap-2 fs-2 text-warning cursor-pointer">
+                                    <input type="radio" name="rating" id="star5" value="5" class="d-none" required><label for="star5"><i class="bi bi-star"></i></label>
+                                    <input type="radio" name="rating" id="star4" value="4" class="d-none"><label for="star4"><i class="bi bi-star"></i></label>
+                                    <input type="radio" name="rating" id="star3" value="3" class="d-none"><label for="star3"><i class="bi bi-star"></i></label>
+                                    <input type="radio" name="rating" id="star2" value="2" class="d-none"><label for="star2"><i class="bi bi-star"></i></label>
+                                    <input type="radio" name="rating" id="star1" value="1" class="d-none"><label for="star1"><i class="bi bi-star"></i></label>
+                                </div>
+                                <style>
+                                    .rating-input label { cursor: pointer; transition: 0.2s; }
+                                    .rating-input label:hover,
+                                    .rating-input label:hover ~ label,
+                                    .rating-input input:checked ~ label {
+                                        color: #ffc107;
+                                    }
+                                    .rating-input label:hover i::before,
+                                    .rating-input label:hover ~ label i::before,
+                                    .rating-input input:checked ~ label i::before {
+                                        content: "\F586"; /* bi-star-fill */
+                                    }
+                                </style>
                             </div>
-                        @endif
-                    @else
-                        <div class="alert alert-secondary rounded-4 text-center mt-4 border-0">
-                            Please <a href="{{ route('login') }}" class="fw-bold text-decoration-none">log in</a> to write a review.
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Review Title</label>
+                                <input type="text" name="title" class="form-control" placeholder="Summarize your experience" maxlength="255">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Review Details</label>
+                                <textarea name="comment" class="form-control" rows="4" placeholder="What did you like or dislike?"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Add Photos (Optional)</label>
+                                <input type="file" name="photos[]" class="form-control" multiple accept="image/jpeg,image/png,image/gif">
+                                <small class="text-muted d-block mt-1">Upload up to 4 images (Max 2MB each).</small>
+                            </div>
                         </div>
-                    @endauth
+                        <div class="modal-footer border-top-0 pt-0">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4" style="background:var(--ps-gradient);border:none;">Submit Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @endauth
                 </div>
             </div>
         </div>
