@@ -221,8 +221,8 @@
                             </div>
 
                             @php
-                                $totalReviews = $product->reviews()->where('is_approved', true)->count();
-                                $ratings = $product->reviews()->where('is_approved', true)->selectRaw('rating, count(*) as count')->groupBy('rating')->get()->keyBy('rating');
+                                $totalReviews = $product->reviews()->approved()->count();
+                                $ratings = $product->reviews()->approved()->selectRaw('rating, count(*) as count')->groupBy('rating')->get()->keyBy('rating');
                             @endphp
 
                             <div class="rating-bars mb-4">

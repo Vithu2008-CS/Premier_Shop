@@ -44,6 +44,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'dob' => 'date',
+            'loyalty_points' => 'integer',
+            'is_on_duty' => 'boolean',
         ];
     }
 
@@ -137,5 +139,10 @@ class User extends Authenticatable
     public function rewardPointTransactions()
     {
         return $this->hasMany(RewardPointTransaction::class)->orderByDesc('created_at');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

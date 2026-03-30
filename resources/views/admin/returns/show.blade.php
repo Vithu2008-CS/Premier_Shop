@@ -3,7 +3,7 @@
 @section('content')
 <nav class="page-breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('returns.index') }}">Returns</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('admin.returns.index') }}">Returns</a></li>
         <li class="breadcrumb-item active" aria-current="page">Request #{{ $return->id }}</li>
     </ol>
 </nav>
@@ -87,7 +87,7 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <form action="{{ route('returns.update', $return) }}" method="POST">
+                <form action="{{ route('admin.returns.update', $return) }}" method="POST">
                     @csrf
                     @method('PUT')
 

@@ -46,7 +46,7 @@
                                     </td>
                                     <td>{{ $return->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <a href="{{ route('returns.show', $return) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="{{ route('admin.returns.show', $return) }}" class="btn btn-sm btn-outline-primary">View</a>
                                     </td>
                                 </tr>
                             @empty

@@ -11,87 +11,76 @@ class CartController extends Controller
 {
     public function index()
     {
-        $items = auth()->user()->cartItems()->with('product')->get();
+        $items = auth()->user()->cartItems()
+            ->with('product')
+            ->whereHas('product', function($q) {
+                $q->where('is_active', true);
+            })->get();
         return view('cart.index', compact('items'));
     }
 
     public function add(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+        $result = $this->addToCart($request);
 
-        $product = Product::findOrFail($request->product_id);
-
-        if ($product->is_age_restricted && auth()->user()->isUnder16()) {
-            return back()->with('error', 'You must be 16 or older to purchase this product.');
+        if ($request->wantsJson()) {
+            return response()->json($result);
         }
 
-        if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Not enough stock available.');
+        if (!$result['success']) {
+            return back()->with('error', $result['message']);
         }
 
-        $cartItem = UserItem::where('user_id', auth()->id())
-            ->where('product_id', $product->id)
-            ->where('type', 'cart')
-            ->first();
+        return back()->with('success', $result['message']);
+    }
 
-        if ($cartItem) {
-            $newQty = $cartItem->quantity + $request->quantity;
-            if ($newQty > $product->stock) {
-                if ($request->wantsJson()) {
-                    return response()->json(['success' => false, 'message' => 'Cannot add more. Stock limit reached.']);
-                }
-                return back()->with('error', 'Cannot add more. Stock limit reached.');
+    public function buyNow(Request $request)
+    {
+        $result = $this->addToCart($request);
+
+        if (!$result['success']) {
+            if ($request->wantsJson()) {
+                return response()->json($result);
             }
-            $cartItem->update(['quantity' => $newQty]);
-        } else {
-            UserItem::create([
-                'user_id' => auth()->id(),
-                'product_id' => $product->id,
-                'quantity' => $request->quantity,
-                'type' => 'cart',
-            ]);
+            return back()->with('error', $result['message']);
         }
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => "{$product->name} added to cart!",
-                'cartCount' => auth()->user()->cartItems()->sum('quantity')
+                'message' => 'Proceeding to checkout...',
+                'redirect' => route('checkout.index')
             ]);
         }
 
-        return back()->with('success', "{$product->name} added to cart!");
+        return redirect()->route('checkout.index');
     }
 
-    public function buyNow(Request $request)
+    private function addToCart(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::where('is_active', true)->findOrFail($request->product_id);
 
         if ($product->is_age_restricted && auth()->user()->isUnder16()) {
-            return back()->with('error', 'You must be 16 or older to purchase this product.');
+            return ['success' => false, 'message' => 'You must be 16 or older to purchase this product.'];
         }
 
         if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Not enough stock available.');
+            return ['success' => false, 'message' => 'Not enough stock available.'];
         }
 
-        $cartItem = UserItem::where('user_id', auth()->id())
+        $cartItem = auth()->user()->cartItems()
             ->where('product_id', $product->id)
-            ->where('type', 'cart')
             ->first();
 
         if ($cartItem) {
             $newQty = $cartItem->quantity + $request->quantity;
             if ($newQty > $product->stock) {
-                return back()->with('error', 'Cannot add more. Stock limit reached.');
+                return ['success' => false, 'message' => 'Cannot add more. Stock limit reached.'];
             }
             $cartItem->update(['quantity' => $newQty]);
         } else {
@@ -103,7 +92,11 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->route('checkout.index');
+        return [
+            'success' => true,
+            'message' => "{$product->name} added to cart!",
+            'cartCount' => auth()->user()->cartItems()->sum('quantity')
+        ];
     }
 
     public function update(Request $request, UserItem $cartItem)
@@ -126,12 +119,11 @@ class CartController extends Controller
         if ($request->wantsJson()) {
             $user = auth()->user();
             $items = $user->cartItems()->with('product')->get();
-            $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+            $subtotal = $items->sum('line_total');
             $totalItems = $items->sum('quantity');
             
-            $settings = Setting::first();
-            $threshold = $settings ? $settings->free_delivery_threshold : 50;
-            $baseFee = $settings ? $settings->flat_rate_fee : 5.99;
+            $threshold = Setting::get('free_delivery_threshold', 50);
+            $baseFee = Setting::get('flat_rate_fee', 5.99);
             
             $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
             
@@ -164,12 +156,11 @@ class CartController extends Controller
                 return response()->json(['success' => true, 'empty' => true]);
             }
             
-            $subtotal = $items->sum(fn($i) => $i->product->price * $i->quantity);
+            $subtotal = $items->sum('line_total');
             $totalItems = $items->sum('quantity');
             
-            $settings = Setting::first();
-            $threshold = $settings ? $settings->free_delivery_threshold : 50;
-            $baseFee = $settings ? $settings->flat_rate_fee : 5.99;
+            $threshold = Setting::get('free_delivery_threshold', 50);
+            $baseFee = Setting::get('flat_rate_fee', 5.99);
             
             $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
             

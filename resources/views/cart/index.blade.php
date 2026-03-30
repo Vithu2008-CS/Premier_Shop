@@ -34,7 +34,13 @@
 
                         <div id="cart-items-container" class="stagger-children">
                             @foreach($items as $item)
-                                <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" id="cart-item-{{ $item->id }}" data-price="{{ $item->product->price }}" data-id="{{ $item->id }}">
+                                <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" 
+                                     id="cart-item-{{ $item->id }}" 
+                                     data-price="{{ $item->product->price }}" 
+                                     data-id="{{ $item->id }}"
+                                     data-has-offer="{{ $item->product->has_offer ? '1' : '0' }}"
+                                     data-offer-price="{{ $item->product->offer_price }}"
+                                     data-offer-min-qty="{{ $item->product->offer_min_qty }}">
                                     <div class="card-body p-3">
                                         <div class="d-flex d-md-none align-items-center mb-3">
                                             <div class="form-check me-2">
@@ -183,8 +189,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const row = cb.closest('.cart-item-row');
                 const id = row.dataset.id;
                 const price = parseFloat(row.dataset.price);
+                const hasOffer = row.dataset.hasOffer === '1';
+                const offerPrice = parseFloat(row.dataset.offerPrice);
+                const offerMinQty = parseInt(row.dataset.offerMinQty);
                 const qty = parseInt(document.getElementById('qty-' + id).value);
-                subtotal += price * qty;
+                
+                if (hasOffer && qty >= offerMinQty) {
+                    subtotal += offerPrice * qty;
+                } else {
+                    subtotal += price * qty;
+                }
                 count += qty;
             }
         });

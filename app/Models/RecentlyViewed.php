@@ -47,6 +47,8 @@ class RecentlyViewed extends Model
         $oldest = self::where('user_id', $userId)
             ->orderByDesc('viewed_at')
             ->skip(10)
+            ->take(100) // MariaDB requires LIMIT with OFFSET
+            ->get(['id'])
             ->pluck('id');
 
         if ($oldest->isNotEmpty()) {

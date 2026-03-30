@@ -130,40 +130,7 @@
     @endif
 
 
-    {{-- ═══════════════════════════════════════════════════════════
-         CATEGORY SHOWCASE
-    ═══════════════════════════════════════════════════════════ --}}
-    @if(isset($categories) && $categories->count() > 0)
-    <section class="category-showcase-section" aria-label="Shop by Category">
-        <div class="container">
-            <div class="premium-section-header scroll-reveal">
-                <div class="header-line"></div>
-                <h2 class="section-title">Shop by <span class="gradient-text">Category</span></h2>
-                <a href="{{ route('categories') }}" class="view-all-link">Explore All <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="category-scroll-container">
-                <div class="category-grid-premium">
-                    @foreach($categories as $i => $cat)
-                        <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-glass-card scroll-reveal" data-delay="{{ ($i % 6) * 60 }}">
-                            <div class="category-glow"></div>
-                            <div class="category-icon-wrap">
-                                @if($cat->image)
-                                    <img src="{{ $cat->image }}" alt="{{ $cat->name }}" loading="lazy">
-                                @else
-                                    <div class="icon-fallback"><i class="bi bi-box-seam"></i></div>
-                                @endif
-                            </div>
-                            <div class="category-info">
-                                <span class="category-name">{{ $cat->name }}</span>
-                                <span class="category-meta">{{ $cat->products_count ?? $cat->products()->where('is_active', true)->count() }} Products</span>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </section>
-    @endif
+
 
 
     {{-- ═══════════════════════════════════════════════════════════

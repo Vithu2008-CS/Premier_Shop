@@ -23,7 +23,7 @@ class ProductFactory extends Factory
             'price' => $this->faker->randomFloat(2, 5, 100),
             'wholesale_price' => $this->faker->randomFloat(2, 1, 50),
             'stock' => $this->faker->numberBetween(10, 100),
-            'category_id' => 1,
+            'category_id' => \App\Models\Category::factory(),
             'is_active' => true,
         ];
     }

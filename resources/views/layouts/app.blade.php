@@ -16,7 +16,8 @@
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
@@ -612,7 +613,7 @@
         if (form && form.classList.contains('ajax-form')) {
             e.preventDefault();
             
-            const btn = form.querySelector('button[type="submit"]');
+            const btn = e.submitter || form.querySelector('button[type="submit"]');
             const originalBtnHtml = btn ? btn.innerHTML : null;
             if (btn) {
                 btn.disabled = true;
@@ -620,8 +621,9 @@
             }
 
             const formData = new FormData(form);
+            const actionUrl = (btn && btn.hasAttribute('formaction')) ? btn.getAttribute('formaction') : form.action;
             
-            fetch(form.action, {
+            fetch(actionUrl, {
                 method: form.method || 'POST',
                 body: formData,
                 headers: {
@@ -638,6 +640,11 @@
                 }
 
                 if (data.success) {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                    
                     showToast(data.message, 'bg-success');
                     
                     // Update Cart Badge globally
