@@ -1,12 +1,12 @@
 @extends('emails.layouts.master')
 @section('title', 'Welcome to Premier Shop')
-@section('header_style', 'background:linear-gradient(135deg,#00B894 0%,#00CEC9 50%,#6C5CE7 100%);')
+@section('header_style', 'background:#6C5CE7;')
 @section('header_subtitle', 'Your account has been created successfully')
 
 @section('content')
 <tr>
     <td style="padding:30px 40px 0;text-align:center;">
-        <div style="display:inline-block;width:80px;height:80px;background:linear-gradient(135deg,#00B894,#00CEC9);border-radius:50%;line-height:80px;font-size:40px;">
+        <div style="display:inline-block;width:80px;height:80px;background:#00B894;border-radius:50%;line-height:80px;font-size:40px;">
             ✅
         </div>
     </td>
@@ -85,7 +85,7 @@
 
 <tr>
     <td style="padding:10px 40px 30px;text-align:center;">
-        <a href="{{ url('/products') }}" style="display:inline-block;background:linear-gradient(135deg,#6C5CE7,#00CEC9);color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/products') }}" style="display:inline-block;background:#6C5CE7;color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
             Start Shopping →
         </a>
     </td>

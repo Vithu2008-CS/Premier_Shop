@@ -5,7 +5,7 @@
 @section('content')
 <tr>
     <td style="padding:30px 40px 0;text-align:center;">
-        <div style="display:inline-block;background:linear-gradient(135deg,#00B894,#00CEC9);color:#fff;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;">
+        <div style="display:inline-block;background:#00B894;color:#fff;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;">
             ✅ Order Confirmed
         </div>
     </td>
@@ -114,7 +114,7 @@
 </tr>
 <tr>
     <td style="padding:10px 40px 40px;text-align:center;">
-        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:linear-gradient(135deg,#6C5CE7,#00CEC9);color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#6C5CE7;color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
             View Order Details →
         </a>
     </td>

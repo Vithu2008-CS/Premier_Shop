@@ -9,12 +9,12 @@
                 <div class="card-body p-4 p-md-5 text-center">
                     {{-- Icon --}}
                     <div class="mb-4">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:80px;height:80px;background:linear-gradient(135deg,#6C5CE7,#A29BFE);">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:80px;height:80px;background:#6C5CE7;">
                             <i class="bi bi-envelope-check text-white" style="font-size:2rem;"></i>
                         </div>
                     </div>
 
-                    <h2 class="fw-bold mb-2" style="background:linear-gradient(135deg,#6C5CE7,#00CEC9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Check Your Email</h2>
+                    <h2 class="fw-bold mb-2" style="color:#6C5CE7;">Check Your Email</h2>
                     <p class="text-muted mb-4">
                         We've sent a 6-digit verification code to<br>
                         <strong class="text-dark">{{ session('registration_data.email') }}</strong>
