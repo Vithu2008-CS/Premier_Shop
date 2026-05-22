@@ -246,17 +246,140 @@ document.querySelectorAll('.qty-stepper').forEach(stepper => {
 });
 
 // ============================================================
-// Back to Top
+// Premium Circular Scroll-Progress Back-to-Top Widget
 // ============================================================
-const backToTop = document.getElementById('backToTop');
-if (backToTop) {
-    window.addEventListener('scroll', () => {
-        backToTop.style.display = window.scrollY > 400 ? 'flex' : 'none';
-    });
-    backToTop.addEventListener('click', () => {
+const progressWrap = document.getElementById('scrollProgress');
+const progressPath = document.querySelector('.scroll-progress-wrap path');
+
+if (progressWrap && progressPath) {
+    const pathLength = progressPath.getTotalLength();
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+    progressPath.style.strokeDasharray = `${pathLength} ${pathLength}`;
+    progressPath.style.strokeDashoffset = pathLength;
+    progressPath.getBoundingClientRect();
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
+
+    const updateProgress = () => {
+        const scroll = window.pageYOffset || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const progress = pathLength - (scroll * pathLength / height);
+        progressPath.style.strokeDashoffset = progress;
+
+        if (scroll > 300) {
+            progressWrap.classList.add('active');
+        } else {
+            progressWrap.classList.remove('active');
+        }
+    };
+
+    window.addEventListener('scroll', updateProgress);
+    progressWrap.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+    // Run once on load
+    updateProgress();
 }
+
+// ============================================================
+// Smart Flash Sale Countdown Timer (Rolling 48-Hour Baseline)
+// ============================================================
+const initFlashCountdown = () => {
+    const countdownContainer = document.getElementById('flashCountdown');
+    if (!countdownContainer) return;
+
+    const dEl = document.getElementById('cd-days');
+    const hEl = document.getElementById('cd-hours');
+    const mEl = document.getElementById('cd-mins');
+    const sEl = document.getElementById('cd-secs');
+
+    // Smart 48-hour rolling timer
+    let targetTime = parseInt(localStorage.getItem('flash_deal_target'));
+    const now = new Date().getTime();
+
+    if (!targetTime || targetTime < now) {
+        targetTime = now + (48 * 60 * 60 * 1000); // 48h from now
+        localStorage.setItem('flash_deal_target', targetTime);
+    }
+
+    const updateTimer = () => {
+        const currentTime = new Date().getTime();
+        const difference = targetTime - currentTime;
+
+        if (difference <= 0) {
+            // Reset to another 48 hours to maintain a visual marketing campaign
+            targetTime = currentTime + (48 * 60 * 60 * 1000);
+            localStorage.setItem('flash_deal_target', targetTime);
+            return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        if (dEl) dEl.textContent = String(days).padStart(2, '0');
+        if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+        if (mEl) mEl.textContent = String(minutes).padStart(2, '0');
+        if (sEl) sEl.textContent = String(seconds).padStart(2, '0');
+    };
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+};
+initFlashCountdown();
+
+// ============================================================
+// Interactive Milestone Statistics (Viewport Triggered Count-Up)
+// ============================================================
+const initMilestoneCounters = () => {
+    const counterElements = document.querySelectorAll('.milestone-card .counter-num');
+    if (counterElements.length === 0) return;
+
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px'
+    };
+
+    const countUp = (el) => {
+        const target = parseFloat(el.getAttribute('data-target'));
+        const decimals = parseInt(el.getAttribute('data-decimals') || '0');
+        const suffix = el.getAttribute('data-suffix') || '';
+        const duration = 1500; // in milliseconds
+        const frameRate = 1000 / 60; // 60 FPS
+        const totalFrames = Math.round(duration / frameRate);
+        let frame = 0;
+
+        const updateCount = () => {
+            frame++;
+            const progress = frame / totalFrames;
+            // Ease out quad formula: progress * (2 - progress)
+            const easeProgress = progress * (2 - progress);
+            const currentValue = easeProgress * target;
+
+            el.textContent = currentValue.toFixed(decimals) + suffix;
+
+            if (frame < totalFrames) {
+                requestAnimationFrame(updateCount);
+            } else {
+                el.textContent = target.toFixed(decimals) + suffix;
+            }
+        };
+
+        requestAnimationFrame(updateCount);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                countUp(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    counterElements.forEach((el) => observer.observe(el));
+};
+initMilestoneCounters();
 
 // ============================================================
 // Tooltip Init
