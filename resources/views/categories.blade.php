@@ -20,31 +20,31 @@
         <div class="row g-4 stagger-children">
             @foreach($categories as $i => $category)
                 <div class="col-6 col-md-4 col-lg-3 fade-up delay-{{ ($i % 8) + 1 }}">
-                    <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="category-showcase-card d-block text-decoration-none">
-                        <div class="category-showcase-inner">
+                    <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="category-grid-card d-block text-decoration-none">
+                        <div class="category-grid-inner">
                             {{-- Background Image or Gradient --}}
                             @if($category->image)
-                                <img src="{{ $category->image }}" alt="{{ $category->name }}" class="category-showcase-bg" loading="lazy">
+                                <img src="{{ $category->image }}" alt="{{ $category->name }}" class="category-grid-bg" loading="lazy">
                             @endif
-                            <div class="category-showcase-overlay"></div>
+                            <div class="category-grid-overlay"></div>
 
                             {{-- Content --}}
-                            <div class="category-showcase-content">
-                                <div class="category-showcase-icon">
+                            <div class="category-grid-content">
+                                <div class="category-grid-icon">
                                     @if($category->image)
                                         <img src="{{ $category->image }}" alt="">
                                     @else
                                         <i class="bi bi-grid-fill"></i>
                                     @endif
                                 </div>
-                                <h5 class="category-showcase-title">{{ $category->name }}</h5>
-                                <span class="category-showcase-count">
+                                <h5 class="category-grid-title">{{ $category->name }}</h5>
+                                <span class="category-grid-count">
                                     {{ $category->products_count }} {{ Str::plural('product', $category->products_count) }}
                                 </span>
                             </div>
 
                             {{-- Hover Shine --}}
-                            <div class="category-showcase-shine"></div>
+                            <div class="category-grid-shine"></div>
                         </div>
                     </a>
                 </div>
