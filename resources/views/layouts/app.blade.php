@@ -96,12 +96,12 @@
 
             {{-- Mobile Icons --}}
             <div class="d-flex align-items-center gap-2 d-lg-none">
-                <button class="btn btn-link text-white p-2" data-bs-toggle="modal" data-bs-target="#searchModal">
+                <button class="btn btn-link p-2" data-bs-toggle="modal" data-bs-target="#searchModal">
                     <i class="bi bi-search fs-5"></i>
                 </button>
                 @auth
                     @if(!auth()->user()->isDriver())
-                    <a href="{{ route('cart.index') }}" class="btn btn-link text-white p-2 cart-badge">
+                    <a href="{{ route('cart.index') }}" class="btn btn-link p-2 cart-badge">
                         <i class="bi bi-bag fs-5"></i>
                         @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
                         <span class="badge cart-count-badge" id="cartCountBadgeMobile" style="{{ $cartCount > 0 ? '' : 'display:none;' }}">{{ $cartCount }}</span>
@@ -110,7 +110,7 @@
                 @endauth
                 <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#mobileMenu">
-                    <i class="bi bi-list text-white fs-4"></i>
+                    <i class="bi bi-list fs-4"></i>
                 </button>
             </div>
 
@@ -228,39 +228,74 @@
         {{-- Category Mega Menu (Moved inside nav for relative positioning) --}}
         @if(!auth()->user()?->isDriver())
         <div class="category-mega-menu" id="categoryMegaMenu">
-            <div class="container py-4">
-                <div class="row g-4 stagger-children">
-                    @foreach($globalCategories as $cat)
-                        <div class="col-6 col-md-4 col-lg-3 fade-up">
-                            <div class="category-list-group">
-                                <h6 class="fw-bold mb-3 border-bottom pb-2">
-                                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-dark text-decoration-none hover-primary d-flex align-items-center">
-                                        @if($cat->image)
-                                            <img src="{{ $cat->image }}" alt="" style="width:20px;height:20px;object-fit:cover;margin-right:8px;border-radius:4px;">
-                                        @endif
-                                        {{ $cat->name }}
+            <div class="container-fluid px-lg-5 py-4">
+                <div class="row g-4">
+                    <!-- Left Side Spotlight Column -->
+                    <div class="col-lg-3 d-none d-lg-block border-end-dynamic">
+                        <div class="mega-spotlight-card h-100 p-4 d-flex flex-column justify-content-between rounded-4 position-relative overflow-hidden">
+                            <div class="spotlight-glow"></div>
+                            <div class="position-relative z-index-2 d-flex flex-column h-100">
+                                <div class="mb-3">
+                                    <span class="badge badge-spotlight mb-3 px-3 py-1.5 rounded-pill small-caps fw-semibold text-primary">Spotlight</span>
+                                </div>
+                                <h4 class="fw-bold mb-3 spotlight-title">Handpicked Collections</h4>
+                                <p class="spotlight-desc mb-4 lh-lg">
+                                    Discover our top premium goods curated for your lifestyle. Sourced with a commitment to local quality and absolute excellence.
+                                </p>
+                                <div class="mt-auto pt-4">
+                                    <a href="{{ route('products.index') }}" class="btn btn-premium-gradient w-100 rounded-pill py-2.5 px-4 d-flex align-items-center justify-content-center gap-2 text-white">
+                                        <span class="fw-bold">Browse All Products</span>
+                                        <i class="bi bi-arrow-right-short fs-5 transition-transform"></i>
                                     </a>
-                                </h6>
-                                <ul class="list-unstyled ps-0" style="font-size: 0.85rem;">
-                                    @php
-                                        $topProducts = $cat->products()->where('is_active', true)->take(5)->get();
-                                    @endphp
-                                    @foreach($topProducts as $prod)
-                                        <li class="mb-2">
-                                            <a href="{{ route('products.show', $prod->slug) }}" class="text-muted text-decoration-none hover-link">
-                                                {{ Str::limit($prod->name, 28) }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                    <li class="mt-2">
-                                        <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-primary text-decoration-none fw-bold small">
-                                            View all results <i class="bi bi-chevron-right small"></i>
-                                        </a>
-                                    </li>
-                                </ul>
+                                </div>
                             </div>
                         </div>
-                    @endforeach
+                    </div>
+
+                    <!-- Right Side Categories Grid -->
+                    <div class="col-12 col-lg-9">
+                        <div class="row g-4 stagger-children">
+                            @foreach($globalCategories as $cat)
+                                <div class="col-6 col-md-4 col-xl-3 fade-up">
+                                    <div class="category-mega-tile p-3 rounded-4 h-100 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <div class="tile-header mb-3 pb-2.5 d-flex align-items-center gap-2">
+                                                <div class="tile-icon-frame d-flex align-items-center justify-content-center shadow-sm">
+                                                    @if($cat->image)
+                                                        <img src="{{ $cat->image }}" alt="" class="tile-icon-img">
+                                                    @else
+                                                        <i class="bi bi-grid text-primary"></i>
+                                                    @endif
+                                                </div>
+                                                <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="tile-title text-decoration-none fw-bold hover-primary text-truncate" title="{{ $cat->name }}">
+                                                    {{ $cat->name }}
+                                                </a>
+                                            </div>
+                                            <ul class="list-unstyled ps-0 mega-product-list">
+                                                @php
+                                                    $topProducts = $cat->products()->where('is_active', true)->take(4)->get();
+                                                @endphp
+                                                @foreach($topProducts as $prod)
+                                                    <li class="mb-2">
+                                                        <a href="{{ route('products.show', $prod->slug) }}" class="mega-product-link text-decoration-none d-flex align-items-center gap-2" title="{{ $prod->name }}">
+                                                            <span class="bullet-dot"></span>
+                                                            <span class="text-truncate">{{ Str::limit($prod->name, 22) }}</span>
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                        <div class="mt-3 pt-2 border-top-dynamic">
+                                            <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="view-all-link text-decoration-none fw-bold small d-inline-flex align-items-center gap-1 text-primary">
+                                                <span>Explore All</span>
+                                                <i class="bi bi-chevron-right small transition-transform"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -273,37 +308,37 @@
     {{-- Mobile Off-Canvas Menu --}}
     {{-- Mobile Off-Canvas Menu (Premium Redesign) --}}
     <div class="offcanvas offcanvas-end mobile-offcanvas" id="mobileMenu" tabindex="-1">
-        <div class="offcanvas-header border-bottom border-white border-opacity-10 py-4">
+        <div class="offcanvas-header py-4">
             <div class="d-flex align-items-center gap-3">
                 @auth
                     <div class="user-avatar-mini bg-primary bg-opacity-20 text-primary border border-primary border-opacity-25 shadow-sm">
                         {{ substr(auth()->user()->name, 0, 1) }}
                     </div>
                     <div>
-                        <h6 class="mb-0 fw-bold text-white small">Hello, {{ explode(' ', auth()->user()->name)[0] }}</h6>
-                        <span class="text-white-50 x-small">Welcome back</span>
+                        <h6 class="mb-0 fw-bold small welcome-text">Hello, {{ explode(' ', auth()->user()->name)[0] }}</h6>
+                        <span class="welcome-subtext x-small">Welcome back</span>
                     </div>
                 @else
-                    <div class="user-avatar-mini bg-white bg-opacity-10 text-white">
+                    <div class="user-avatar-mini guest-avatar">
                         <i class="bi bi-person"></i>
                     </div>
                     <div>
-                        <h6 class="mb-0 fw-bold text-white small">Guest User</h6>
+                        <h6 class="mb-0 fw-bold small welcome-text">Guest User</h6>
                         <a href="{{ route('login') }}" class="text-primary text-decoration-none x-small fw-bold">Login / Sign Up</a>
                     </div>
                 @endauth
             </div>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close mobile-offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0">
             {{-- Mobile Search --}}
             <div class="px-4 py-3">
                 <form action="{{ route('products.index') }}" method="GET" class="mobile-search-form">
-                    <div class="input-group bg-white bg-opacity-10 rounded-pill overflow-hidden border border-white border-opacity-10">
-                        <span class="input-group-text bg-transparent border-0 text-white-50 ps-3">
+                    <div class="input-group mobile-search-group rounded-pill overflow-hidden">
+                        <span class="input-group-text bg-transparent border-0 mobile-search-icon ps-3">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" class="form-control bg-transparent border-0 text-white small py-2 ps-1" placeholder="Search products...">
+                        <input type="text" name="search" class="form-control bg-transparent border-0 mobile-search-input small py-2 ps-1" placeholder="Search products...">
                     </div>
                 </form>
             </div>
@@ -354,7 +389,7 @@
                 </div>
 
                 {{-- Account & Settings --}}
-                <div class="nav-group mt-5 border-top border-white border-opacity-10 pt-4">
+                <div class="nav-group mt-5 mobile-nav-footer-divider pt-4">
                     <ul class="nav flex-column gap-2">
                         @auth
                             <li><a class="mobile-nav-link" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear"></i>Settings</a></li>
@@ -376,8 +411,8 @@
                 </div>
             </div>
         </div>
-        <div class="px-4 py-3 border-top border-white border-opacity-10">
-            <button class="btn btn-outline-light w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" id="mobileThemeToggle">
+        <div class="px-4 py-3 mobile-nav-footer-toggle">
+            <button class="btn mobile-theme-btn w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" id="mobileThemeToggle">
                 <i class="bi bi-moon-stars"></i>
                 <span id="mobileThemeText">Switch Theme</span>
             </button>
@@ -387,11 +422,11 @@
     {{-- Mobile Search Modal --}}
     <div class="modal fade" id="searchModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background:var(--ps-gradient-dark);border:none;">
+            <div class="modal-content search-modal-content" style="border:none;">
                 <div class="modal-body p-4">
                     <div class="search-container position-relative">
                         <input type="text" id="mobileSearchInput" class="form-control search-input"
-                            placeholder="Search products..." autocomplete="off">
+                             placeholder="Search products..." autocomplete="off">
                         <button class="search-btn"><i class="bi bi-search"></i></button>
                         <div id="mobileSearchSuggestions" class="search-suggestions"></div>
                     </div>

@@ -20,20 +20,27 @@
     <link rel="stylesheet" href="{{ asset('admin_assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
     <!-- endinject -->
     
-    <!-- Layout styles -->  
-    <link rel="stylesheet" id="main-stylesheet" href="{{ asset('admin_assets/css/demo_1/style.css') }}">
-    <!-- End layout styles -->
-    
-    {{-- Pre-render Theme Logic --}}
+    {{-- Pre-render Theme Logic & Background to prevent Flash of Unstyled Content (FOUC) --}}
     <script>
         (function() {
             const savedTheme = localStorage.getItem('admin_theme') || 'light';
-            const stylesheet = document.getElementById('main-stylesheet');
+            // Set document background color immediately to match the active theme and prevent the white flash
             if (savedTheme === 'dark') {
-                stylesheet.href = "{{ asset('admin_assets/css/demo_2/style.css') }}";
+                document.documentElement.style.backgroundColor = '#0c1427';
+            } else {
+                document.documentElement.style.backgroundColor = '#f9fafb';
             }
+            
+            const cssPath = savedTheme === 'dark' 
+                ? "{{ asset('admin_assets/css/demo_2/style.css') }}" 
+                : "{{ asset('admin_assets/css/demo_1/style.css') }}";
+            
+            document.write('<link rel="stylesheet" id="main-stylesheet" href="' + cssPath + '">');
         })();
     </script>
+    <noscript>
+        <link rel="stylesheet" id="main-stylesheet" href="{{ asset('admin_assets/css/demo_1/style.css') }}">
+    </noscript>
     
     <link rel="shortcut icon" href="{{ asset('admin_assets/images/favicon.png') }}" />
 
@@ -132,6 +139,11 @@
                     : "{{ asset('admin_assets/css/demo_1/style.css') }}";
                 
                 stylesheet.attr('href', newSheet);
+                if (newTheme === 'dark') {
+                    document.documentElement.style.backgroundColor = '#0c1427';
+                } else {
+                    document.documentElement.style.backgroundColor = '#f9fafb';
+                }
                 localStorage.setItem('admin_theme', newTheme);
                 updateThemeIcon(newTheme);
             });
