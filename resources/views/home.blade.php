@@ -122,15 +122,54 @@
                     </div>
                 </div>
             </div>
-            <div class="scroll-indicator">
-                <div class="mouse"><div class="wheel"></div></div>
-                <span>Scroll to explore</span>
-            </div>
-        </section>
     @endif
 
 
-
+    {{-- ═══════════════════════════════════════════════════════════
+         CATEGORY SHOWCASE (NEW)
+    ═══════════════════════════════════════════════════════════ --}}
+    @if(isset($globalCategories) && $globalCategories->count() > 0)
+    <section class="category-showcase-section" aria-label="Category Showcase">
+        <div class="container">
+            <div class="section-header scroll-reveal mb-4">
+                <div>
+                    <h2 class="section-title"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Explore <span class="gradient-text">Categories</span></h2>
+                    <p class="section-subtitle mb-0">Browse our handpicked collections of premium items</p>
+                </div>
+                <a href="{{ route('categories.index') }}" class="btn btn-outline-primary rounded-pill">View All Categories <i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+            
+            <div class="position-relative category-slider-container">
+                <button class="category-scroll-btn scroll-btn-left" id="categoryScrollLeft" aria-label="Scroll Left">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="category-scroll-btn scroll-btn-right" id="categoryScrollRight" aria-label="Scroll Right">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+                
+                <div class="category-scroll-track scroll-reveal" id="categoryScrollTrack" data-delay="100">
+                    @foreach($globalCategories as $category)
+                        <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="category-showcase-card">
+                            <div class="cat-card-glow"></div>
+                            <div class="cat-card-icon">
+                                @if($category->image)
+                                    <img src="{{ $category->image }}" alt="{{ $category->name }}" loading="lazy">
+                                @else
+                                    <i class="bi bi-grid-fill"></i>
+                                @endif
+                            </div>
+                            <span class="cat-card-name">{{ $category->name }}</span>
+                            @php
+                                $prodCount = $category->products_count ?? $category->products()->where('is_active', true)->count();
+                            @endphp
+                            <span class="cat-card-count">{{ $prodCount }} {{ Str::plural('item', $prodCount) }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
 
 
     {{-- ═══════════════════════════════════════════════════════════
@@ -396,6 +435,45 @@
                     scrollIndicator.style.pointerEvents = 'auto';
                 }
             });
+        }
+
+        // ── Category Slider Custom Scroll Handler ────────────────
+        const catTrack = document.getElementById('categoryScrollTrack');
+        const catBtnLeft = document.getElementById('categoryScrollLeft');
+        const catBtnRight = document.getElementById('categoryScrollRight');
+
+        if (catTrack && catBtnLeft && catBtnRight) {
+            const scrollAmount = 320; // scroll offset per step
+
+            catBtnLeft.addEventListener('click', function() {
+                catTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            });
+
+            catBtnRight.addEventListener('click', function() {
+                catTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            });
+
+            const updateSliderArrows = function() {
+                const maxScroll = catTrack.scrollWidth - catTrack.clientWidth;
+                
+                if (catTrack.scrollLeft <= 10) {
+                    catBtnLeft.classList.add('disabled');
+                } else {
+                    catBtnLeft.classList.remove('disabled');
+                }
+
+                if (catTrack.scrollLeft >= maxScroll - 10) {
+                    catBtnRight.classList.add('disabled');
+                } else {
+                    catBtnRight.classList.remove('disabled');
+                }
+            };
+
+            catTrack.addEventListener('scroll', updateSliderArrows);
+            window.addEventListener('resize', updateSliderArrows);
+            
+            // Allow a brief moment for images/rendering to settle before initial bounds check
+            setTimeout(updateSliderArrows, 300);
         }
     });
     </script>

@@ -42,7 +42,7 @@
             
             {{-- Quick Action Overlay --}}
             <div class="product-overlay-glass d-none d-lg-flex">
-                <form action="{{ route('cart.add') }}" method="POST" class="ajax-form w-100 p-3">
+                <form action="{{ route('cart.add') }}" method="POST" class="ajax-form w-100 p-2">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="quantity" value="1">
@@ -75,7 +75,7 @@
             </div>
 
             {{-- Mobile Action (Simplified) --}}
-            <div class="d-lg-none mt-3">
+            <div class="d-lg-none mt-2">
                 <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
