@@ -140,17 +140,14 @@
                         </div>
                     </div>
 
-                    {{-- Map Placeholder --}}
-                    <div class="contact-map-card">
-                        <div class="contact-map-overlay">
-                            <i class="bi bi-pin-map-fill"></i>
-                            <span>London, UK</span>
-                        </div>
-                        <img src="https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/-0.1276,51.5074,12,0/600x300@2x?access_token=placeholder" 
-                             alt="Store location map" 
-                             class="w-100 rounded-4"
-                             style="height: 180px; object-fit: cover; filter: brightness(0.7) saturate(0.8);"
-                             onerror="this.parentElement.style.background='linear-gradient(135deg, #1a1a2e, #16213e)'; this.style.display='none';">
+                    {{-- Real, responsive, and beautiful Google Maps Embed --}}
+                    <div class="contact-map-card shadow-sm border rounded-4 overflow-hidden" style="height: 180px;">
+                        <iframe class="w-100 h-100 border-0" 
+                                src="https://maps.google.com/maps?q=London,%20United%20Kingdom&t=m&z=12&output=embed&iwloc=near" 
+                                style="filter: grayscale(0.6) contrast(1.1) brightness(0.85); min-height: 180px;" 
+                                loading="lazy"
+                                title="Store location map">
+                        </iframe>
                     </div>
                 </div>
             </div>
