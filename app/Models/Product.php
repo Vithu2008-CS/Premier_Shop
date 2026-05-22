@@ -78,7 +78,8 @@ class Product extends Model
     public function getFirstImageAttribute(): string
     {
         $images = $this->images;
-        return !empty($images) ? $images[0] : '/images/placeholder.png';
+
+        return ! empty($images) ? $images[0] : '/images/placeholder.png';
     }
 
     public function getHasOfferAttribute(): bool
@@ -88,7 +89,10 @@ class Product extends Model
 
     public function getOfferPriceAttribute(): ?float
     {
-        if (!$this->has_offer) return null;
+        if (! $this->has_offer) {
+            return null;
+        }
+
         return round($this->price * (1 - $this->offer_discount_percent / 100), 2);
     }
 

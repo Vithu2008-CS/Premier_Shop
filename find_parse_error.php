@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
@@ -15,7 +16,7 @@ foreach ($files as $file) {
             $orig = $m[1];
         }
         echo "ParseError in $file (Original: $orig)\n";
-        echo $e->getMessage() . "\n";
+        echo $e->getMessage()."\n";
     } catch (\Throwable $e) {
         // runtime errors are fine, we only want ParseError
     }

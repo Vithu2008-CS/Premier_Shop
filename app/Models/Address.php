@@ -43,6 +43,7 @@ class Address extends Model
     public function getFormattedAttribute(): string
     {
         $parts = array_filter([$this->address_line, $this->city, $this->postcode]);
+
         return implode(', ', $parts);
     }
 }

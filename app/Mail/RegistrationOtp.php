@@ -13,6 +13,7 @@ class RegistrationOtp extends Mailable
     use Queueable, SerializesModels;
 
     public string $otp;
+
     public string $userName;
 
     public function __construct(string $otp, string $userName)

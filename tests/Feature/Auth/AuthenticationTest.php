@@ -26,7 +26,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        if (!$this->isAuthenticated()) {
+        if (! $this->isAuthenticated()) {
             $response->dump();
         }
 

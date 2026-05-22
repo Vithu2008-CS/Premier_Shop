@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('notificationData', [
                 'pendingOrdersCount' => \App\Models\Order::where('status', 'pending')->count(),
                 'recentOrders' => \App\Models\Order::with('user')->latest()->limit(3)->get(),
-                'recentCustomers' => \App\Models\User::whereHas('role', fn($q) => $q->where('name', 'customer'))
+                'recentCustomers' => \App\Models\User::whereHas('role', fn ($q) => $q->where('name', 'customer'))
                     ->latest()->limit(3)->get(),
             ]);
         });

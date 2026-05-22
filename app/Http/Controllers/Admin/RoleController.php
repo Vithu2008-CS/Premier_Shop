@@ -12,12 +12,14 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::withCount(['users', 'permissions'])->get();
+
         return view('admin.roles.index', compact('roles'));
     }
 
     public function create()
     {
         $permissions = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
+
         return view('admin.roles.create', compact('permissions'));
     }
 
@@ -50,6 +52,7 @@ class RoleController extends Controller
     {
         $permissions = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
         $rolePermissions = $role->permissions->pluck('id')->toArray();
+
         return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
@@ -85,6 +88,7 @@ class RoleController extends Controller
         }
 
         $role->delete();
+
         return redirect()->route('admin.roles.index')->with('success', 'Role deleted successfully.');
     }
 }

@@ -10,8 +10,6 @@ class ShippingService
     /**
      * Calculate driving distance between two addresses using Google Maps Distance Matrix API.
      *
-     * @param string $origin
-     * @param string $destination
      * @return float|null Distance in kilometers
      */
     public function calculateDrivingDistance(string $origin, string $destination): ?float
@@ -19,8 +17,9 @@ class ShippingService
         // Destination should ideally be "Address Line, City, UK" for maximum precision
         $apiKey = config('services.google.maps_key');
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             Log::error('Google Maps API key is not configured.');
+
             return null;
         }
 
@@ -46,18 +45,18 @@ class ShippingService
                     if (($element['status'] ?? '') === 'ZERO_RESULTS') {
                         Log::warning('Google Maps Distance Matrix: No route found between origin and destination.');
                     } else {
-                        Log::warning('Google Maps Distance Matrix element status: ' . ($element['status'] ?? 'UNKNOWN'));
+                        Log::warning('Google Maps Distance Matrix element status: '.($element['status'] ?? 'UNKNOWN'));
                     }
                 } elseif (($data['status'] ?? '') === 'ZERO_RESULTS') {
                     Log::warning('Google Maps Distance Matrix: API returned ZERO_RESULTS.');
                 } else {
-                    Log::error('Google Maps Distance Matrix API status: ' . ($data['status'] ?? 'UNKNOWN'));
+                    Log::error('Google Maps Distance Matrix API status: '.($data['status'] ?? 'UNKNOWN'));
                 }
             } else {
-                Log::error('Google Maps Distance Matrix API request failed with status: ' . $response->status());
+                Log::error('Google Maps Distance Matrix API request failed with status: '.$response->status());
             }
         } catch (\Exception $e) {
-            Log::error('Google Maps Distance Matrix API exception: ' . $e->getMessage());
+            Log::error('Google Maps Distance Matrix API exception: '.$e->getMessage());
         }
 
         return null;

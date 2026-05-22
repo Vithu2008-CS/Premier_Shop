@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ReturnRequest;
 use App\Models\AppNotification;
+use App\Models\ReturnRequest;
 use Illuminate\Http\Request;
 
 class ReturnRequestController extends Controller
@@ -12,12 +12,14 @@ class ReturnRequestController extends Controller
     public function index()
     {
         $returns = ReturnRequest::with(['user', 'order'])->latest()->paginate(20);
+
         return view('admin.returns.index', compact('returns'));
     }
 
     public function show(ReturnRequest $return)
     {
         $return->load(['user', 'order', 'items.orderItem.product']);
+
         return view('admin.returns.show', compact('return'));
     }
 
@@ -31,7 +33,7 @@ class ReturnRequestController extends Controller
 
         $oldStatus = $return->status;
         $newStatus = $request->status;
-        
+
         $return->update([
             'status' => $newStatus,
             'admin_note' => $request->admin_note,

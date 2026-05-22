@@ -56,11 +56,10 @@ class RecentlyViewed extends Model
         }
     }
 
-    /**
-     * Get recently viewed products for a user.
-     */
     public static function getForUser(int $userId, int $limit = 10)
     {
+        $isUnder16 = auth()->check() && auth()->user()->isUnder16();
+
         return self::where('user_id', $userId)
             ->with('product')
             ->orderByDesc('viewed_at')
@@ -68,6 +67,6 @@ class RecentlyViewed extends Model
             ->get()
             ->pluck('product')
             ->filter() // Remove any null products (deleted)
-            ->filter(fn($p) => $p->is_active);
+            ->filter(fn ($p) => $p->is_active && (! $isUnder16 || ! $p->is_age_restricted));
     }
 }

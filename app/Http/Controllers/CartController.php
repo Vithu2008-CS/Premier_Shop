@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserItem;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\UserItem;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -13,9 +13,10 @@ class CartController extends Controller
     {
         $items = auth()->user()->cartItems()
             ->with('product')
-            ->whereHas('product', function($q) {
+            ->whereHas('product', function ($q) {
                 $q->where('is_active', true);
             })->get();
+
         return view('cart.index', compact('items'));
     }
 
@@ -27,7 +28,7 @@ class CartController extends Controller
             return response()->json($result);
         }
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return back()->with('error', $result['message']);
         }
 
@@ -38,10 +39,11 @@ class CartController extends Controller
     {
         $result = $this->addToCart($request);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             if ($request->wantsJson()) {
                 return response()->json($result);
             }
+
             return back()->with('error', $result['message']);
         }
 
@@ -49,7 +51,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Proceeding to checkout...',
-                'redirect' => route('checkout.index')
+                'redirect' => route('checkout.index'),
             ]);
         }
 
@@ -95,7 +97,7 @@ class CartController extends Controller
         return [
             'success' => true,
             'message' => "{$product->name} added to cart!",
-            'cartCount' => auth()->user()->cartItems()->sum('quantity')
+            'cartCount' => auth()->user()->cartItems()->sum('quantity'),
         ];
     }
 
@@ -111,6 +113,7 @@ class CartController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => 'Not enough stock available.']);
             }
+
             return back()->with('error', 'Not enough stock available.');
         }
 
@@ -121,20 +124,20 @@ class CartController extends Controller
             $items = $user->cartItems()->with('product')->get();
             $subtotal = $items->sum('line_total');
             $totalItems = $items->sum('quantity');
-            
+
             $threshold = Setting::get('free_delivery_threshold', 50);
             $baseFee = Setting::get('flat_rate_fee', 5.99);
-            
+
             $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Cart updated.',
                 'lineTotal' => number_format($cartItem->line_total, 2),
                 'subtotal' => number_format($subtotal, 2),
                 'totalItems' => $totalItems,
-                'shipping' => $shippingCost == 0 ? 'Free' : '£' . number_format($baseFee, 2),
-                'total' => number_format($subtotal + $shippingCost, 2)
+                'shipping' => $shippingCost == 0 ? 'Free' : '£'.number_format($baseFee, 2),
+                'total' => number_format($subtotal + $shippingCost, 2),
             ]);
         }
 
@@ -155,23 +158,23 @@ class CartController extends Controller
             if ($items->isEmpty()) {
                 return response()->json(['success' => true, 'empty' => true]);
             }
-            
+
             $subtotal = $items->sum('line_total');
             $totalItems = $items->sum('quantity');
-            
+
             $threshold = Setting::get('free_delivery_threshold', 50);
             $baseFee = Setting::get('flat_rate_fee', 5.99);
-            
+
             $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
-            
+
             return response()->json([
                 'success' => true,
                 'empty' => false,
                 'message' => 'Item removed from cart.',
                 'subtotal' => number_format($subtotal, 2),
                 'totalItems' => $totalItems,
-                'shipping' => $shippingCost == 0 ? 'Free' : '£' . number_format($baseFee, 2),
-                'total' => number_format($subtotal + $shippingCost, 2)
+                'shipping' => $shippingCost == 0 ? 'Free' : '£'.number_format($baseFee, 2),
+                'total' => number_format($subtotal + $shippingCost, 2),
             ]);
         }
 

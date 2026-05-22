@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Mail\RegistrationOtp;
 use App\Mail\WelcomeEmail;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,10 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-
-use Illuminate\Support\Facades\RateLimiter;
 
 class RegisteredUserController extends Controller
 {
@@ -32,7 +31,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'dob' => ['required', 'date', 'before:today'],
             'phone' => ['nullable', 'string', 'max:20'],
@@ -61,7 +60,7 @@ class RegisteredUserController extends Controller
             Mail::to($request->email)->send(new RegistrationOtp($otp, $request->name));
         } catch (\Exception $e) {
             // Log the error but don't block registration
-            Log::error('Failed to send OTP email: ' . $e->getMessage());
+            Log::error('Failed to send OTP email: '.$e->getMessage());
         }
 
         return redirect()->route('register.verify')
@@ -73,9 +72,10 @@ class RegisteredUserController extends Controller
      */
     public function showVerify(): View|RedirectResponse
     {
-        if (!session('registration_data')) {
+        if (! session('registration_data')) {
             return redirect()->route('register')->with('error', 'Session expired. Please register again.');
         }
+
         return view('auth.verify-otp');
     }
 
@@ -88,10 +88,11 @@ class RegisteredUserController extends Controller
             'otp' => ['required', 'string', 'size:6'],
         ]);
 
-        $throttleKey = 'otp-verification|' . $request->ip();
+        $throttleKey = 'otp-verification|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
+
             return back()->with('error', "Too many attempts. Please try again in {$seconds} seconds.");
         }
 
@@ -99,7 +100,7 @@ class RegisteredUserController extends Controller
         $expiresAt = session('registration_otp_expires');
         $regData = session('registration_data');
 
-        if (!$storedOtp || !$regData) {
+        if (! $storedOtp || ! $regData) {
             return redirect()->route('register')
                 ->with('error', 'Registration session expired. Please try again.');
         }
@@ -107,6 +108,7 @@ class RegisteredUserController extends Controller
         // Check expiry
         if (now()->isAfter($expiresAt)) {
             session()->forget(['registration_data', 'registration_otp', 'registration_otp_expires']);
+
             return redirect()->route('register')
                 ->with('error', 'Verification code has expired. Please register again.');
         }
@@ -114,6 +116,7 @@ class RegisteredUserController extends Controller
         // Check OTP match
         if ($request->otp !== $storedOtp) {
             RateLimiter::hit($throttleKey);
+
             return back()->with('error', 'Invalid verification code. Please try again.');
         }
 
@@ -145,7 +148,7 @@ class RegisteredUserController extends Controller
         try {
             Mail::to($user->email)->send(new WelcomeEmail($user));
         } catch (\Exception $e) {
-            Log::error('Failed to send welcome email: ' . $e->getMessage());
+            Log::error('Failed to send welcome email: '.$e->getMessage());
         }
 
         Auth::login($user);
@@ -160,7 +163,7 @@ class RegisteredUserController extends Controller
     {
         $regData = session('registration_data');
 
-        if (!$regData) {
+        if (! $regData) {
             return redirect()->route('register')
                 ->with('error', 'Registration session expired. Please try again.');
         }
@@ -176,7 +179,7 @@ class RegisteredUserController extends Controller
         try {
             Mail::to($regData['email'])->send(new RegistrationOtp($otp, $regData['name']));
         } catch (\Exception $e) {
-            Log::error('Failed to resend OTP email: ' . $e->getMessage());
+            Log::error('Failed to resend OTP email: '.$e->getMessage());
         }
 
         return back()->with('success', 'A new verification code has been sent!');

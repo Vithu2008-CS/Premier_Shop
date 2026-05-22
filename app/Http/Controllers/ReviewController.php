@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
-use App\Models\Order;
 use App\Models\RewardPointTransaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
@@ -31,14 +30,14 @@ class ReviewController extends Controller
                 $query->where('product_id', $product->id);
             })->exists();
 
-        if (!$hasPurchased) {
+        if (! $hasPurchased) {
             return back()->with('error', 'You can only review products you have purchased.');
         }
 
         // 2. Prevent duplicate reviews
         $existingReview = Review::where('user_id', auth()->id())
-                                ->where('product_id', $product->id)
-                                ->first();
+            ->where('product_id', $product->id)
+            ->first();
 
         if ($existingReview) {
             return back()->with('error', 'You have already reviewed this product.');
@@ -67,15 +66,15 @@ class ReviewController extends Controller
         // 5. Gamification: Award 50 loyalty points if it's their FIRST review on this product (which is guaranteed by Step 2)
         $pointsToAward = 50;
         auth()->user()->increment('loyalty_points', $pointsToAward);
-        
+
         RewardPointTransaction::create([
             'user_id' => auth()->id(),
             'amount' => $pointsToAward,
             'type' => 'earned',
-            'description' => "Earned for reviewing " . $product->name,
+            'description' => 'Earned for reviewing '.$product->name,
             'order_id' => null, // Not tied to an order
         ]);
 
-        return back()->with('success', 'Your review has been published! You earned ' . $pointsToAward . ' loyalty points.');
+        return back()->with('success', 'Your review has been published! You earned '.$pointsToAward.' loyalty points.');
     }
 }
