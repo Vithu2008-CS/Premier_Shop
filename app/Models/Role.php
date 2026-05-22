@@ -33,7 +33,7 @@ class Role extends Model
     public function givePermission(string $permission): void
     {
         $perm = Permission::where('name', $permission)->first();
-        if ($perm && !$this->permissions()->where('permission_id', $perm->id)->exists()) {
+        if ($perm && ! $this->permissions()->where('permission_id', $perm->id)->exists()) {
             $this->permissions()->attach($perm->id);
         }
     }

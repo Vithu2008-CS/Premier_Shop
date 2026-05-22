@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\User;
-use App\Models\Role;
-use Illuminate\Http\Request;
-
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -16,22 +14,24 @@ class OrderController extends Controller
     {
         $order->load('items.product', 'user');
         $pdf = Pdf::loadView('admin.orders.print', compact('order'));
+
         return $pdf->download("order-{$order->order_number}.pdf");
     }
 
     public function index()
     {
         $orders = Order::with('user')->latest()->paginate(15);
+
         return view('admin.orders.index', compact('orders'));
     }
 
     public function show(Order $order)
     {
         $order->load('items.product', 'user', 'driver');
-        $drivers = User::whereHas('role', function($q) {
+        $drivers = User::whereHas('role', function ($q) {
             $q->where('name', 'driver');
         })->where('is_on_duty', true)->get();
-        
+
         return view('admin.orders.show', compact('order', 'drivers'));
     }
 
@@ -65,22 +65,22 @@ class OrderController extends Controller
         if ($statusChanged) {
             try {
                 if ($request->send_email ?? true) {
-                     \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
+                    \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
                 }
                 \App\Models\AppNotification::notifyOrderStatus($order);
 
                 $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
 
                 \App\Models\ContactMessage::create([
-                    'name' => 'System (' . (auth()->user()->name ?? 'Admin') . ')',
+                    'name' => 'System ('.(auth()->user()->name ?? 'Admin').')',
                     'email' => $order->user->email,
-                    'subject' => 'Your order #' . $order->order_number . ' status has been updated to ' . $order->status,
+                    'subject' => 'Your order #'.$order->order_number.' status has been updated to '.$order->status,
                     'message' => $htmlContent,
                     'is_read' => true,
                     'folder' => 'sent',
                 ]);
             } catch (\Exception $e) {
-                \Log::error('Failed to send order status email: ' . $e->getMessage());
+                \Log::error('Failed to send order status email: '.$e->getMessage());
             }
         }
 

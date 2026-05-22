@@ -3,23 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
     public function index()
     {
         $products = Product::with('category')->latest()->paginate(15);
+
         return view('admin.products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
+
         return view('admin.products.create', compact('categories'));
     }
 
@@ -50,7 +52,7 @@ class ProductController extends Controller
         if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
                 $path = $image->store('products', 'public');
-                $images[] = '/storage/' . $path;
+                $images[] = '/storage/'.$path;
             }
         }
         $validated['images'] = $images;
@@ -66,6 +68,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
+
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -94,7 +97,7 @@ class ProductController extends Controller
             $images = $product->images ?? [];
             foreach ($request->file('product_images') as $image) {
                 $path = $image->store('products', 'public');
-                $images[] = '/storage/' . $path;
+                $images[] = '/storage/'.$path;
             }
             $validated['images'] = $images;
         }
@@ -107,12 +110,14 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
+
         return redirect()->route('admin.products.index')->with('success', 'Product deleted.');
     }
 
     public function regenerateQr(Product $product)
     {
         $this->generateQrCode($product);
+
         return back()->with('success', 'QR code regenerated!');
     }
 
@@ -128,7 +133,7 @@ class ProductController extends Controller
         $productId = $request->input('product_id');
         $product = Product::find($productId);
 
-        if (!$product) {
+        if (! $product) {
             return response()->json(['error' => 'Product not found'], 404);
         }
 
@@ -158,10 +163,10 @@ class ProductController extends Controller
     {
         // Unique QR data: product URL + unique hash to ensure uniqueness
         $uniqueHash = Str::uuid()->toString();
-        $qrData = url('/admin/products/' . $product->id . '/qr-lookup') . '?uid=' . $uniqueHash;
+        $qrData = url('/admin/products/'.$product->id.'/qr-lookup').'?uid='.$uniqueHash;
 
         // Use QR Server API (free, no extensions needed)
-        $apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?' . http_build_query([
+        $apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?'.http_build_query([
             'size' => '300x300',
             'data' => $qrData,
             'color' => '6C5CE7',       // Premier Shop purple
@@ -177,9 +182,9 @@ class ProductController extends Controller
             throw new \Exception('Failed to generate QR code from API.');
         }
 
-        $filename = 'qrcodes/product_' . $product->id . '_' . substr($uniqueHash, 0, 8) . '.png';
+        $filename = 'qrcodes/product_'.$product->id.'_'.substr($uniqueHash, 0, 8).'.png';
         Storage::disk('public')->put($filename, $qrImage);
 
-        $product->update(['qr_code' => '/storage/' . $filename]);
+        $product->update(['qr_code' => '/storage/'.$filename]);
     }
 }

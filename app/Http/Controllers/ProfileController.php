@@ -21,9 +21,9 @@ class ProfileController extends Controller
         // Order status counts
         $orderCounts = [
             'processing' => $user->orders()->where('status', 'processing')->count(),
-            'shipped'    => $user->orders()->where('status', 'shipped')->count(),
-            'delivered'  => $user->orders()->where('status', 'delivered')->count(),
-            'cancelled'  => $user->orders()->where('status', 'cancelled')->count(),
+            'shipped' => $user->orders()->where('status', 'shipped')->count(),
+            'delivered' => $user->orders()->where('status', 'delivered')->count(),
+            'cancelled' => $user->orders()->where('status', 'cancelled')->count(),
         ];
 
         // Recent orders
@@ -97,7 +97,7 @@ class ProfileController extends Controller
         $transactions = $user->rewardPointTransactions()->paginate(15);
         $totalEarned = $user->rewardPointTransactions()->where('type', 'earned')->sum('amount');
         $totalSaved = $user->rewardPointTransactions()->where('type', 'redeemed')->sum('amount');
-        
+
         return view('profile.rewards', compact('user', 'transactions', 'totalEarned', 'totalSaved'));
     }
 }

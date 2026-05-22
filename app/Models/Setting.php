@@ -29,15 +29,15 @@ class Setting extends Model
 
     /**
      * Get a setting value by key with optional default.
-     * 
-     * @param string $key
-     * @param mixed $default
+     *
+     * @param  string  $key
+     * @param  mixed  $default
      * @return mixed
      */
     public static function get($key, $default = null)
     {
         $settings = self::first();
-        if (!$settings) {
+        if (! $settings) {
             return $default;
         }
 

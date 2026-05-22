@@ -14,7 +14,7 @@ class ReturnRequest extends Model
         'customer_note',
         'admin_note',
         'refund_amount',
-        'photo_path'
+        'photo_path',
     ];
 
     protected function casts(): array
@@ -42,9 +42,11 @@ class ReturnRequest extends Model
     public function restoreStock()
     {
         foreach ($this->items as $item) {
-            $product = $item->orderItem->product;
-            if ($product) {
-                $product->increment('stock', $item->quantity);
+            if ($item->orderItem) {
+                $product = $item->orderItem->product;
+                if ($product) {
+                    $product->increment('stock', $item->quantity);
+                }
             }
         }
     }

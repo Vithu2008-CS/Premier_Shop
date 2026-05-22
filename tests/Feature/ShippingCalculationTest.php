@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Product;
-use App\Models\UserItem;
 use App\Models\Setting;
+use App\Models\User;
+use App\Models\UserItem;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ShippingCalculationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Product $product;
 
     protected function setUp(): void
@@ -45,7 +45,7 @@ class ShippingCalculationTest extends TestCase
         \Illuminate\Support\Facades\Http::fake([
             'maps.googleapis.com/*' => \Illuminate\Support\Facades\Http::response([
                 'status' => 'ZERO_RESULTS',
-                'rows' => [['elements' => [['status' => 'ZERO_RESULTS']]]]
+                'rows' => [['elements' => [['status' => 'ZERO_RESULTS']]]],
             ]),
         ]);
     }

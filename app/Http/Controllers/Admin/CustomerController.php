@@ -12,8 +12,8 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = User::whereHas('role', function ($q) {
-                $q->where('name', 'customer');
-            })
+            $q->where('name', 'customer');
+        })
             ->with('role')
             ->withCount('orders')
             ->latest()
@@ -49,7 +49,7 @@ class CustomerController extends Controller
 
         $customer->role_id = $request->role_id;
         $customer->save();
-        
+
         $roleName = Role::find($request->role_id)->display_name;
 
         return back()->with('success', "Role updated to '{$roleName}' successfully.");
@@ -61,6 +61,7 @@ class CustomerController extends Controller
             return back()->with('error', 'Cannot delete admin users.');
         }
         $customer->delete();
+
         return redirect()->route('admin.customers.index')->with('success', 'Customer deleted.');
     }
 }

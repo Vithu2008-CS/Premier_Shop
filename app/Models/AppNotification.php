@@ -74,14 +74,14 @@ class AppNotification extends Model
     public static function notifyNewOrder(Order $order): void
     {
         // Notify all admin/staff users
-        $staffUsers = User::whereHas('role', fn($q) => $q->where('is_staff', true))->get();
+        $staffUsers = User::whereHas('role', fn ($q) => $q->where('is_staff', true))->get();
 
         foreach ($staffUsers as $user) {
             self::create([
                 'user_id' => $user->id,
                 'type' => 'new_order',
                 'title' => 'New Order Received',
-                'message' => "Order #{$order->order_number} placed by {$order->user->name} — £" . number_format($order->total, 2),
+                'message' => "Order #{$order->order_number} placed by {$order->user->name} — £".number_format($order->total, 2),
                 'icon' => 'bi-bag-plus-fill',
                 'url' => route('admin.orders.show', $order),
             ]);
@@ -90,7 +90,7 @@ class AppNotification extends Model
 
     public static function notifyLowStock(Product $product): void
     {
-        $staffUsers = User::whereHas('role', fn($q) => $q->where('is_staff', true))->get();
+        $staffUsers = User::whereHas('role', fn ($q) => $q->where('is_staff', true))->get();
 
         foreach ($staffUsers as $user) {
             self::create([
@@ -126,7 +126,7 @@ class AppNotification extends Model
     public static function notifyNewReturnRequest(ReturnRequest $return): void
     {
         // Notify all admin/staff users
-        $staffUsers = User::whereHas('role', fn($q) => $q->where('is_staff', true))->get();
+        $staffUsers = User::whereHas('role', fn ($q) => $q->where('is_staff', true))->get();
 
         foreach ($staffUsers as $user) {
             self::create([
@@ -135,7 +135,7 @@ class AppNotification extends Model
                 'title' => 'New Return Request',
                 'message' => "Return request submitted for Order #{$return->order->order_number} by {$return->user->name}.",
                 'icon' => 'bi-arrow-return-left',
-                'url' => route('returns.show', $return), // Admin route
+                'url' => route('admin.returns.show', $return), // Admin route
             ]);
         }
     }
@@ -145,7 +145,7 @@ class AppNotification extends Model
         $statusMessages = [
             'approved' => 'Your return request has been approved!',
             'rejected' => 'Your return request has been rejected.',
-            'refunded' => 'Your refund of £' . number_format($return->refund_amount, 2) . ' has been processed.',
+            'refunded' => 'Your refund of £'.number_format($return->refund_amount, 2).' has been processed.',
         ];
 
         $statusIcons = [
@@ -154,7 +154,9 @@ class AppNotification extends Model
             'refunded' => 'bi-cash',
         ];
 
-        if (!isset($statusMessages[$return->status])) return;
+        if (! isset($statusMessages[$return->status])) {
+            return;
+        }
 
         self::create([
             'user_id' => $return->user_id,

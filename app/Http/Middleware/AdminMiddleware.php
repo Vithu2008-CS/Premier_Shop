@@ -9,7 +9,7 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check() || !auth()->user()->isStaff()) {
+        if (! auth()->check() || ! auth()->user()->isStaff()) {
             abort(403, 'Access denied. Staff only.');
         }
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Promotion;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -15,6 +14,9 @@ class HomeController extends Controller
             return redirect()->route('driver.dashboard');
         }
 
+        $isUnder16 = auth()->check() && auth()->user()->isUnder16();
+        $suffix = $isUnder16 ? '_restricted' : '_all';
+
         $sliders = cache()->remember('home_sliders', 300, function () {
             return Promotion::sliders()->active()->orderBy('order_priority')->get();
         });
@@ -22,34 +24,44 @@ class HomeController extends Controller
         $categories = cache()->remember('home_categories', 300, function () {
             return Category::all();
         });
-        
-        $offerProducts = cache()->remember('home_offers', 300, function () {
-            return Product::with(['category', 'reviews'])->where('is_active', true)
-                ->withActiveOffers()
-                ->take(4)
-                ->get();
+
+        $offerProducts = cache()->remember("home_offers{$suffix}", 300, function () use ($isUnder16) {
+            $query = Product::with(['category', 'reviews'])->where('is_active', true);
+            if ($isUnder16) {
+                $query->where('is_age_restricted', false);
+            }
+
+            return $query->withActiveOffers()->take(4)->get();
         });
-            
-        $popularProducts = cache()->remember('home_popular', 300, function () {
-            return Product::with(['category', 'reviews'])->where('is_active', true)
-                ->withCount('orderItems')
+
+        $popularProducts = cache()->remember("home_popular{$suffix}", 300, function () use ($isUnder16) {
+            $query = Product::with(['category', 'reviews'])->where('is_active', true);
+            if ($isUnder16) {
+                $query->where('is_age_restricted', false);
+            }
+
+            return $query->withCount('orderItems')
                 ->orderBy('order_items_count', 'desc')
                 ->take(4)
                 ->get();
         });
-            
-        $newProducts = cache()->remember('home_new', 300, function () {
-            return Product::with(['category', 'reviews'])->where('is_active', true)
-                ->latest()
-                ->take(4)
-                ->get();
+
+        $newProducts = cache()->remember("home_new{$suffix}", 300, function () use ($isUnder16) {
+            $query = Product::with(['category', 'reviews'])->where('is_active', true);
+            if ($isUnder16) {
+                $query->where('is_age_restricted', false);
+            }
+
+            return $query->latest()->take(4)->get();
         });
-            
-        $randomProducts = cache()->remember('home_random', 60, function () {
-            return Product::with(['category', 'reviews'])->where('is_active', true)
-                ->inRandomOrder()
-                ->take(4)
-                ->get();
+
+        $randomProducts = cache()->remember("home_random{$suffix}", 60, function () use ($isUnder16) {
+            $query = Product::with(['category', 'reviews'])->where('is_active', true);
+            if ($isUnder16) {
+                $query->where('is_age_restricted', false);
+            }
+
+            return $query->inRandomOrder()->take(4)->get();
         });
 
         $promotions = cache()->remember('home_promotions', 300, function () {
@@ -62,7 +74,7 @@ class HomeController extends Controller
             $recentlyViewed = \App\Models\RecentlyViewed::getForUser(auth()->id(), 8);
         } else {
             $recentIds = session('recently_viewed', []);
-            if (!empty($recentIds)) {
+            if (! empty($recentIds)) {
                 $recentlyViewed = Product::with(['category', 'reviews'])
                     ->where('is_active', true)
                     ->whereIn('id', $recentIds)
@@ -78,10 +90,14 @@ class HomeController extends Controller
 
     public function offers()
     {
-        $offerProducts = Product::with(['category', 'reviews'])->where('is_active', true)
-            ->withActiveOffers()
-            ->paginate(12);
-            
+        $query = Product::with(['category', 'reviews'])->where('is_active', true);
+
+        if (auth()->check() && auth()->user()->isUnder16()) {
+            $query->where('is_age_restricted', false);
+        }
+
+        $offerProducts = $query->withActiveOffers()->paginate(12);
+
         return view('offers', compact('offerProducts'));
     }
 

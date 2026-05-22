@@ -1,22 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\NewsletterController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DriverController as AdminDriverController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
 
     // Shipping Settings API
-    Route::get('/api/shipping-settings', function() {
+    Route::get('/api/shipping-settings', function () {
         return \App\Models\Setting::first();
     });
 
@@ -161,7 +161,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('drafts', [\App\Http\Controllers\Admin\MailController::class, 'drafts'])->name('drafts');
         Route::get('trash', [\App\Http\Controllers\Admin\MailController::class, 'trash'])->name('trash');
         Route::get('tags/{tag?}', [\App\Http\Controllers\Admin\MailController::class, 'tags'])->name('tags');
-        
+
         Route::get('read/{id}', [\App\Http\Controllers\Admin\MailController::class, 'read'])->name('read');
         Route::get('compose', [\App\Http\Controllers\Admin\MailController::class, 'compose'])->name('compose');
         Route::post('send', [\App\Http\Controllers\Admin\MailController::class, 'send'])->name('send');
@@ -178,4 +178,4 @@ Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(
     Route::post('/orders/{order}/complete', [DriverController::class, 'completeDelivery'])->name('orders.complete');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

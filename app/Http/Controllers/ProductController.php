@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -22,14 +22,17 @@ class ProductController extends Controller
 
         // Search
         if ($request->has('search') && $request->search) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         // Sort
         switch ($request->get('sort', 'newest')) {
-            case 'price_low': $query->orderBy('price', 'asc'); break;
-            case 'price_high': $query->orderBy('price', 'desc'); break;
-            case 'name': $query->orderBy('name', 'asc'); break;
+            case 'price_low': $query->orderBy('price', 'asc');
+                break;
+            case 'price_high': $query->orderBy('price', 'desc');
+                break;
+            case 'name': $query->orderBy('name', 'asc');
+                break;
             default: $query->orderBy('created_at', 'desc');
         }
 
@@ -46,7 +49,7 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::with(['category', 'reviews' => function($q) {
+        $product = Product::with(['category', 'reviews' => function ($q) {
             $q->approved()->latest()->take(5);
         }, 'reviews.user'])->where('slug', $slug)->where('is_active', true)->firstOrFail();
 
@@ -54,11 +57,11 @@ class ProductController extends Controller
         if ($product->is_age_restricted && auth()->check() && auth()->user()->isUnder16()) {
             abort(403, 'You must be 16 or older to view this product.');
         }
-        
+
         $relatedProducts = Product::where('category_id', $product->category_id)
-                                  ->where('id', '!=', $product->id)
-                                  ->where('is_active', true)
-                                  ->limit(4)->get();
+            ->where('id', '!=', $product->id)
+            ->where('is_active', true)
+            ->limit(4)->get();
 
         $recentlyViewed = collect();
         if (auth()->check()) {
@@ -71,8 +74,8 @@ class ProductController extends Controller
             array_unshift($recentIds, $product->id); // add to front
             $recentIds = array_slice($recentIds, 0, 12); // keep max 12
             session(['recently_viewed' => $recentIds]);
-            
-            if (!empty($recentIds)) {
+
+            if (! empty($recentIds)) {
                 $recentlyViewed = Product::with(['category', 'reviews'])
                     ->where('is_active', true)
                     ->whereIn('id', $recentIds)
@@ -86,9 +89,6 @@ class ProductController extends Controller
         return view('products.show', compact('product', 'relatedProducts', 'recentlyViewed'));
     }
 
-    /**
-     * Search auto-suggest — returns JSON suggestions as user types
-     */
     public function suggest(Request $request)
     {
         $q = $request->get('q', '');
@@ -96,23 +96,31 @@ class ProductController extends Controller
             return response()->json([]);
         }
 
+        $isUnder16 = auth()->check() && auth()->user()->isUnder16();
+        $cacheKey = 'search_suggest_'.($isUnder16 ? 'restricted_' : 'all_').$q;
+
         // Cache suggestions for 5 minutes for identical queries
-        return cache()->remember("search_suggest_{$q}", 300, function () use ($q) {
-            return Product::with('category:id,name')
+        return cache()->remember($cacheKey, 300, function () use ($q, $isUnder16) {
+            $query = Product::with('category:id,name')
                 ->where('is_active', true)
                 ->where(function ($query) use ($q) {
-                    $query->where('name', 'like', '%' . $q . '%')
-                          ->orWhereHas('category', function ($cq) use ($q) {
-                              $cq->where('name', 'like', '%' . $q . '%');
-                          });
-                })
-                ->limit(6)
-                ->get(['id', 'name', 'slug', 'price', 'images', 'category_id'])
+                    $query->where('name', 'like', '%'.$q.'%')
+                        ->orWhereHas('category', function ($cq) use ($q) {
+                            $cq->where('name', 'like', '%'.$q.'%');
+                        });
+                });
+
+            if ($isUnder16) {
+                $query->where('is_age_restricted', false);
+            }
+
+            return $query->limit(6)
+                ->get(['id', 'name', 'slug', 'price', 'images', 'category_id', 'is_age_restricted'])
                 ->map(function ($p) {
                     return [
                         'name' => $p->name,
                         'slug' => $p->slug,
-                        'price' => '£' . number_format($p->price, 2),
+                        'price' => '£'.number_format($p->price, 2),
                         'image' => $p->first_image,
                         'category' => $p->category?->name,
                         'url' => route('products.show', $p->slug),

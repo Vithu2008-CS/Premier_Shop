@@ -10,6 +10,7 @@ class AddressController extends Controller
     public function index()
     {
         $addresses = auth()->user()->addresses()->latest()->get();
+
         return view('profile.addresses', compact('addresses'));
     }
 
@@ -32,8 +33,8 @@ class AddressController extends Controller
         if ($address->is_default) {
             $address->setAsDefault();
         } elseif (auth()->user()->addresses()->count() === 1) {
-             // If it's the first address, make it default automatically
-             $address->setAsDefault();
+            // If it's the first address, make it default automatically
+            $address->setAsDefault();
         }
 
         return back()->with('success', 'Address saved successfully.');
