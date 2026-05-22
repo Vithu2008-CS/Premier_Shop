@@ -95,20 +95,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Products
-    Route::resource('products', AdminProductController::class);
+    Route::resource('products', AdminProductController::class)->except(['show']);
     Route::post('products/{product}/regenerate-qr', [AdminProductController::class, 'regenerateQr'])->name('products.regenerateQr');
     Route::get('scanner', [AdminProductController::class, 'scanner'])->name('scanner');
     Route::post('products/find-by-qr', [AdminProductController::class, 'findByQr'])->name('products.findByQr');
     Route::post('products/{product}/update-stock', [AdminProductController::class, 'updateStock'])->name('products.updateStock');
 
     // Categories
-    Route::resource('categories', CategoryController::class);
+    Route::resource('categories', CategoryController::class)->except(['show']);
 
     // Sliders
-    Route::resource('sliders', \App\Http\Controllers\Admin\SliderController::class);
+    Route::resource('sliders', \App\Http\Controllers\Admin\SliderController::class)->except(['show']);
 
     // Coupons
-    Route::resource('coupons', CouponController::class);
+    Route::resource('coupons', CouponController::class)->except(['show']);
 
     // Reviews
     Route::get('/reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
@@ -145,13 +145,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('profile', [ProfileController::class, 'editAdmin'])->name('profile');
 
     // Roles & Permissions
-    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+    Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class)->except(['show']);
 
     // Order Print
     Route::get('orders/{order}/print', [AdminOrderController::class, 'print'])->name('orders.print');
 
     // Drivers Monitoring & Management
-    Route::resource('drivers', AdminDriverController::class);
+    Route::resource('drivers', AdminDriverController::class)->except(['show']);
 
     // Mail Service
     Route::group(['prefix' => 'mail', 'as' => 'mail.'], function () {
