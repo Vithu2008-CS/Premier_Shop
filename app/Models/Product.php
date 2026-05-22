@@ -79,7 +79,7 @@ class Product extends Model
     {
         $images = $this->images;
 
-        return ! empty($images) ? $images[0] : '/images/placeholder.png';
+        return ! empty($images) ? $images[0] : '/images/placeholder-product.png';
     }
 
     public function getHasOfferAttribute(): bool
