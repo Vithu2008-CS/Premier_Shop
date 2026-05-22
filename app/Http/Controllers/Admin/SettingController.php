@@ -10,7 +10,8 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::first() ?? new Setting();
+        $settings = Setting::first() ?? new Setting;
+
         return view('admin.settings.index', compact('settings'));
     }
 
@@ -30,8 +31,8 @@ class SettingController extends Controller
             'points_redemption_value' => 'nullable|numeric|min:0',
         ]);
 
-        $settings = Setting::first() ?? new Setting();
-        
+        $settings = Setting::first() ?? new Setting;
+
         $settings->shop_name = $request->shop_name ?? $settings->shop_name;
         $settings->origin_address = $request->origin_address ?? $settings->origin_address;
         $settings->free_delivery_threshold = $request->free_delivery_threshold ?? $settings->free_delivery_threshold;
@@ -46,7 +47,7 @@ class SettingController extends Controller
         if ($request->has('shop_notice')) {
             $other['shop_notice'] = $request->shop_notice;
         }
-        
+
         // Loyalty Configuration
         $other['loyalty_enabled'] = $request->has('loyalty_enabled');
         if ($request->has('points_per_pound')) {
@@ -57,7 +58,7 @@ class SettingController extends Controller
         }
 
         $settings->other_settings = $other;
-        
+
         $settings->save();
 
         return back()->with('success', 'Settings updated successfully.');

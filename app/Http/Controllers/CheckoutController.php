@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserItem;
+use App\Mail\OrderReceipt;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Coupon;
 use App\Models\Setting;
-use App\Mail\OrderReceipt;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\DB;
+use App\Models\UserItem;
 use App\Services\ShippingService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -32,7 +32,7 @@ class CheckoutController extends Controller
         if ($request->has('items')) {
             $selectedIds = $request->items;
             $items = $items->whereIn('id', $selectedIds);
-            
+
             if ($items->isEmpty()) {
                 return redirect()->route('cart.index')->with('error', 'Please select at least one item to checkout.');
             }
@@ -46,7 +46,7 @@ class CheckoutController extends Controller
         $request->validate(['coupon_code' => 'required|string']);
 
         $coupon = Coupon::where('code', strtoupper($request->coupon_code))->first();
-        if (!$coupon) {
+        if (! $coupon) {
             return back()->with('error', 'Invalid coupon code.');
         }
 
@@ -74,7 +74,7 @@ class CheckoutController extends Controller
                 'message' => "Coupon '{$coupon->code}' applied!",
                 'coupon' => session('coupon'),
                 'subtotal' => number_format($subtotal, 2),
-                'total' => number_format($subtotal - session('coupon.discount'), 2)
+                'total' => number_format($subtotal - session('coupon.discount'), 2),
             ]);
         }
 
@@ -88,12 +88,12 @@ class CheckoutController extends Controller
         if ($request->wantsJson()) {
             $items = auth()->user()->cartItems()->with('product')->get();
             $subtotal = $items->sum('line_total');
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Coupon removed.',
                 'subtotal' => number_format($subtotal, 2),
-                'total' => number_format($subtotal, 2)
+                'total' => number_format($subtotal, 2),
             ]);
         }
 
@@ -166,7 +166,7 @@ class CheckoutController extends Controller
             if ($userPoints > 0) {
                 $redemptionValue = $settings->other_settings['points_redemption_value'] ?? 0.01;
                 $maxPointsValue = $userPoints * $redemptionValue;
-                
+
                 if ($maxPointsValue > $subtotalAfterCoupon) {
                     $pointsDiscount = $subtotalAfterCoupon;
                     $pointsUsed = (int) ceil($subtotalAfterCoupon / $redemptionValue);
@@ -244,7 +244,7 @@ class CheckoutController extends Controller
                     $ptsPerPound = $settings->other_settings['points_per_pound'] ?? 1;
                     $earnableSubtotal = $subtotal - $discount - $pointsDiscount;
                     $pointsEarned = floor($earnableSubtotal * $ptsPerPound);
-                    
+
                     if ($pointsEarned > 0) {
                         auth()->user()->increment('loyalty_points', $pointsEarned);
                         \App\Models\RewardPointTransaction::create([
@@ -269,19 +269,19 @@ class CheckoutController extends Controller
         $order->load('items.product', 'user');
         try {
             Mail::to($order->user->email)->send(new OrderReceipt($order));
-            
+
             $htmlContent = view('emails.order-receipt', compact('order'))->render();
 
             \App\Models\ContactMessage::create([
                 'name' => 'System (Checkout)',
                 'email' => $order->user->email,
-                'subject' => 'Your Premier Shop Order #' . $order->order_number,
+                'subject' => 'Your Premier Shop Order #'.$order->order_number,
                 'message' => $htmlContent,
                 'is_read' => true,
                 'folder' => 'sent',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to send order receipt: ' . $e->getMessage());
+            \Log::error('Failed to send order receipt: '.$e->getMessage());
         }
 
         // Trigger Notifications
@@ -299,11 +299,11 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'address_line' => 'required|string',
-            'city' => 'required|string'
+            'city' => 'required|string',
         ]);
 
         $settings = Setting::first();
-        if (!$settings) {
+        if (! $settings) {
             return response()->json(['cost' => 5.99, 'distance' => null, 'message' => 'Flat rate typical shipping.']);
         }
 
@@ -315,7 +315,7 @@ class CheckoutController extends Controller
         $distance = $this->shippingService->calculateDrivingDistance($origin, $destination);
 
         $shippingCost = $settings->flat_rate_fee;
-        $message = "Flat rate shipping.";
+        $message = 'Flat rate shipping.';
 
         if ($subtotal >= $settings->free_delivery_threshold) {
             $shippingCost = 0.00;
@@ -324,18 +324,18 @@ class CheckoutController extends Controller
             $distanceInMiles = $distance * 0.621371;
             if ($distanceInMiles <= $settings->free_delivery_radius_miles) {
                 $shippingCost = 0.00;
-                $message = "Free local delivery (" . number_format($distanceInMiles, 1) . " miles)";
+                $message = 'Free local delivery ('.number_format($distanceInMiles, 1).' miles)';
             } else {
                 $extraMiles = $distanceInMiles - $settings->free_delivery_radius_miles;
                 $shippingCost = $settings->flat_rate_fee + ($extraMiles * $settings->surcharge_per_mile);
-                $message = "Distance: " . number_format($distanceInMiles, 1) . " miles.";
+                $message = 'Distance: '.number_format($distanceInMiles, 1).' miles.';
             }
         }
 
         return response()->json([
             'cost' => round($shippingCost, 2),
             'distance' => $distance ? round($distance * 0.621371, 1) : null,
-            'message' => $message
+            'message' => $message,
         ]);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Prunable;
-use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -71,8 +71,13 @@ class User extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        if (!$this->role) return false;
-        if ($this->role->name === 'admin') return true; // Admin has all permissions
+        if (! $this->role) {
+            return false;
+        }
+        if ($this->role->name === 'admin') {
+            return true;
+        } // Admin has all permissions
+
         return $this->role->hasPermission($permission);
     }
 

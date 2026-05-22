@@ -11,7 +11,7 @@ class RewardPointTransaction extends Model
         'amount',
         'type',
         'description',
-        'order_id'
+        'order_id',
     ];
 
     public function user()

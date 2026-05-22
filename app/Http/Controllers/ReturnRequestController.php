@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppNotification;
 use App\Models\Order;
 use App\Models\ReturnRequest;
 use App\Models\ReturnRequestItem;
-use App\Models\AppNotification;
 use Illuminate\Http\Request;
 
 class ReturnRequestController extends Controller
@@ -21,6 +21,7 @@ class ReturnRequestController extends Controller
         }
 
         $order->load('items.product');
+
         return view('returns.create', compact('order'));
     }
 
@@ -42,10 +43,18 @@ class ReturnRequestController extends Controller
             'photo' => 'nullable|image|max:5120',
         ]);
 
-        $requestedItems = array_filter($request->items, fn($qty) => $qty > 0);
-        
+        $requestedItems = array_filter($request->items, fn ($qty) => $qty > 0);
+
         if (empty($requestedItems)) {
             return back()->with('error', 'You must select at least one item to return.');
+        }
+
+        // Validate all requested items and quantities before creating a database record
+        foreach ($requestedItems as $orderItemId => $qty) {
+            $orderItem = $order->items()->find($orderItemId);
+            if (! $orderItem || $qty > $orderItem->quantity) {
+                return back()->with('error', 'Invalid return quantity or item selected.');
+            }
         }
 
         $photoPath = null;
@@ -88,6 +97,7 @@ class ReturnRequestController extends Controller
         }
 
         $return->load(['order', 'items.orderItem.product']);
+
         return view('returns.show', compact('return'));
     }
 }

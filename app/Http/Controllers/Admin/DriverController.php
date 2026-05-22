@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -13,9 +13,9 @@ class DriverController extends Controller
 {
     public function index()
     {
-        $drivers = User::whereHas('role', function($q) {
+        $drivers = User::whereHas('role', function ($q) {
             $q->where('name', 'driver');
-        })->withCount(['assignedOrders as processing_orders_count' => function($q) {
+        })->withCount(['assignedOrders as processing_orders_count' => function ($q) {
             $q->whereIn('status', ['pending', 'processing', 'shipped']);
         }])->latest()->get();
 
@@ -56,15 +56,16 @@ class DriverController extends Controller
 
     public function edit(User $driver)
     {
-        if (!$driver->isDriver()) {
+        if (! $driver->isDriver()) {
             abort(404);
         }
+
         return view('admin.drivers.edit', compact('driver'));
     }
 
     public function update(Request $request, User $driver)
     {
-        if (!$driver->isDriver()) {
+        if (! $driver->isDriver()) {
             abort(404);
         }
 
@@ -97,7 +98,7 @@ class DriverController extends Controller
 
     public function destroy(User $driver)
     {
-        if (!$driver->isDriver()) {
+        if (! $driver->isDriver()) {
             abort(404);
         }
 

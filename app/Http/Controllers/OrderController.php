@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use Illuminate\Http\Request;
-
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -17,6 +16,7 @@ class OrderController extends Controller
 
         $order->load('items.product', 'user');
         $pdf = Pdf::loadView('admin.orders.print', compact('order'));
+
         return $pdf->download("order-{$order->order_number}.pdf");
     }
 
@@ -31,11 +31,12 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        if ($order->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+        if ($order->user_id !== auth()->id() && ! auth()->user()->isAdmin()) {
             abort(403);
         }
 
         $order->load('items.product');
+
         return view('orders.show', compact('order'));
     }
 

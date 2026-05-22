@@ -29,11 +29,11 @@ class Coupon extends Model
 
     public function getValidationError(float $orderAmount = 0): ?string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'This coupon is no longer active.';
         }
         if ($this->valid_from && now()->lt($this->valid_from)) {
-            return 'This coupon is not yet active (starts ' . $this->valid_from->format('M d, Y') . ').';
+            return 'This coupon is not yet active (starts '.$this->valid_from->format('M d, Y').').';
         }
         if ($this->valid_until && now()->gt($this->valid_until)) {
             return 'This coupon has expired.';
@@ -42,8 +42,9 @@ class Coupon extends Model
             return 'This coupon has reached its usage limit.';
         }
         if ($this->min_order_amount && $orderAmount < $this->min_order_amount) {
-            return 'Your order total must be at least £' . number_format($this->min_order_amount, 2) . ' to use this coupon.';
+            return 'Your order total must be at least £'.number_format($this->min_order_amount, 2).' to use this coupon.';
         }
+
         return null;
     }
 
@@ -52,6 +53,7 @@ class Coupon extends Model
         if ($this->discount_type === 'percentage') {
             return round($subtotal * ($this->discount_value / 100), 2);
         }
+
         return min($this->discount_value, $subtotal);
     }
 }

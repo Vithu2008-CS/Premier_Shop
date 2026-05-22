@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
@@ -13,7 +13,7 @@ class DriverController extends Controller
     public function dashboard()
     {
         $driver = auth()->user();
-        
+
         $pendingOrders = $driver->assignedOrders()
             ->with('user')
             ->whereIn('status', ['pending', 'processing', 'shipped'])
@@ -33,7 +33,7 @@ class DriverController extends Controller
     {
         $driver = auth()->user();
         $driver->update([
-            'is_on_duty' => !$driver->is_on_duty
+            'is_on_duty' => ! $driver->is_on_duty,
         ]);
 
         return back()->with('success', 'Your duty status has been updated.');
@@ -46,6 +46,7 @@ class DriverController extends Controller
         }
 
         $order->load('items.product', 'user');
+
         return view('driver.order_details', compact('order'));
     }
 
@@ -62,8 +63,8 @@ class DriverController extends Controller
 
         $path = $request->file('delivery_proof')->store('delivery_proofs', 'public');
 
-        $deliveredDate = $request->filled('delivered_date') 
-            ? Carbon::parse($request->delivered_date) 
+        $deliveredDate = $request->filled('delivered_date')
+            ? Carbon::parse($request->delivered_date)
             : now();
 
         $order->updateStatusAndTracking(
@@ -75,22 +76,25 @@ class DriverController extends Controller
 
         $order->update(['delivery_proof' => $path]);
 
+        // Trigger in-app notification
+        \App\Models\AppNotification::notifyOrderStatus($order);
+
         // Notify user
         try {
             \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusUpdated($order));
-            
+
             $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
 
             \App\Models\ContactMessage::create([
                 'name' => 'System (Driver)',
                 'email' => $order->user->email,
-                'subject' => 'Your order #' . $order->order_number . ' status has been updated to ' . $order->status,
+                'subject' => 'Your order #'.$order->order_number.' status has been updated to '.$order->status,
                 'message' => $htmlContent,
                 'is_read' => true,
                 'folder' => 'sent',
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to send order status email: ' . $e->getMessage());
+            \Log::error('Failed to send order status email: '.$e->getMessage());
         }
 
         return redirect()->route('driver.dashboard')->with('success', 'Order marked as delivered!');

@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Request;
-
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
@@ -45,7 +44,8 @@ class ReportController extends Controller
         $products = $query->get();
 
         $pdf = Pdf::loadView('admin.reports.print', compact('products', 'categories'));
-        return $pdf->download('sales-report-' . now()->format('Y-m-d') . '.pdf');
+
+        return $pdf->download('sales-report-'.now()->format('Y-m-d').'.pdf');
     }
 
     public function index(Request $request)

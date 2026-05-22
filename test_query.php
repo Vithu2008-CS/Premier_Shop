@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
@@ -16,6 +17,6 @@ try {
         ->pluck('id');
     echo "Query successful\n";
 } catch (\Exception $e) {
-    echo "Query failed: " . $e->getMessage() . "\n";
+    echo 'Query failed: '.$e->getMessage()."\n";
 }
 print_r(DB::getQueryLog());
