@@ -52,8 +52,8 @@
                         </span>
                     </div>
                     <h1 class="hero-title scroll-reveal" data-delay="100">
-                        <span class="fw-light">Elevate Your</span><br>
-                        <span class="hero-title-accent glass-text-wrap">Shopping Experience</span>
+                        <span class="hero-title-lead">Elevate Your</span>
+                        <span class="hero-title-accent">Shopping Experience</span>
                     </h1>
                     <p class="hero-subtitle scroll-reveal" data-delay="200">
                         Premium products, unbeatable prices, and fast delivery straight to your door.
@@ -104,7 +104,7 @@
                         <span>Curated Selection</span>
                     </div>
                     <h1 class="hero-title scroll-reveal" data-delay="100">
-                        Discover<br>
+                        <span class="hero-title-lead">Discover</span>
                         <span class="hero-title-accent">Quality Goods</span>
                     </h1>
                     <p class="hero-subtitle scroll-reveal" data-delay="200">
