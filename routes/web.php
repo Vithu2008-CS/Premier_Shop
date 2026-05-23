@@ -168,10 +168,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('trash', [\App\Http\Controllers\Admin\MailController::class, 'trash'])->name('trash');
         Route::get('tags/{tag?}', [\App\Http\Controllers\Admin\MailController::class, 'tags'])->name('tags');
 
+        Route::get('search', [\App\Http\Controllers\Admin\MailController::class, 'search'])->name('search');
         Route::get('read/{id}', [\App\Http\Controllers\Admin\MailController::class, 'read'])->name('read');
         Route::get('compose', [\App\Http\Controllers\Admin\MailController::class, 'compose'])->name('compose');
         Route::post('send', [\App\Http\Controllers\Admin\MailController::class, 'send'])->name('send');
         Route::post('star/{id}', [\App\Http\Controllers\Admin\MailController::class, 'toggleStar'])->name('star');
+        Route::post('mark-unread/{id}', [\App\Http\Controllers\Admin\MailController::class, 'markUnread'])->name('markUnread');
+        Route::post('restore/{id}', [\App\Http\Controllers\Admin\MailController::class, 'restore'])->name('restore');
         Route::delete('delete/{id}', [\App\Http\Controllers\Admin\MailController::class, 'destroy'])->name('destroy');
     });
 });
