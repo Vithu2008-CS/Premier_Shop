@@ -14,6 +14,11 @@
         <div class="card">
             <div class="card-body">
                 <h6 class="card-title text-center">Scan Product QR Code</h6>
+                <div class="text-center mb-3">
+                    <button id="startCamBtn" class="btn btn-primary" onclick="startScanner()">
+                        <i data-feather="camera" class="icon-sm mr-1"></i> Start Camera
+                    </button>
+                </div>
                 <div id="qr-reader" style="width:100%;max-width:400px;margin:0 auto;border-radius:10px;overflow:hidden;"></div>
                 <p class="text-muted text-center mt-3">
                     <i data-feather="camera" class="icon-sm mr-1"></i> Point your camera at a product QR code
@@ -71,21 +76,60 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
     let currentProductId = null;
+    let html5QrCode = null;
 
-    const html5QrCode = new Html5Qrcode("qr-reader");
-    html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
+    function startScanner() {
+        document.getElementById('startCamBtn').style.display = 'none';
+        document.getElementById('qr-reader').innerHTML = '';
+
+        // Recreate fresh instance every attempt — avoids stale internal state
+        html5QrCode = new Html5Qrcode("qr-reader");
+
+        const onScan = (decodedText) => {
             const match = decodedText.match(/products\/(\d+)\/qr-lookup/);
-            if (match) {
-                fetchProduct(match[1]);
-            }
-        },
-        (error) => { /* ignore scan errors */ }
-    ).catch(err => {
-        document.getElementById('qr-reader').innerHTML = '<div class="alert alert-warning" style="border-radius:10px;">Camera access denied or not available.</div>';
-    });
+            if (match) fetchProduct(match[1]);
+        };
+
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        // Try environment (mobile back cam), fallback to user (desktop webcam), fallback to any
+        html5QrCode.start({ facingMode: "environment" }, config, onScan, () => {})
+            .catch(() => {
+                html5QrCode = new Html5Qrcode("qr-reader");
+                return html5QrCode.start({ facingMode: "user" }, config, onScan, () => {});
+            })
+            .catch(err => {
+                showScannerError(err);
+            });
+    }
+
+    function showScannerError(err) {
+        console.error("Camera error:", err);
+        let errorMsg = "Camera access denied or not available.";
+
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            errorMsg = "<strong>Security Error:</strong> Camera requires HTTPS. Open this page over HTTPS.";
+        } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            errorMsg = "<strong>Permission Denied:</strong> Allow camera in browser address bar, then click Retry.";
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            errorMsg = "<strong>No Camera Found:</strong> No webcam detected on this device.";
+        } else if (err.name === 'NotReadableError') {
+            errorMsg = "<strong>Camera Busy:</strong> Camera is in use by another app. Close it and click Retry.";
+        } else {
+            errorMsg = `<strong>Camera Error:</strong> ${err.message || err}`;
+        }
+
+        document.getElementById('qr-reader').innerHTML = `
+            <div class="alert alert-warning p-3 text-center" style="border-radius:10px; font-size:0.9rem;">
+                <div class="d-flex flex-column gap-2 align-items-center">
+                    <i class="bi bi-exclamation-triangle fs-4"></i>
+                    <span>${errorMsg}</span>
+                </div>
+            </div>
+        `;
+        document.getElementById('startCamBtn').style.display = 'inline-block';
+        document.getElementById('startCamBtn').textContent = 'Retry Camera';
+    }
 
     function fetchProduct(productId) {
         currentProductId = productId;
