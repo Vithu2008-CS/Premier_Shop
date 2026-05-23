@@ -13,7 +13,9 @@ class ContactMessage extends Model
     protected function casts(): array
     {
         return [
-            'is_read' => 'boolean',
+            'is_read'     => 'boolean',
+            'is_starred'  => 'boolean',
+            'is_trash'    => 'boolean',
         ];
     }
 }
