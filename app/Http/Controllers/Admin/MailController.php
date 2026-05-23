@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller
 {
-    /**
-     * Display the inbox (Contact Messages).
-     */
     public function inbox()
     {
         $messages = ContactMessage::where('folder', 'inbox')
@@ -20,10 +17,12 @@ class MailController extends Controller
             ->orderBy('created_at', 'desc')->paginate(15);
         $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
 
-        $pageTitle = 'Inbox';
-        $pageIcon = 'inbox';
-
-        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+        return view('admin.mail.inbox', [
+            'messages'   => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'  => 'Inbox',
+            'pageIcon'   => 'inbox',
+        ]);
     }
 
     public function sent()
@@ -33,10 +32,12 @@ class MailController extends Controller
             ->orderBy('created_at', 'desc')->paginate(15);
         $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
 
-        $pageTitle = 'Sent Mail';
-        $pageIcon = 'mail';
-
-        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+        return view('admin.mail.inbox', [
+            'messages'   => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'  => 'Sent Mail',
+            'pageIcon'   => 'mail',
+        ]);
     }
 
     public function important()
@@ -46,10 +47,12 @@ class MailController extends Controller
             ->orderBy('created_at', 'desc')->paginate(15);
         $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
 
-        $pageTitle = 'Important';
-        $pageIcon = 'briefcase';
-
-        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+        return view('admin.mail.inbox', [
+            'messages'   => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'  => 'Important',
+            'pageIcon'   => 'briefcase',
+        ]);
     }
 
     public function drafts()
@@ -59,10 +62,12 @@ class MailController extends Controller
             ->orderBy('created_at', 'desc')->paginate(15);
         $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
 
-        $pageTitle = 'Drafts';
-        $pageIcon = 'file';
-
-        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+        return view('admin.mail.inbox', [
+            'messages'   => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'  => 'Drafts',
+            'pageIcon'   => 'file',
+        ]);
     }
 
     public function trash()
@@ -71,10 +76,12 @@ class MailController extends Controller
             ->orderBy('created_at', 'desc')->paginate(15);
         $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
 
-        $pageTitle = 'Trash';
-        $pageIcon = 'trash';
-
-        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+        return view('admin.mail.inbox', [
+            'messages'   => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'  => 'Trash',
+            'pageIcon'   => 'trash',
+        ]);
     }
 
     public function tags($tag = null)
@@ -88,20 +95,41 @@ class MailController extends Controller
         $messages = $query->orderBy('created_at', 'desc')->paginate(15);
         $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
 
-        $pageTitle = $tag ? ucfirst($tag) : 'Tags';
-        $pageIcon = 'tag';
-
-        return view('admin.mail.inbox', compact('messages', 'unreadCount', 'pageTitle', 'pageIcon'));
+        return view('admin.mail.inbox', [
+            'messages'   => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'  => $tag ? ucfirst($tag) : 'Tags',
+            'pageIcon'   => 'tag',
+        ]);
     }
 
-    /**
-     * Display a specific message.
-     */
+    public function search(Request $request)
+    {
+        $q = trim($request->get('q', ''));
+        $messages = ContactMessage::where('is_trash', false)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                    ->orWhere('subject', 'like', "%{$q}%")
+                    ->orWhere('email', 'like', "%{$q}%")
+                    ->orWhere('message', 'like', "%{$q}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $unreadCount = ContactMessage::where('is_read', false)->where('folder', 'inbox')->count();
+
+        return view('admin.mail.inbox', [
+            'messages'    => $messages,
+            'unreadCount' => $unreadCount,
+            'pageTitle'   => 'Search: '.e($q),
+            'pageIcon'    => 'search',
+        ]);
+    }
+
     public function read($id)
     {
         $message = ContactMessage::findOrFail($id);
 
-        // Mark as read if it wasn't
         if (! $message->is_read) {
             $message->update(['is_read' => true]);
         }
@@ -111,34 +139,37 @@ class MailController extends Controller
         return view('admin.mail.read', compact('message', 'unreadCount'));
     }
 
-    /**
-     * Show the compose form.
-     */
     public function compose(Request $request)
     {
-        $to = $request->get('to', '');
+        $to      = $request->get('to', '');
         $subject = $request->get('subject', '');
-        $unreadCount = ContactMessage::where('is_read', false)->count();
+        $body    = '';
+        $draftId = null;
 
-        return view('admin.mail.compose', compact('to', 'subject', 'unreadCount'));
-    }
-
-    /**
-     * Handle sending a message.
-     */
-    public function send(Request $request)
-    {
-        $request->validate([
-            'to' => 'required',
-            'subject' => 'required|string|max:255',
-            'message' => 'required',
-        ]);
-
-        $recipients = $request->to;
-        if (! is_array($recipients)) {
-            $recipients = explode(',', $recipients);
+        if ($draftIdParam = $request->get('draft_id')) {
+            $draft = ContactMessage::where('folder', 'draft')->findOrFail($draftIdParam);
+            $to      = $draft->email ?? '';
+            $subject = $draft->subject;
+            $body    = $draft->message;
+            $draftId = $draft->id;
         }
 
+        $unreadCount = ContactMessage::where('is_read', false)->count();
+
+        return view('admin.mail.compose', compact('to', 'subject', 'body', 'draftId', 'unreadCount'));
+    }
+
+    public function send(Request $request)
+    {
+        $isDraft = $request->has('save_draft');
+
+        $request->validate([
+            'to'      => $isDraft ? 'nullable|array' : 'required|array|min:1',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        $recipients = $request->to ?? [];
         $emails = [];
         foreach ($recipients as $recipient) {
             if ($recipient === 'newsletter') {
@@ -148,36 +179,41 @@ class MailController extends Controller
                 $emails[] = trim($recipient);
             }
         }
-
-        $emails = array_unique($emails);
+        $emails = array_unique(array_filter($emails));
 
         $parsedMessage = \Illuminate\Support\Str::markdown($request->message);
-        $htmlContent = view('emails.admin_custom', ['mailMessage' => $parsedMessage])->render();
-
-        $isDraft = $request->has('save_draft');
+        $htmlContent   = view('emails.admin_custom', ['mailMessage' => $parsedMessage])->render();
 
         if (! $isDraft) {
+            if (empty($emails)) {
+                return back()->withErrors(['to' => 'Add at least one recipient.'])->withInput();
+            }
             foreach ($emails as $email) {
                 Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $parsedMessage));
             }
-            \Log::info('Admin mail sent successfully to recipients: '.implode(', ', $emails));
+            \Log::info('Admin mail sent to: '.implode(', ', $emails));
         }
 
-        // Save to DB
+        // If editing a draft, delete the old one
+        if ($request->filled('draft_id')) {
+            ContactMessage::where('folder', 'draft')->where('id', $request->draft_id)->delete();
+        }
+
         ContactMessage::create([
-            'name' => 'Admin ('.auth()->user()->name.')',
-            'email' => implode(', ', $emails), // store all recipients in email column
+            'name'    => 'Admin ('.auth()->user()->name.')',
+            'email'   => implode(', ', $emails),
             'subject' => $request->subject,
             'message' => $isDraft ? $request->message : $htmlContent,
-            'is_read' => true, // Outbound messages are inherently read
-            'folder' => $isDraft ? 'draft' : 'sent',
+            'is_read' => true,
+            'folder'  => $isDraft ? 'draft' : 'sent',
         ]);
 
         if ($isDraft) {
-            return redirect()->route('admin.mail.drafts')->with('success', 'Draft saved successfully!');
+            return redirect()->route('admin.mail.drafts')->with('success', 'Draft saved.');
         }
 
-        return redirect()->route('admin.mail.sent')->with('success', 'Message sent successfully to '.count($emails).' recipient(s)!');
+        return redirect()->route('admin.mail.sent')
+            ->with('success', 'Message sent to '.count($emails).' recipient(s).');
     }
 
     public function toggleStar($id)
@@ -186,24 +222,34 @@ class MailController extends Controller
         $message->is_starred = ! $message->is_starred;
         $message->save();
 
-        return back()->with('success', 'Message marked as '.($message->is_starred ? 'important' : 'unimportant').'.');
+        return back()->with('success', 'Message '.($message->is_starred ? 'starred' : 'unstarred').'.');
     }
 
-    /**
-     * Delete a message.
-     */
+    public function markUnread($id)
+    {
+        ContactMessage::findOrFail($id)->update(['is_read' => false]);
+
+        return back()->with('success', 'Marked as unread.');
+    }
+
+    public function restore($id)
+    {
+        ContactMessage::findOrFail($id)->update(['is_trash' => false, 'folder' => 'inbox']);
+
+        return back()->with('success', 'Message restored to inbox.');
+    }
+
     public function destroy($id)
     {
         $message = ContactMessage::findOrFail($id);
         if ($message->is_trash) {
             $message->delete();
 
-            return redirect()->route('admin.mail.trash')->with('success', 'Message permanently deleted!');
+            return redirect()->route('admin.mail.trash')->with('success', 'Message permanently deleted.');
         } else {
-            $message->is_trash = true;
-            $message->save();
+            $message->update(['is_trash' => true]);
 
-            return back()->with('success', 'Message moved to trash!');
+            return back()->with('success', 'Message moved to trash.');
         }
     }
 }

@@ -10,65 +10,105 @@
                 <div class="row">
                     @include('admin.mail.partials.sidebar')
                     <div class="col-lg-9 email-content">
+
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                            </div>
+                        @endif
+
                         <div class="email-head">
                             <div class="email-head-subject">
                                 <div class="title d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
                                         <form action="{{ route('admin.mail.star', $message->id) }}" method="POST" class="d-inline mr-2">
                                             @csrf
-                                            <button type="submit" class="p-0 border-0 bg-transparent icon" style="outline: none;">
-                                                <i data-feather="star" class="{{ $message->is_starred ? 'text-warning fill-warning' : 'text-primary-muted' }}"></i>
+                                            <button type="submit" class="p-0 border-0 bg-transparent icon" style="outline:none;">
+                                                <i data-feather="star" class="{{ $message->is_starred ? 'text-warning fill-warning' : 'text-muted' }}"></i>
                                             </button>
-                                        </form> 
+                                        </form>
                                         <span>{{ $message->subject }}</span>
                                     </div>
-                                    <div class="icons">
-                                        <a href="{{ route('admin.mail.compose', ['to' => $message->email, 'subject' => 'Re: ' . $message->subject]) }}" class="icon" data-toggle="tooltip" title="Reply"><i data-feather="share" class="text-muted hover-primary-muted"></i></a>
-                                        <a href="javascript:window.print();" class="icon"><i data-feather="printer" class="text-muted" data-toggle="tooltip" title="Print"></i></a>
-                                        <form action="{{ route('admin.mail.destroy', $message->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this message?')">
+                                    <div class="icons d-flex align-items-center">
+                                        <a href="{{ route('admin.mail.compose', ['to' => $message->email, 'subject' => 'Re: ' . $message->subject]) }}"
+                                           class="icon mr-2" data-toggle="tooltip" title="Reply">
+                                            <i data-feather="corner-up-left" class="text-muted"></i>
+                                        </a>
+                                        <a href="javascript:window.print();" class="icon mr-2">
+                                            <i data-feather="printer" class="text-muted" data-toggle="tooltip" title="Print"></i>
+                                        </a>
+                                        <form action="{{ route('admin.mail.markUnread', $message->id) }}" method="POST" class="d-inline mr-2">
+                                            @csrf
+                                            <button type="submit" class="p-0 border-0 bg-transparent icon" data-toggle="tooltip" title="Mark as unread">
+                                                <i data-feather="mail" class="text-muted"></i>
+                                            </button>
+                                        </form>
+                                        @if($message->is_trash)
+                                            <form action="{{ route('admin.mail.restore', $message->id) }}" method="POST" class="d-inline mr-2">
+                                                @csrf
+                                                <button type="submit" class="p-0 border-0 bg-transparent icon" data-toggle="tooltip" title="Restore">
+                                                    <i data-feather="rotate-ccw" class="text-muted"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        <form action="{{ route('admin.mail.destroy', $message->id) }}" method="POST" class="d-inline"
+                                              onsubmit="return confirm('Delete this message?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-0 border-0 bg-transparent icon"><i data-feather="trash" class="text-muted" data-toggle="tooltip" title="Delete"></i></button>
+                                            <button type="submit" class="p-0 border-0 bg-transparent icon">
+                                                <i data-feather="trash" class="text-muted" data-toggle="tooltip"
+                                                   title="{{ $message->is_trash ? 'Delete permanently' : 'Move to trash' }}"></i>
+                                            </button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
                             <div class="email-head-sender d-flex align-items-center justify-content-between flex-wrap">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar">
-                                        <img src="https://via.placeholder.com/36x36" alt="Avatar" class="rounded-circle user-avatar-md">
+                                    <div class="avatar mr-2">
+                                        @php
+                                            $initials = collect(explode(' ', $message->name))->map(fn($w) => strtoupper($w[0] ?? ''))->take(2)->implode('');
+                                            $colors = ['4e73df','1cc88a','36b9cc','e74a3b','f6c23e','858796'];
+                                            $color  = $colors[crc32($message->email) % count($colors)];
+                                        @endphp
+                                        <div style="width:36px;height:36px;border-radius:50%;background:#{{ $color }};
+                                                    display:flex;align-items:center;justify-content:center;
+                                                    color:#fff;font-size:13px;font-weight:700;">
+                                            {{ $initials }}
+                                        </div>
                                     </div>
                                     <div class="sender d-flex align-items-center">
-                                        <a href="javascript:;">{{ $message->name }}</a> <span>&lt;{{ $message->email }}&gt;</span>
-                                        <div class="actions dropdown">
-                                            <a class="icon" href="javascript:;" data-toggle="dropdown"><i data-feather="chevron-down"></i></a>
-                                            <div class="dropdown-menu" role="menu">
-                                                <a class="dropdown-item" href="javascript:;">Mark as unread</a>
-                                                <a class="dropdown-item" href="javascript:;">Spam</a>
-                                                <div class="dropdown-divider"></div>
-                                                <form action="{{ route('admin.mail.destroy', $message->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="dropdown-item text-danger">Delete</button>
-                                                </form>
-                                            </div>
-                                        </div>
+                                        <a href="javascript:;">{{ $message->name }}</a>
+                                        <span class="ml-1">&lt;{{ $message->email }}&gt;</span>
                                     </div>
                                 </div>
                                 <div class="date">{{ $message->created_at->format('M d, Y H:i') }}</div>
                             </div>
                         </div>
+
                         <div class="email-body">
                             @if(\Illuminate\Support\Str::contains($message->message, ['<html', '<body', '<table']))
-                                <iframe srcdoc="{{ $message->message }}" style="width: 100%; height: 800px; border: none; overflow: hidden; border-radius: 8px;"></iframe>
+                                <iframe srcdoc="{{ $message->message }}"
+                                        style="width:100%;height:800px;border:none;overflow:hidden;border-radius:8px;"></iframe>
                             @else
                                 {!! nl2br(e($message->message)) !!}
                             @endif
-                            
+
                             @if($message->phone)
                                 <hr>
                                 <p><strong>Phone:</strong> {{ $message->phone }}</p>
                             @endif
+                        </div>
+
+                        <div class="email-reply mt-4">
+                            <a href="{{ route('admin.mail.compose', ['to' => $message->email, 'subject' => 'Re: ' . $message->subject]) }}"
+                               class="btn btn-primary btn-sm">
+                                <i data-feather="corner-up-left" class="icon-sm mr-1"></i> Reply
+                            </a>
+                            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm ml-2">
+                                <i data-feather="arrow-left" class="icon-sm mr-1"></i> Back
+                            </a>
                         </div>
                     </div>
                 </div>
