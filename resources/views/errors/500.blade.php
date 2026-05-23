@@ -7,7 +7,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">
                 <div class="mb-5 fade-up">
-                    <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:120px;height:120px;background:linear-gradient(135deg,#e17055,#d63031);border-radius:35px;box-shadow:var(--ps-shadow-lg);">
+                    <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:120px;height:120px;background:#d63031;border-radius:35px;box-shadow:var(--ps-shadow-lg);">
                         <i class="bi bi-exclamation-triangle text-white" style="font-size:3.5rem;"></i>
                     </div>
                     <h1 class="display-1 fw-bold text-danger mb-2">500</h1>

@@ -14,7 +14,7 @@
 
                     {{-- Header --}}
                     <tr>
-                        <td style="@yield('header_style', 'background:linear-gradient(135deg,#6C5CE7 0%,#00CEC9 100%);') padding:40px 40px 30px; text-align:center;">
+                        <td style="@yield('header_style', 'background:#6C5CE7;') padding:40px 40px 30px; text-align:center;">
                             <h1 style="margin:0;font-size:28px;color:#ffffff;font-weight:700;">🛍️ Premier Shop</h1>
                             @hasSection('header_subtitle')
                                 <p style="margin:10px 0 0;font-size:14px;color:rgba(255,255,255,0.85);">@yield('header_subtitle')</p>

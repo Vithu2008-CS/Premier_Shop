@@ -15,7 +15,7 @@
             <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
                 <h5 class="fw-bold mb-4">Customer Details</h5>
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#A29BFE);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.2rem;">
+                    <div style="width:50px;height:50px;border-radius:50%;background:#6C5CE7;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.2rem;">
                         {{ substr($order->user->name, 0, 1) }}
                     </div>
                     <div>

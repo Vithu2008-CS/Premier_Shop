@@ -105,7 +105,7 @@
             @endphp
             
             @if($loyaltyEnabled && $userPoints > 0)
-            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 20px; background: linear-gradient(135deg, rgba(253, 203, 110, 0.1) 0%, rgba(255, 255, 255, 1) 100%); border-left: 4px solid #fdcb6e !important;">
+            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 20px; background: rgba(253, 203, 110, 0.1); border-left: 4px solid #fdcb6e !important;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Loyalty Points</h5>
                     <div class="d-flex justify-content-between align-items-center mb-3">
