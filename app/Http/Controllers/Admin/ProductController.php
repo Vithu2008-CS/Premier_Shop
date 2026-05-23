@@ -59,10 +59,13 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        // Generate unique QR Code
-        $this->generateQrCode($product);
+        try {
+            $this->generateQrCode($product);
+        } catch (\Exception $e) {
+            \Log::warning('QR code generation failed for product '.$product->id.': '.$e->getMessage());
+        }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created with QR code!');
+        return redirect()->route('admin.products.index')->with('success', 'Product created!');
     }
 
     public function edit(Product $product)

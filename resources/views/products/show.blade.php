@@ -51,7 +51,7 @@
                             </div>
                         @endif
                     @else
-                        <div class="d-flex align-items-center justify-content-center" style="aspect-ratio:1;background:linear-gradient(135deg,#f0f0f5,#e8e8f0);">
+                        <div class="d-flex align-items-center justify-content-center" style="aspect-ratio:1;background:#f0f0f5;">
                             <i class="bi bi-image text-muted" style="font-size:5rem;"></i>
                         </div>
                     @endif

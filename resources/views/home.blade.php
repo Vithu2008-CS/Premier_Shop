@@ -52,8 +52,8 @@
                         </span>
                     </div>
                     <h1 class="hero-title scroll-reveal" data-delay="100">
-                        <span class="fw-light">Elevate Your</span><br>
-                        <span class="hero-title-accent glass-text-wrap">Shopping Experience</span>
+                        <span class="hero-title-lead">Elevate Your</span>
+                        <span class="hero-title-accent">Shopping Experience</span>
                     </h1>
                     <p class="hero-subtitle scroll-reveal" data-delay="200">
                         Premium products, unbeatable prices, and fast delivery straight to your door.
@@ -104,7 +104,7 @@
                         <span>Curated Selection</span>
                     </div>
                     <h1 class="hero-title scroll-reveal" data-delay="100">
-                        Discover<br>
+                        <span class="hero-title-lead">Discover</span>
                         <span class="hero-title-accent">Quality Goods</span>
                     </h1>
                     <p class="hero-subtitle scroll-reveal" data-delay="200">
@@ -186,6 +186,54 @@
                 </div>
                 <a href="{{ route('offers') }}" class="btn btn-outline-primary rounded-pill">See All Offers <i class="bi bi-arrow-right ms-1"></i></a>
             </div>
+
+            {{-- Flash Sale Countdown Timer Widget --}}
+            <div class="flash-sale-banner scroll-reveal mb-5" data-delay="100">
+                <div class="row align-items-center g-4">
+                    <div class="col-md-6 col-lg-5 text-center text-md-start">
+                        <span class="badge rounded-pill mb-2" style="background: rgba(225,112,85,0.15); color: #E17055; font-weight: 700; font-size: 0.75rem;">
+                            <i class="bi bi-stopwatch-fill me-1"></i>Limited Campaign Offer
+                        </span>
+                        <h4 class="fw-extrabold mb-1" style="font-family: 'Outfit', sans-serif;">Mega Flash Sale Event</h4>
+                        <p class="text-dynamic-muted small mb-0">Premium stock is running out fast. Order now to secure the highest volume discounts!</p>
+                    </div>
+                    
+                    <div class="col-md-6 col-lg-4 text-center">
+                        <div class="countdown-digits" id="flashCountdown">
+                            <div class="time-card">
+                                <div class="num" id="cd-days">00</div>
+                                <div class="label">Days</div>
+                            </div>
+                            <div class="separator">:</div>
+                            <div class="time-card">
+                                <div class="num" id="cd-hours">00</div>
+                                <div class="label">Hours</div>
+                            </div>
+                            <div class="separator">:</div>
+                            <div class="time-card">
+                                <div class="num" id="cd-mins">00</div>
+                                <div class="label">Mins</div>
+                            </div>
+                            <div class="separator">:</div>
+                            <div class="time-card">
+                                <div class="num" id="cd-secs">00</div>
+                                <div class="label">Secs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-12 claims-progress-wrap mt-3 mt-lg-0">
+                        <div class="progress-text mb-2">
+                            <span class="x-small fw-bold">Stock Claimed</span>
+                            <span class="x-small fw-bold text-primary">82%</span>
+                        </div>
+                        <div class="progress mb-0">
+                            <div class="progress-bar progress-bar-glow" role="progressbar" style="width: 82%;" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-4">
                 @foreach($offerProducts as $i => $product)
                     @include('partials.product_card', ['delay' => $i + 1])
@@ -294,6 +342,59 @@
 
 
     {{-- ═══════════════════════════════════════════════════════════
+         MILESTONES & STATISTICS SECTION
+    ═══════════════════════════════════════════════════════════ --}}
+    <section class="milestone-section" aria-label="Our Milestones">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="0">
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="counter-num" data-target="99.8" data-decimals="1" data-suffix="%">0.0%</div>
+                        <h6>Happy Customers</h6>
+                        <p>High quality feedback & repeat custom</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="100">
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="bi bi-box-fill"></i>
+                        </div>
+                        <div class="counter-num" data-target="24500" data-suffix="+">0</div>
+                        <h6>Orders Delivered</h6>
+                        <p>Packed carefully & dispatched within 24 hours</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="200">
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div class="counter-num" data-target="1200" data-suffix="+">0</div>
+                        <h6>Premium Products</h6>
+                        <p>Carefully curated top tier inventory</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="300">
+                    <div class="milestone-card">
+                        <div class="milestone-icon">
+                            <i class="bi bi-chat-heart-fill"></i>
+                        </div>
+                        <div class="counter-num" data-target="24" data-suffix="/7">0</div>
+                        <h6>Customer Service</h6>
+                        <p>Always available chat support concierge</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════
          ANIMATED TRUST BAR
     ═══════════════════════════════════════════════════════════ --}}
     <section class="trust-bar-modern" aria-label="Why Shop With Us">
@@ -333,6 +434,97 @@
                         </div>
                         <h6>24/7 Support</h6>
                         <small>Dedicated customer care</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══════════════════════════════════════════════════════════
+         TESTIMONIAL CUSTOMER REVIEWS SLIDER
+    ═══════════════════════════════════════════════════════════ --}}
+    <section class="testimonial-section" aria-label="Customer Reviews">
+        <div class="container text-center mb-5 scroll-reveal">
+            <span class="badge rounded-pill mb-2" style="background: rgba(108,92,231,0.1); color: var(--ps-primary); font-weight: 700; font-size: 0.75rem;">
+                <i class="bi bi-chat-quote-fill me-1"></i>Client Testimonials
+            </span>
+            <h2 class="section-title">What Our <span class="gradient-text">Customers Say</span></h2>
+            <p class="section-subtitle mx-auto mb-0">Don't just take our word for it. Read verified feedback from our Premier community.</p>
+        </div>
+        
+        <div class="container">
+            <div class="testimonial-carousel-wrap scroll-reveal" data-delay="100">
+                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="7000">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="testimonial-card">
+                                <div class="quote-icon"><i class="bi bi-quote"></i></div>
+                                <div class="rating-stars">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <p class="review-text">"Outstanding products and exceptionally fast dispatch! I received my item in less than 24 hours. The packaging was meticulous and the quality was far beyond expectation. Highly recommend!"</p>
+                                <div class="author-info">
+                                    <div class="author-avatar">SC</div>
+                                    <div class="author-meta">
+                                        <h6>Sarah Jenkins</h6>
+                                        <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified Buyer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <div class="testimonial-card">
+                                <div class="quote-icon"><i class="bi bi-quote"></i></div>
+                                <div class="rating-stars">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <p class="review-text">"Premier Shop is hands down the best place for high-quality electronics. Their dark mode website is slick, checkout is lightning fast, and customer service is always helpful. A flawless shopping experience."</p>
+                                <div class="author-info">
+                                    <div class="author-avatar">MD</div>
+                                    <div class="author-meta">
+                                        <h6>Marcus Davies</h6>
+                                        <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified Buyer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="carousel-item">
+                            <div class="testimonial-card">
+                                <div class="quote-icon"><i class="bi bi-quote"></i></div>
+                                <div class="rating-stars">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <p class="review-text">"I am genuinely impressed by their bulk offers. Saved nearly 30% on kitchen accessories, and they dispatch everything immediately. Truly professional and reliable vendor."</p>
+                                <div class="author-info">
+                                    <div class="author-avatar">EL</div>
+                                    <div class="author-meta">
+                                        <h6>Emily Laurent</h6>
+                                        <span class="verified-badge"><i class="bi bi-patch-check-fill"></i> Verified Buyer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- Indicators --}}
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                     </div>
                 </div>
             </div>

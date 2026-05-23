@@ -82,7 +82,7 @@
 
         .auth-side-illustration {
             flex: 1;
-            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            background: #E3F2FD;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -251,8 +251,7 @@
             height: 100%;
             top: 0;
             left: 0;
-            background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 40%),
-                              radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0%, transparent 40%);
+            background-image: none;
         }
     </style>
 </head>

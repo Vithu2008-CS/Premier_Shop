@@ -574,11 +574,13 @@
         </div>
     </footer>
 
-    {{-- Back to Top --}}
-    <button id="backToTop" class="btn btn-primary"
-        style="display:none;position:fixed;bottom:30px;right:30px;width:48px;height:48px;border-radius:50%;align-items:center;justify-content:center;z-index:999;box-shadow:var(--ps-shadow-lg);">
-        <i class="bi bi-arrow-up"></i>
-    </button>
+    {{-- Back to Top with Scroll Progress --}}
+    <div id="scrollProgress" class="scroll-progress-wrap">
+        <svg class="progress-circle" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"/>
+        </svg>
+        <i class="bi bi-arrow-up-short"></i>
+    </div>
 
     @push('scripts')
     <script>

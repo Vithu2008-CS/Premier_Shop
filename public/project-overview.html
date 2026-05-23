@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premier Shop — Full Project Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@page { size: A4; margin: 15mm 16mm 15mm 16mm; }
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .no-print { display: none !important; }
+  .page-break { page-break-before: always; }
+  h2 { page-break-after: avoid; }
+  h3 { page-break-after: avoid; }
+  .card { page-break-inside: avoid; }
+  .cover { page-break-after: always; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #3730a3;
+  --accent: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --bg: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-code: #1e1e2e;
+}
+body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); font-size: 13px; line-height: 1.65; }
+
+/* ── DOWNLOAD BTN ── */
+.dl-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--primary); color: #fff; border: none; cursor: pointer;
+  padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(79,70,229,.35); display: flex; align-items: center; gap: 8px;
+  transition: transform .15s, box-shadow .15s;
+}
+.dl-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,70,229,.45); }
+
+/* ── COVER ── */
+.cover {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #fff; text-align: center; padding: 60px 40px; position: relative; overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(79,70,229,.3) 0%, transparent 70%);
+  top: -100px; left: -100px; pointer-events: none;
+}
+.cover::after {
+  content: ''; position: absolute; width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(6,182,212,.2) 0%, transparent 70%);
+  bottom: -80px; right: -80px; pointer-events: none;
+}
+.cover-badge {
+  display: inline-block; padding: 6px 18px; border-radius: 999px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 28px; backdrop-filter: blur(8px);
+}
+.cover h1 { font-size: 52px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+.cover h1 span { background: linear-gradient(90deg, #818cf8, #06b6d4); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.cover-sub { font-size: 18px; color: rgba(255,255,255,.7); max-width: 520px; margin-bottom: 40px; }
+.cover-meta { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+.cover-meta-item { text-align: center; }
+.cover-meta-item .val { font-size: 28px; font-weight: 800; color: #a5b4fc; }
+.cover-meta-item .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.5); margin-top: 2px; }
+.cover-stack { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 36px; }
+.stack-tag {
+  padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: #e0e7ff;
+}
+
+/* ── PAGE WRAPPER ── */
+.wrapper { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+
+/* ── SECTION HEADER ── */
+.sec-header { display: flex; align-items: center; gap: 12px; margin: 48px 0 24px; }
+.sec-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.sec-icon.blue { background: #eff6ff; }
+.sec-icon.purple { background: #f5f3ff; }
+.sec-icon.green { background: #f0fdf4; }
+.sec-icon.orange { background: #fff7ed; }
+.sec-icon.red { background: #fef2f2; }
+.sec-icon.teal { background: #f0fdfa; }
+.sec-title { font-size: 22px; font-weight: 800; color: var(--text); }
+.sec-title span { color: var(--primary); }
+
+/* ── CARDS ── */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+.card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+.card p { color: var(--text-muted); margin-bottom: 8px; font-size: 13px; }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+/* ── TECH PILLS ── */
+.pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.pill { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.pill.blue { background: #dbeafe; color: #1d4ed8; }
+.pill.purple { background: #ede9fe; color: #6d28d9; }
+.pill.green { background: #dcfce7; color: #16a34a; }
+.pill.orange { background: #ffedd5; color: #c2410c; }
+.pill.teal { background: #ccfbf1; color: #0f766e; }
+.pill.red { background: #fee2e2; color: #b91c1c; }
+.pill.gray { background: #f3f4f6; color: #374151; }
+.pill.pink { background: #fce7f3; color: #be185d; }
+
+/* ── TABLE ── */
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { background: #f8f9ff; color: var(--text); font-weight: 700; padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+td { padding: 9px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafbff; }
+.td-method { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--primary); font-weight: 500; }
+.td-route { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #0891b2; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+.badge-get { background: #dcfce7; color: #166534; }
+.badge-post { background: #dbeafe; color: #1e40af; }
+.badge-put { background: #fef9c3; color: #854d0e; }
+.badge-patch { background: #ffedd5; color: #c2410c; }
+.badge-delete { background: #fee2e2; color: #991b1b; }
+
+/* ── CODE ── */
+code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: #f3f4f6; padding: 2px 6px; border-radius: 5px; color: #4f46e5; }
+pre { background: var(--bg-code); color: #cdd6f4; padding: 18px 20px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; overflow-x: auto; margin: 12px 0; line-height: 1.7; }
+
+/* ── FEATURE LIST ── */
+.feature-list { list-style: none; }
+.feature-list li { padding: 7px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
+.feature-list li:last-child { border-bottom: none; }
+.feature-list li::before { content: '✓'; color: var(--success); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.feature-list li strong { color: var(--text); font-weight: 600; }
+
+/* ── STAT BOX ── */
+.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
+.stat-box .num { font-size: 36px; font-weight: 800; color: var(--primary); line-height: 1; }
+.stat-box .lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* ── TOC ── */
+.toc { background: #f8f9ff; border: 1px solid #e0e7ff; border-radius: 14px; padding: 28px 32px; }
+.toc h3 { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 16px; }
+.toc ol { padding-left: 20px; }
+.toc li { padding: 4px 0; font-size: 13px; color: var(--text); font-weight: 500; }
+.toc li a { color: var(--primary); text-decoration: none; }
+
+/* ── ARCH BOX ── */
+.arch { background: var(--bg-code); border-radius: 12px; padding: 24px; color: #cdd6f4; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.9; overflow-x: auto; }
+.arch .c1 { color: #89dceb; } .arch .c2 { color: #a6e3a1; } .arch .c3 { color: #f9e2af; } .arch .c4 { color: #cba6f7; } .arch .c5 { color: #fab387; }
+
+/* ── HIGHLIGHT BOX ── */
+.highlight { background: #eff6ff; border-left: 4px solid var(--primary); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #1e3a5f; }
+
+/* ── SECTION NUMBER ── */
+.sec-num { background: var(--primary); color: #fff; width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- DOWNLOAD BUTTON -->
+<button class="dl-btn no-print" onclick="window.print()">
+  ⬇ Download PDF
+</button>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+  <div class="cover-badge">Full Project Documentation</div>
+  <h1>Premier<span> Shop</span></h1>
+  <p class="cover-sub">A full-stack e-commerce platform with admin dashboard, driver delivery management, loyalty rewards, and Stripe payments — built on Laravel 12.</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><div class="val">38</div><div class="lbl">Controllers</div></div>
+    <div class="cover-meta-item"><div class="val">20</div><div class="lbl">Models</div></div>
+    <div class="cover-meta-item"><div class="val">82</div><div class="lbl">Views</div></div>
+    <div class="cover-meta-item"><div class="val">31</div><div class="lbl">Migrations</div></div>
+    <div class="cover-meta-item"><div class="val">1809</div><div class="lbl">Total Files</div></div>
+  </div>
+  <div class="cover-stack">
+    <span class="stack-tag">Laravel 12</span>
+    <span class="stack-tag">PHP 8.2</span>
+    <span class="stack-tag">Vite 7</span>
+    <span class="stack-tag">Tailwind CSS 3</span>
+    <span class="stack-tag">Bootstrap 5</span>
+    <span class="stack-tag">Alpine.js 3</span>
+    <span class="stack-tag">Stripe</span>
+    <span class="stack-tag">SQLite / MySQL</span>
+  </div>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<div class="wrapper">
+
+<!-- TABLE OF CONTENTS -->
+<div class="sec-header">
+  <div class="sec-icon blue">📋</div>
+  <div class="sec-title">Table of <span>Contents</span></div>
+</div>
+<div class="toc">
+  <h3>Document Sections</h3>
+  <ol>
+    <li>Project Overview &amp; Purpose</li>
+    <li>Tech Stack — Backend</li>
+    <li>Tech Stack — Frontend</li>
+    <li>Tech Stack — Admin &amp; Libraries</li>
+    <li>System Architecture</li>
+    <li>Directory Structure</li>
+    <li>Database Schema (31 Tables)</li>
+    <li>Models &amp; Relationships (20 Models)</li>
+    <li>Controllers &amp; Methods (38 Controllers)</li>
+    <li>Routes Reference</li>
+    <li>Feature Breakdown — Customer</li>
+    <li>Feature Breakdown — Admin</li>
+    <li>Feature Breakdown — Driver</li>
+    <li>Email &amp; Notification System</li>
+    <li>Authentication &amp; Security</li>
+    <li>Payments &amp; Shipping</li>
+    <li>Rewards &amp; Loyalty System</li>
+    <li>Testing</li>
+    <li>Setup &amp; Deployment</li>
+  </ol>
+</div>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">1</div>
+  <div class="sec-icon blue">🛍️</div>
+  <div class="sec-title">Project <span>Overview</span></div>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>What Is Premier Shop?</div>
+  <p>Premier Shop is a production-ready, multi-role e-commerce web application built with Laravel 12. It provides a complete retail pipeline — from product browsing and cart management through Stripe-powered checkout, order fulfillment, and driver-assisted delivery — plus a full admin dashboard for store management.</p>
+  <p>The platform serves three distinct user roles: <strong>Customers</strong> who shop, <strong>Admins/Staff</strong> who manage the store, and <strong>Drivers</strong> who fulfill deliveries. Each role has its own layout, middleware protection, and dedicated controller logic.</p>
+</div>
+<div class="grid-3">
+  <div class="stat-box"><div class="num">3</div><div class="lbl">User Roles</div></div>
+  <div class="stat-box"><div class="num">5</div><div class="lbl">Mail Classes</div></div>
+  <div class="stat-box"><div class="num">4</div><div class="lbl">Middleware Guards</div></div>
+</div>
+<div class="card" style="margin-top:14px">
+  <div class="card-title"><div class="dot"></div>Core Capabilities</div>
+  <ul class="feature-list">
+    <li><strong>Full product catalog</strong> — categories, search, filters, slug-based routing, QR code per product</li>
+    <li><strong>Shopping cart &amp; wishlist</strong> — session-backed cart, persistent wishlist, buy-now shortcut</li>
+    <li><strong>Stripe checkout</strong> — coupon validation, shipping calculation, tax, order confirmation</li>
+    <li><strong>Order lifecycle</strong> — placed → processing → dispatched → delivered / cancelled / returned</li>
+    <li><strong>Driver portal</strong> — duty toggle, order queue, proof-of-delivery photo upload</li>
+    <li><strong>Admin dashboard</strong> — sales charts, revenue reports, inventory, role-based access control</li>
+    <li><strong>Loyalty rewards</strong> — points earned per order, redeemable at checkout</li>
+    <li><strong>Return requests</strong> — customer-initiated, item-level, admin-approved workflow</li>
+    <li><strong>Review system</strong> — star ratings, text reviews, admin moderation, admin reply</li>
+    <li><strong>QR code scanning</strong> — admin scanner finds product by QR, instant stock update</li>
+  </ul>
+</div>
+
+<!-- ============ 2. BACKEND STACK ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">2</div>
+  <div class="sec-icon purple">⚙️</div>
+  <div class="sec-title">Tech Stack — <span>Backend</span></div>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>PHP</strong></td><td>8.2+</td><td>Server-side language. Uses typed properties, enums, fibers, readonly classes.</td></tr>
+      <tr><td><strong>Laravel</strong></td><td>12.x</td><td>MVC framework. Handles routing, ORM, mail, queues, auth, middleware, service providers.</td></tr>
+      <tr><td><strong>Eloquent ORM</strong></td><td>Laravel 12</td><td>Active-record ORM. All 20 models use Eloquent relationships, casts, accessors, scopes.</td></tr>
+      <tr><td><strong>SQLite</strong></td><td>3.x (dev)</td><td>Development database. Single <code>database.sqlite</code> file. Zero-config local setup.</td></tr>
+      <tr><td><strong>MySQL</strong></td><td>8.x (prod)</td><td>Production database. Configurable via <code>DB_CONNECTION=mysql</code> in <code>.env</code>.</td></tr>
+      <tr><td><strong>Laravel Breeze</strong></td><td>2.3</td><td>Auth scaffolding — login, register, password reset, email verification, OTP.</td></tr>
+      <tr><td><strong>PHPUnit</strong></td><td>11.5.3</td><td>Testing framework. 11 tests across Feature and Unit suites.</td></tr>
+      <tr><td><strong>Stripe PHP SDK</strong></td><td>19.4</td><td>Payment processing — PaymentIntent creation, webhook handling, refunds.</td></tr>
+      <tr><td><strong>barryvdh/laravel-dompdf</strong></td><td>3.1</td><td>PDF generation — order invoices, admin sales reports.</td></tr>
+      <tr><td><strong>chillerlan/php-qrcode</strong></td><td>5.0</td><td>QR code generation per product — stored in <code>storage/app/public/qrcodes/</code>.</td></tr>
+      <tr><td><strong>endroid/qr-code</strong></td><td>6.0</td><td>Secondary QR library for alternate rendering formats.</td></tr>
+      <tr><td><strong>Laravel Tinker</strong></td><td>2.10.1</td><td>REPL for debugging and seeding in development.</td></tr>
+      <tr><td><strong>Laravel Pail</strong></td><td>1.2.2</td><td>Real-time log viewer in terminal during development.</td></tr>
+      <tr><td><strong>Laravel Sail</strong></td><td>1.41</td><td>Docker dev environment — optional containerized setup.</td></tr>
+      <tr><td><strong>FakerPHP</strong></td><td>1.23</td><td>Generates fake data for factories: users, products, categories.</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="highlight">
+  <strong>Config files:</strong> <code>config/app.php</code> · <code>config/auth.php</code> · <code>config/database.php</code> · <code>config/filesystems.php</code> · <code>config/cache.php</code> · <code>config/logging.php</code> · <code>config/mail.php</code> · <code>config/queue.php</code> · <code>config/services.php</code> · <code>config/session.php</code>
+</div>
+
+<!-- ============ 3. FRONTEND STACK ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">3</div>
+  <div class="sec-icon teal">🎨</div>
+  <div class="sec-title">Tech Stack — <span>Frontend</span></div>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Technology</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Vite</strong></td><td>7.0.7</td><td>Frontend build tool. HMR in dev, optimized bundles in prod. Configured via <code>vite.config.js</code>.</td></tr>
+      <tr><td><strong>laravel-vite-plugin</strong></td><td>2.0.0</td><td>Bridges Laravel Blade and Vite — injects hashed asset URLs via <code>@vite()</code> directive.</td></tr>
+      <tr><td><strong>Tailwind CSS</strong></td><td>3.1.0</td><td>Utility-first CSS framework. Used across all customer-facing pages for layout and styling.</td></tr>
+      <tr><td><strong>@tailwindcss/forms</strong></td><td>0.5.2</td><td>Tailwind plugin that normalizes form element styles cross-browser.</td></tr>
+      <tr><td><strong>Bootstrap</strong></td><td>5.3.8</td><td>Component framework used in admin dashboard and some auth pages.</td></tr>
+      <tr><td><strong>Alpine.js</strong></td><td>3.4.2</td><td>Lightweight reactive framework for interactive UI — dropdowns, modals, cart updates, notifications.</td></tr>
+      <tr><td><strong>Framer Motion</strong></td><td>12.36.0</td><td>Animation library. Used on storefront for hero and product card entrance animations.</td></tr>
+      <tr><td><strong>Axios</strong></td><td>1.11.0</td><td>HTTP client for AJAX calls — coupon validation, notification polling, cart count updates.</td></tr>
+      <tr><td><strong>Sass/SCSS</strong></td><td>1.97.3</td><td>CSS preprocessor. Main stylesheet at <code>resources/sass/app.scss</code>.</td></tr>
+      <tr><td><strong>PostCSS</strong></td><td>8.4.31</td><td>CSS transformation pipeline. Works with Tailwind and autoprefixer.</td></tr>
+      <tr><td><strong>Autoprefixer</strong></td><td>10.4.2</td><td>Automatically adds vendor prefixes to CSS for browser compatibility.</td></tr>
+      <tr><td><strong>@popperjs/core</strong></td><td>2.11.8</td><td>Tooltip and dropdown positioning engine used by Bootstrap.</td></tr>
+      <tr><td><strong>concurrently</strong></td><td>9.0.1</td><td>Runs dev server, queue worker, log viewer, and Vite together from one <code>composer run dev</code>.</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Layouts</div>
+  <table>
+    <thead><tr><th>Layout File</th><th>Used By</th></tr></thead>
+    <tbody>
+      <tr><td><code>resources/views/layouts/app.blade.php</code></td><td>All customer-facing pages</td></tr>
+      <tr><td><code>resources/views/layouts/admin_noble.blade.php</code></td><td>Admin dashboard pages</td></tr>
+      <tr><td><code>resources/views/layouts/auth_modern.blade.php</code></td><td>Login, register, password reset</td></tr>
+      <tr><td><code>resources/views/layouts/driver.blade.php</code></td><td>Driver portal pages</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 4. ADMIN LIBRARIES ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">4</div>
+  <div class="sec-icon orange">📦</div>
+  <div class="sec-title">Tech Stack — <span>Admin Libraries</span></div>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Vendor Libraries in <code>public/admin_assets/vendors/</code></div>
+  <table>
+    <thead><tr><th>Library</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ApexCharts</strong></td><td>Interactive SVG charts — dashboard revenue, order trends, category breakdowns</td></tr>
+      <tr><td><strong>Chart.js</strong></td><td>Canvas-based charts — alternative chart rendering for reports</td></tr>
+      <tr><td><strong>Morris.js</strong></td><td>Line/bar/donut charts — legacy report widgets</td></tr>
+      <tr><td><strong>DataTables.net</strong></td><td>Sortable, searchable, paginated HTML tables for products, orders, customers</td></tr>
+      <tr><td><strong>TinyMCE</strong></td><td>Rich text editor — product descriptions, email composition</td></tr>
+      <tr><td><strong>Ace Builds</strong></td><td>Code editor widget — view raw HTML in email composer</td></tr>
+      <tr><td><strong>Select2</strong></td><td>Enhanced select dropdowns with search — category, driver, role pickers</td></tr>
+      <tr><td><strong>SweetAlert2</strong></td><td>Styled modal alerts for confirmations, success/error feedback</td></tr>
+      <tr><td><strong>Bootstrap Datepicker</strong></td><td>Date range picker for report filters and coupon expiry</td></tr>
+      <tr><td><strong>Tempusdominus</strong></td><td>Date/time picker for scheduled promotions</td></tr>
+      <tr><td><strong>Moment.js</strong></td><td>Date formatting and relative time display</td></tr>
+      <tr><td><strong>FullCalendar</strong></td><td>Calendar widget — delivery scheduling view</td></tr>
+      <tr><td><strong>Dropify</strong></td><td>Drag-and-drop file upload with image preview — product images, sliders</td></tr>
+      <tr><td><strong>Dropzone</strong></td><td>Multi-file drop zone for bulk media uploads</td></tr>
+      <tr><td><strong>Cropper.js</strong></td><td>Client-side image cropping before upload</td></tr>
+      <tr><td><strong>Owl Carousel</strong></td><td>Responsive image/content carousel — homepage sliders</td></tr>
+      <tr><td><strong>Font Awesome</strong></td><td>Icon library (6.x) — admin sidebar, action buttons</td></tr>
+      <tr><td><strong>Feather Icons</strong></td><td>Minimal SVG icons — admin navigation and KPI widgets</td></tr>
+      <tr><td><strong>MDI (Material Design Icons)</strong></td><td>Extended icon set for admin UI</td></tr>
+      <tr><td><strong>Flag Icon CSS</strong></td><td>Country flag icons for shipping/address display</td></tr>
+      <tr><td><strong>Bootstrap Colorpicker</strong></td><td>Color selector for category and promotion theme colors</td></tr>
+      <tr><td><strong>JQVMap</strong></td><td>Interactive vector map for geographic sales data</td></tr>
+      <tr><td><strong>PrismJS</strong></td><td>Syntax highlighting for code display in admin</td></tr>
+      <tr><td><strong>jQuery + plugins</strong></td><td>Core DOM library + UI, Steps, Tags, Validation, Sparkline, Typeahead</td></tr>
+      <tr><td><strong>Inputmask</strong></td><td>Input formatting — phone numbers, prices</td></tr>
+      <tr><td><strong>Clipboard.js</strong></td><td>Copy-to-clipboard for coupon codes and order IDs</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 5. ARCHITECTURE ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">5</div>
+  <div class="sec-icon blue">🏗️</div>
+  <div class="sec-title">System <span>Architecture</span></div>
+</div>
+<div class="arch">
+<span class="c1">┌─────────────────────────────────────────────────────────────────┐</span>
+<span class="c1">│                         BROWSER / CLIENT                        │</span>
+<span class="c1">│   Tailwind CSS · Bootstrap · Alpine.js · Framer Motion · Axios  │</span>
+<span class="c1">└──────────────────────────┬──────────────────────────────────────┘</span>
+                           │  HTTP Requests
+<span class="c2">┌──────────────────────────▼──────────────────────────────────────┐</span>
+<span class="c2">│                      Laravel 12 (PHP 8.2)                       │</span>
+<span class="c2">│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────────┐   │</span>
+<span class="c2">│  │  Middleware  │  │    Router    │  │   Blade Templates    │   │</span>
+<span class="c2">│  │  Admin Guard │  │  web.php     │  │   82 views + layouts │   │</span>
+<span class="c2">│  │  Driver Guard│  │  auth.php    │  │   Vite-compiled JS   │   │</span>
+<span class="c2">│  │  Permission  │  │  console.php │  │   SCSS → CSS         │   │</span>
+<span class="c2">│  └─────────────┘  └──────────────┘  └──────────────────────┘   │</span>
+<span class="c2">│                                                                  │</span>
+<span class="c2">│  ┌───────────────────────────────────────────────────────────┐  │</span>
+<span class="c2">│  │                    38 Controllers                         │  │</span>
+<span class="c2">│  │  Customer(14)  ·  Admin(14)  ·  Auth(9)  ·  Driver(1)   │  │</span>
+<span class="c2">│  └───────────────────────────────────────────────────────────┘  │</span>
+<span class="c2">│                                                                  │</span>
+<span class="c2">│  ┌──────────────┐  ┌─────────────────┐  ┌───────────────────┐  │</span>
+<span class="c2">│  │  20 Models   │  │  ShippingService│  │   Mail Classes    │</span>
+<span class="c2">│  │  Eloquent ORM│  │  (ShippingCalc) │  │   5 templates     │  │</span>
+<span class="c2">│  └──────┬───────┘  └─────────────────┘  └───────────────────┘  │</span>
+<span class="c2">└─────────┼────────────────────────────────────────────────────────┘</span>
+          │
+<span class="c3">┌─────────▼──────────────────────────────────────────────────────┐</span>
+<span class="c3">│               DATABASE  (SQLite dev / MySQL prod)              │</span>
+<span class="c3">│   31 Migrations · Users · Products · Orders · Reviews ···     │</span>
+<span class="c3">└────────────────────────────────────────────────────────────────┘</span>
+
+<span class="c4">┌────────────────────────────────────────────────────────────────┐</span>
+<span class="c4">│                     EXTERNAL SERVICES                          │</span>
+<span class="c4">│  Stripe (payments)  ·  SMTP Mail  ·  File Storage             │</span>
+<span class="c4">└────────────────────────────────────────────────────────────────┘</span>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="card-title"><div class="dot"></div>Request Lifecycle</div>
+  <p><strong>1. Request arrives</strong> → Laravel router matches URI against <code>routes/web.php</code> or <code>routes/auth.php</code>.</p>
+  <p><strong>2. Middleware stack</strong> → <code>web</code> group (session, CSRF, cookies) → <code>auth</code> guard → role guards (AdminMiddleware, DriverMiddleware, PermissionMiddleware) → SecurityHeadersMiddleware adds CSP/HSTS headers.</p>
+  <p><strong>3. Controller action</strong> → Business logic executes, queries Eloquent models, calls services (ShippingService), dispatches mail jobs.</p>
+  <p><strong>4. Response</strong> → Blade view rendered with data, or JSON response for AJAX endpoints, or redirect response.</p>
+</div>
+
+<!-- ============ 6. DIRECTORY STRUCTURE ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">6</div>
+  <div class="sec-icon green">📁</div>
+  <div class="sec-title">Directory <span>Structure</span></div>
+</div>
+<pre>c:\Retail shop\
+├── app/
+│   ├── Console/Commands/TestPhases.php
+│   ├── Http/
+│   │   ├── Controllers/          ← 38 controllers (see Section 9)
+│   │   │   ├── Admin/            ← 14 admin controllers
+│   │   │   └── Auth/             ← 9 auth controllers
+│   │   ├── Middleware/           ← Admin, Driver, Permission, SecurityHeaders
+│   │   └── Requests/             ← ProfileUpdateRequest, LoginRequest
+│   ├── Mail/                     ← 5 Mailable classes
+│   ├── Models/                   ← 20 Eloquent models
+│   ├── Providers/AppServiceProvider.php
+│   ├── Services/ShippingService.php
+│   └── View/Components/          ← AppLayout, GuestLayout
+├── config/                       ← 10 config files
+├── database/
+│   ├── migrations/               ← 31 migration files
+│   ├── factories/                ← User, Product, Category factories
+│   ├── seeders/                  ← DatabaseSeeder, RolePermissionSeeder
+│   └── database.sqlite           ← Dev database
+├── public/
+│   ├── admin_assets/             ← Admin dashboard CSS/JS/fonts/vendors
+│   └── project-overview.html    ← This document
+├── resources/
+│   ├── views/                    ← 82 Blade templates
+│   ├── sass/app.scss             ← Main stylesheet
+│   └── js/app.js                 ← Main JS entry
+├── routes/
+│   ├── web.php                   ← All web routes
+│   ├── auth.php                  ← Breeze auth routes
+│   └── console.php
+├── storage/app/public/
+│   ├── products/                 ← Product images
+│   ├── sliders/                  ← Homepage slider images
+│   ├── delivery_proofs/          ← Driver delivery photos
+│   └── qrcodes/                  ← Product QR codes
+├── tests/                        ← 11 PHPUnit tests
+├── vite.config.js
+├── tailwind.config.js
+└── composer.json</pre>
+
+<!-- ============ 7. DATABASE SCHEMA ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">7</div>
+  <div class="sec-icon orange">🗄️</div>
+  <div class="sec-title">Database <span>Schema</span></div>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Table</th><th>Key Columns</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>users</code></td><td>id, name, email, password, role_id, dob, loyalty_points, is_on_duty</td><td>All users (customers, admins, drivers)</td></tr>
+      <tr><td><code>roles</code></td><td>id, name, slug</td><td>User role definitions</td></tr>
+      <tr><td><code>permissions</code></td><td>id, name, slug</td><td>Permission definitions</td></tr>
+      <tr><td><code>role_permission</code></td><td>role_id, permission_id</td><td>Pivot: roles ↔ permissions</td></tr>
+      <tr><td><code>categories</code></td><td>id, name, slug, image, parent_id</td><td>Hierarchical product categories</td></tr>
+      <tr><td><code>products</code></td><td>id, name, slug, description, price, sale_price, stock, category_id, image, qr_code</td><td>Product catalog</td></tr>
+      <tr><td><code>coupons</code></td><td>id, code, type (percent/fixed), value, min_order, max_uses, used_count, expires_at</td><td>Discount codes</td></tr>
+      <tr><td><code>orders</code></td><td>id, user_id, driver_id, status, total, shipping_fee, coupon_id, payment_intent_id, delivery_proof</td><td>Customer orders</td></tr>
+      <tr><td><code>order_items</code></td><td>id, order_id, product_id, quantity, price</td><td>Line items per order</td></tr>
+      <tr><td><code>user_items</code></td><td>id, user_id, product_id, quantity, type (cart/wishlist)</td><td>Cart and wishlist items</td></tr>
+      <tr><td><code>addresses</code></td><td>id, user_id, label, line1, line2, city, state, postcode, country, is_default</td><td>Saved delivery addresses</td></tr>
+      <tr><td><code>reviews</code></td><td>id, user_id, product_id, rating, title, body, is_approved, admin_reply, verified_purchase</td><td>Product reviews</td></tr>
+      <tr><td><code>return_requests</code></td><td>id, order_id, user_id, reason, status, refund_amount</td><td>Return/refund requests</td></tr>
+      <tr><td><code>return_request_items</code></td><td>id, return_request_id, order_item_id, quantity</td><td>Items in each return</td></tr>
+      <tr><td><code>promotions</code></td><td>id, title, subtitle, image, link, order, is_active</td><td>Homepage slider content</td></tr>
+      <tr><td><code>settings</code></td><td>id, key, value</td><td>Key-value application settings</td></tr>
+      <tr><td><code>contact_messages</code></td><td>id, name, email, subject, message, is_read</td><td>Customer contact form submissions</td></tr>
+      <tr><td><code>newsletter_subscriptions</code></td><td>id, email, is_active, token</td><td>Newsletter subscribers</td></tr>
+      <tr><td><code>notifications</code></td><td>id, user_id, type, title, message, is_read, data</td><td>In-app notifications</td></tr>
+      <tr><td><code>recently_viewed</code></td><td>id, user_id, product_id, viewed_at</td><td>Recently viewed product history</td></tr>
+      <tr><td><code>reward_point_transactions</code></td><td>id, user_id, order_id, points, type (earn/redeem), description</td><td>Loyalty points ledger</td></tr>
+      <tr><td><code>cache</code></td><td>key, value, expiration</td><td>Laravel cache table driver</td></tr>
+      <tr><td><code>jobs</code></td><td>id, queue, payload, attempts</td><td>Queued job storage</td></tr>
+      <tr><td><code>sessions</code></td><td>id, user_id, payload, last_activity</td><td>Database session storage</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="highlight">
+  <strong>Index optimization:</strong> Migration <code>add_indexes_to_tables.php</code> adds composite indexes on <code>orders(user_id, status)</code>, <code>products(category_id, price)</code>, and <code>reviews(product_id, is_approved)</code> for query performance.
+</div>
+
+<!-- ============ 8. MODELS ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">8</div>
+  <div class="sec-icon purple">🔗</div>
+  <div class="sec-title">Models &amp; <span>Relationships</span></div>
+</div>
+
+<div class="card">
+  <div class="card-title"><div class="dot"></div>User Model — <code>app/Models/User.php</code></div>
+  <table>
+    <thead><tr><th>Method</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="td-method">role()</td><td>BelongsTo</td><td>User's assigned role</td></tr>
+      <tr><td class="td-method">orders()</td><td>HasMany</td><td>All orders placed by user</td></tr>
+      <tr><td class="td-method">cartItems()</td><td>HasMany</td><td>Active cart items (UserItem type=cart)</td></tr>
+      <tr><td class="td-method">wishlists()</td><td>HasMany</td><td>Wishlist items (UserItem type=wishlist)</td></tr>
+      <tr><td class="td-method">addresses()</td><td>HasMany</td><td>Saved delivery addresses</td></tr>
+      <tr><td class="td-method">defaultAddress()</td><td>HasOne</td><td>Address marked is_default=true</td></tr>
+      <tr><td class="td-method">assignedOrders()</td><td>HasMany</td><td>Orders assigned to driver</td></tr>
+      <tr><td class="td-method">recentlyViewed()</td><td>HasMany</td><td>Product view history</td></tr>
+      <tr><td class="td-method">notifications()</td><td>HasMany</td><td>All in-app notifications</td></tr>
+      <tr><td class="td-method">unreadNotifications()</td><td>HasMany</td><td>Scoped to is_read=false</td></tr>
+      <tr><td class="td-method">returnRequests()</td><td>HasMany</td><td>Customer return requests</td></tr>
+      <tr><td class="td-method">rewardPointTransactions()</td><td>HasMany</td><td>Loyalty points ledger</td></tr>
+      <tr><td class="td-method">reviews()</td><td>HasMany</td><td>Product reviews written</td></tr>
+      <tr><td class="td-method">isAdmin()</td><td>Accessor</td><td>Checks role slug === 'admin'</td></tr>
+      <tr><td class="td-method">isDriver()</td><td>Accessor</td><td>Checks role slug === 'driver'</td></tr>
+      <tr><td class="td-method">isStaff()</td><td>Accessor</td><td>Checks role slug === 'staff'</td></tr>
+      <tr><td class="td-method">hasPermission(string)</td><td>Method</td><td>Checks permission via role pivot</td></tr>
+      <tr><td class="td-method">getAgeAttribute()</td><td>Accessor</td><td>Calculates age from dob</td></tr>
+      <tr><td class="td-method">isUnder16()</td><td>Method</td><td>Age gate for restricted products</td></tr>
+      <tr><td class="td-method">prunable()</td><td>Pruning</td><td>Auto-deletes soft-deleted old accounts</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="grid-2">
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Product Model</div>
+  <ul class="feature-list">
+    <li><strong>category()</strong> — BelongsTo Category</li>
+    <li><strong>orderItems()</strong> — HasMany OrderItem</li>
+    <li><strong>reviews()</strong> — HasMany Review</li>
+    <li><strong>wishlists()</strong> — HasMany UserItem</li>
+    <li><strong>recentlyViewed()</strong> — HasMany RecentlyViewed</li>
+    <li><strong>Casts:</strong> price/sale_price as decimal</li>
+    <li><strong>Route model binding</strong> via slug</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Order Model</div>
+  <ul class="feature-list">
+    <li><strong>user()</strong> — BelongsTo User</li>
+    <li><strong>driver()</strong> — BelongsTo User</li>
+    <li><strong>coupon()</strong> — BelongsTo Coupon</li>
+    <li><strong>items()</strong> — HasMany OrderItem</li>
+    <li><strong>returnRequests()</strong> — HasMany ReturnRequest</li>
+    <li><strong>Status enum:</strong> pending, processing, dispatched, delivered, cancelled</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Review Model</div>
+  <ul class="feature-list">
+    <li><strong>user()</strong> — BelongsTo User</li>
+    <li><strong>product()</strong> — BelongsTo Product</li>
+    <li><strong>Fields:</strong> rating, title, body, is_approved, admin_reply, verified_purchase</li>
+    <li><strong>Advanced fields</strong> added via migration for verified badge</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Coupon Model</div>
+  <ul class="feature-list">
+    <li><strong>orders()</strong> — HasMany Order</li>
+    <li><strong>Type:</strong> percent | fixed_amount</li>
+    <li><strong>Validation:</strong> min_order_value, max_uses, expires_at</li>
+    <li>Auto-increments used_count on application</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>ReturnRequest Model</div>
+  <ul class="feature-list">
+    <li><strong>order()</strong> — BelongsTo Order</li>
+    <li><strong>user()</strong> — BelongsTo User</li>
+    <li><strong>items()</strong> — HasMany ReturnRequestItem</li>
+    <li><strong>Status:</strong> pending, approved, rejected, processed</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Role / Permission Models</div>
+  <ul class="feature-list">
+    <li><strong>Role</strong> → hasMany Users</li>
+    <li><strong>Role</strong> → belongsToMany Permission (pivot)</li>
+    <li><strong>Permission</strong> → belongsToMany Role</li>
+    <li>Slug-based checks via <code>hasPermission()</code></li>
+  </ul>
+</div>
+</div>
+
+<!-- ============ 9. CONTROLLERS ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">9</div>
+  <div class="sec-icon red">🎮</div>
+  <div class="sec-title">Controllers &amp; <span>Methods</span></div>
+</div>
+
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Customer Controllers</div>
+  <table>
+    <thead><tr><th>Controller</th><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3"><strong>HomeController</strong></td><td class="td-method">index()</td><td>Homepage — featured products, sliders, categories, counters, reviews</td></tr>
+      <tr><td class="td-method">offers()</td><td>Offers/deals page with discounted products</td></tr>
+      <tr><td class="td-method">categories()</td><td>All categories listing page</td></tr>
+      <tr><td rowspan="3"><strong>ProductController</strong></td><td class="td-method">index(Request)</td><td>Product catalog with search, price filter, category filter, sort</td></tr>
+      <tr><td class="td-method">show($slug)</td><td>Single product detail — reviews, related products, recently viewed</td></tr>
+      <tr><td class="td-method">suggest(Request)</td><td>AJAX search suggestions (returns JSON)</td></tr>
+      <tr><td rowspan="5"><strong>CartController</strong></td><td class="td-method">index()</td><td>Shopping cart page with totals calculation</td></tr>
+      <tr><td class="td-method">add(Request)</td><td>Add product to cart (creates UserItem type=cart)</td></tr>
+      <tr><td class="td-method">buyNow(Request)</td><td>Add to cart and redirect directly to checkout</td></tr>
+      <tr><td class="td-method">update(Request, UserItem)</td><td>Update quantity of cart item</td></tr>
+      <tr><td class="td-method">remove(Request, UserItem)</td><td>Remove item from cart</td></tr>
+      <tr><td rowspan="5"><strong>CheckoutController</strong></td><td class="td-method">index(Request)</td><td>Checkout page — order summary, address selector, shipping cost</td></tr>
+      <tr><td class="td-method">applyCoupon(Request)</td><td>Validate and apply coupon code to session</td></tr>
+      <tr><td class="td-method">removeCoupon(Request)</td><td>Remove applied coupon from session</td></tr>
+      <tr><td class="td-method">process(Request)</td><td>Create Stripe PaymentIntent, validate stock, create Order + OrderItems, deduct loyalty points, dispatch mail</td></tr>
+      <tr><td class="td-method">calculateShipping(Request)</td><td>AJAX endpoint — returns shipping fee based on address/weight</td></tr>
+      <tr><td rowspan="4"><strong>OrderController</strong></td><td class="td-method">index()</td><td>Customer order history list</td></tr>
+      <tr><td class="td-method">show(Order)</td><td>Single order detail — items, status timeline, return option</td></tr>
+      <tr><td class="td-method">cancel(Request, Order)</td><td>Cancel pending order, restock items, issue refund</td></tr>
+      <tr><td class="td-method">print(Order)</td><td>Render printable order invoice (DomPDF)</td></tr>
+      <tr><td rowspan="4"><strong>ProfileController</strong></td><td class="td-method">edit(Request)</td><td>Customer profile edit form</td></tr>
+      <tr><td class="td-method">update(ProfileUpdateRequest)</td><td>Save profile changes, re-verify email if changed</td></tr>
+      <tr><td class="td-method">destroy(Request)</td><td>Delete account after password confirmation</td></tr>
+      <tr><td class="td-method">rewards()</td><td>Loyalty rewards page — points balance, transaction history</td></tr>
+      <tr><td rowspan="5"><strong>AddressController</strong></td><td class="td-method">index()</td><td>List saved addresses</td></tr>
+      <tr><td class="td-method">store(Request)</td><td>Save new address</td></tr>
+      <tr><td class="td-method">update(Request, Address)</td><td>Edit existing address</td></tr>
+      <tr><td class="td-method">destroy(Address)</td><td>Delete address</td></tr>
+      <tr><td class="td-method">setDefault(Address)</td><td>Mark address as default</td></tr>
+      <tr><td rowspan="2"><strong>WishlistController</strong></td><td class="td-method">index()</td><td>Display wishlist items</td></tr>
+      <tr><td class="td-method">toggle(Request, Product)</td><td>Add or remove product from wishlist (AJAX toggle)</td></tr>
+      <tr><td><strong>ReviewController</strong></td><td class="td-method">store(Request, Product)</td><td>Submit product review — verified purchase check, rating + text</td></tr>
+      <tr><td rowspan="3"><strong>ReturnRequestController</strong></td><td class="td-method">create(Order)</td><td>Return request form — lists eligible order items</td></tr>
+      <tr><td class="td-method">store(Request, Order)</td><td>Submit return request with item selection and reason</td></tr>
+      <tr><td class="td-method">show(ReturnRequest)</td><td>View return request status and timeline</td></tr>
+      <tr><td><strong>ContactController</strong></td><td class="td-method">index() / store()</td><td>Contact form display and submission (stores ContactMessage)</td></tr>
+      <tr><td><strong>NewsletterController</strong></td><td class="td-method">subscribe() / unsubscribe()</td><td>Newsletter opt-in and token-based opt-out</td></tr>
+      <tr><td rowspan="5"><strong>NotificationController</strong></td><td class="td-method">index()</td><td>All notifications for current user</td></tr>
+      <tr><td class="td-method">count()</td><td>AJAX — returns unread count badge</td></tr>
+      <tr><td class="td-method">latest()</td><td>AJAX — returns latest 5 notifications for dropdown</td></tr>
+      <tr><td class="td-method">markAsRead(AppNotification)</td><td>Mark single notification read</td></tr>
+      <tr><td class="td-method">markAllAsRead()</td><td>Mark all user notifications read</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="page-break"></div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Admin Controllers — <code>app/Http/Controllers/Admin/</code></div>
+  <table>
+    <thead><tr><th>Controller</th><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><strong>DashboardController</strong></td><td class="td-method">index()</td><td>Dashboard — revenue charts, order counts, top products, recent orders</td></tr>
+      <tr><td rowspan="8"><strong>ProductController</strong></td><td class="td-method">index()</td><td>Paginated product list with DataTable</td></tr>
+      <tr><td class="td-method">create()</td><td>New product form</td></tr>
+      <tr><td class="td-method">store(Request)</td><td>Save product — image upload, QR code generation, stock setup</td></tr>
+      <tr><td class="td-method">edit(Product)</td><td>Edit product form prefilled</td></tr>
+      <tr><td class="td-method">update(Request, Product)</td><td>Update product, regenerate QR if name changed</td></tr>
+      <tr><td class="td-method">destroy(Product)</td><td>Delete product and associated image</td></tr>
+      <tr><td class="td-method">regenerateQr(Product)</td><td>Force regenerate QR code for product</td></tr>
+      <tr><td class="td-method">scanner()</td><td>QR scanner page — camera access via JS</td></tr>
+      <tr><td class="td-method">findByQr(Request)</td><td>AJAX — find product by QR code value</td></tr>
+      <tr><td class="td-method">updateStock(Request, Product)</td><td>AJAX inline stock update from scanner</td></tr>
+      <tr><td rowspan="5"><strong>CategoryController</strong></td><td class="td-method">index()</td><td>Category tree listing</td></tr>
+      <tr><td class="td-method">create() / store(Request)</td><td>Create category with image and parent</td></tr>
+      <tr><td class="td-method">edit(Category) / update(Request, Category)</td><td>Edit category name, image, slug, parent</td></tr>
+      <tr><td class="td-method">destroy(Category)</td><td>Delete category (guards against category with products)</td></tr>
+      <tr><td rowspan="5"><strong>CouponController</strong></td><td class="td-method">index()</td><td>Coupon list with usage stats</td></tr>
+      <tr><td class="td-method">create() / store(Request)</td><td>Create coupon — type, value, limits, expiry</td></tr>
+      <tr><td class="td-method">edit(Coupon) / update(Request, Coupon)</td><td>Update coupon parameters</td></tr>
+      <tr><td class="td-method">destroy(Coupon)</td><td>Delete coupon</td></tr>
+      <tr><td rowspan="4"><strong>CustomerController</strong></td><td class="td-method">index()</td><td>Customer list — registration date, order count, total spent</td></tr>
+      <tr><td class="td-method">show(User)</td><td>Customer profile — orders, reviews, return history</td></tr>
+      <tr><td class="td-method">updateRole(Request, User)</td><td>Change customer role (promote to staff/driver)</td></tr>
+      <tr><td class="td-method">destroy(User)</td><td>Delete customer account</td></tr>
+      <tr><td rowspan="5"><strong>OrderController</strong></td><td class="td-method">index()</td><td>All orders with status filter and search</td></tr>
+      <tr><td class="td-method">show(Order)</td><td>Full order detail — items, customer, driver, timeline</td></tr>
+      <tr><td class="td-method">assignDriver(Request, Order)</td><td>Assign or change delivery driver for order</td></tr>
+      <tr><td class="td-method">updateStatus(Request, Order)</td><td>Advance order status — triggers notification and email</td></tr>
+      <tr><td class="td-method">print(Order)</td><td>Printable order sheet (DomPDF)</td></tr>
+      <tr><td rowspan="3"><strong>ReturnRequestController</strong></td><td class="td-method">index()</td><td>Pending and processed return requests</td></tr>
+      <tr><td class="td-method">show(ReturnRequest)</td><td>Return detail — items, reason, photos</td></tr>
+      <tr><td class="td-method">update(Request, ReturnRequest)</td><td>Approve/reject/process return — triggers refund</td></tr>
+      <tr><td rowspan="4"><strong>ReviewController</strong></td><td class="td-method">index()</td><td>All reviews with approval status filter</td></tr>
+      <tr><td class="td-method">toggleApproval(Review)</td><td>Approve or unapprove review</td></tr>
+      <tr><td class="td-method">reply(Request, Review)</td><td>Post admin reply to review</td></tr>
+      <tr><td class="td-method">destroy(Review)</td><td>Delete review permanently</td></tr>
+      <tr><td rowspan="5"><strong>DriverController</strong></td><td class="td-method">index()</td><td>Driver list with on-duty status and delivery stats</td></tr>
+      <tr><td class="td-method">create() / store(Request)</td><td>Create driver user account with driver role</td></tr>
+      <tr><td class="td-method">edit(User) / update(Request, User)</td><td>Edit driver details and vehicle info</td></tr>
+      <tr><td class="td-method">destroy(User)</td><td>Delete driver account</td></tr>
+      <tr><td rowspan="5"><strong>SliderController</strong></td><td class="td-method">index()</td><td>Slider/promotion list with ordering</td></tr>
+      <tr><td class="td-method">create() / store(Request)</td><td>Create slider — title, image, link, display order</td></tr>
+      <tr><td class="td-method">edit(Promotion) / update(Request, Promotion)</td><td>Edit slider content</td></tr>
+      <tr><td class="td-method">destroy(Promotion)</td><td>Delete slider and image</td></tr>
+      <tr><td rowspan="2"><strong>ReportController</strong></td><td class="td-method">index(Request)</td><td>Sales report — date range filter, revenue, top products, export data</td></tr>
+      <tr><td class="td-method">print(Request)</td><td>Printable/PDF sales report (DomPDF)</td></tr>
+      <tr><td rowspan="5"><strong>RoleController</strong></td><td class="td-method">index()</td><td>Roles list with permission matrix</td></tr>
+      <tr><td class="td-method">create() / store(Request)</td><td>Create role with permission assignment</td></tr>
+      <tr><td class="td-method">edit(Role) / update(Request, Role)</td><td>Edit role name and permissions</td></tr>
+      <tr><td class="td-method">destroy(Role)</td><td>Delete role (checks no users assigned)</td></tr>
+      <tr><td rowspan="8"><strong>MailController</strong></td><td class="td-method">inbox()</td><td>Contact messages inbox list</td></tr>
+      <tr><td class="td-method">sent() / drafts() / trash()</td><td>Email folder views</td></tr>
+      <tr><td class="td-method">important()</td><td>Starred messages</td></tr>
+      <tr><td class="td-method">tags($tag)</td><td>Messages filtered by tag</td></tr>
+      <tr><td class="td-method">read($id)</td><td>Read single message — marks as read</td></tr>
+      <tr><td class="td-method">compose(Request)</td><td>Email compose form — recipient, subject, TinyMCE body</td></tr>
+      <tr><td class="td-method">send(Request)</td><td>Send email to customer via SMTP</td></tr>
+      <tr><td class="td-method">toggleStar($id) / destroy($id)</td><td>Star/unstar and delete messages</td></tr>
+      <tr><td rowspan="2"><strong>SettingController</strong></td><td class="td-method">index()</td><td>App settings form — store name, logo, contact, mail config</td></tr>
+      <tr><td class="td-method">store(Request)</td><td>Save settings to key-value settings table</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="page-break"></div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Driver Controller — <code>app/Http/Controllers/DriverController.php</code></div>
+  <table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td class="td-method">dashboard()</td><td>Driver dashboard — assigned orders, delivery stats, duty status toggle</td></tr>
+      <tr><td class="td-method">toggleDuty(Request)</td><td>Toggle driver on-duty / off-duty status (AJAX)</td></tr>
+      <tr><td class="td-method">showOrder(Order)</td><td>Order delivery detail — customer address, items, contact info</td></tr>
+      <tr><td class="td-method">completeDelivery(Request, Order)</td><td>Mark order as delivered, upload proof-of-delivery photo</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Auth Controllers — <code>app/Http/Controllers/Auth/</code></div>
+  <table>
+    <thead><tr><th>Controller</th><th>Methods</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AuthenticatedSessionController</strong></td><td class="td-method">create(), store(), destroy()</td><td>Login form, process login (rate limited), logout</td></tr>
+      <tr><td><strong>RegisteredUserController</strong></td><td class="td-method">create(), store()</td><td>Registration form, validate and create user + send OTP</td></tr>
+      <tr><td><strong>PasswordResetLinkController</strong></td><td class="td-method">create(), store()</td><td>Forgot password form, send reset link email</td></tr>
+      <tr><td><strong>NewPasswordController</strong></td><td class="td-method">create(), store()</td><td>Password reset form with token validation, update password</td></tr>
+      <tr><td><strong>VerifyEmailController</strong></td><td class="td-method">__invoke()</td><td>Handle email verification link click</td></tr>
+      <tr><td><strong>EmailVerificationPromptController</strong></td><td class="td-method">__invoke()</td><td>Show "verify your email" notice page</td></tr>
+      <tr><td><strong>EmailVerificationNotificationController</strong></td><td class="td-method">store()</td><td>Resend verification email (rate throttled)</td></tr>
+      <tr><td><strong>PasswordController</strong></td><td class="td-method">update()</td><td>Change password from profile settings</td></tr>
+      <tr><td><strong>ConfirmablePasswordController</strong></td><td class="td-method">show(), store()</td><td>Confirm password before sensitive actions (account delete)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 10. ROUTES ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">10</div>
+  <div class="sec-icon teal">🛣️</div>
+  <div class="sec-title">Routes <span>Reference</span></div>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Public Routes (no auth required)</div>
+  <table>
+    <thead><tr><th>Method</th><th>URI</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/</td><td>HomeController@index</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/offers</td><td>HomeController@offers</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/categories</td><td>HomeController@categories</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/products</td><td>ProductController@index</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/products/{slug}</td><td>ProductController@show</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/products/suggest</td><td>ProductController@suggest (AJAX)</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/contact</td><td>ContactController@index</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/contact</td><td>ContactController@store</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/newsletter/subscribe</td><td>NewsletterController@subscribe</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/newsletter/unsubscribe/{token}</td><td>NewsletterController@unsubscribe</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Authenticated Customer Routes (middleware: auth, verified)</div>
+  <table>
+    <thead><tr><th>Method</th><th>URI</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/cart</td><td>CartController@index</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/cart/add</td><td>CartController@add</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/cart/buy-now</td><td>CartController@buyNow</td></tr>
+      <tr><td><span class="badge badge-patch">PATCH</span></td><td class="td-route">/cart/{cartItem}</td><td>CartController@update</td></tr>
+      <tr><td><span class="badge badge-delete">DELETE</span></td><td class="td-route">/cart/{cartItem}</td><td>CartController@remove</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/checkout</td><td>CheckoutController@index</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/checkout/process</td><td>CheckoutController@process</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/checkout/coupon/apply</td><td>CheckoutController@applyCoupon</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/checkout/coupon/remove</td><td>CheckoutController@removeCoupon</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/checkout/shipping</td><td>CheckoutController@calculateShipping</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/orders</td><td>OrderController@index</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/orders/{order}</td><td>OrderController@show</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/orders/{order}/cancel</td><td>OrderController@cancel</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/orders/{order}/print</td><td>OrderController@print</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/wishlist</td><td>WishlistController@index</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/wishlist/{product}/toggle</td><td>WishlistController@toggle</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/products/{product}/reviews</td><td>ReviewController@store</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/returns/{order}/create</td><td>ReturnRequestController@create</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/returns/{order}</td><td>ReturnRequestController@store</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/returns/{return}</td><td>ReturnRequestController@show</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/profile</td><td>ProfileController@edit</td></tr>
+      <tr><td><span class="badge badge-patch">PATCH</span></td><td class="td-route">/profile</td><td>ProfileController@update</td></tr>
+      <tr><td><span class="badge badge-delete">DELETE</span></td><td class="td-route">/profile</td><td>ProfileController@destroy</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/profile/rewards</td><td>ProfileController@rewards</td></tr>
+      <tr><td><span class="badge badge-get">GET</span></td><td class="td-route">/addresses</td><td>AddressController@index</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/addresses</td><td>AddressController@store</td></tr>
+      <tr><td><span class="badge badge-put">PUT</span></td><td class="td-route">/addresses/{address}</td><td>AddressController@update</td></tr>
+      <tr><td><span class="badge badge-delete">DELETE</span></td><td class="td-route">/addresses/{address}</td><td>AddressController@destroy</td></tr>
+      <tr><td><span class="badge badge-post">POST</span></td><td class="td-route">/addresses/{address}/default</td><td>AddressController@setDefault</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Admin Routes (prefix: /admin, middleware: admin)</div>
+  <table>
+    <thead><tr><th>URI Pattern</th><th>Resource / Actions</th></tr></thead>
+    <tbody>
+      <tr><td class="td-route">/admin</td><td>Dashboard index</td></tr>
+      <tr><td class="td-route">/admin/products + regenerate-qr, scanner, find-by-qr, update-stock</td><td>Full CRUD + QR operations</td></tr>
+      <tr><td class="td-route">/admin/categories</td><td>Full CRUD resource</td></tr>
+      <tr><td class="td-route">/admin/coupons</td><td>Full CRUD resource</td></tr>
+      <tr><td class="td-route">/admin/customers + update-role</td><td>Index, show, role change, delete</td></tr>
+      <tr><td class="td-route">/admin/orders + assign-driver, update-status, print</td><td>Index, show, status, driver, print</td></tr>
+      <tr><td class="td-route">/admin/returns</td><td>Index, show, update (approve/reject)</td></tr>
+      <tr><td class="td-route">/admin/reviews + toggle-approval, reply</td><td>Index, moderate, reply, delete</td></tr>
+      <tr><td class="td-route">/admin/drivers</td><td>Full CRUD resource</td></tr>
+      <tr><td class="td-route">/admin/sliders</td><td>Full CRUD resource</td></tr>
+      <tr><td class="td-route">/admin/reports</td><td>Index, print</td></tr>
+      <tr><td class="td-route">/admin/roles</td><td>Full CRUD resource</td></tr>
+      <tr><td class="td-route">/admin/mail (inbox, sent, drafts, trash, important, tags, read, compose, send, toggle-star)</td><td>Full mail system</td></tr>
+      <tr><td class="td-route">/admin/settings</td><td>Index, store</td></tr>
+      <tr><td class="td-route">/admin/profile</td><td>Admin profile edit</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ 11–13. FEATURES ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">11</div>
+  <div class="sec-icon green">👤</div>
+  <div class="sec-title">Feature Breakdown — <span>Customer</span></div>
+</div>
+<div class="grid-2">
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Shopping</div>
+  <ul class="feature-list">
+    <li><strong>Product browse</strong> — search by keyword, filter by category, price range, sort by newest/price/popularity</li>
+    <li><strong>Product detail</strong> — image, description, price, stock badge, reviews, related products, recently viewed history</li>
+    <li><strong>Cart</strong> — add, update quantity, remove, price summary with tax</li>
+    <li><strong>Buy Now</strong> — skip cart, go direct to checkout</li>
+    <li><strong>Wishlist</strong> — toggle heart icon on product, view full wishlist, move to cart</li>
+    <li><strong>Search suggestions</strong> — live AJAX dropdown as you type</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Checkout &amp; Payment</div>
+  <ul class="feature-list">
+    <li><strong>Address picker</strong> — select from saved addresses or enter new</li>
+    <li><strong>Coupon codes</strong> — validate and apply percent or fixed discounts</li>
+    <li><strong>Shipping calculator</strong> — AJAX-computed fee based on address/weight via ShippingService</li>
+    <li><strong>Loyalty redemption</strong> — apply points as discount at checkout</li>
+    <li><strong>Stripe payment</strong> — secure PaymentIntent flow</li>
+    <li><strong>Order confirmation</strong> — receipt email dispatched, points credited</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Orders &amp; Returns</div>
+  <ul class="feature-list">
+    <li><strong>Order history</strong> — list all past orders with status</li>
+    <li><strong>Order detail</strong> — items, shipping address, delivery status, driver info</li>
+    <li><strong>Cancel order</strong> — available while status is pending, auto-restock</li>
+    <li><strong>Print invoice</strong> — A4 PDF receipt via DomPDF</li>
+    <li><strong>Return request</strong> — select items, specify reason, submit for admin review</li>
+    <li><strong>Track return</strong> — view status of submitted returns</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Profile &amp; Account</div>
+  <ul class="feature-list">
+    <li><strong>Profile edit</strong> — name, email, avatar, date of birth</li>
+    <li><strong>Address book</strong> — multiple addresses, set default</li>
+    <li><strong>Password change</strong> — current password verification required</li>
+    <li><strong>Account deletion</strong> — password-confirmed, permanent</li>
+    <li><strong>Loyalty rewards</strong> — points balance, full transaction history</li>
+    <li><strong>In-app notifications</strong> — bell icon with unread count, dropdown list</li>
+  </ul>
+</div>
+</div>
+
+<div class="sec-header">
+  <div class="sec-num">12</div>
+  <div class="sec-icon red">👑</div>
+  <div class="sec-title">Feature Breakdown — <span>Admin</span></div>
+</div>
+<div class="grid-2">
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Dashboard &amp; Analytics</div>
+  <ul class="feature-list">
+    <li><strong>KPI widgets</strong> — today's revenue, total orders, customers, pending returns</li>
+    <li><strong>Revenue charts</strong> — ApexCharts line/bar by day/week/month</li>
+    <li><strong>Top products</strong> — by units sold and revenue</li>
+    <li><strong>Recent orders</strong> — live feed of latest orders</li>
+    <li><strong>Sales reports</strong> — date-range filtered, printable PDF</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Product Management</div>
+  <ul class="feature-list">
+    <li><strong>Full CRUD</strong> — create/edit/delete with image upload, Dropify preview</li>
+    <li><strong>QR codes</strong> — auto-generated per product, stored in <code>storage/qrcodes/</code></li>
+    <li><strong>QR scanner</strong> — webcam scanner page finds product instantly</li>
+    <li><strong>Inline stock update</strong> — adjust quantity from scanner result</li>
+    <li><strong>Rich text description</strong> — TinyMCE editor</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Order &amp; Driver Management</div>
+  <ul class="feature-list">
+    <li><strong>Order list</strong> — filter by status, search, paginate</li>
+    <li><strong>Status progression</strong> — pending → processing → dispatched → delivered</li>
+    <li><strong>Driver assignment</strong> — assign any on-duty driver to an order</li>
+    <li><strong>Email trigger</strong> — status change fires <code>OrderStatusUpdated</code> mail</li>
+    <li><strong>Print order</strong> — DomPDF-rendered packing slip</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Access &amp; Roles</div>
+  <ul class="feature-list">
+    <li><strong>Role CRUD</strong> — create roles (admin, staff, driver, customer)</li>
+    <li><strong>Permission matrix</strong> — assign granular permissions per role</li>
+    <li><strong>PermissionMiddleware</strong> — guards any route by permission slug</li>
+    <li><strong>Customer role promotion</strong> — promote customer to staff or driver</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Reviews &amp; Returns</div>
+  <ul class="feature-list">
+    <li><strong>Review moderation</strong> — approve, reject, or delete customer reviews</li>
+    <li><strong>Admin reply</strong> — post public response to any review</li>
+    <li><strong>Return processing</strong> — approve with refund amount, reject with reason, mark processed</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Mail &amp; Settings</div>
+  <ul class="feature-list">
+    <li><strong>Mail inbox</strong> — read contact form submissions</li>
+    <li><strong>Compose &amp; send</strong> — TinyMCE email composer, send to any customer</li>
+    <li><strong>Mail folders</strong> — inbox, sent, drafts, trash, important, tags</li>
+    <li><strong>Settings</strong> — store name, logo, contact email, SMTP config</li>
+    <li><strong>Slider management</strong> — homepage hero banners CRUD with image upload</li>
+  </ul>
+</div>
+</div>
+
+<div class="sec-header">
+  <div class="sec-num">13</div>
+  <div class="sec-icon teal">🚚</div>
+  <div class="sec-title">Feature Breakdown — <span>Driver</span></div>
+</div>
+<div class="card">
+  <ul class="feature-list">
+    <li><strong>Driver dashboard</strong> — overview of assigned orders, delivery count today, on-duty toggle</li>
+    <li><strong>Duty toggle</strong> — AJAX on/off switch, only on-duty drivers appear in admin assignment dropdown</li>
+    <li><strong>Order queue</strong> — list of dispatched orders assigned to this driver with customer address</li>
+    <li><strong>Order detail</strong> — full delivery info, items, customer phone, map link</li>
+    <li><strong>Complete delivery</strong> — upload proof-of-delivery photo, marks order as <code>delivered</code>, stored in <code>storage/delivery_proofs/</code></li>
+    <li><strong>Separate layout</strong> — <code>driver.blade.php</code> with simplified navigation</li>
+    <li><strong>DriverMiddleware</strong> — all <code>/driver/*</code> routes require driver role</li>
+  </ul>
+</div>
+
+<!-- ============ 14. EMAIL SYSTEM ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">14</div>
+  <div class="sec-icon orange">📧</div>
+  <div class="sec-title">Email &amp; <span>Notification System</span></div>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Mail Classes — <code>app/Mail/</code></div>
+  <table>
+    <thead><tr><th>Class</th><th>Trigger</th><th>Template</th></tr></thead>
+    <tbody>
+      <tr><td><strong>WelcomeEmail</strong></td><td>User completes registration</td><td><code>resources/views/emails/welcome.blade.php</code></td></tr>
+      <tr><td><strong>RegistrationOtp</strong></td><td>User registers — OTP for email verification</td><td><code>resources/views/emails/otp.blade.php</code></td></tr>
+      <tr><td><strong>OrderReceipt</strong></td><td>Order placed successfully</td><td><code>resources/views/emails/order_receipt.blade.php</code></td></tr>
+      <tr><td><strong>OrderStatusUpdated</strong></td><td>Admin updates order status</td><td><code>resources/views/emails/order_status.blade.php</code></td></tr>
+      <tr><td><strong>AdminCustomMail</strong></td><td>Admin composes mail from MailController</td><td>TinyMCE HTML body from compose form</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>In-App Notifications — <code>AppNotification</code> Model</div>
+  <p>Notifications stored in <code>notifications</code> table. Bell icon in nav shows unread count via AJAX polling <code>GET /notifications/count</code>. Dropdown loads latest 5 via <code>GET /notifications/latest</code>. Full list at <code>GET /notifications</code>.</p>
+  <p><strong>Triggered by:</strong> order status changes, return request updates, review approvals, admin messages.</p>
+  <p><strong>Actions:</strong> mark single as read, mark all as read. Alpine.js handles UI state without page reload.</p>
+</div>
+
+<!-- ============ 15. AUTH & SECURITY ============ -->
+<div class="sec-header">
+  <div class="sec-num">15</div>
+  <div class="sec-icon red">🔐</div>
+  <div class="sec-title">Authentication &amp; <span>Security</span></div>
+</div>
+<div class="grid-2">
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Authentication Flow</div>
+  <ul class="feature-list">
+    <li><strong>Registration</strong> — email + password, OTP email sent via <code>RegistrationOtp</code></li>
+    <li><strong>OTP verification</strong> — 6-digit code, expiry enforced, view: <code>auth/verify-otp.blade.php</code></li>
+    <li><strong>Login</strong> — rate-limited (5 attempts), remember-me cookie</li>
+    <li><strong>Email verification</strong> — signed URL, resend throttled</li>
+    <li><strong>Password reset</strong> — token-based, 60-min expiry</li>
+    <li><strong>Confirm password</strong> — re-auth gate before account deletion</li>
+  </ul>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Middleware Stack</div>
+  <ul class="feature-list">
+    <li><strong>AdminMiddleware</strong> — checks <code>user->isAdmin() || isStaff()</code>, redirects otherwise</li>
+    <li><strong>DriverMiddleware</strong> — checks <code>user->isDriver()</code>, guards all <code>/driver/*</code> routes</li>
+    <li><strong>PermissionMiddleware</strong> — checks specific permission slug on role pivot table</li>
+    <li><strong>SecurityHeadersMiddleware</strong> — adds CSP, X-Frame-Options, X-Content-Type-Options, HSTS headers</li>
+  </ul>
+</div>
+</div>
+
+<!-- ============ 16. PAYMENTS ============ -->
+<div class="sec-header">
+  <div class="sec-num">16</div>
+  <div class="sec-icon green">💳</div>
+  <div class="sec-title">Payments &amp; <span>Shipping</span></div>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Stripe Integration</div>
+  <p><strong>Library:</strong> <code>stripe/stripe-php</code> v19.4 · <strong>Config:</strong> <code>config/services.php</code> → <code>STRIPE_KEY</code> / <code>STRIPE_SECRET</code> in <code>.env</code></p>
+  <p><strong>Flow:</strong> <code>CheckoutController@process</code> creates a <code>PaymentIntent</code> with order total. On success, order record is created, stock decremented, loyalty points credited, <code>OrderReceipt</code> mail dispatched. <code>payment_intent_id</code> stored on order for refund processing.</p>
+  <p><strong>Refunds:</strong> Triggered when admin approves a return request — Stripe refund API called with stored <code>payment_intent_id</code>.</p>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>ShippingService — <code>app/Services/ShippingService.php</code></div>
+  <p>Injected into <code>CheckoutController</code> via constructor. Calculates shipping fee based on delivery address region, cart weight/volume, and configurable shipping tiers stored in <code>settings</code> table. Called both on checkout page load and via AJAX when address changes.</p>
+</div>
+
+<!-- ============ 17. REWARDS ============ -->
+<div class="sec-header">
+  <div class="sec-num">17</div>
+  <div class="sec-icon orange">⭐</div>
+  <div class="sec-title">Rewards &amp; <span>Loyalty System</span></div>
+</div>
+<div class="card">
+  <ul class="feature-list">
+    <li><strong>Points earned</strong> — configurable points per £1 spent, credited on order placement</li>
+    <li><strong>Points ledger</strong> — every earn/redeem logged in <code>reward_point_transactions</code> table with order reference</li>
+    <li><strong>Points balance</strong> — stored on <code>users.loyalty_points</code>, updated atomically</li>
+    <li><strong>Redemption</strong> — customer applies points at checkout, converted to discount (configurable rate)</li>
+    <li><strong>Rewards page</strong> — <code>ProfileController@rewards</code> shows balance and full transaction history</li>
+    <li><strong>Migration:</strong> <code>add_loyalty_fields_to_users_and_orders_table.php</code> — adds <code>loyalty_points</code>, <code>points_earned</code>, <code>points_redeemed</code> columns</li>
+  </ul>
+</div>
+
+<!-- ============ 18. TESTING ============ -->
+<div class="page-break"></div>
+<div class="sec-header">
+  <div class="sec-num">18</div>
+  <div class="sec-icon blue">🧪</div>
+  <div class="sec-title"><span>Testing</span></div>
+</div>
+<div class="card">
+  <table>
+    <thead><tr><th>Test File</th><th>Type</th><th>Coverage</th></tr></thead>
+    <tbody>
+      <tr><td><code>Auth/AuthenticationTest.php</code></td><td>Feature</td><td>Login form renders, valid credentials log in, invalid credentials rejected</td></tr>
+      <tr><td><code>Auth/EmailVerificationTest.php</code></td><td>Feature</td><td>Unverified users redirected, verification link works</td></tr>
+      <tr><td><code>Auth/PasswordConfirmationTest.php</code></td><td>Feature</td><td>Confirm password screen, correct/wrong password handling</td></tr>
+      <tr><td><code>Auth/PasswordResetTest.php</code></td><td>Feature</td><td>Reset link email sent, valid/expired token handling</td></tr>
+      <tr><td><code>Auth/PasswordUpdateTest.php</code></td><td>Feature</td><td>Password change with correct current password</td></tr>
+      <tr><td><code>Auth/RegistrationTest.php</code></td><td>Feature</td><td>Registration form renders, user created, redirect</td></tr>
+      <tr><td><code>ProfileTest.php</code></td><td>Feature</td><td>Profile page renders, update persists, deletion flow</td></tr>
+      <tr><td><code>ShippingCalculationTest.php</code></td><td>Feature</td><td>ShippingService fee calculation for various address/weight combinations</td></tr>
+      <tr><td><code>ExampleTest.php</code> (Feature)</td><td>Feature</td><td>Homepage returns 200</td></tr>
+      <tr><td><code>ExampleTest.php</code> (Unit)</td><td>Unit</td><td>Basic unit test scaffolding</td></tr>
+    </tbody>
+  </table>
+</div>
+<pre>php artisan test              # run all 11 tests
+php artisan test --filter Auth  # run auth suite only
+php artisan test --coverage     # with code coverage report</pre>
+
+<!-- ============ 19. SETUP ============ -->
+<div class="sec-header">
+  <div class="sec-num">19</div>
+  <div class="sec-icon green">🚀</div>
+  <div class="sec-title">Setup &amp; <span>Deployment</span></div>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Local Development Setup</div>
+  <pre>git clone &lt;repo&gt; "Retail shop"
+cd "Retail shop"
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+npm run dev</pre>
+  <p style="margin-top:12px">Or run everything at once (server + queue + logs + vite):</p>
+  <pre>composer run dev</pre>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Environment Variables (<code>.env</code>)</div>
+  <table>
+    <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>APP_KEY</code></td><td>Laravel encryption key (auto-generated)</td></tr>
+      <tr><td><code>APP_ENV</code></td><td><code>local</code> | <code>production</code></td></tr>
+      <tr><td><code>DB_CONNECTION</code></td><td><code>sqlite</code> (dev) or <code>mysql</code> (prod)</td></tr>
+      <tr><td><code>DB_DATABASE</code></td><td>Path to SQLite file or MySQL DB name</td></tr>
+      <tr><td><code>STRIPE_KEY</code></td><td>Stripe publishable key</td></tr>
+      <tr><td><code>STRIPE_SECRET</code></td><td>Stripe secret key</td></tr>
+      <tr><td><code>MAIL_MAILER</code></td><td><code>smtp</code> | <code>log</code> | <code>array</code></td></tr>
+      <tr><td><code>MAIL_HOST</code></td><td>SMTP server hostname</td></tr>
+      <tr><td><code>MAIL_USERNAME / MAIL_PASSWORD</code></td><td>SMTP credentials</td></tr>
+      <tr><td><code>MAIL_FROM_ADDRESS</code></td><td>Sender email address</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Production Build</div>
+  <pre>npm run build              # compile and hash all assets
+php artisan config:cache   # cache config
+php artisan route:cache    # cache routes
+php artisan view:cache     # cache compiled views
+php artisan migrate        # run any pending migrations</pre>
+</div>
+<div class="card">
+  <div class="card-title"><div class="dot"></div>Artisan Commands Reference</div>
+  <table>
+    <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>php artisan migrate</code></td><td>Run all database migrations</td></tr>
+      <tr><td><code>php artisan migrate:fresh --seed</code></td><td>Drop all tables, re-migrate, seed roles/permissions</td></tr>
+      <tr><td><code>php artisan db:seed --class=RolePermissionSeeder</code></td><td>Seed roles and permissions only</td></tr>
+      <tr><td><code>php artisan storage:link</code></td><td>Create symlink public/storage → storage/app/public</td></tr>
+      <tr><td><code>php artisan queue:work</code></td><td>Process queued mail jobs</td></tr>
+      <tr><td><code>php artisan tinker</code></td><td>Interactive REPL for debugging</td></tr>
+      <tr><td><code>php artisan test:phases</code></td><td>Custom command: TestPhases (development test runner)</td></tr>
+      <tr><td><code>php artisan pail</code></td><td>Real-time log tailing in terminal</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<hr class="divider">
+<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px 0 40px;">
+  <strong>Premier Shop</strong> — Full Project Documentation &nbsp;·&nbsp; Generated 2026-05-23 &nbsp;·&nbsp; Laravel 12 / PHP 8.2 / Vite 7
+  <br>
+  <span style="font-size:11px; margin-top:6px; display:block;">38 Controllers · 20 Models · 82 Views · 31 Migrations · 1,809 Total Files</span>
+</div>
+
+</div><!-- /wrapper -->
+</body>
+</html>

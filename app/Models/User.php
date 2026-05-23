@@ -81,14 +81,20 @@ class User extends Authenticatable
         return $this->role->hasPermission($permission);
     }
 
-    public function getAgeAttribute(): int
+    public function getAgeAttribute(): ?int
     {
+        if (! $this->dob) {
+            return null;
+        }
+
         return Carbon::parse($this->dob)->age;
     }
 
     public function isUnder16(): bool
     {
-        return $this->age < 16;
+        $age = $this->age;
+
+        return $age !== null && $age < 16;
     }
 
     public function cartItems()
