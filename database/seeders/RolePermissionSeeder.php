@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * RolePermissionSeeder — Creates roles and assigns permission sets.
+ * Roles: admin (all), manager (products/orders/coupons/sliders/reports),
+ *        accountant (view-only + orders.update), driver (orders.view), customer (none).
+ * Permissions grouped by module for display in the role editor UI.
+ * Uses firstOrCreate so re-running is safe (idempotent).
+ */
+
 namespace Database\Seeders;
 
 use App\Models\Permission;

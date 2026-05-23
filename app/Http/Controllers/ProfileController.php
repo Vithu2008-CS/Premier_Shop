@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * ProfileController — Customer profile management.
+ * edit(): profile page with order counts, recent orders, wishlist count.
+ * editAdmin(): admin profile page (separate view, same update logic).
+ * update(): uses ProfileUpdateRequest; nullifies email_verified_at on email change.
+ * destroy(): requires current_password confirmation, soft-deletes account.
+ * rewards(): paginated reward point transaction history with earned/saved totals.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;

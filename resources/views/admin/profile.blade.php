@@ -1,3 +1,10 @@
+{{--
+    admin/profile.blade.php — Admin account profile editor
+    ========================================================
+    Update name, email, phone, avatar upload.
+    Separate password change form with current password verification.
+    POST → admin.profile.update → AdminProfileController::update()
+--}}
 @extends('layouts.admin_noble')
 
 @section('title', 'Admin Profile')

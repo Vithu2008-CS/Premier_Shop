@@ -1,3 +1,13 @@
+{{--
+    returns/create.blade.php — Return request creation form
+    =========================================================
+    Shown only for delivered orders with no existing return request.
+    Checkboxes per order line item with quantity selector.
+    Reason dropdown, customer notes textarea, optional photo upload (max 5MB).
+    POST → returns.store → ReturnRequestController::store()
+    Validation errors displayed inline.
+    Variable: $order (with items.product loaded)
+--}}
 @extends('layouts.app')
 
 @section('title', 'Request Return - Order ' . $order->order_number)

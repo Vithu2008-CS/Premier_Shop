@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create addresses table (user_id FK, label, address_line, city, postcode, phone, is_default). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

@@ -1,3 +1,14 @@
+{{--
+    admin/dashboard.blade.php — Admin main dashboard
+    ==================================================
+    Stats cards: total revenue, total orders, total customers, total products.
+    Revenue chart (last 7 days bar chart — Chart.js).
+    Recent orders table (5 most recent).
+    Low stock alert list (products with stock < 10).
+    Pending return requests list.
+    Variables: $stats, $revenueData, $recentOrders, $lowStockProducts, $pendingReturns
+    Injected by DashboardController::index()
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Dashboard')
 

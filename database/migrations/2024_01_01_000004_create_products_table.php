@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create products table with pricing, stock, images JSON, barcode, age restriction. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

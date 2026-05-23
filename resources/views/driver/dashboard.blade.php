@@ -1,3 +1,11 @@
+{{--
+    driver/dashboard.blade.php — Driver dashboard
+    ===============================================
+    Shows on/off duty toggle, list of orders assigned to this driver
+    (status: processing or shipped), duty status badge.
+    Toggle → POST driver.toggleDuty → updates is_on_duty on the User model.
+    Variable: $orders — orders assigned to auth driver, not yet delivered
+--}}
 @extends('layouts.driver')
 @section('title', 'Driver Dashboard — Premier Shop')
 

@@ -1,3 +1,20 @@
+{{--
+    layouts/admin_noble.blade.php — Admin panel layout (Noble UI theme)
+    =====================================================================
+    Used by all admin routes (dashboard, products, orders, customers, reports, mail, etc.)
+
+    Provides:
+     - Noble UI vendor CSS/JS (admin_assets/)
+     - Dark/light theme pre-render without FOUC — inlines correct CSS path before body paint
+     - @include noble_sidebar, noble_navbar, noble_footer partials
+     - Flash message alerts for session('success') and session('error')
+     - @yield('content') — admin page content slot
+     - Feather icons init, theme switcher, admin notification bell fetch via jQuery
+     - @stack('plugin-styles'), @stack('styles'), @stack('plugin-scripts'), @stack('scripts')
+
+    AppServiceProvider injects $notificationData (pendingOrdersCount, recentOrders,
+    recentCustomers) into this layout via View::composer.
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,3 +1,25 @@
+{{--
+    home.blade.php — Homepage
+    ==========================
+    Sections (in order):
+     1. Parallax Hero — full-screen carousel from Promotion sliders; fallback static hero if none
+     2. Category Showcase — horizontal scroll strip of all categories ($globalCategories)
+     3. Hot Offers — products with active bulk-buy offers ($offerProducts) + countdown timer
+     4. Most Popular — top-rated products ($popularProducts)
+     5. New Arrivals — recently added products ($newProducts)
+     6. Discover More — random selection ($randomProducts)
+     7. Recently Viewed — auth user's last 10 viewed products ($recentlyViewed)
+     8. Milestones — animated counters (happy customers, orders, products, support)
+     9. Trust Bar — fast delivery, secure checkout, easy returns, 24/7 support badges
+    10. Testimonials — Bootstrap carousel with 3 static review cards
+
+    Scripts: parallax scroll, IntersectionObserver scroll-reveal, category slider arrows,
+    hero carousel init, countdown timer, scroll indicator hide-on-scroll.
+
+    Variables injected by HomeController::index():
+      $sliders, $offerProducts, $popularProducts, $newProducts, $randomProducts,
+      $recentlyViewed, $globalCategories (via View::composer)
+--}}
 @extends('layouts.app')
 @section('title', 'Premier Shop — Your One-Stop Shop for Quality Products')
 

@@ -1,3 +1,13 @@
+{{--
+    profile/edit.blade.php — Customer profile settings
+    ====================================================
+    Tabbed layout:
+     - Profile info: name, email, DOB, phone, address, city (PATCH profile.update)
+     - Password: current + new + confirm (PUT password.update)
+     - Danger zone: delete account (DELETE profile.destroy)
+    Includes partials: update-profile-information-form, update-password-form, delete-user-form
+    Variable: $user (auth user)
+--}}
 @extends('layouts.app')
 
 @section('title', 'My Account - Premier Shop')

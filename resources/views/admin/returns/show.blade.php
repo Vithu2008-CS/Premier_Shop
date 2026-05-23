@@ -1,3 +1,10 @@
+{{--
+    admin/returns/show.blade.php — Return request detail view
+    ===========================================================
+    Shows return items with quantities, reason, photos. Approve/reject action buttons.
+    Approve → restores stock, triggers refund flow. Reject → closes request.
+    Variable: $return (ReturnRequest with items.orderItem.product, order.user)
+--}}
 @extends('layouts.admin_noble')
 
 @section('content')

@@ -1,3 +1,11 @@
+{{--
+    emails/order-receipt.blade.php — Order confirmation email receipt
+    ==================================================================
+    Sent by OrderReceipt mailable after checkout transaction commits.
+    Shows order number, items table, totals (subtotal/discount/shipping/grand total),
+    shipping address, and link to track order.
+    Variable: $order (Order with items.product, user)
+--}}
 @extends('emails.layouts.master')
 @section('title', 'Order Receipt')
 @section('header_subtitle', 'Thank you for your order!')

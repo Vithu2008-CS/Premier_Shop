@@ -1,3 +1,11 @@
+{{--
+    auth/verify-otp.blade.php — OTP email verification
+    ====================================================
+    6-digit code entry form after registration.
+    POST → register.verify.submit → RegisteredUserController::verify()
+    Resend OTP link → POST register.resendOtp (throttle:login)
+    On success: account verified, welcome email sent, user logged in.
+--}}
 @extends('layouts.app')
 @section('title', 'Verify Email - Premier Shop')
 

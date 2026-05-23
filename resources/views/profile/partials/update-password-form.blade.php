@@ -1,3 +1,10 @@
+{{--
+    profile/partials/update-password-form.blade.php — Password change form
+    =========================================================================
+    Fields: current_password, password, password_confirmation.
+    Password policy enforced via Password::defaults() (min 12, uncompromised).
+    PUT → password.update → PasswordController::update()
+--}}
 <section>
     <header class="mb-4">
         <h4 class="fw-bold mb-1">

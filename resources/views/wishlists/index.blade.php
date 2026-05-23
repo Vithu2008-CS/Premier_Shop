@@ -1,3 +1,11 @@
+{{--
+    wishlists/index.blade.php — Customer wishlist
+    ===============================================
+    Grid of wishlisted products using the product_card partial.
+    Remove uses the wishlist toggle AJAX handler in layouts/app.blade.php
+    (removes the card from DOM without reload when on the wishlist page).
+    Variable: $wishlistItems — UserItem rows (type='wishlist') with product loaded
+--}}
 @extends('layouts.app')
 @section('title', 'My Wishlist — Premier Shop')
 

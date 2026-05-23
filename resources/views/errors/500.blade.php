@@ -1,3 +1,9 @@
+{{--
+    errors/500.blade.php — 500 Internal Server Error page
+    =======================================================
+    Styled error page using storefront layout. Shows generic error message
+    and back-to-home button. Does not expose stack traces.
+--}}
 @extends('layouts.app')
 @section('title', '500 - Server Error — Premier Shop')
 

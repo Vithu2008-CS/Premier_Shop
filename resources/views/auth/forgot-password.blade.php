@@ -1,3 +1,9 @@
+{{--
+    auth/forgot-password.blade.php — Password reset request
+    =========================================================
+    Email input form. POST → password.email → PasswordResetLinkController::store()
+    Sends a password reset link to the provided email address.
+--}}
 @extends('layouts.app')
 @section('title', 'Forgot Password — Premier Shop')
 

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * EmailVerificationPromptController — Show "please verify your email" page.
+ * Already-verified users are redirected to dashboard immediately.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

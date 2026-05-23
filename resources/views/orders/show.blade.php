@@ -1,3 +1,12 @@
+{{--
+    orders/show.blade.php — Order detail page (customer view)
+    ===========================================================
+    Shows: order status timeline, shipping address, line items with prices,
+    subtotal / discount / shipping / total breakdown, QR code for the order,
+    cancel button (pending only), return request button (delivered only),
+    link to existing return request if already submitted.
+    Variable: $order (with items.product, user, returnRequest loaded)
+--}}
 @extends('layouts.app')
 @section('title', 'Order ' . $order->order_number . ' - Premier Shop')
 

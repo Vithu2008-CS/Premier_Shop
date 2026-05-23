@@ -1,3 +1,10 @@
+{{--
+    admin/sliders/create.blade.php — Create slider/banner form
+    ============================================================
+    Fields: title, subtitle, link_url, type (slider/banner), image upload,
+            order_priority, is_active, start_date, end_date.
+    POST → admin.sliders.store → PromotionController::store()
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Add Slider')
 

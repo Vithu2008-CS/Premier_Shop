@@ -1,3 +1,12 @@
+{{--
+    contact.blade.php — Contact page
+    ==================================
+    Left column: contact form (name, email, phone, subject dropdown, message)
+      POST → route('contact.send') → ContactController::send()
+      Submission stored as ContactMessage in inbox folder.
+    Right column: address, phone, email info cards + Google Maps embed.
+    Flash validation errors displayed inline via @error.
+--}}
 @extends('layouts.app')
 @section('title', 'Contact Us — Premier Shop')
 

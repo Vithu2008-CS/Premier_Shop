@@ -1,3 +1,10 @@
+{{--
+    admin/roles/edit.blade.php — Edit role form
+    =============================================
+    Same fields as create; pre-checked permissions based on $role->permissions.
+    PUT → admin.roles.update → RoleController::update()
+    Variables: $role (with permissions), $permissions (all, grouped)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Edit Role: ' . $role->display_name)
 

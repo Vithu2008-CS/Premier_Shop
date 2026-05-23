@@ -1,3 +1,10 @@
+{{--
+    admin/coupons/index.blade.php — Coupon management list
+    =======================================================
+    Table of all coupons: code, type (percentage/fixed), value, usage stats, expiry, status.
+    Toggle active/inactive inline. Links to create and edit.
+    Variable: $coupons (paginated)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Coupons')
 

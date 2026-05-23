@@ -1,3 +1,9 @@
+{{--
+    admin/drivers/create.blade.php — Create driver account form
+    ============================================================
+    Fields: name, email, phone, password. Creates User with 'driver' role.
+    POST → admin.drivers.store → DriverController::store()
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Add New Driver')
 

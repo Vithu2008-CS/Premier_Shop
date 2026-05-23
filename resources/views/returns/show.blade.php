@@ -1,3 +1,10 @@
+{{--
+    returns/show.blade.php — Customer return request status page
+    =============================================================
+    Shows: return status badge, reason, customer note, items being returned,
+    admin note (when available), refund amount (when refunded).
+    Variable: $return (with order, items.orderItem.product loaded)
+--}}
 @extends('layouts.app')
 
 @section('title', 'Return Details - #' . $return->id)

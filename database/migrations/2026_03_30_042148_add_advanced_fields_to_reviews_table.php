@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: add photos JSON, admin_reply, admin_replied_at to reviews table. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

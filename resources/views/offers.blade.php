@@ -1,3 +1,11 @@
+{{--
+    offers.blade.php — Bulk-buy offers listing
+    ===========================================
+    Displays all products with active offers ($offerProducts, paginated).
+    Uses the shared product_card partial.
+    Empty state shown when no offers are active.
+    Variable: $offerProducts — paginated collection from HomeController::offers()
+--}}
 @extends('layouts.app')
 @section('title', 'Offers — Premier Shop')
 

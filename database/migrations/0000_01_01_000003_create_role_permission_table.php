@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create role_permission pivot table (many-to-many). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

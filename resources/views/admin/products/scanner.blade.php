@@ -1,3 +1,12 @@
+{{--
+    admin/products/scanner.blade.php — Browser-based QR / barcode scanner
+    ========================================================================
+    Uses Html5Qrcode v2.3.8 to access the device camera.
+    "Start Camera" button triggers getUserMedia (environment camera first, user fallback).
+    On successful scan: POST admin.products.findByQr → looks up product → navigates to edit.
+    Manual barcode/code input fallback field.
+    Camera requires: Permissions-Policy: camera=(self) header (set in SecurityHeadersMiddleware).
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'QR Scanner')
 

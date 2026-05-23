@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * DriverController — Driver-facing delivery management.
+ * dashboard(): active + completed orders for auth driver.
+ * toggleDuty(): flips is_on_duty flag.
+ * completeDelivery(): stores delivery proof image, marks order delivered,
+ *   fires AppNotification + sends status email + logs to sent folder.
+ * All actions enforce driver_id === auth()->id() ownership check.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\Order;

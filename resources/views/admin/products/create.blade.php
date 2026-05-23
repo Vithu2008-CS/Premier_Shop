@@ -1,3 +1,13 @@
+{{--
+    admin/products/create.blade.php — Create new product form
+    ===========================================================
+    Fields: name (auto-slug), description (SimpleMDE), category, price, wholesale price,
+    stock, product type, age restriction checkbox, multiple image upload (preview),
+    barcode, active toggle, bulk-buy offer fields (min qty, discount %, active toggle).
+    POST → admin.products.store → AdminProductController::store()
+    QR code is auto-generated on store.
+    Variable: $categories (for dropdown)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Add Product')
 

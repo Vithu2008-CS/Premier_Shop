@@ -1,3 +1,10 @@
+{{--
+    partials/product_card.blade.php — Reusable storefront product card
+    ====================================================================
+    Displays product image, name, price (with offer_price if applicable), rating,
+    add-to-cart form, and wishlist toggle (auth users only). Age restriction badge.
+    Variable: $product (Product model), $delay (optional CSS animation delay index)
+--}}
 <div class="col-6 col-md-4 col-xl-3 fade-up delay-{{ $delay ?? 1 }}">
     <div class="product-card glass-premium-card h-100 transition-float">
         {{-- Wishlist Toggle --}}

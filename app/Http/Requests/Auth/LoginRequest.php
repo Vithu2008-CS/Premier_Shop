@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * LoginRequest — Form request for email/password login.
+ * authenticate(): attempts Auth::attempt(), rate-limits via throttleKey (email|ip).
+ * Max 5 attempts before Lockout event fires and ValidationException thrown.
+ * throttleKey uses Str::transliterate for unicode email safety.
+ */
+
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Auth\Events\Lockout;

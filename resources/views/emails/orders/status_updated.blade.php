@@ -1,3 +1,10 @@
+{{--
+    emails/orders/status_updated.blade.php — Order status change notification email
+    ==================================================================================
+    Sent by OrderStatusUpdated mailable when admin updates order status.
+    Shows new status badge, timeline of status changes, tracking link.
+    Variable: $order (Order with user)
+--}}
 @extends('emails.layouts.master')
 @section('title', 'Order Status Update')
 @section('header_subtitle', 'Update on Order #' . $order->order_number)

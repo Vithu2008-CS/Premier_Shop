@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create return_requests table (order_id FK, reason, status, photos JSON). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

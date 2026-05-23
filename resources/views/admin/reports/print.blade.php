@@ -1,3 +1,10 @@
+{{--
+    admin/reports/print.blade.php — Printable sales report (standalone HTML)
+    ==========================================================================
+    No layout wrapper. Browser print triggered on load via window.print().
+    Summary table + product breakdown for date range.
+    Variables: $reportData, $from, $to
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

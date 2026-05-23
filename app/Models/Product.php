@@ -6,6 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * Represents a product in the shop catalogue.
+ *
+ * Offer system: a product can have a bulk-buy discount defined by
+ * offer_min_qty (minimum quantity to qualify) and offer_discount_percent.
+ * The computed offer_price and has_offer accessors are appended to every
+ * serialisation so the frontend never needs to recalculate them.
+ *
+ * Images are stored as a JSON array of public paths; first_image falls
+ * back to a placeholder when the array is empty.
+ */
 class Product extends Model
 {
     use HasFactory;
@@ -17,21 +28,26 @@ class Product extends Model
         'offer_min_qty', 'offer_discount_percent', 'offer_active',
     ];
 
+    // These virtual attributes are included in toArray() / toJson()
     protected $appends = ['first_image', 'has_offer', 'offer_price'];
 
     protected function casts(): array
     {
         return [
-            'images' => 'array',
-            'price' => 'decimal:2',
-            'wholesale_price' => 'decimal:2',
-            'is_age_restricted' => 'boolean',
-            'is_active' => 'boolean',
-            'offer_active' => 'boolean',
+            'images'                 => 'array',
+            'price'                  => 'decimal:2',
+            'wholesale_price'        => 'decimal:2',
+            'is_age_restricted'      => 'boolean',
+            'is_active'              => 'boolean',
+            'offer_active'           => 'boolean',
             'offer_discount_percent' => 'decimal:2',
         ];
     }
 
+    /**
+     * Auto-generate a slug from the product name on creation if not explicitly provided.
+     * Using boot() rather than an observer keeps the logic close to the model.
+     */
     protected static function boot()
     {
         parent::boot();
@@ -40,11 +56,14 @@ class Product extends Model
         });
     }
 
+    // ── Relationships ────────────────────────────────────────────────────────
+
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
+    /** All OrderItem rows that include this product (used for sales reporting). */
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
@@ -55,26 +74,27 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function getAverageRatingAttribute()
-    {
-        return $this->reviews()->approved()->avg('rating') ?? 0;
-    }
-
-    public function getReviewsCountAttribute()
-    {
-        return $this->reviews()->approved()->count();
-    }
-
+    /** UserItem rows where type = 'wishlist' (used for wishlist counts in reports). */
     public function wishlistedBy()
     {
         return $this->hasMany(UserItem::class)->wishlist();
     }
 
-    public function isInStock(): bool
+    // ── Accessors ────────────────────────────────────────────────────────────
+
+    /** Average star rating across approved reviews only. Returns 0 when no reviews exist. */
+    public function getAverageRatingAttribute(): float
     {
-        return $this->stock > 0;
+        return (float) ($this->reviews()->approved()->avg('rating') ?? 0);
     }
 
+    /** Count of approved reviews displayed on the product page. */
+    public function getReviewsCountAttribute(): int
+    {
+        return $this->reviews()->approved()->count();
+    }
+
+    /** Returns the first uploaded image path, or a placeholder fallback. */
     public function getFirstImageAttribute(): string
     {
         $images = $this->images;
@@ -82,11 +102,18 @@ class Product extends Model
         return ! empty($images) ? $images[0] : '/images/placeholder-product.png';
     }
 
+    /** True when all three offer fields are set and offer is currently active. */
     public function getHasOfferAttribute(): bool
     {
-        return $this->offer_active && $this->offer_min_qty && $this->offer_discount_percent;
+        return $this->offer_active
+            && $this->offer_min_qty
+            && $this->offer_discount_percent;
     }
 
+    /**
+     * The discounted unit price when the offer is active.
+     * Returns null when no offer applies so blade can test `@if($product->offer_price)`.
+     */
     public function getOfferPriceAttribute(): ?float
     {
         if (! $this->has_offer) {
@@ -96,6 +123,15 @@ class Product extends Model
         return round($this->price * (1 - $this->offer_discount_percent / 100), 2);
     }
 
+    /** Returns true when stock is greater than zero. */
+    public function isInStock(): bool
+    {
+        return $this->stock > 0;
+    }
+
+    // ── Scopes ───────────────────────────────────────────────────────────────
+
+    /** Filter to products that have a configured active bulk-buy offer. */
     public function scopeWithActiveOffers($query)
     {
         return $query->where('offer_active', true)

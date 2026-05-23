@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * PasswordUpdateTest — Feature tests for in-profile password change.
+ * Covers: valid current password updates and hashes new password,
+ *         wrong current password returns updatePassword bag error.
+ * withoutMiddleware() used to bypass password policy uncompromised check in tests.
+ */
+
 namespace Tests\Feature\Auth;
 
 use App\Models\User;

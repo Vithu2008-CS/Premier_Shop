@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * AuthenticatedSessionController — Login / logout flow.
+ * store(): delegates credential check to LoginRequest::authenticate() (rate-limited).
+ * Session regenerated on login to prevent session fixation.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

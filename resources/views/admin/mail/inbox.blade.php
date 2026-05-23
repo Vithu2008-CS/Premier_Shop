@@ -1,3 +1,11 @@
+{{--
+    admin/mail/inbox.blade.php — Mail centre folder view (inbox/sent/trash/starred)
+    =================================================================================
+    Reused for all folders; $pageTitle and $folder variable control active state.
+    Lists ContactMessage records filtered by folder. Search, star toggle, bulk delete.
+    Sidebar partial: admin/mail/partials/sidebar.blade.php
+    Variables: $messages (paginated), $folder, $pageTitle
+--}}
 @extends('layouts.admin_noble')
 
 @section('title', $pageTitle ?? 'Inbox')

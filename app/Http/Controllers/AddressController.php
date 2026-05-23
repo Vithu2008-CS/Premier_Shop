@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * AddressController — Customer address book management.
+ * CRUD for Address records scoped to auth user.
+ * setDefault() clears all other defaults before setting the chosen one.
+ * First address saved is auto-promoted to default even without the checkbox.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\Address;
