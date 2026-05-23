@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: change delivery_proof column to LONGTEXT to support base64-encoded image strings. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

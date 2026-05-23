@@ -1,3 +1,10 @@
+{{--
+    admin/coupons/edit.blade.php — Edit coupon form
+    =================================================
+    Same fields as create + usage count display (read-only).
+    PUT → admin.coupons.update → CouponController::update()
+    Variable: $coupon
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Edit Coupon')
 

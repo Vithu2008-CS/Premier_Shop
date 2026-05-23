@@ -9,23 +9,27 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Notifies the customer when their order status changes.
+ *
+ * Sent by Admin\OrderController when an admin updates the order status
+ * (processing, shipped, delivered, cancelled). The subject line includes
+ * the new status so it's immediately visible in the customer's inbox.
+ *
+ * The order is passed with its current status already updated so the
+ * email template reflects the new state.
+ */
 class OrderStatusUpdated extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $order;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct(Order $order)
     {
         $this->order = $order;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -33,9 +37,6 @@ class OrderStatusUpdated extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -43,11 +44,6 @@ class OrderStatusUpdated extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

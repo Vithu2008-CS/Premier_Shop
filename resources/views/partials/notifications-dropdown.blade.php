@@ -1,3 +1,10 @@
+{{--
+    partials/notifications-dropdown.blade.php — Notification bell dropdown content
+    ==================================================================================
+    Rendered inside admin navbar. Lists recent AppNotification records for auth user.
+    Unread items shown with highlight. "Mark all read" and "View all" links.
+    $notifications injected by View::composer in AppServiceProvider (notificationData).
+--}}
 @if($notifications->isEmpty())
     <div class="px-3 py-4 text-center text-muted">
         <i class="bi bi-bell-slash fs-3 d-block mb-2"></i>

@@ -1,3 +1,10 @@
+{{--
+    admin/coupons/create.blade.php — Create coupon form
+    =====================================================
+    Fields: code, type (percentage/fixed), value, min_order_amount, max_uses,
+            expires_at, is_active. JS toggles value label based on type selection.
+    POST → admin.coupons.store → CouponController::store()
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Create Coupon')
 

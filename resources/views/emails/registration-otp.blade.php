@@ -1,3 +1,10 @@
+{{--
+    emails/registration-otp.blade.php — OTP email verification code
+    =================================================================
+    Sent by RegistrationOtp mailable during registration flow.
+    OTP generated in AuthController, stored in session, displayed here.
+    Variable: $otp (string, 6-digit code)
+--}}
 @extends('emails.layouts.master')
 @section('title', 'Verify Your Email')
 @section('header_style', 'background:#6C5CE7;')

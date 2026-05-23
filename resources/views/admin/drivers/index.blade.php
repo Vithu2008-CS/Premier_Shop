@@ -1,3 +1,10 @@
+{{--
+    admin/drivers/index.blade.php — Driver monitoring dashboard
+    ============================================================
+    Table of all driver accounts: name, email, assigned active orders count, status.
+    Links to create new driver and edit existing. DriverController resource.
+    Variable: $drivers (with assigned_orders_count)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Driver Monitoring')
 

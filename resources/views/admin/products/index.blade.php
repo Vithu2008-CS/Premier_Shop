@@ -1,3 +1,13 @@
+{{--
+    admin/products/index.blade.php — Product list management
+    =========================================================
+    Searchable, filterable table of all products.
+    Columns: image, name, category, price, stock (colour-coded), status, actions.
+    Actions: edit, toggle active, delete, regenerate QR.
+    Quick stock update inline input.
+    Link to QR scanner page.
+    Variable: $products (paginated with category)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Products')
 

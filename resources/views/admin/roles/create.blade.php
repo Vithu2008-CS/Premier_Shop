@@ -1,3 +1,11 @@
+{{--
+    admin/roles/create.blade.php — Create role form
+    =================================================
+    Fields: name (slug), display_name, is_staff toggle, permissions checkboxes
+    grouped by permission.group column.
+    POST → admin.roles.store → RoleController::store()
+    Variable: $permissions (grouped)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Create Role')
 

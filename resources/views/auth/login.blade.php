@@ -1,3 +1,11 @@
+{{--
+    auth/login.blade.php — Login form
+    ===================================
+    Uses auth_modern split layout.
+    Left: email + password fields, remember me, forgot password link.
+    POST → AuthenticatedSessionController::store() (throttle:login)
+    Right: illustration panel.
+--}}
 @extends('layouts.auth_modern')
 
 @section('title', 'Login - Premier Shop')

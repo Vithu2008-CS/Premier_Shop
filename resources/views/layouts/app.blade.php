@@ -1,3 +1,22 @@
+{{--
+    layouts/app.blade.php — Main storefront layout
+    ================================================
+    Used by all customer-facing pages (home, products, cart, checkout, orders, profile, etc.)
+
+    Provides:
+     - Head: meta tags, OG/Twitter cards, Vite assets (Bootstrap + app.js), dark/light theme pre-render
+     - Sticky navbar: search bar, category mega-menu, cart badge, wishlist, notification dropdown,
+       user dropdown (admin link if admin role), login/signup for guests, dark mode toggle
+     - Mobile: off-canvas menu, search modal
+     - Flash messages: session('success') and session('error') alert banners
+     - @yield('content') — page-specific content slot
+     - Newsletter section (shown only on home page)
+     - Footer: shop links, account links, trading hours from settings, social links
+     - Back-to-top scroll-progress circle
+     - Global JS: wishlist AJAX toggle, ajax-form handler, cart badge sync, toast helper,
+       theme persist, notification bell fetch, newsletter AJAX
+     - @stack('scripts') — page scripts injected here
+--}}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 

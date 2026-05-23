@@ -4,11 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * A saved delivery address belonging to a user.
+ *
+ * Users can store multiple addresses; exactly one can be flagged is_default.
+ * setAsDefault() enforces the single-default invariant by clearing other
+ * defaults before setting this one — done in two queries rather than a
+ * conditional update to avoid race conditions.
+ *
+ * The formatted accessor builds a single display string for dropdowns and
+ * confirmation pages, omitting any null parts.
+ */
 class Address extends Model
 {
     protected $fillable = [
         'user_id',
-        'label',
+        'label',        // friendly name e.g. "Home", "Work"
         'address_line',
         'city',
         'postcode',
@@ -23,13 +34,18 @@ class Address extends Model
         ];
     }
 
+    // ── Relationships ────────────────────────────────────────────────────────
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    // ── Business logic ───────────────────────────────────────────────────────
+
     /**
-     * Set this address as default and unset others.
+     * Mark this address as the user's default.
+     * Clears is_default on all other addresses for this user first.
      */
     public function setAsDefault(): void
     {
@@ -37,9 +53,9 @@ class Address extends Model
         $this->update(['is_default' => true]);
     }
 
-    /**
-     * Get formatted address as a single string.
-     */
+    // ── Accessors ────────────────────────────────────────────────────────────
+
+    /** Comma-separated address string, omitting any blank parts. */
     public function getFormattedAttribute(): string
     {
         $parts = array_filter([$this->address_line, $this->city, $this->postcode]);

@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create cache and cache_locks tables (Laravel file/DB cache driver). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

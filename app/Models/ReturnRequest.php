@@ -4,6 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * A customer's request to return items from a delivered order.
+ *
+ * Status lifecycle: pending → approved | rejected → refunded
+ *
+ * One return request per order maximum (enforced in ReturnRequestController).
+ * Individual items and their quantities are stored as ReturnRequestItem rows.
+ * An optional photo_path allows the customer to upload evidence of damage.
+ */
 class ReturnRequest extends Model
 {
     protected $fillable = [
@@ -12,8 +21,8 @@ class ReturnRequest extends Model
         'status',
         'reason',
         'customer_note',
-        'admin_note',
-        'refund_amount',
+        'admin_note',       // staff response visible to customer
+        'refund_amount',    // populated by admin when status → refunded
         'photo_path',
     ];
 
@@ -23,6 +32,8 @@ class ReturnRequest extends Model
             'refund_amount' => 'decimal:2',
         ];
     }
+
+    // ── Relationships ────────────────────────────────────────────────────────
 
     public function user()
     {
@@ -34,11 +45,18 @@ class ReturnRequest extends Model
         return $this->belongsTo(Order::class);
     }
 
+    /** The individual product lines being returned. */
     public function items()
     {
         return $this->hasMany(ReturnRequestItem::class);
     }
 
+    // ── Business logic ───────────────────────────────────────────────────────
+
+    /**
+     * Return the stock for all items in this return request back to the product.
+     * Called by admin when approving or refunding a return.
+     */
     public function restoreStock()
     {
         foreach ($this->items as $item) {

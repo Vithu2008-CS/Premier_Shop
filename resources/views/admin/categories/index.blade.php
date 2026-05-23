@@ -1,3 +1,9 @@
+{{--
+    admin/categories/index.blade.php — Category management list
+    =============================================================
+    Table of all categories: image, name, slug, product count, actions (edit, delete).
+    Variable: $categories (with products_count)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Categories')
 

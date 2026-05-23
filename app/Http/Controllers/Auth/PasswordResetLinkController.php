@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * PasswordResetLinkController — Forgot password: send reset link by email.
+ * Uses Laravel's built-in Password broker (password_reset tokens table).
+ * Throttled by 'login' rate limiter defined in AppServiceProvider.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

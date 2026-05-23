@@ -1,3 +1,14 @@
+{{--
+    cart/index.blade.php — Shopping cart page
+    ==========================================
+    Lists all cart items (UserItem, type='cart') with quantity controls,
+    per-line subtotals applying bulk-buy offers when threshold met,
+    cart total summary, proceed to checkout button.
+    Quantity +/- uses AJAX PATCH to cart.update.
+    Remove uses AJAX DELETE to cart.remove.
+    "Select items" checkboxes allow subset checkout via cart.buyNow.
+    Variable: $cartItems — auth user's cart items with product loaded
+--}}
 @extends('layouts.app')
 @section('title', 'Shopping Cart — Premier Shop')
 

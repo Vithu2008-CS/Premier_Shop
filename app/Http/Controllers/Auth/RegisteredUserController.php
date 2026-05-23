@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * RegisteredUserController — Two-step registration with OTP email verification.
+ * Step 1 (store): validates form, generates 6-digit OTP, stores data + OTP in session,
+ *   sends RegistrationOtp email, redirects to verify page.
+ * Step 2 (verify): checks OTP expiry (10 min) + match (5 attempt rate limit),
+ *   creates User, assigns customer role, clears session, sends WelcomeEmail, logs in.
+ * resendOtp(): regenerates OTP and resends without revalidating registration data.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

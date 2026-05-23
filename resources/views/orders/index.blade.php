@@ -1,3 +1,11 @@
+{{--
+    orders/index.blade.php — Customer order history
+    =================================================
+    Paginated list of the auth user's orders, newest first.
+    Each row: order number, date, status badge, total, view button.
+    Empty state shown when user has no orders.
+    Variable: $orders — paginated, from OrderController::index()
+--}}
 @extends('layouts.app')
 @section('title', 'My Orders - Premier Shop')
 

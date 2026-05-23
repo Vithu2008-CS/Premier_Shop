@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * VerifyEmailController — Handles signed email verification link clicks.
+ * Idempotent: already-verified users redirected without re-firing the Verified event.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

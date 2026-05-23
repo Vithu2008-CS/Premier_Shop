@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create users table with role_id FK, dob, phone, address, loyalty fields. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

@@ -4,6 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Persists per-user product view history for the "Recently Viewed" widget.
+ *
+ * Capped at 10 records per user — older entries are pruned automatically by track().
+ * $timestamps = false because we manage our own viewed_at column rather than
+ * using Laravel's created_at / updated_at pair.
+ *
+ * Guest recently-viewed history is handled separately via session in ProductController.
+ */
 class RecentlyViewed extends Model
 {
     protected $table = 'recently_viewed';
@@ -23,6 +32,8 @@ class RecentlyViewed extends Model
         ];
     }
 
+    // ── Relationships ────────────────────────────────────────────────────────
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -33,8 +44,16 @@ class RecentlyViewed extends Model
         return $this->belongsTo(Product::class);
     }
 
+    // ── Static helpers ───────────────────────────────────────────────────────
+
     /**
-     * Track a product view for a user. Keeps only 10 most recent.
+     * Record a product view for a logged-in user.
+     * Uses updateOrCreate so revisiting a product just bumps the timestamp
+     * rather than creating a duplicate row. After upsert, deletes any
+     * records beyond the 10 most recent.
+     *
+     * The take(100) in the prune query is a MariaDB workaround:
+     * DELETE with OFFSET is not directly supported, so we SELECT the IDs first.
      */
     public static function track(int $userId, int $productId): void
     {
@@ -43,11 +62,11 @@ class RecentlyViewed extends Model
             ['viewed_at' => now()]
         );
 
-        // Keep only the 10 most recent
+        // Collect IDs beyond the 10 most recent and delete them
         $oldest = self::where('user_id', $userId)
             ->orderByDesc('viewed_at')
             ->skip(10)
-            ->take(100) // MariaDB requires LIMIT with OFFSET
+            ->take(100) // MariaDB requires LIMIT with OFFSET in subqueries
             ->get(['id'])
             ->pluck('id');
 
@@ -56,6 +75,11 @@ class RecentlyViewed extends Model
         }
     }
 
+    /**
+     * Fetch active, age-appropriate recently viewed products for a user.
+     * Filters out deleted (null) products and age-restricted items
+     * when the viewing user is under 16.
+     */
     public static function getForUser(int $userId, int $limit = 10)
     {
         $isUnder16 = auth()->check() && auth()->user()->isUnder16();
@@ -66,7 +90,7 @@ class RecentlyViewed extends Model
             ->limit($limit)
             ->get()
             ->pluck('product')
-            ->filter() // Remove any null products (deleted)
+            ->filter()  // drop nulls (product was deleted after being viewed)
             ->filter(fn ($p) => $p->is_active && (! $isUnder16 || ! $p->is_age_restricted));
     }
 }

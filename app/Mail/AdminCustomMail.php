@@ -8,6 +8,15 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Mailable for custom emails composed by admin via the mail centre.
+ *
+ * Both subject and body are passed at construction time from the compose form.
+ * The body (mailMessage) is rendered as HTML in emails.admin_custom — the
+ * view applies Str::markdown() so admin can write plain text or markdown.
+ *
+ * Used by Admin\MailController::send() when dispatching to one or more recipients.
+ */
 class AdminCustomMail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -16,18 +25,12 @@ class AdminCustomMail extends Mailable
 
     public $mailMessage;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct($subject, $message)
     {
         $this->mailSubject = $subject;
         $this->mailMessage = $message;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -35,9 +38,6 @@ class AdminCustomMail extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -45,11 +45,6 @@ class AdminCustomMail extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

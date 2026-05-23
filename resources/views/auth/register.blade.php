@@ -1,3 +1,11 @@
+{{--
+    auth/register.blade.php — Registration form
+    =============================================
+    Uses auth_modern split layout.
+    Fields: name, email, DOB, password, confirm password.
+    POST → RegisteredUserController::store() → sends OTP email → redirects to verify-otp.
+    Password strength rules enforced (min 12, mixed case, symbols, uncompromised).
+--}}
 @extends('layouts.auth_modern')
 
 @section('title', 'Register - Premier Shop')

@@ -1,3 +1,10 @@
+{{--
+    admin/reviews/index.blade.php — Customer reviews moderation
+    =============================================================
+    Table of all reviews: product, customer, rating (stars), body, status, date.
+    Approve/unapprove toggle. Admin reply form inline per review.
+    Variables: $reviews (paginated, with product, user)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Customer Reviews Management')
 

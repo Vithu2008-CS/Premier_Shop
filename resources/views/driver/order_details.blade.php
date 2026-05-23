@@ -1,3 +1,11 @@
+{{--
+    driver/order_details.blade.php — Driver order detail view
+    ===========================================================
+    Shows order items, customer delivery address, phone number.
+    "Mark as Delivered" button with optional photo proof upload (base64).
+    POST → driver.orders.complete → DriverController::completeDelivery()
+    Variable: $order (with items.product, user, shipping_address)
+--}}
 @extends('layouts.driver')
 @section('title', 'Order Details — Driver')
 

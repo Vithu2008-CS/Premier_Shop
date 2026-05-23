@@ -1,3 +1,12 @@
+{{--
+    products/index.blade.php — Product catalogue listing
+    ======================================================
+    Filterable, sortable, paginated product grid.
+    Left sidebar: category filter, price range, product type, age-restriction toggle.
+    Right area: sort dropdown, product cards grid (partials/product_card).
+    AJAX search suggestions via products.suggest endpoint.
+    Variables: $products (paginated), $categories, $filters (active filters array)
+--}}
 @extends('layouts.app')
 @section('title', 'Products — Premier Shop')
 

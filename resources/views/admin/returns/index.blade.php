@@ -1,3 +1,10 @@
+{{--
+    admin/returns/index.blade.php — Return request list
+    =====================================================
+    Table of all return requests: order number, customer, reason, status, date.
+    Status filter tabs (pending/approved/rejected/refunded). Links to detail view.
+    Variable: $returns (paginated, with order.user)
+--}}
 @extends('layouts.admin_noble')
 
 @section('content')

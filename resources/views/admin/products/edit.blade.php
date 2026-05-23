@@ -1,3 +1,12 @@
+{{--
+    admin/products/edit.blade.php — Edit existing product
+    =======================================================
+    Same fields as create plus: existing image management (delete individual images),
+    QR code display + regenerate button, barcode display.
+    PUT → admin.products.update → AdminProductController::update()
+    POST admin.products.regenerateQr → regenerates QR and returns new image URL via JSON.
+    Variables: $product (with category), $categories
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Edit Product')
 

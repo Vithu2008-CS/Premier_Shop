@@ -1,3 +1,10 @@
+{{--
+    emails/welcome.blade.php — Welcome email after OTP verification
+    =================================================================
+    Sent by WelcomeEmail mailable once OTP verified in RegisteredUserController::verify().
+    Shows account name, login link, quick-start links.
+    Variable: $user (User model)
+--}}
 @extends('emails.layouts.master')
 @section('title', 'Welcome to Premier Shop')
 @section('header_style', 'background:#6C5CE7;')

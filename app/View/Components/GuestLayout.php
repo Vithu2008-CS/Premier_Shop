@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * GuestLayout — Blade component wrapper for the guest/auth layout (layouts.guest).
+ * Used by Breeze-generated auth views that reference <x-guest-layout>.
+ */
+
 namespace App\View\Components;
 
 use Illuminate\View\Component;

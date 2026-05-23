@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * PasswordConfirmationTest — Feature tests for the password re-confirmation gate.
+ * Covers: confirm-password page renders, valid password confirms, wrong password errors.
+ */
+
 namespace Tests\Feature\Auth;
 
 use App\Models\User;

@@ -1,3 +1,14 @@
+{{--
+    admin/orders/show.blade.php — Admin order detail view
+    =======================================================
+    Full order info: items, pricing breakdown, shipping address, payment status.
+    Status update form with date fields (processing_date, shipped_date, delivered_date).
+    Driver assignment dropdown.
+    QR code display (links to customer order page).
+    Delivery proof image (when driver has uploaded it).
+    Links: print order, view customer profile.
+    Variables: $order (with items.product, user, driver), $drivers
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Order ' . $order->order_number)
 

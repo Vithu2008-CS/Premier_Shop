@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create jobs, job_batches, failed_jobs tables (queue driver). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

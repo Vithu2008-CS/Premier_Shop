@@ -1,3 +1,9 @@
+{{--
+    admin/categories/create.blade.php — Create category form
+    ==========================================================
+    Fields: name (slug auto-generated), description, image upload.
+    POST → admin.categories.store → CategoryController::store()
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Add Category')
 

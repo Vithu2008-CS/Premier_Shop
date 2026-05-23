@@ -7,19 +7,27 @@ use App\Models\Setting;
 use App\Models\UserItem;
 use Illuminate\Http\Request;
 
+/**
+ * Manages the authenticated user's shopping cart (UserItem rows with type = 'cart').
+ * All mutating actions support both JSON (AJAX) and standard form responses.
+ */
 class CartController extends Controller
 {
+    /** Show the cart page, only including items whose product is still active. */
     public function index()
     {
         $items = auth()->user()->cartItems()
             ->with('product')
-            ->whereHas('product', function ($q) {
-                $q->where('is_active', true);
-            })->get();
+            ->whereHas('product', fn ($q) => $q->where('is_active', true))
+            ->get();
 
         return view('cart.index', compact('items'));
     }
 
+    /**
+     * Add a product to the cart and stay on the current page.
+     * Delegates to addToCart() so logic is shared with buyNow().
+     */
     public function add(Request $request)
     {
         $result = $this->addToCart($request);
@@ -28,29 +36,29 @@ class CartController extends Controller
             return response()->json($result);
         }
 
-        if (! $result['success']) {
-            return back()->with('error', $result['message']);
-        }
-
-        return back()->with('success', $result['message']);
+        return $result['success']
+            ? back()->with('success', $result['message'])
+            : back()->with('error', $result['message']);
     }
 
+    /**
+     * Add a product to the cart and immediately redirect to checkout.
+     * Used by the "Buy Now" button on product pages.
+     */
     public function buyNow(Request $request)
     {
         $result = $this->addToCart($request);
 
         if (! $result['success']) {
-            if ($request->wantsJson()) {
-                return response()->json($result);
-            }
-
-            return back()->with('error', $result['message']);
+            return $request->wantsJson()
+                ? response()->json($result)
+                : back()->with('error', $result['message']);
         }
 
         if ($request->wantsJson()) {
             return response()->json([
-                'success' => true,
-                'message' => 'Proceeding to checkout...',
+                'success'  => true,
+                'message'  => 'Proceeding to checkout...',
                 'redirect' => route('checkout.index'),
             ]);
         }
@@ -58,11 +66,17 @@ class CartController extends Controller
         return redirect()->route('checkout.index');
     }
 
-    private function addToCart(Request $request)
+    /**
+     * Core add-to-cart logic shared by add() and buyNow().
+     * Validates product existence, age restriction, stock level,
+     * and merges quantity into an existing cart row if present.
+     * Returns an associative result array — never redirects.
+     */
+    private function addToCart(Request $request): array
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
         ]);
 
         $product = Product::where('is_active', true)->findOrFail($request->product_id);
@@ -75,11 +89,10 @@ class CartController extends Controller
             return ['success' => false, 'message' => 'Not enough stock available.'];
         }
 
-        $cartItem = auth()->user()->cartItems()
-            ->where('product_id', $product->id)
-            ->first();
+        $cartItem = auth()->user()->cartItems()->where('product_id', $product->id)->first();
 
         if ($cartItem) {
+            // Product already in cart — increase quantity, respecting stock ceiling
             $newQty = $cartItem->quantity + $request->quantity;
             if ($newQty > $product->stock) {
                 return ['success' => false, 'message' => 'Cannot add more. Stock limit reached.'];
@@ -87,22 +100,29 @@ class CartController extends Controller
             $cartItem->update(['quantity' => $newQty]);
         } else {
             UserItem::create([
-                'user_id' => auth()->id(),
+                'user_id'    => auth()->id(),
                 'product_id' => $product->id,
-                'quantity' => $request->quantity,
-                'type' => 'cart',
+                'quantity'   => $request->quantity,
+                'type'       => 'cart',
             ]);
         }
 
         return [
-            'success' => true,
-            'message' => "{$product->name} added to cart!",
+            'success'   => true,
+            'message'   => "{$product->name} added to cart!",
+            // Return fresh total for the nav badge to update via JS
             'cartCount' => auth()->user()->cartItems()->sum('quantity'),
         ];
     }
 
+    /**
+     * Update the quantity of a cart item.
+     * Returns updated totals as JSON when called via AJAX so the cart page
+     * can recalculate without a full page reload.
+     */
     public function update(Request $request, UserItem $cartItem)
     {
+        // Ownership check — prevent users from modifying each other's carts
         if ($cartItem->user_id !== auth()->id() || $cartItem->type !== 'cart') {
             abort(403, 'Unauthorized action.');
         }
@@ -110,40 +130,39 @@ class CartController extends Controller
         $request->validate(['quantity' => 'required|integer|min:1']);
 
         if ($request->quantity > $cartItem->product->stock) {
-            if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'Not enough stock available.']);
-            }
-
-            return back()->with('error', 'Not enough stock available.');
+            return $request->wantsJson()
+                ? response()->json(['success' => false, 'message' => 'Not enough stock available.'])
+                : back()->with('error', 'Not enough stock available.');
         }
 
         $cartItem->update(['quantity' => $request->quantity]);
 
         if ($request->wantsJson()) {
-            $user = auth()->user();
-            $items = $user->cartItems()->with('product')->get();
-            $subtotal = $items->sum('line_total');
-            $totalItems = $items->sum('quantity');
-
-            $threshold = Setting::get('free_delivery_threshold', 50);
-            $baseFee = Setting::get('flat_rate_fee', 5.99);
-
-            $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
+            $items      = auth()->user()->cartItems()->with('product')->get();
+            $subtotal   = $items->sum('line_total');
+            $threshold  = Setting::get('free_delivery_threshold', 50);
+            $baseFee    = Setting::get('flat_rate_fee', 5.99);
+            $shipping   = $subtotal >= $threshold ? 0 : $baseFee;
 
             return response()->json([
-                'success' => true,
-                'message' => 'Cart updated.',
-                'lineTotal' => number_format($cartItem->line_total, 2),
-                'subtotal' => number_format($subtotal, 2),
-                'totalItems' => $totalItems,
-                'shipping' => $shippingCost == 0 ? 'Free' : '£'.number_format($baseFee, 2),
-                'total' => number_format($subtotal + $shippingCost, 2),
+                'success'    => true,
+                'message'    => 'Cart updated.',
+                'lineTotal'  => number_format($cartItem->line_total, 2),
+                'subtotal'   => number_format($subtotal, 2),
+                'totalItems' => $items->sum('quantity'),
+                'shipping'   => $shipping == 0 ? 'Free' : '£'.number_format($baseFee, 2),
+                'total'      => number_format($subtotal + $shipping, 2),
             ]);
         }
 
         return back()->with('success', 'Cart updated.');
     }
 
+    /**
+     * Remove a single item from the cart.
+     * When the cart is now empty the JSON response includes `empty: true`
+     * so the JS can swap in the empty-cart UI without a reload.
+     */
     public function remove(Request $request, UserItem $cartItem)
     {
         if ($cartItem->user_id !== auth()->id() || $cartItem->type !== 'cart') {
@@ -153,28 +172,25 @@ class CartController extends Controller
         $cartItem->delete();
 
         if ($request->wantsJson()) {
-            $user = auth()->user();
-            $items = $user->cartItems()->with('product')->get();
+            $items = auth()->user()->cartItems()->with('product')->get();
+
             if ($items->isEmpty()) {
                 return response()->json(['success' => true, 'empty' => true]);
             }
 
-            $subtotal = $items->sum('line_total');
-            $totalItems = $items->sum('quantity');
-
+            $subtotal  = $items->sum('line_total');
             $threshold = Setting::get('free_delivery_threshold', 50);
-            $baseFee = Setting::get('flat_rate_fee', 5.99);
-
-            $shippingCost = $subtotal >= $threshold ? 0 : $baseFee;
+            $baseFee   = Setting::get('flat_rate_fee', 5.99);
+            $shipping  = $subtotal >= $threshold ? 0 : $baseFee;
 
             return response()->json([
-                'success' => true,
-                'empty' => false,
-                'message' => 'Item removed from cart.',
-                'subtotal' => number_format($subtotal, 2),
-                'totalItems' => $totalItems,
-                'shipping' => $shippingCost == 0 ? 'Free' : '£'.number_format($baseFee, 2),
-                'total' => number_format($subtotal + $shippingCost, 2),
+                'success'    => true,
+                'empty'      => false,
+                'message'    => 'Item removed from cart.',
+                'subtotal'   => number_format($subtotal, 2),
+                'totalItems' => $items->sum('quantity'),
+                'shipping'   => $shipping == 0 ? 'Free' : '£'.number_format($baseFee, 2),
+                'total'      => number_format($subtotal + $shipping, 2),
             ]);
         }
 

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * PasswordController — In-profile password change (requires current password).
+ * Validated via updatePassword error bag so errors target the correct form on the page.
+ * Password policy enforced through Password::defaults() set in AppServiceProvider.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

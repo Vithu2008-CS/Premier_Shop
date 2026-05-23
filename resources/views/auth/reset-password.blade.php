@@ -1,3 +1,10 @@
+{{--
+    auth/reset-password.blade.php — New password form
+    ===================================================
+    Reached via the signed reset-password link in the email.
+    Fields: email (hidden), password, confirm password.
+    POST → password.store → NewPasswordController::store()
+--}}
 @extends('layouts.app')
 @section('title', 'Reset Password — Premier Shop')
 

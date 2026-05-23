@@ -1,3 +1,12 @@
+{{--
+    categories.blade.php — Category grid browse page
+    ==================================================
+    Full grid of all categories with product counts.
+    Each tile links to products filtered by category slug.
+    Shows category image as background if available.
+    Empty state shown when no categories exist.
+    Variable: $categories — collection with products_count, from HomeController::categories()
+--}}
 @extends('layouts.app')
 @section('title', 'Browse Categories — Premier Shop')
 

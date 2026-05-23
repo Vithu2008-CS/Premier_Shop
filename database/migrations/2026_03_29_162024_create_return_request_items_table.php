@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create return_request_items table (return_request_id, order_item_id, quantity). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

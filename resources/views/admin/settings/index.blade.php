@@ -1,3 +1,12 @@
+{{--
+    admin/settings/index.blade.php — System settings form
+    =======================================================
+    Tabbed sections: Shop Info (name, address, phone, logo), Shipping (flat rate,
+    free threshold, Google Maps API key), Loyalty (points per £, redemption rate),
+    Email (SMTP settings), Maintenance mode toggle.
+    PATCH → admin.settings.update → SettingController::update()
+    Settings persisted via Setting model (column or other_settings JSON blob).
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'System Settings')
 

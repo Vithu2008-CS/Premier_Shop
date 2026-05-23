@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * ExampleTest — Smoke test: homepage returns HTTP 200.
+ */
+
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;

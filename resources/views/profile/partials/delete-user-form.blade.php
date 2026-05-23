@@ -1,3 +1,10 @@
+{{--
+    profile/partials/delete-user-form.blade.php — Account deletion confirmation form
+    ====================================================================================
+    Requires password confirmation before deletion. Modal dialog for safety.
+    DELETE → profile.destroy → ProfileController::destroy()
+    Soft-deletes user; cascades handled in model boot.
+--}}
 <section>
     <header class="mb-4">
         <h4 class="fw-bold text-danger mb-1">

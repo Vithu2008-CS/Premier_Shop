@@ -1,3 +1,10 @@
+{{--
+    admin/mail/read.blade.php — Single message reader
+    ===================================================
+    Shows full message body, sender info, tags, timestamps.
+    Reply/forward/delete actions. Marks message as read on load via MailController::show().
+    Variable: $message (ContactMessage)
+--}}
 @extends('layouts.admin_noble')
 
 @section('title', 'Read Message')

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * ConfirmablePasswordController — Password re-confirmation gate for sensitive actions.
+ * Stores confirmed timestamp in session (auth.password_confirmed_at).
+ * Redirects to admin dashboard after confirmation.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

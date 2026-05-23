@@ -8,12 +8,20 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * The application user model — covers customers, admins, staff, and drivers.
+ * Role-based access is handled by the Role / Permission models (not Gates/Policies).
+ *
+ * Prunable: unverified accounts older than 1 day are deleted by the scheduler
+ * so abandoned registrations don't pollute the users table.
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, Prunable;
 
     /**
-     * Get the prunable model query.
+     * Delete unverified accounts that are more than 1 day old.
+     * Run automatically by `php artisan model:prune`.
      */
     public function prunable()
     {
@@ -21,20 +29,13 @@ class User extends Authenticatable
     }
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'dob',
-        'phone',
-        'address',
-        'city',
-        'role_id',
-        'is_on_duty',
-        'loyalty_points',
+        'name', 'email', 'password',
+        'dob', 'phone', 'address', 'city',
+        'role_id', 'is_on_duty', 'loyalty_points',
     ];
 
     protected $hidden = [
-        'password',
+        'password',       // never serialise the hash
         'remember_token',
     ];
 
@@ -42,13 +43,16 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'dob' => 'date',
-            'loyalty_points' => 'integer',
-            'is_on_duty' => 'boolean',
+            'password'          => 'hashed',
+            'dob'               => 'date',
+            'loyalty_points'    => 'integer',
+            'is_on_duty'        => 'boolean',  // driver duty status
         ];
     }
 
+    // ── Role helpers ─────────────────────────────────────────────────────────
+
+    /** The user's role record (admin / customer / driver / staff / custom). */
     public function role()
     {
         return $this->belongsTo(Role::class);
@@ -64,32 +68,42 @@ class User extends Authenticatable
         return $this->role && $this->role->name === 'driver';
     }
 
+    /** Staff = any role with is_staff = true (admin, manager, etc.). */
     public function isStaff(): bool
     {
         return $this->role && $this->role->is_staff;
     }
 
+    /**
+     * Check if the user has a specific named permission.
+     * Admins implicitly have every permission without a DB lookup.
+     */
     public function hasPermission(string $permission): bool
     {
         if (! $this->role) {
             return false;
         }
+
+        // Admin role bypasses all individual permission checks
         if ($this->role->name === 'admin') {
             return true;
-        } // Admin has all permissions
+        }
 
         return $this->role->hasPermission($permission);
     }
 
+    // ── Age / age restriction ────────────────────────────────────────────────
+
+    /** Calculate age from DOB. Returns null when DOB is not set. */
     public function getAgeAttribute(): ?int
     {
-        if (! $this->dob) {
-            return null;
-        }
-
-        return Carbon::parse($this->dob)->age;
+        return $this->dob ? Carbon::parse($this->dob)->age : null;
     }
 
+    /**
+     * Returns true when the user's verified age is under 16.
+     * Null DOB (age unknown) returns false — only restrict when we're certain.
+     */
     public function isUnder16(): bool
     {
         $age = $this->age;
@@ -97,6 +111,9 @@ class User extends Authenticatable
         return $age !== null && $age < 16;
     }
 
+    // ── Relationships ────────────────────────────────────────────────────────
+
+    /** Cart items (UserItem rows with type = 'cart'). */
     public function cartItems()
     {
         return $this->hasMany(UserItem::class)->cart();
@@ -107,11 +124,13 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    /** Wishlist items (UserItem rows with type = 'wishlist'). */
     public function wishlists()
     {
         return $this->hasMany(UserItem::class)->wishlist();
     }
 
+    /** Orders where this user is the assigned delivery driver. */
     public function assignedOrders()
     {
         return $this->hasMany(Order::class, 'driver_id');
@@ -127,16 +146,19 @@ class User extends Authenticatable
         return $this->hasOne(Address::class)->where('is_default', true);
     }
 
+    /** Recently viewed products ordered by most recent first. */
     public function recentlyViewed()
     {
         return $this->hasMany(RecentlyViewed::class)->orderByDesc('viewed_at');
     }
 
+    /** All in-app notifications, newest first. */
     public function notifications()
     {
         return $this->hasMany(AppNotification::class)->orderByDesc('created_at');
     }
 
+    /** Subset of notifications that have not been read yet. */
     public function unreadNotifications()
     {
         return $this->notifications()->whereNull('read_at');
@@ -147,6 +169,7 @@ class User extends Authenticatable
         return $this->hasMany(ReturnRequest::class);
     }
 
+    /** Loyalty point transaction history, newest first. */
     public function rewardPointTransactions()
     {
         return $this->hasMany(RewardPointTransaction::class)->orderByDesc('created_at');

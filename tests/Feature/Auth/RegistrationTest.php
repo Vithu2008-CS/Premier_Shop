@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * RegistrationTest — Feature tests for the two-step OTP registration flow.
+ * Covers: register page renders, full registration flow (POST /register → session OTP
+ *         stored → POST /register/verify → authenticated and redirected to /).
+ * Uses withoutMiddleware() to bypass throttle on OTP verify step.
+ */
+
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;

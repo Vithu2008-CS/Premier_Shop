@@ -1,3 +1,10 @@
+{{--
+    auth/confirm-password.blade.php — Password re-confirmation gate
+    ================================================================
+    Shown before sensitive actions (e.g. account deletion) when the
+    session confirmation has expired. User must re-enter their password.
+    POST → ConfirmablePasswordController::store()
+--}}
 @extends('layouts.app')
 @section('title', 'Confirm Password — Premier Shop')
 

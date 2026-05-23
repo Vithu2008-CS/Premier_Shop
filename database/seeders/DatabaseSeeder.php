@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * DatabaseSeeder — Primary seeder: runs RolePermissionSeeder first, then creates
+ * admin/driver/customer demo users, 22 product categories, 18 sample products
+ * (alcohol flagged is_age_restricted), default Settings row, and sample Promotions.
+ * Run with: php artisan db:seed
+ */
+
 namespace Database\Seeders;
 
 use App\Models\Category;

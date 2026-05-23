@@ -8,6 +8,13 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * One-time password email sent during registration for email verification.
+ *
+ * The OTP is a short numeric code generated in AuthController::register()
+ * and stored temporarily in the session. This mailable passes both the
+ * code and the user's name to the view for a personalised message.
+ */
 class RegistrationOtp extends Mailable
 {
     use Queueable, SerializesModels;
@@ -18,7 +25,7 @@ class RegistrationOtp extends Mailable
 
     public function __construct(string $otp, string $userName)
     {
-        $this->otp = $otp;
+        $this->otp      = $otp;
         $this->userName = $userName;
     }
 

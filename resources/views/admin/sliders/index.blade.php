@@ -1,3 +1,10 @@
+{{--
+    admin/sliders/index.blade.php — Promotion/slider management list
+    ==================================================================
+    Table of Promotion records (type: 'slider'|'banner'): image, title, link,
+    order_priority, active status, date range. Drag-to-reorder or priority input.
+    Variable: $promotions (all, ordered by order_priority)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Sliders')
 

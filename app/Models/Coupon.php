@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Discount coupon that can be applied at checkout.
+ *
+ * Two discount types supported:
+ *  - 'percentage' — reduce subtotal by discount_value %
+ *  - 'fixed'      — subtract a flat discount_value (capped at subtotal)
+ *
+ * Validity is controlled by: is_active flag, valid_from/valid_until date range,
+ * usage_limit (null = unlimited), and min_order_amount threshold.
+ */
 class Coupon extends Model
 {
     protected $fillable = [
@@ -14,19 +24,27 @@ class Coupon extends Model
     protected function casts(): array
     {
         return [
-            'discount_value' => 'decimal:2',
+            'discount_value'   => 'decimal:2',
             'min_order_amount' => 'decimal:2',
-            'valid_from' => 'datetime',
-            'valid_until' => 'datetime',
-            'is_active' => 'boolean',
+            'valid_from'       => 'datetime',
+            'valid_until'      => 'datetime',
+            'is_active'        => 'boolean',
         ];
     }
 
+    // ── Validation ───────────────────────────────────────────────────────────
+
+    /** Returns true when the coupon passes all validity checks for the given order amount. */
     public function isValid(float $orderAmount = 0): bool
     {
         return $this->getValidationError($orderAmount) === null;
     }
 
+    /**
+     * Returns a human-readable error string if the coupon fails any check,
+     * or null when the coupon is fully valid. Used to surface specific errors
+     * in both the checkout AJAX response and the back-redirect flash message.
+     */
     public function getValidationError(float $orderAmount = 0): ?string
     {
         if (! $this->is_active) {
@@ -48,12 +66,19 @@ class Coupon extends Model
         return null;
     }
 
+    // ── Discount calculation ─────────────────────────────────────────────────
+
+    /**
+     * Calculate the discount amount to deduct from the given subtotal.
+     * Fixed coupons are capped at the subtotal so the total can never go negative.
+     */
     public function calculateDiscount(float $subtotal): float
     {
         if ($this->discount_type === 'percentage') {
             return round($subtotal * ($this->discount_value / 100), 2);
         }
 
+        // Fixed: never discount more than the order is worth
         return min($this->discount_value, $subtotal);
     }
 }
