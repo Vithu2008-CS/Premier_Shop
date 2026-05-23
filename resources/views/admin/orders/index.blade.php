@@ -1,3 +1,11 @@
+{{--
+    admin/orders/index.blade.php — Admin order management list
+    ===========================================================
+    Filterable by status, searchable by order number / customer name.
+    Table: order number, customer, date, total, status badge, driver, actions.
+    Quick status update dropdown per row.
+    Variable: $orders (paginated with user, driver), $drivers (for assignment modal)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Orders')
 

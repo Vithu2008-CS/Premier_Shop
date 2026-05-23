@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(grep -n 'public function\\\\|class \\\\|protected $fillable\\\\|public function ' 'c:/Retail shop/app/Models/User.php')"
+    ]
+  }
+}

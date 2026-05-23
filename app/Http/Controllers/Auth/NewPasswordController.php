@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * NewPasswordController — Password reset form and token-based reset handler.
+ * Password validated against Password::defaults() (min 12, uncompromised check).
+ * On success: hashes new password, fires PasswordReset event, regenerates remember_token.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

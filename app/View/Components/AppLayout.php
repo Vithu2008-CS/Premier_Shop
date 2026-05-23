@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * AppLayout — Blade component wrapper for the storefront layout (layouts.app).
+ * Used by Breeze-generated auth views that reference <x-app-layout>.
+ */
+
 namespace App\View\Components;
 
 use Illuminate\View\Component;

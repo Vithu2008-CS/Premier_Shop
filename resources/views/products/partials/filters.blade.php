@@ -1,3 +1,11 @@
+{{--
+    products/partials/filters.blade.php — Product listing sidebar/drawer filter form
+    ====================================================================================
+    GET → products.index. Fields: search, category[], min_price, max_price, sort, rating.
+    $isMobile=true renders as off-canvas drawer; false renders as sidebar.
+    Preserves active filter values via request() helpers.
+    Variables: $categories (all), $isMobile (bool)
+--}}
 <form action="{{ route('products.index') }}" method="GET" class="{{ $isMobile ? 'mobile-filters' : '' }}">
     {{-- Search --}}
     <div class="mb-3">

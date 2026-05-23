@@ -7,8 +7,13 @@ use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
+/**
+ * Manages user roles and their associated permission sets.
+ * System roles ('admin', 'customer') are protected from deletion.
+ */
 class RoleController extends Controller
 {
+    /** List all roles with user and permission counts. */
     public function index()
     {
         $roles = Role::withCount(['users', 'permissions'])->get();
@@ -16,69 +21,85 @@ class RoleController extends Controller
         return view('admin.roles.index', compact('roles'));
     }
 
+    /** Show the create-role form with all permissions grouped by category. */
     public function create()
     {
+        // Group permissions by their 'group' field for a cleaner checkbox UI
         $permissions = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
 
         return view('admin.roles.create', compact('permissions'));
     }
 
+    /** Validate, create a new role, and sync its permissions. */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:50|unique:roles,name|regex:/^[a-z_]+$/',
-            'display_name' => 'required|string|max:100',
-            'description' => 'nullable|string|max:255',
-            'is_staff' => 'boolean',
-            'permissions' => 'array',
+            // name must be lowercase_snake — used as a machine identifier in code
+            'name'          => 'required|string|max:50|unique:roles,name|regex:/^[a-z_]+$/',
+            'display_name'  => 'required|string|max:100',
+            'description'   => 'nullable|string|max:255',
+            'is_staff'      => 'boolean',
+            'permissions'   => 'array',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
         $role = Role::create([
-            'name' => $request->name,
+            'name'         => $request->name,
             'display_name' => $request->display_name,
-            'description' => $request->description,
-            'is_staff' => $request->boolean('is_staff'),
+            'description'  => $request->description,
+            'is_staff'     => $request->boolean('is_staff'),
         ]);
 
+        // sync() replaces the pivot rows in one query
         if ($request->permissions) {
             $role->permissions()->sync($request->permissions);
         }
 
-        return redirect()->route('admin.roles.index')->with('success', "Role '{$role->display_name}' created successfully.");
+        return redirect()->route('admin.roles.index')
+            ->with('success', "Role '{$role->display_name}' created successfully.");
     }
 
+    /** Show the edit form pre-populated with the role's current permissions. */
     public function edit(Role $role)
     {
-        $permissions = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
+        $permissions    = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
+        // Array of permission IDs currently attached — used to pre-check checkboxes
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
         return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
+    /** Validate, update a role's display fields, and sync permissions. */
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'display_name' => 'required|string|max:100',
-            'description' => 'nullable|string|max:255',
-            'is_staff' => 'boolean',
-            'permissions' => 'array',
+            'display_name'  => 'required|string|max:100',
+            'description'   => 'nullable|string|max:255',
+            'is_staff'      => 'boolean',
+            'permissions'   => 'array',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
         $role->update([
             'display_name' => $request->display_name,
-            'description' => $request->description,
-            'is_staff' => $request->boolean('is_staff'),
+            'description'  => $request->description,
+            'is_staff'     => $request->boolean('is_staff'),
         ]);
 
+        // Pass empty array when no checkboxes submitted so all permissions are detached
         $role->permissions()->sync($request->permissions ?? []);
 
-        return redirect()->route('admin.roles.index')->with('success', "Role '{$role->display_name}' updated successfully.");
+        return redirect()->route('admin.roles.index')
+            ->with('success', "Role '{$role->display_name}' updated successfully.");
     }
 
+    /**
+     * Delete a role.
+     * Blocked if: role is a system role ('admin'/'customer'), or users are still assigned to it.
+     */
     public function destroy(Role $role)
     {
+        // Protect built-in roles that core app logic depends on
         if (in_array($role->name, ['admin', 'customer'])) {
             return back()->with('error', 'Cannot delete system roles.');
         }

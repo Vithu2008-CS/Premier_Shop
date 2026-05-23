@@ -1,3 +1,10 @@
+{{--
+    admin/drivers/edit.blade.php — Edit driver account form
+    =========================================================
+    Same fields as create; password field optional (blank = no change).
+    PUT → admin.drivers.update → DriverController::update()
+    Variable: $driver
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Edit Driver')
 

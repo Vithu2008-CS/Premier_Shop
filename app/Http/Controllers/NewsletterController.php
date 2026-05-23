@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * NewsletterController — Email newsletter subscription capture.
+ * store(): validates email, prevents duplicates, returns JSON response.
+ * Called via AJAX from the homepage newsletter form (ajax-form handler in app.blade.php).
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\NewsletterSubscription;

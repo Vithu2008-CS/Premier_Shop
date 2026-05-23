@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create notifications table (user_id, type, title, message, url, read_at). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

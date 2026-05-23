@@ -1,3 +1,11 @@
+{{--
+    admin/reports/index.blade.php — Sales reports dashboard
+    =========================================================
+    Date-range filter (from/to). Charts: revenue over time, orders by status,
+    top products, top categories. Summary KPIs: total revenue, order count, avg order.
+    Print button links to reports.print (standalone HTML).
+    Variables: $reportData (aggregated), $from, $to
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Sales Report')
 

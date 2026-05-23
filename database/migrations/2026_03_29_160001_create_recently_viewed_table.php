@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create recently_viewed table (user_id, product_id, viewed_at) — no timestamps. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

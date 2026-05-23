@@ -1,3 +1,10 @@
+{{--
+    admin/sliders/edit.blade.php — Edit slider/banner form
+    ========================================================
+    Same fields as create + current image preview. Leave image blank to keep existing.
+    PUT → admin.sliders.update → PromotionController::update()
+    Variable: $promotion (Promotion model)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Edit Slider')
 

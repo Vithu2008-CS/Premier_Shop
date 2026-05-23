@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * EmailVerificationNotificationController — Resend email verification link.
+ * Skips resend if already verified and redirects to dashboard.
+ */
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;

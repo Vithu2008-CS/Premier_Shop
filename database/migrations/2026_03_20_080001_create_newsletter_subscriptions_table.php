@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create newsletter_subscriptions table (email unique, subscribed_at). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

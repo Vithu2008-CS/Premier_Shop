@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * CategoryFactory — Test/seeder factory for Category model.
+ * Generates random word name and slug. Used in feature tests.
+ */
+
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;

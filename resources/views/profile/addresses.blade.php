@@ -1,3 +1,12 @@
+{{--
+    profile/addresses.blade.php — Saved delivery addresses management
+    ==================================================================
+    Lists all saved addresses with default badge.
+    Inline add/edit forms, set-as-default button, delete button.
+    Actions: POST addresses.store, PATCH addresses.update, PATCH addresses.setDefault,
+    DELETE addresses.destroy
+    Variable: $addresses — auth user's addresses
+--}}
 @extends('layouts.app')
 
 @section('title', 'My Addresses - Premier Shop')

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * ContactController — Public contact page and form submission.
+ * Stores submission as ContactMessage in inbox folder (folder='inbox').
+ * Admin reads messages via MailController; no reply sent from here.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;

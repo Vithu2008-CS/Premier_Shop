@@ -1,3 +1,10 @@
+{{--
+    profile/rewards.blade.php — Loyalty points history and balance
+    ===============================================================
+    Shows current points balance, redemption value in £,
+    full transaction history (earned / redeemed / refunded) with order links.
+    Variables: $user (with rewardPointTransactions), $settings (redemption rate)
+--}}
 @extends('layouts.app')
 
 @section('title', 'Loyalty Rewards - My Profile')

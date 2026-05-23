@@ -1,3 +1,10 @@
+{{--
+    admin/customers/show.blade.php — Customer detail view
+    =======================================================
+    Profile info, address book, order history, reward points balance and transaction log.
+    Read-only view; no edits from this page.
+    Variable: $customer (with orders, addresses, rewardTransactions)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Customer: ' . $customer->name)
 

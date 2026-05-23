@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: add composite indexes to orders, order_items, user_items, products for query performance. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

@@ -8,6 +8,11 @@ use App\Models\NewsletterSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * Admin mail centre: inbox (contact form messages), sent, drafts, trash, starred, tags.
+ * All mail records are ContactMessage rows distinguished by the `folder` column.
+ * Outbound mail is sent via Laravel Mail and a copy is saved as a 'sent' ContactMessage.
+ */
 class MailController extends Controller
 {
     public function inbox()

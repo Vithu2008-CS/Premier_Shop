@@ -1,3 +1,11 @@
+{{--
+    emails/layouts/master.blade.php — Base email layout (table-based HTML)
+    =========================================================================
+    Inline-CSS table layout for maximum email client compatibility.
+    Sections: @yield('title'), @yield('header_style'), @yield('header_subtitle'),
+              @yield('content') (main body rows), @yield('footer_note').
+    Extended by all transactional email templates in the emails/ folder.
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

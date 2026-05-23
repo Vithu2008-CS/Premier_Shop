@@ -1,3 +1,10 @@
+{{--
+    admin/roles/index.blade.php — Role list
+    =========================================
+    Table of all roles: name, display_name, is_staff flag, permissions count.
+    Links to create and edit. Role with is_staff=true grants admin panel access.
+    Variable: $roles (with permissions_count)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Roles')
 

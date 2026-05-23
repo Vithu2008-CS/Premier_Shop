@@ -1,3 +1,10 @@
+{{--
+    admin/mail/partials/sidebar.blade.php — Mail centre navigation sidebar
+    ========================================================================
+    Folder links: Inbox, Sent, Drafts, Starred, Trash with unread/count badges.
+    Active folder highlighted via Route::currentRouteName() comparison.
+    Included by inbox.blade.php, read.blade.php, compose.blade.php.
+--}}
 @php
     $currentRoute = Route::currentRouteName();
 @endphp

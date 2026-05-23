@@ -8,11 +8,21 @@ use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
+/**
+ * Generates sales/stock reports for the admin panel.
+ * Supports category filtering, dynamic column sorting, paginated web view,
+ * and a PDF download of the same data set.
+ */
 class ReportController extends Controller
 {
+    /**
+     * Download the current filtered/sorted report as a PDF.
+     * Uses the same query logic as index() but fetches all rows (no pagination).
+     */
     public function print(Request $request)
     {
         $categories = Category::all();
+
         $query = Product::with('category')
             ->withSum('orderItems as total_sold', 'quantity')
             ->withCount(['wishlistedBy as total_wishlist']);
@@ -21,26 +31,8 @@ class ReportController extends Controller
             $query->where('category_id', $request->category);
         }
 
-        $sortBy = $request->get('sort_by', 'sold');
-        $order = $request->get('order', 'desc');
+        $this->applySorting($query, $request);
 
-        switch ($sortBy) {
-            case 'price':
-                $query->orderBy('price', $order);
-                break;
-            case 'stock':
-                $query->orderBy('stock', $order);
-                break;
-            case 'wishlist':
-                $query->orderBy('total_wishlist', $order);
-                break;
-            case 'sold':
-            default:
-                $query->orderBy('total_sold', $order);
-                break;
-        }
-
-        $query->orderBy('id', 'desc');
         $products = $query->get();
 
         $pdf = Pdf::loadView('admin.reports.print', compact('products', 'categories'));
@@ -48,50 +40,47 @@ class ReportController extends Controller
         return $pdf->download('sales-report-'.now()->format('Y-m-d').'.pdf');
     }
 
+    /**
+     * Display the interactive report page with optional category filter and sorting.
+     * Paginated to 50 rows per page for performance on large catalogues.
+     */
     public function index(Request $request)
     {
         $categories = Category::all();
 
         $query = Product::with('category')
-            ->withSum(['orderItems as total_sold' => function ($query) {
-                // You can add conditions here if you only want to count paid/completed orders
-            }], 'quantity')
+            ->withSum('orderItems as total_sold', 'quantity')
             ->withCount(['wishlistedBy as total_wishlist']);
 
-        // Apply Category Filter
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
-        // Apply Dynamic Sorting
-        $sortBy = $request->get('sort_by', 'sold');
-        $order = $request->get('order', 'desc');
+        $this->applySorting($query, $request);
 
-        switch ($sortBy) {
-            case 'price':
-                $query->orderBy('price', $order);
-                break;
-            case 'stock':
-                $query->orderBy('stock', $order);
-                break;
-            case 'wishlist':
-                $query->orderBy('total_wishlist', $order);
-                break;
-            case 'sold':
-            default:
-                $query->orderBy('total_sold', $order);
-                break;
-        }
-
-        // Also order by id as a secondary sort
-        $query->orderBy('id', 'desc');
-
-        if ($request->has('print')) {
-            $products = $query->get();
-        } else {
-            $products = $query->paginate(50)->withQueryString();
-        }
+        $products = $query->paginate(50)->withQueryString();
 
         return view('admin.reports.index', compact('products', 'categories'));
+    }
+
+    /**
+     * Apply sort column and direction from the request to the query.
+     * Falls back to 'sold desc' when parameters are missing or unrecognised.
+     * A secondary sort by id desc ensures a stable, deterministic order.
+     */
+    private function applySorting($query, Request $request): void
+    {
+        $sortBy = $request->get('sort_by', 'sold');
+        $order  = $request->get('order', 'desc');
+
+        match ($sortBy) {
+            'price'    => $query->orderBy('price', $order),
+            'stock'    => $query->orderBy('stock', $order),
+            'wishlist' => $query->orderBy('total_wishlist', $order),
+            default    => $query->orderBy('total_sold', $order),
+        };
+
+        // Tie-break by id so pagination pages don't shuffle between requests
+        $query->orderBy('id', 'desc');
     }
 }

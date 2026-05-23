@@ -1,3 +1,12 @@
+{{--
+    admin/partials/noble_sidebar.blade.php — Admin left sidebar navigation
+    =========================================================================
+    Noble UI sidebar: brand logo, nav links grouped by section (Dashboard, Products,
+    Orders, Customers, Drivers, Reports, Mail, Settings, Roles).
+    Active link state via Route::is() comparisons.
+    Permission-gated links hidden based on auth()->user()->hasPermission().
+    Included by layouts/admin_noble.blade.php.
+--}}
 <nav class="sidebar">
   <div class="sidebar-header">
     <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">

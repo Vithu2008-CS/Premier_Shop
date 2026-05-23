@@ -1,3 +1,9 @@
+{{--
+    profile/partials/update-profile-information-form.blade.php — Profile info update form
+    ========================================================================================
+    Fields: name, email, phone. Email change triggers re-verification notice.
+    PATCH → profile.update → ProfileController::update()
+--}}
 <section>
     <header class="mb-4">
         <h4 class="fw-bold mb-1">

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * PasswordResetTest — Feature tests for the forgot-password / reset-password flow.
+ * Covers: forgot-password page renders, reset link notification dispatched,
+ *         reset-password page renders with valid token, password reset with valid token.
+ * Password must meet Password::defaults() (min 12 chars) — uses 'StrongP@ssw0rd123!'.
+ */
+
 namespace Tests\Feature\Auth;
 
 use App\Models\User;

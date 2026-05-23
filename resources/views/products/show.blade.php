@@ -1,3 +1,12 @@
+{{--
+    products/show.blade.php — Single product detail page
+    =====================================================
+    Sections: image gallery, product info (price, offer badge, stock), add-to-cart form,
+    bulk-buy offer callout, product description, reviews section (approved only),
+    leave-a-review form (auth users who purchased), related products row.
+    Variables: $product (with reviews, category), $relatedProducts, $userReview,
+    $hasPurchased, $wishlistIds (auth user's wishlisted product IDs)
+--}}
 @extends('layouts.app')
 @section('title', $product->name . ' — Premier Shop')
 

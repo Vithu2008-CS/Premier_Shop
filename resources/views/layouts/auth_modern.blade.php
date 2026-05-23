@@ -1,3 +1,16 @@
+{{--
+    layouts/auth_modern.blade.php — Authentication pages layout
+    =============================================================
+    Used by: login, register, OTP verify, forgot-password, reset-password, confirm-password.
+
+    Two-column split design:
+     - Left: auth-side-form — the actual form (scrollable, hidden scrollbar)
+     - Right: auth-side-illustration — decorative image panel (hidden below lg breakpoint)
+
+    Inline CSS handles the split layout and all auth component styles.
+    Dark/light theme pre-render script syncs with the user's saved theme preference.
+    @yield('content') — entire page content (form + illustration) rendered by each auth view.
+--}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>

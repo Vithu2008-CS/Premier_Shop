@@ -6,8 +6,17 @@ use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
+/**
+ * Customer-facing order management: listing, detail view, cancellation,
+ * and PDF receipt download.
+ * Every action enforces ownership — users cannot see or modify other people's orders.
+ */
 class OrderController extends Controller
 {
+    /**
+     * Download a PDF receipt for the authenticated user's order.
+     * Aborts 403 if the order belongs to a different user.
+     */
     public function print(Order $order)
     {
         if ($order->user_id !== auth()->id()) {
@@ -20,6 +29,7 @@ class OrderController extends Controller
         return $pdf->download("order-{$order->order_number}.pdf");
     }
 
+    /** List the authenticated user's orders, newest first, paginated. */
     public function index()
     {
         $orders = Order::where('user_id', auth()->id())
@@ -29,6 +39,10 @@ class OrderController extends Controller
         return view('orders.index', compact('orders'));
     }
 
+    /**
+     * Show an order's detail page.
+     * Accessible to the owning customer or any admin user.
+     */
     public function show(Order $order)
     {
         if ($order->user_id !== auth()->id() && ! auth()->user()->isAdmin()) {
@@ -40,6 +54,12 @@ class OrderController extends Controller
         return view('orders.show', compact('order'));
     }
 
+    /**
+     * Cancel a pending order.
+     * Only 'pending' status orders can be cancelled — once processing has started
+     * the customer must contact support.
+     * Stock is restored and loyalty points are clawed back via Order::restoreStock().
+     */
     public function cancel(Request $request, Order $order)
     {
         if ($order->user_id !== auth()->id()) {
@@ -50,15 +70,14 @@ class OrderController extends Controller
             return back()->with('error', 'Only pending orders can be cancelled.');
         }
 
-        $request->validate([
-            'cancellation_reason' => 'required|string|max:1000',
-        ]);
+        $request->validate(['cancellation_reason' => 'required|string|max:1000']);
 
         $order->update([
-            'status' => 'cancelled',
+            'status'              => 'cancelled',
             'cancellation_reason' => $request->cancellation_reason,
         ]);
 
+        // Restore product stock and reverse any loyalty point transactions
         $order->restoreStock();
 
         return back()->with('success', 'Order cancelled successfully.');

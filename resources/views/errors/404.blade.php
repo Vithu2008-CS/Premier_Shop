@@ -1,3 +1,9 @@
+{{--
+    errors/404.blade.php — 404 Not Found error page
+    =================================================
+    Styled error page using storefront layout. Shows friendly message,
+    search link, and back-to-home button.
+--}}
 @extends('layouts.app')
 @section('title', '404 - Page Not Found — Premier Shop')
 

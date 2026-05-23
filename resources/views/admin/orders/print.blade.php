@@ -1,3 +1,11 @@
+{{--
+    admin/orders/print.blade.php — Printable order receipt (standalone)
+    =====================================================================
+    No layout wrapper — standalone HTML page intended for browser print.
+    Includes shop logo/name, order details, line items, totals, QR code.
+    Window.print() called automatically on page load.
+    Variable: $order (with items.product, user)
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

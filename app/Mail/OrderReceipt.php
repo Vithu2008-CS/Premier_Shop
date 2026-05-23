@@ -9,6 +9,16 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Order confirmation email sent to the customer immediately after checkout.
+ *
+ * Sent by CheckoutController::process() after the DB transaction commits.
+ * A copy of the rendered HTML is also archived in the ContactMessage sent
+ * folder so admin can review all outbound order receipts in the mail centre.
+ *
+ * The Order is passed with items.product and user already loaded to avoid
+ * N+1 queries inside the email template.
+ */
 class OrderReceipt extends Mailable
 {
     use Queueable, SerializesModels;

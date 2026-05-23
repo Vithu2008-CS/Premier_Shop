@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * ProfileTest — Feature tests for profile edit, update, and account deletion.
+ * Covers: page renders, name/email update (email change nullifies verified_at),
+ *         verified_at preserved when email unchanged, account deletion with correct
+ *         and wrong password.
+ */
+
 namespace Tests\Feature;
 
 use App\Models\User;

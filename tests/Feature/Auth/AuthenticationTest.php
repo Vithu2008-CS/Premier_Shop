@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * AuthenticationTest — Feature tests for login and logout.
+ * Covers: login page renders, valid credentials authenticate + redirect /,
+ *         invalid password keeps guest, logout destroys session.
+ */
+
 namespace Tests\Feature\Auth;
 
 use App\Models\User;

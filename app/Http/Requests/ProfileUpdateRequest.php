@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * ProfileUpdateRequest — Validation rules for profile info update.
+ * Email uniqueness rule ignores the current user's own email (Rule::unique ignore).
+ * Email change nullifies email_verified_at in ProfileController::update().
+ */
+
 namespace App\Http\Requests;
 
 use App\Models\User;

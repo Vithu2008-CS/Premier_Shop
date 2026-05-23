@@ -1,3 +1,10 @@
+{{--
+    admin/partials/noble_navbar.blade.php — Admin top navigation bar
+    ==================================================================
+    Sidebar toggle button, global search form, notification bell (dropdown from
+    partials/notifications-dropdown.blade.php), admin avatar/name with logout dropdown.
+    Included by layouts/admin_noble.blade.php.
+--}}
 <nav class="navbar">
   <a href="#" class="sidebar-toggler">
     <i data-feather="menu"></i>

@@ -1,3 +1,10 @@
+{{--
+    auth/verify-email.blade.php — Email verification notice gate
+    ==============================================================
+    Shown when a user is logged in but email_verified_at is null.
+    Displays a prompt to check email + resend button.
+    POST → verification.send → EmailVerificationNotificationController::store() (throttle:6,1)
+--}}
 @extends('layouts.app')
 @section('title', 'Verify Email — Premier Shop')
 

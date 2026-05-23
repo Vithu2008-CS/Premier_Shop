@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create reviews table (product_id, user_id, rating, body, is_approved). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

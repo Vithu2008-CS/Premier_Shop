@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: add reward_points balance to users; add loyalty_points_used and loyalty_discount to orders. */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

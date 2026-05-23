@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create reward_point_transactions table (user_id, order_id, type, amount signed integer). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

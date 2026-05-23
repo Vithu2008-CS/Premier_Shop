@@ -1,3 +1,10 @@
+{{--
+    admin/customers/index.blade.php — Customer list
+    =================================================
+    Paginated table of registered customers: name, email, order count, join date.
+    Search filter by name/email. Links to customer detail view.
+    Variable: $customers (paginated)
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Customers')
 

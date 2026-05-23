@@ -1,3 +1,12 @@
+{{--
+    layouts/driver.blade.php — Driver portal layout
+    =================================================
+    Used by all driver routes (dashboard, order details).
+
+    Minimal dark navbar with driver badge, user dropdown (logout only),
+    flash message support, @yield('content'), simple footer, @stack('scripts').
+    Shares the same Vite assets (Bootstrap) as the storefront.
+--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>

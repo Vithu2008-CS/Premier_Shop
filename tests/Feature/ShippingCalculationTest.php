@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * ShippingCalculationTest — Feature tests for checkout shipping cost logic.
+ * Covers: flat-rate fee, free delivery threshold, distance-based surcharge.
+ * Uses RefreshDatabase; seeds a Setting row and a product in setUp().
+ */
+
 namespace Tests\Feature;
 
 use App\Models\Product;

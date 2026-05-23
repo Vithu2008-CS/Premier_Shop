@@ -1,5 +1,7 @@
 <?php
 
+/** Migration: create contact_messages table (name, email, subject, message, folder, is_read, is_starred). */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

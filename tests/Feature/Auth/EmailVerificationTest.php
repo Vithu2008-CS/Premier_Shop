@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * EmailVerificationTest — Feature tests for email verification flow.
+ * Covers: verify-email page renders, valid signed URL marks verified + fires Verified event,
+ *         invalid hash leaves user unverified.
+ */
+
 namespace Tests\Feature\Auth;
 
 use App\Models\User;

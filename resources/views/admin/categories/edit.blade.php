@@ -1,3 +1,10 @@
+{{--
+    admin/categories/edit.blade.php — Edit category form
+    ======================================================
+    Same fields as create + current image preview with replace option.
+    PUT → admin.categories.update → CategoryController::update()
+    Variable: $category
+--}}
 @extends('layouts.admin_noble')
 @section('title', 'Edit Category')
 

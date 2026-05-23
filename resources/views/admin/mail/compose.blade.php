@@ -1,3 +1,12 @@
+{{--
+    admin/mail/compose.blade.php — Compose / edit draft email
+    ===========================================================
+    Select2 recipient picker, SimpleMDE markdown body editor.
+    Send → MailController::send() stores in sent folder + dispatches Mailable.
+    Save draft → MailController::saveDraft() stores in draft folder (no send).
+    $draftId non-null → editing existing draft; form pre-populated.
+    Variables: $customers (for recipient picker), $draftId?, $draft? (ContactMessage)
+--}}
 @extends('layouts.admin_noble')
 
 @section('title', isset($draftId) && $draftId ? 'Edit Draft' : 'Compose Message')
