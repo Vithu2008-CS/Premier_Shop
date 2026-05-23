@@ -220,7 +220,7 @@ class CheckoutController extends Controller
                     $item->product->decrement('stock', $item->quantity);
                 }
 
-                if (session('coupon')) {
+                if ($couponCode !== null) {
                     $coupon = Coupon::find(session('coupon.id'));
                     if ($coupon) {
                         $coupon->increment('times_used');

@@ -31,8 +31,6 @@ Route::get('/products/{slug}', [ProductController::class, 'show'])->name('produc
 
 // Authenticated customer routes
 Route::middleware('auth')->group(function () {
-    // Reviews
-    Route::post('/products/{product}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -40,9 +38,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
 
-    // Shipping Settings API
+    // Shipping Settings API — only expose non-sensitive fields
     Route::get('/api/shipping-settings', function () {
-        return \App\Models\Setting::first();
+        $s = \App\Models\Setting::first();
+        if (! $s) {
+            return response()->json(['flat_rate_fee' => 5.99, 'free_delivery_threshold' => 50, 'free_delivery_radius_miles' => 0]);
+        }
+
+        return response()->json([
+            'flat_rate_fee' => $s->flat_rate_fee,
+            'free_delivery_threshold' => $s->free_delivery_threshold,
+            'free_delivery_radius_miles' => $s->free_delivery_radius_miles,
+            'surcharge_per_mile' => $s->surcharge_per_mile,
+        ]);
     });
 
     // Checkout
@@ -60,8 +68,6 @@ Route::middleware('auth')->group(function () {
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-    Route::get('/profile/orders', [ProfileController::class, 'orders'])->name('profile.orders');
     Route::get('/profile/rewards', [ProfileController::class, 'rewards'])->name('profile.rewards');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
