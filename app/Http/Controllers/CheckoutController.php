@@ -163,29 +163,31 @@ class CheckoutController extends Controller
         $settings = Setting::first();
         $subtotal  = $purchasedItems->sum('line_total');
 
-        // ── Shipping calculation ─────────────────────────────────────────────
-        $shippingCost = $settings ? $settings->flat_rate_fee : 5.99;
-        $distance     = null;
+        // ── Shipping calculation using new dynamic engine ───────────────────
+        $rates = \App\Models\ShippingRate::first() ?? (object) [
+            'base_connection_fee' => 5.00,
+            'per_mile_rate'       => 0.50,
+            'per_kg_surcharge'    => 0.20,
+        ];
 
-        if ($settings) {
-            $origin      = $settings->origin_address ?? config('app.address', 'United Kingdom');
-            $destination = "{$request->address_line}, {$request->city}, UK";
-            $distance    = $this->shippingService->calculateDrivingDistance($origin, $destination);
+        $baseFee        = (float) $rates->base_connection_fee;
+        $perMileRate    = (float) $rates->per_mile_rate;
+        $perKgSurcharge = (float) $rates->per_kg_surcharge;
 
-            if ($subtotal >= $settings->free_delivery_threshold) {
-                // Order value qualifies for free delivery
-                $shippingCost = 0.00;
-            } elseif ($distance !== null) {
-                $distanceInMiles = $distance * 0.621371; // km → miles
-                if ($distanceInMiles <= $settings->free_delivery_radius_miles) {
-                    // Within free local delivery radius
-                    $shippingCost = 0.00;
-                } else {
-                    // Flat base + per-extra-mile surcharge beyond the free radius
-                    $extraMiles   = max(0, $distanceInMiles - $settings->free_delivery_radius_miles);
-                    $shippingCost = $settings->flat_rate_fee + ($extraMiles * $settings->surcharge_per_mile);
-                }
-            }
+        $shippingCalcService = new \App\Services\ShippingCalculationService();
+        $totalWeight = $shippingCalcService->calculateCartWeight($purchasedItems);
+
+        $destination = "{$request->address_line}, {$request->city}, UK";
+        $distanceMiles = $shippingCalcService->calculateDrivingDistance($destination);
+
+        if ($distanceMiles !== null) {
+            $shippingCost = $baseFee + ($distanceMiles * $perMileRate) + ($totalWeight * $perKgSurcharge);
+            $distance = $distanceMiles;
+        } else {
+            // Robust fallback system: apply setting's flat rate or standard default
+            $flatRate = $settings ? $settings->flat_rate_fee : 5.99;
+            $shippingCost = (float) $flatRate;
+            $distance = null;
         }
 
         // ── Coupon discount ──────────────────────────────────────────────────
