@@ -527,6 +527,37 @@
         .avatar-upload-wrapper:hover .avatar-upload-overlay {
             opacity: 1;
         }
+
+        /* Premium Brand Gradient Buttons */
+        .btn-premium-gradient {
+            background: linear-gradient(135deg, #6C5CE7 0%, #8E2DE2 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        
+        .btn-premium-gradient:hover {
+            background: linear-gradient(135deg, #8E2DE2 0%, #6C5CE7 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35) !important;
+            color: #ffffff !important;
+        }
+
+        /* Elite Professional Status Badges */
+        .status-badge.status-pending { background: rgba(212, 175, 55, 0.1) !important; color: #8A6D1C !important; }
+        [data-bs-theme="dark"] .status-badge.status-pending { background: rgba(212, 175, 55, 0.18) !important; color: #E5C158 !important; }
+
+        .status-badge.status-processing { background: rgba(2, 128, 144, 0.08) !important; color: #028090 !important; }
+        [data-bs-theme="dark"] .status-badge.status-processing { background: rgba(2, 128, 144, 0.18) !important; color: #00E5FF !important; }
+
+        .status-badge.status-shipped { background: rgba(108, 92, 231, 0.08) !important; color: #6C5CE7 !important; }
+        [data-bs-theme="dark"] .status-badge.status-shipped { background: rgba(162, 155, 254, 0.18) !important; color: #A29BFE !important; }
+
+        .status-badge.status-delivered { background: rgba(42, 157, 143, 0.08) !important; color: #2A9D8F !important; }
+        [data-bs-theme="dark"] .status-badge.status-delivered { background: rgba(42, 157, 143, 0.18) !important; color: #4ADBB3 !important; }
+
+        .status-badge.status-cancelled { background: rgba(127, 140, 141, 0.1) !important; color: #5E6A75 !important; }
+        [data-bs-theme="dark"] .status-badge.status-cancelled { background: rgba(255, 255, 255, 0.08) !important; color: #BDC3C7 !important; }
     </style>
     
     {{-- Pre-render Theme Logic --}}

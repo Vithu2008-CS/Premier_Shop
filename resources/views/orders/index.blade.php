@@ -36,18 +36,18 @@
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3) !important;
     }
 
-    /* Left border status color highlights & responsive glow */
-    .order-card.border-pending { border-left-color: #f1c40f !important; }
-    .order-card.border-processing { border-left-color: #00cec9 !important; }
-    .order-card.border-shipped { border-left-color: #6c5ce7 !important; }
-    .order-card.border-delivered { border-left-color: #2ecc71 !important; }
-    .order-card.border-cancelled { border-left-color: #e74c3c !important; }
+    /* Dynamic status indicator left border - Elite Professional Colors */
+    .order-card.border-pending { border-left-color: #D4AF37 !important; }
+    .order-card.border-processing { border-left-color: #028090 !important; }
+    .order-card.border-shipped { border-left-color: #6C5CE7 !important; }
+    .order-card.border-delivered { border-left-color: #2A9D8F !important; }
+    .order-card.border-cancelled { border-left-color: #7F8C8D !important; }
 
-    .order-card.border-pending:hover { border-color: rgba(241, 196, 15, 0.25) !important; box-shadow: 0 16px 32px rgba(241, 196, 15, 0.08) !important; transform: translateY(-4px); }
-    .order-card.border-processing:hover { border-color: rgba(0, 206, 201, 0.25) !important; box-shadow: 0 16px 32px rgba(0, 206, 201, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-pending:hover { border-color: rgba(212, 175, 55, 0.25) !important; box-shadow: 0 16px 32px rgba(212, 175, 55, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-processing:hover { border-color: rgba(2, 128, 144, 0.25) !important; box-shadow: 0 16px 32px rgba(2, 128, 144, 0.08) !important; transform: translateY(-4px); }
     .order-card.border-shipped:hover { border-color: rgba(108, 92, 231, 0.25) !important; box-shadow: 0 16px 32px rgba(108, 92, 231, 0.08) !important; transform: translateY(-4px); }
-    .order-card.border-delivered:hover { border-color: rgba(46, 204, 113, 0.25) !important; box-shadow: 0 16px 32px rgba(46, 204, 113, 0.08) !important; transform: translateY(-4px); }
-    .order-card.border-cancelled:hover { border-color: rgba(231, 76, 60, 0.25) !important; box-shadow: 0 16px 32px rgba(231, 76, 60, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-delivered:hover { border-color: rgba(42, 157, 143, 0.25) !important; box-shadow: 0 16px 32px rgba(42, 157, 143, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-cancelled:hover { border-color: rgba(127, 140, 141, 0.25) !important; box-shadow: 0 16px 32px rgba(127, 140, 141, 0.08) !important; transform: translateY(-4px); }
 
     .order-card-header {
         background: rgba(108, 92, 231, 0.015);
