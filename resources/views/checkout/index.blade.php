@@ -78,6 +78,80 @@
                             <input type="text" name="phone" id="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone', $defaultAddress->phone ?? auth()->user()->phone) }}" placeholder="e.g. 07123456789" required style="border-radius: 12px; padding: 14px 20px;">
                             @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
+
+                        <!-- Payment Method Section -->
+                        <div class="mt-5 mb-4">
+                            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                                <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle me-3" style="width:32px;height:32px;font-size:0.9rem;">2</span>
+                                Payment Method
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="payment_method" id="pay_card" value="Debit/Credit Card" checked required>
+                                    <label class="btn btn-outline-primary w-100 py-3 px-3 d-flex flex-column align-items-center gap-2" for="pay_card" style="border-radius: 16px; border-width: 2px;">
+                                        <i class="bi bi-credit-card-2-front fs-2"></i>
+                                        <span class="fw-bold small">Debit/Credit Card</span>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="payment_method" id="pay_bank" value="Bank Transfer" required>
+                                    <label class="btn btn-outline-primary w-100 py-3 px-3 d-flex flex-column align-items-center gap-2" for="pay_bank" style="border-radius: 16px; border-width: 2px;">
+                                        <i class="bi bi-bank fs-2"></i>
+                                        <span class="fw-bold small">Bank Transfer</span>
+                                    </label>
+                                </div>
+                            </div>
+                            @error('payment_method') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
+
+                            <!-- Secure Card Details Drawer -->
+                            <div id="cardDetailsContainer" class="mt-4 p-4 border rounded-4 bg-light shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-shield-lock-fill text-success fs-5"></i>
+                                    Secure Card Details
+                                </h6>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted px-1">CARDHOLDER NAME</label>
+                                    <input type="text" name="card_name" id="card_name" class="form-control form-control-lg border-0 bg-white" placeholder="John Doe" style="border-radius: 10px;" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-muted px-1">CARD NUMBER</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-0 pe-0" style="border-radius: 10px 0 0 10px;"><i class="bi bi-credit-card text-muted"></i></span>
+                                        <input type="text" name="card_number" id="card_number" class="form-control form-control-lg border-0 bg-white ps-2" placeholder="4111 2222 3333 4444" style="border-radius: 0 10px 10px 0;" required>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold text-muted px-1">EXPIRY DATE</label>
+                                        <input type="text" name="card_expiry" id="card_expiry" class="form-control form-control-lg border-0 bg-white" placeholder="MM/YY" style="border-radius: 10px;" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-bold text-muted px-1">CVV</label>
+                                        <input type="password" name="card_cvv" id="card_cvv" class="form-control form-control-lg border-0 bg-white" placeholder="•••" maxlength="3" style="border-radius: 10px;" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bank Transfer Details Drawer (Collapsible) -->
+                            <div id="bankDetailsContainer" class="mt-4 p-4 border rounded-4 bg-light shadow-sm d-none" style="border-radius: 16px; transition: all 0.3s ease;">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                    <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+                                    Bank Transfer Instructions
+                                </h6>
+                                <p class="small text-muted mb-3">Please transfer the total amount to the bank account below. Your order will be processed once the funds clear.</p>
+                                <div class="bg-white p-3 rounded-3 mb-2">
+                                    <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Bank Name:</span> <strong class="text-dark">Premier Retail Bank</strong></div>
+                                    <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Account Name:</span> <strong class="text-dark">Premier Shop Ltd</strong></div>
+                                    <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Sort Code:</span> <strong class="text-dark">12-34-56</strong></div>
+                                    <div class="d-flex justify-content-between small"><span class="text-muted">Account Number:</span> <strong class="text-dark">98765432</strong></div>
+                                </div>
+                                <div class="x-small text-warning bg-warning bg-opacity-10 p-2.5 rounded text-center">
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i> Please use your Order Number as the transfer reference!
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="d-none d-lg-block">
                             <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mt-4" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);">
                                 <i class="bi bi-shield-lock-fill me-2"></i> Place Order Now
@@ -191,7 +265,7 @@
                     </div>
 
                     <div class="d-lg-none">
-                        <button type="button" onclick="document.getElementById('checkoutForm').submit()" class="btn btn-primary btn-lg w-100 py-3" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);">
+                        <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg w-100 py-3" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);">
                             <i class="bi bi-shield-lock-fill me-2"></i> Place Order
                         </button>
                     </div>
@@ -353,6 +427,37 @@
                 }
             }
         });
+
+        // Payment Method Toggle handler
+        const payCard = document.getElementById('pay_card');
+        const payBank = document.getElementById('pay_bank');
+        const cardContainer = document.getElementById('cardDetailsContainer');
+        const bankContainer = document.getElementById('bankDetailsContainer');
+        
+        const cardInputs = ['card_name', 'card_number', 'card_expiry', 'card_cvv'];
+        
+        function togglePaymentDrawer() {
+            if (payCard && payCard.checked) {
+                cardContainer.classList.remove('d-none');
+                bankContainer.classList.add('d-none');
+                cardInputs.forEach(id => document.getElementById(id).setAttribute('required', 'required'));
+            } else if (payBank && payBank.checked) {
+                cardContainer.classList.add('d-none');
+                bankContainer.classList.remove('d-none');
+                cardInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    input.removeAttribute('required');
+                    input.value = '';
+                });
+            }
+        }
+        
+        if (payCard && payBank) {
+            payCard.addEventListener('change', togglePaymentDrawer);
+            payBank.addEventListener('change', togglePaymentDrawer);
+            // Run initially to set correct state
+            togglePaymentDrawer();
+        }
     });
 </script>
 @endsection

@@ -40,9 +40,9 @@ class CategoryController extends Controller
         // Auto-generate a URL-safe slug from the category name
         $validated['slug'] = Str::slug($validated['name']);
 
-        // File upload takes priority over a link; store in /storage/categories
+        // File upload takes priority over a link; store in /storage/categories as WebP
         if ($request->hasFile('image_file')) {
-            $path             = $request->file('image_file')->store('categories', 'public');
+            $path             = \App\Helpers\ImageHelper::storeAsWebp($request->file('image_file'), 'categories');
             $validated['image'] = '/storage/'.$path;
         } elseif ($request->filled('image_link')) {
             $validated['image'] = $request->image_link;
@@ -73,7 +73,7 @@ class CategoryController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         if ($request->hasFile('image_file')) {
-            $path             = $request->file('image_file')->store('categories', 'public');
+            $path             = \App\Helpers\ImageHelper::storeAsWebp($request->file('image_file'), 'categories');
             $validated['image'] = '/storage/'.$path;
         } elseif ($request->filled('image_link')) {
             $validated['image'] = $request->image_link;
