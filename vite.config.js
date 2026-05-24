@@ -16,6 +16,16 @@ export default defineConfig({
             },
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['bootstrap', 'axios'],
+                },
+            },
+        },
+        chunkSizeWarningLimit: 600,
+    },
     server: {
         host: '127.0.0.1',
         watch: {

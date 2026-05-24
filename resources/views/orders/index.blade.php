@@ -157,6 +157,46 @@
     .font-outfit {
         font-family: 'Outfit', sans-serif;
     }
+
+    /* Desktop enhancements */
+    @media (min-width: 992px) {
+        .order-card {
+            margin-bottom: 24px !important;
+        }
+
+        .order-card-header {
+            padding: 14px 28px;
+        }
+
+        .order-card-body {
+            padding: 20px 28px !important;
+        }
+
+        .order-product-thumbnail {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+        }
+
+        .order-remaining-badge {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            font-size: 0.82rem;
+        }
+
+        .order-col-divider {
+            border-right: 1px solid rgba(108, 92, 231, 0.07);
+        }
+
+        [data-bs-theme="dark"] .order-col-divider {
+            border-right-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .order-total-price {
+            font-size: 1.4rem;
+        }
+    }
 </style>
 @endpush
 
@@ -205,19 +245,19 @@
                         </div>
                         
                         <!-- Slim Body -->
-                        <div class="p-3">
+                        <div class="p-3 order-card-body">
                             <div class="row align-items-center g-3">
-                                <div class="col-md-7 col-12">
+                                <div class="col-lg-8 col-md-7 col-12 order-col-divider">
                                     <div class="d-flex align-items-center gap-3 flex-wrap">
                                         <div class="order-product-thumbnail-group">
-                                            @foreach($order->items->take(4) as $item)
+                                            @foreach($order->items->take(5) as $item)
                                                 <a href="{{ route('products.show', $item->product->slug) }}" class="order-product-thumbnail shadow-sm" title="{{ $item->product->name }}">
                                                     <img src="{{ $item->product->first_image }}" alt="" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
                                                 </a>
                                             @endforeach
-                                            @if($order->items->count() > 4)
+                                            @if($order->items->count() > 5)
                                                 <a href="{{ route('orders.show', $order) }}" class="order-remaining-badge">
-                                                    +{{ $order->items->count() - 4 }}
+                                                    +{{ $order->items->count() - 5 }}
                                                 </a>
                                             @endif
                                         </div>
@@ -226,15 +266,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div class="col-md-5 col-12 text-md-end text-start">
+
+                                <div class="col-lg-4 col-md-5 col-12">
                                     <div class="d-flex gap-2 justify-content-md-end justify-content-start align-items-center mt-2 mt-md-0">
-                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-premium-gradient rounded-pill px-3.5 py-1.5 text-white d-inline-flex align-items-center gap-1.5 hover-up shadow-sm btn-sm font-outfit">
+                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-premium-gradient rounded-pill px-4 py-2 text-white d-inline-flex align-items-center gap-2 hover-up shadow-sm font-outfit">
                                             <i class="bi bi-eye"></i>
                                             <span>View Order</span>
                                         </a>
-                                        <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-dark rounded-pill px-2.5 py-1.5 hover-up btn-sm" title="Print Invoice">
-                                            <i class="bi bi-printer fs-6"></i>
+                                        <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 hover-up" title="Print Invoice">
+                                            <i class="bi bi-printer"></i>
                                         </a>
                                     </div>
                                 </div>

@@ -35,38 +35,10 @@
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
-
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
-            const notificationListContent = document.getElementById('notificationListContent');
-            
-            if (notificationMenuTrigger && notificationListContent) {
-                notificationMenuTrigger.addEventListener('show.bs.dropdown', function () {
-                    // Fetch latest notifications
-                    fetch('{{ route("notifications.latest") }}')
-                        .then(response => response.text())
-                        .then(html => {
-                            notificationListContent.innerHTML = html;
-                        })
-                        .catch(error => {
-                            console.error('Error fetching notifications:', error);
-                            notificationListContent.innerHTML = '<div class="p-3 text-center text-danger">Failed to load.</div>';
-                        });
-                });
-            }
-        });
-        function showToast(message, type = 'success') {
-            const toastEl = document.getElementById('liveToast');
-            const toastBody = document.getElementById('toastMessage');
-            toastBody.innerText = message;
-            toastEl.classList.remove('bg-success', 'bg-danger');
-            toastEl.classList.add(type === 'success' ? 'bg-success' : 'bg-danger');
-            const toast = new bootstrap.Toast(toastEl);
-            toast.show();
-        }
-    </script>
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -761,7 +733,7 @@
                                             <div class="tile-header mb-3 pb-2.5 d-flex align-items-center gap-2">
                                                 <div class="tile-icon-frame d-flex align-items-center justify-content-center shadow-sm">
                                                     @if($cat->image)
-                                                        <img src="{{ $cat->image }}" alt="" class="tile-icon-img">
+                                                        <img src="{{ $cat->image }}" alt="" class="tile-icon-img" loading="lazy" decoding="async">
                                                     @else
                                                         <i class="bi bi-grid text-primary"></i>
                                                     @endif
@@ -824,7 +796,7 @@
                         <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-drawer-tile text-decoration-none">
                             <div class="tile-icon">
                                 @if($cat->image)
-                                    <img src="{{ $cat->image }}" alt="">
+                                    <img src="{{ $cat->image }}" alt="" loading="lazy" decoding="async">
                                 @else
                                     <i class="bi bi-tag text-primary"></i>
                                 @endif
@@ -1201,14 +1173,6 @@
             if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
             if (mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
             if (mobileThemeToggleTop) mobileThemeToggleTop.addEventListener('click', toggleTheme);
-            
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 20) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
 
             // Newsletter AJAX
             const nlForm = document.getElementById('newsletterForm');
@@ -1360,6 +1324,26 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
+            const notificationListContent = document.getElementById('notificationListContent');
+
+            if (notificationMenuTrigger && notificationListContent) {
+                notificationMenuTrigger.addEventListener('show.bs.dropdown', function () {
+                    fetch('{{ route("notifications.latest") }}')
+                        .then(response => response.text())
+                        .then(html => {
+                            notificationListContent.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching notifications:', error);
+                            notificationListContent.innerHTML = '<div class="p-3 text-center text-danger">Failed to load.</div>';
+                        });
+                });
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 
