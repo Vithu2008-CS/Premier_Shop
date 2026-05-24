@@ -10,26 +10,57 @@ window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // ============================================================
-// Navbar Scroll Effect
+// Unified RAF-Throttled Scroll Handler
+// (navbar + parallax + scroll-progress in one rAF loop)
 // ============================================================
 const navbar = document.querySelector('.navbar-premium');
-if (navbar) {
-    window.addEventListener('scroll', () => {
-        navbar.classList.toggle('scrolled', window.scrollY > 50);
+const parallaxElements = document.querySelectorAll('.hero-section, .profile-header');
+const progressWrap = document.getElementById('scrollProgress');
+const progressPath = document.querySelector('.scroll-progress-wrap path');
+let progressPathLength = 0;
+
+if (progressWrap && progressPath) {
+    progressPathLength = progressPath.getTotalLength();
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+    progressPath.style.strokeDasharray = `${progressPathLength} ${progressPathLength}`;
+    progressPath.style.strokeDashoffset = progressPathLength;
+    progressPath.getBoundingClientRect();
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
+    progressWrap.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
+
+const handleScroll = () => {
+    const y = window.scrollY;
+    if (navbar) navbar.classList.toggle('scrolled', y > 50);
+    if (parallaxElements.length) {
+        const yPos = -(y * 0.3);
+        parallaxElements.forEach(el => { el.style.backgroundPositionY = `${yPos}px`; });
+    }
+    if (progressWrap && progressPathLength) {
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        progressPath.style.strokeDashoffset = progressPathLength - (y * progressPathLength / height);
+        progressWrap.classList.toggle('active', y > 300);
+    }
+};
+
+let scrollRAF = null;
+window.addEventListener('scroll', () => {
+    if (scrollRAF) return;
+    scrollRAF = requestAnimationFrame(() => { handleScroll(); scrollRAF = null; });
+}, { passive: true });
+handleScroll();
 
 // ============================================================
 // 3D Scroll Animations — Enhanced IntersectionObserver
 // ============================================================
 const revealClasses = '.fade-up, .scale-in, .reveal-3d, .reveal-slide-left, .reveal-slide-right, .reveal-scale, .reveal-flip, .stagger-children';
-const observerOptions = { threshold: 0.08, rootMargin: '0px 0px -30px 0px' };
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
 
-            // For stagger-children: auto-apply delays to children
             if (entry.target.classList.contains('stagger-children')) {
                 Array.from(entry.target.children).forEach((child, i) => {
                     child.style.transitionDelay = `${i * 0.07}s`;
@@ -39,44 +70,31 @@ const observer = new IntersectionObserver((entries) => {
             observer.unobserve(entry.target);
         }
     });
-}, observerOptions);
+}, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 document.querySelectorAll(revealClasses).forEach(el => observer.observe(el));
 
 // ============================================================
-// 3D Mouse-Follow Tilt Effect
+// 3D Mouse-Follow Tilt Effect — RAF throttled
 // ============================================================
 document.querySelectorAll('.tilt-3d').forEach(el => {
+    let tiltRAF = null;
     el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -4;
-        const rotateY = ((x - centerX) / centerX) * 4;
-        el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        if (tiltRAF) return;
+        tiltRAF = requestAnimationFrame(() => {
+            const rect = el.getBoundingClientRect();
+            const rotateX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -4;
+            const rotateY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 4;
+            el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            tiltRAF = null;
+        });
     });
     el.addEventListener('mouseleave', () => {
+        if (tiltRAF) { cancelAnimationFrame(tiltRAF); tiltRAF = null; }
         el.style.transform = `perspective(800px) rotateX(0) rotateY(0)`;
         el.style.transition = 'transform 0.4s ease-out';
         setTimeout(() => { el.style.transition = 'transform 0.1s ease-out'; }, 400);
     });
 });
-
-// ============================================================
-// Parallax Scroll — subtle depth on hero/profile headers
-// ============================================================
-const parallaxElements = document.querySelectorAll('.hero-section, .profile-header');
-if (parallaxElements.length > 0) {
-    window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        parallaxElements.forEach(el => {
-            const speed = 0.3;
-            const yPos = -(scrollY * speed);
-            el.style.backgroundPositionY = `${yPos}px`;
-        });
-    }, { passive: true });
-}
 
 // ============================================================
 // Search Auto-Suggest
@@ -86,7 +104,7 @@ function initSearch(inputId, suggestionsId) {
     const suggestions = document.getElementById(suggestionsId);
     const container = input?.closest('.search-container');
     const searchBtn = container?.querySelector('.search-btn');
-    
+
     if (!input || !suggestions) return;
 
     let debounceTimer;
@@ -113,7 +131,6 @@ function initSearch(inputId, suggestionsId) {
         }
 
         debounceTimer = setTimeout(async () => {
-            // Add loading indicator
             suggestions.innerHTML = '<div class="suggest-loading"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2">Searching...</span></div>';
             suggestions.classList.add('show');
 
@@ -128,7 +145,7 @@ function initSearch(inputId, suggestionsId) {
 
                 suggestions.innerHTML = data.map(item => `
                     <a href="${item.url}" class="suggest-item">
-                        <img src="${item.image}" alt="" class="suggest-img" onerror="this.src='/images/placeholder-product.png'">
+                        <img src="${item.image}" alt="" class="suggest-img" loading="lazy" decoding="async" onerror="this.src='/images/placeholder-product.png'">
                         <div class="suggest-info">
                             <div class="suggest-name">${item.name}</div>
                             <div class="suggest-meta">${item.category || ''} · ${item.price}</div>
@@ -139,10 +156,9 @@ function initSearch(inputId, suggestionsId) {
                 console.error('Search error:', e);
                 suggestions.innerHTML = '<div class="suggest-empty text-danger">Search failed. Please try again.</div>';
             }
-        }, 400); // 400ms debounce
+        }, 400);
     });
 
-    // Submit search on Enter
     input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -150,7 +166,6 @@ function initSearch(inputId, suggestionsId) {
         }
     });
 
-    // Close suggestions on click outside
     document.addEventListener('click', (e) => {
         if (!input.contains(e.target) && !suggestions.contains(e.target)) {
             suggestions.classList.remove('show');
@@ -158,7 +173,6 @@ function initSearch(inputId, suggestionsId) {
     });
 }
 
-// Init desktop and mobile search
 initSearch('searchInput', 'searchSuggestions');
 if (document.getElementById('mobileSearchInput')) {
     initSearch('mobileSearchInput', 'mobileSearchSuggestions');
@@ -179,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (backdrop) backdrop.classList.toggle('show');
         });
 
-        // Close on click outside
         document.addEventListener('click', function(e) {
             if (!menu.contains(e.target) && !trigger.contains(e.target)) {
                 menu.classList.remove('show');
@@ -188,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Close on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 menu.classList.remove('show');
@@ -198,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 // ============================================================
 // Auto-dismiss Alerts
 // ============================================================
@@ -246,41 +259,6 @@ document.querySelectorAll('.qty-stepper').forEach(stepper => {
 });
 
 // ============================================================
-// Premium Circular Scroll-Progress Back-to-Top Widget
-// ============================================================
-const progressWrap = document.getElementById('scrollProgress');
-const progressPath = document.querySelector('.scroll-progress-wrap path');
-
-if (progressWrap && progressPath) {
-    const pathLength = progressPath.getTotalLength();
-    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
-    progressPath.style.strokeDasharray = `${pathLength} ${pathLength}`;
-    progressPath.style.strokeDashoffset = pathLength;
-    progressPath.getBoundingClientRect();
-    progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
-
-    const updateProgress = () => {
-        const scroll = window.pageYOffset || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const progress = pathLength - (scroll * pathLength / height);
-        progressPath.style.strokeDashoffset = progress;
-
-        if (scroll > 300) {
-            progressWrap.classList.add('active');
-        } else {
-            progressWrap.classList.remove('active');
-        }
-    };
-
-    window.addEventListener('scroll', updateProgress);
-    progressWrap.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-    // Run once on load
-    updateProgress();
-}
-
-// ============================================================
 // Smart Flash Sale Countdown Timer (Rolling 48-Hour Baseline)
 // ============================================================
 const initFlashCountdown = () => {
@@ -292,12 +270,11 @@ const initFlashCountdown = () => {
     const mEl = document.getElementById('cd-mins');
     const sEl = document.getElementById('cd-secs');
 
-    // Smart 48-hour rolling timer
     let targetTime = parseInt(localStorage.getItem('flash_deal_target'));
     const now = new Date().getTime();
 
     if (!targetTime || targetTime < now) {
-        targetTime = now + (48 * 60 * 60 * 1000); // 48h from now
+        targetTime = now + (48 * 60 * 60 * 1000);
         localStorage.setItem('flash_deal_target', targetTime);
     }
 
@@ -306,7 +283,6 @@ const initFlashCountdown = () => {
         const difference = targetTime - currentTime;
 
         if (difference <= 0) {
-            // Reset to another 48 hours to maintain a visual marketing campaign
             targetTime = currentTime + (48 * 60 * 60 * 1000);
             localStorage.setItem('flash_deal_target', targetTime);
             return;
@@ -335,28 +311,20 @@ const initMilestoneCounters = () => {
     const counterElements = document.querySelectorAll('.milestone-card .counter-num');
     if (counterElements.length === 0) return;
 
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px'
-    };
-
     const countUp = (el) => {
         const target = parseFloat(el.getAttribute('data-target'));
         const decimals = parseInt(el.getAttribute('data-decimals') || '0');
         const suffix = el.getAttribute('data-suffix') || '';
-        const duration = 1500; // in milliseconds
-        const frameRate = 1000 / 60; // 60 FPS
+        const duration = 1500;
+        const frameRate = 1000 / 60;
         const totalFrames = Math.round(duration / frameRate);
         let frame = 0;
 
         const updateCount = () => {
             frame++;
             const progress = frame / totalFrames;
-            // Ease out quad formula: progress * (2 - progress)
             const easeProgress = progress * (2 - progress);
-            const currentValue = easeProgress * target;
-
-            el.textContent = currentValue.toFixed(decimals) + suffix;
+            el.textContent = (easeProgress * target).toFixed(decimals) + suffix;
 
             if (frame < totalFrames) {
                 requestAnimationFrame(updateCount);
@@ -368,16 +336,16 @@ const initMilestoneCounters = () => {
         requestAnimationFrame(updateCount);
     };
 
-    const observer = new IntersectionObserver((entries) => {
+    const milestoneObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
                 countUp(entry.target);
-                observer.unobserve(entry.target);
+                milestoneObserver.unobserve(entry.target);
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    counterElements.forEach((el) => observer.observe(el));
+    counterElements.forEach((el) => milestoneObserver.observe(el));
 };
 initMilestoneCounters();
 

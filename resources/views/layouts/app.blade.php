@@ -35,38 +35,10 @@
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
-
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
-            const notificationListContent = document.getElementById('notificationListContent');
-            
-            if (notificationMenuTrigger && notificationListContent) {
-                notificationMenuTrigger.addEventListener('show.bs.dropdown', function () {
-                    // Fetch latest notifications
-                    fetch('{{ route("notifications.latest") }}')
-                        .then(response => response.text())
-                        .then(html => {
-                            notificationListContent.innerHTML = html;
-                        })
-                        .catch(error => {
-                            console.error('Error fetching notifications:', error);
-                            notificationListContent.innerHTML = '<div class="p-3 text-center text-danger">Failed to load.</div>';
-                        });
-                });
-            }
-        });
-        function showToast(message, type = 'success') {
-            const toastEl = document.getElementById('liveToast');
-            const toastBody = document.getElementById('toastMessage');
-            toastBody.innerText = message;
-            toastEl.classList.remove('bg-success', 'bg-danger');
-            toastEl.classList.add(type === 'success' ? 'bg-success' : 'bg-danger');
-            const toast = new bootstrap.Toast(toastEl);
-            toast.show();
-        }
-    </script>
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -527,6 +499,37 @@
         .avatar-upload-wrapper:hover .avatar-upload-overlay {
             opacity: 1;
         }
+
+        /* Premium Brand Gradient Buttons */
+        .btn-premium-gradient {
+            background: linear-gradient(135deg, #6C5CE7 0%, #8E2DE2 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        
+        .btn-premium-gradient:hover {
+            background: linear-gradient(135deg, #8E2DE2 0%, #6C5CE7 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35) !important;
+            color: #ffffff !important;
+        }
+
+        /* Elite Professional Status Badges */
+        .status-badge.status-pending { background: rgba(212, 175, 55, 0.1) !important; color: #8A6D1C !important; }
+        [data-bs-theme="dark"] .status-badge.status-pending { background: rgba(212, 175, 55, 0.18) !important; color: #E5C158 !important; }
+
+        .status-badge.status-processing { background: rgba(2, 128, 144, 0.08) !important; color: #028090 !important; }
+        [data-bs-theme="dark"] .status-badge.status-processing { background: rgba(2, 128, 144, 0.18) !important; color: #00E5FF !important; }
+
+        .status-badge.status-shipped { background: rgba(108, 92, 231, 0.08) !important; color: #6C5CE7 !important; }
+        [data-bs-theme="dark"] .status-badge.status-shipped { background: rgba(162, 155, 254, 0.18) !important; color: #A29BFE !important; }
+
+        .status-badge.status-delivered { background: rgba(42, 157, 143, 0.08) !important; color: #2A9D8F !important; }
+        [data-bs-theme="dark"] .status-badge.status-delivered { background: rgba(42, 157, 143, 0.18) !important; color: #4ADBB3 !important; }
+
+        .status-badge.status-cancelled { background: rgba(127, 140, 141, 0.1) !important; color: #5E6A75 !important; }
+        [data-bs-theme="dark"] .status-badge.status-cancelled { background: rgba(255, 255, 255, 0.08) !important; color: #BDC3C7 !important; }
     </style>
     
     {{-- Pre-render Theme Logic --}}
@@ -730,7 +733,7 @@
                                             <div class="tile-header mb-3 pb-2.5 d-flex align-items-center gap-2">
                                                 <div class="tile-icon-frame d-flex align-items-center justify-content-center shadow-sm">
                                                     @if($cat->image)
-                                                        <img src="{{ $cat->image }}" alt="" class="tile-icon-img">
+                                                        <img src="{{ $cat->image }}" alt="" class="tile-icon-img" loading="lazy" decoding="async">
                                                     @else
                                                         <i class="bi bi-grid text-primary"></i>
                                                     @endif
@@ -793,7 +796,7 @@
                         <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-drawer-tile text-decoration-none">
                             <div class="tile-icon">
                                 @if($cat->image)
-                                    <img src="{{ $cat->image }}" alt="">
+                                    <img src="{{ $cat->image }}" alt="" loading="lazy" decoding="async">
                                 @else
                                     <i class="bi bi-tag text-primary"></i>
                                 @endif
@@ -1170,14 +1173,6 @@
             if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
             if (mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
             if (mobileThemeToggleTop) mobileThemeToggleTop.addEventListener('click', toggleTheme);
-            
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 20) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
 
             // Newsletter AJAX
             const nlForm = document.getElementById('newsletterForm');
@@ -1329,6 +1324,26 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
+            const notificationListContent = document.getElementById('notificationListContent');
+
+            if (notificationMenuTrigger && notificationListContent) {
+                notificationMenuTrigger.addEventListener('show.bs.dropdown', function () {
+                    fetch('{{ route("notifications.latest") }}')
+                        .then(response => response.text())
+                        .then(html => {
+                            notificationListContent.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching notifications:', error);
+                            notificationListContent.innerHTML = '<div class="p-3 text-center text-danger">Failed to load.</div>';
+                        });
+                });
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 
