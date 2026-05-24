@@ -46,19 +46,24 @@
                     
                     <h6 class="card-title">Pricing & Inventory</h6>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label class="form-label">Retail Price (£) <span class="text-danger">*</span></label>
                             <input type="number" name="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
                             @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label class="form-label">Wholesale Price (£)</label>
                             <input type="number" name="wholesale_price" class="form-control" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label class="form-label">Stock Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
                             @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Weight (kg) <span class="text-danger">*</span></label>
+                            <input type="number" name="weight" class="form-control @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight) }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
+                            @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                     </div>
                     

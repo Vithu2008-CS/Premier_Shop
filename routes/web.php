@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon')->middleware('throttle:checkout');
     Route::delete('/checkout/coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon');
     Route::post('/checkout/shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculateShipping')->middleware('throttle:checkout'); // AJAX preview
+    Route::post('/checkout/calculate-shipping-dynamic', [\App\Http\Controllers\ShippingCalculationController::class, 'calculate'])->name('checkout.calculateShippingDynamic')->middleware('throttle:checkout');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process')->middleware('throttle:checkout'); // place order
 
     // ── Orders ───────────────────────────────────────────────────────────────
@@ -176,6 +177,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Settings — shop config: shipping, loyalty rates, shop info
     Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
+
+    // Shipping Rates — base, distance, and weight rates
+    Route::get('shipping-rates', [App\Http\Controllers\Admin\ShippingRateController::class, 'index'])->name('shipping-rates.index');
+    Route::put('shipping-rates', [App\Http\Controllers\Admin\ShippingRateController::class, 'update'])->name('shipping-rates.update');
 
     // Admin profile (reuses ProfileController with different view)
     Route::get('profile', [ProfileController::class, 'editAdmin'])->name('profile');
