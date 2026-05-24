@@ -97,6 +97,8 @@
                             <p class="mb-0 text-muted small">{{ $order->shipping_address['address_line'] ?? 'N/A' }}</p>
                             <p class="mb-0 text-muted small">{{ $order->shipping_address['city'] ?? '' }}</p>
                             <p class="mt-2 mb-0 small text-primary"><i class="bi bi-telephone-fill me-1"></i> {{ $order->shipping_address['phone'] ?? 'N/A' }}</p>
+                            <hr class="my-2 opacity-10">
+                            <p class="mb-0 small text-dark"><i class="bi bi-credit-card-2-front-fill me-1 text-primary"></i> <strong>Payment:</strong> {{ $order->payment_method ?? 'Debit/Credit Card' }}</p>
                         </div>
                     </div>
                 </div>

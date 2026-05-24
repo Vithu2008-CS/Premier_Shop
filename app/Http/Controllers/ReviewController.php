@@ -49,11 +49,11 @@ class ReviewController extends Controller
             return back()->with('error', 'You have already reviewed this product.');
         }
 
-        // Upload optional review photos to /storage/reviews
+        // Upload optional review photos as WebP to /storage/reviews
         $photoPaths = [];
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $photo) {
-                $photoPaths[] = $photo->store('reviews', 'public');
+                $photoPaths[] = \App\Helpers\ImageHelper::storeAsWebp($photo, 'reviews');
             }
         }
 

@@ -31,7 +31,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password',
         'dob', 'phone', 'address', 'city',
-        'role_id', 'is_on_duty', 'loyalty_points',
+        'role_id', 'is_on_duty', 'loyalty_points', 'profile_photo',
     ];
 
     protected $hidden = [
@@ -48,6 +48,17 @@ class User extends Authenticatable
             'loyalty_points'    => 'integer',
             'is_on_duty'        => 'boolean',  // driver duty status
         ];
+    }
+
+    // ── Profile Photo Helpers ────────────────────────────────────────────────
+
+    /** Get the user's profile photo URL or default letter-based avatar. */
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        if ($this->profile_photo) {
+            return asset('storage/' . $this->profile_photo);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6C5CE7&color=fff&size=128&font-size=0.33';
     }
 
     // ── Role helpers ─────────────────────────────────────────────────────────

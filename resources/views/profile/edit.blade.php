@@ -19,8 +19,8 @@
     <div class="container position-relative">
         <div class="profile-header-content">
             <div class="d-flex align-items-center gap-3 gap-md-4">
-                <div class="profile-avatar">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                <div class="profile-avatar overflow-hidden" style="width: 76px; height: 76px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.15); background: #fff;">
+                    <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div class="profile-info">
                     <h2 class="profile-name">{{ $user->name }}</h2>

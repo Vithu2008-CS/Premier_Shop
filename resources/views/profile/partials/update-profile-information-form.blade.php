@@ -19,9 +19,29 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-4">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-4" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        {{-- Profile Photo Uploader Section --}}
+        <div class="mb-4 d-flex align-items-center gap-4">
+            <div class="position-relative avatar-upload-wrapper">
+                <div class="avatar-preview-container shadow-sm border border-2 border-primary">
+                    <img id="avatarPreview" src="{{ $user->profile_photo_url }}" alt="Profile Photo" class="w-100 h-100 object-fit-cover">
+                </div>
+                <label for="profile_photo" class="avatar-upload-overlay d-flex align-items-center justify-content-center" title="Upload Photo">
+                    <i class="bi bi-camera-fill text-white fs-5"></i>
+                </label>
+                <input type="file" name="profile_photo" id="profile_photo" class="d-none" accept="image/*" onchange="previewImage(this)">
+            </div>
+            <div>
+                <h6 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Profile Photo</h6>
+                <p class="text-muted small mb-2">Upload a professional avatar. Allowed formats: PNG, JPG, GIF. Max 2MB.</p>
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="document.getElementById('profile_photo').click()">
+                    Choose Photo
+                </button>
+            </div>
+        </div>
 
         <div class="row g-3">
             <div class="col-md-6">
@@ -88,4 +108,19 @@
             @endif
         </div>
     </form>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('avatarPreview');
+                    if (preview) {
+                        preview.src = e.target.result;
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </section>

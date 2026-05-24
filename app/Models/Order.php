@@ -21,7 +21,7 @@ class Order extends Model
         'subtotal', 'discount_amount', 'coupon_code',
         'points_discount', 'points_used',
         'shipping_cost', 'total', 'shipping_address',
-        'payment_intent_id', 'payment_status',
+        'payment_intent_id', 'payment_status', 'payment_method',
         'distance', 'cancellation_reason',
         'processing_date', 'shipped_date', 'delivered_date',
         'driver_id', 'delivery_proof',

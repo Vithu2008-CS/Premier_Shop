@@ -78,7 +78,7 @@ class ReturnRequestController extends Controller
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('returns', 'public');
+            $photoPath = \App\Helpers\ImageHelper::storeAsWebp($request->file('photo'), 'returns');
         }
 
         $returnRequest = ReturnRequest::create([
