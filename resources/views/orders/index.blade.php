@@ -22,6 +22,7 @@
     .order-card {
         background: #ffffff;
         border: 1px solid rgba(108, 92, 231, 0.1) !important;
+        border-left: 5px solid #ced4da !important; /* Dynamic status indicator left border */
         border-radius: 20px;
         box-shadow: 0 8px 24px rgba(108, 92, 231, 0.03) !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -35,11 +36,18 @@
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3) !important;
     }
 
-    .order-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 32px rgba(108, 92, 231, 0.08) !important;
-        border-color: rgba(108, 92, 231, 0.25) !important;
-    }
+    /* Left border status color highlights & responsive glow */
+    .order-card.border-pending { border-left-color: #f1c40f !important; }
+    .order-card.border-processing { border-left-color: #00cec9 !important; }
+    .order-card.border-shipped { border-left-color: #6c5ce7 !important; }
+    .order-card.border-delivered { border-left-color: #2ecc71 !important; }
+    .order-card.border-cancelled { border-left-color: #e74c3c !important; }
+
+    .order-card.border-pending:hover { border-color: rgba(241, 196, 15, 0.25) !important; box-shadow: 0 16px 32px rgba(241, 196, 15, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-processing:hover { border-color: rgba(0, 206, 201, 0.25) !important; box-shadow: 0 16px 32px rgba(0, 206, 201, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-shipped:hover { border-color: rgba(108, 92, 231, 0.25) !important; box-shadow: 0 16px 32px rgba(108, 92, 231, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-delivered:hover { border-color: rgba(46, 204, 113, 0.25) !important; box-shadow: 0 16px 32px rgba(46, 204, 113, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-cancelled:hover { border-color: rgba(231, 76, 60, 0.25) !important; box-shadow: 0 16px 32px rgba(231, 76, 60, 0.08) !important; transform: translateY(-4px); }
 
     .order-card-header {
         background: rgba(108, 92, 231, 0.015);
@@ -163,7 +171,7 @@
         <div class="row stagger-children">
             @foreach($orders as $order)
                 <div class="col-12 fade-up">
-                    <div class="order-card">
+                    <div class="order-card border-{{ $order->status }}">
                         <!-- Slim Compact Header -->
                         <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                             <div class="d-flex flex-wrap align-items-center gap-2">
@@ -221,9 +229,9 @@
                                 
                                 <div class="col-md-5 col-12 text-md-end text-start">
                                     <div class="d-flex gap-2 justify-content-md-end justify-content-start align-items-center mt-2 mt-md-0">
-                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-premium-gradient rounded-pill px-3.5 py-1.5 text-white d-inline-flex align-items-center gap-1 hover-up shadow-sm btn-sm font-outfit">
-                                            <span>Track</span>
-                                            <i class="bi bi-arrow-right-short fs-5 transition-transform"></i>
+                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-premium-gradient rounded-pill px-3.5 py-1.5 text-white d-inline-flex align-items-center gap-1.5 hover-up shadow-sm btn-sm font-outfit">
+                                            <i class="bi bi-eye"></i>
+                                            <span>View Order</span>
                                         </a>
                                         <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-dark rounded-pill px-2.5 py-1.5 hover-up btn-sm" title="Print Invoice">
                                             <i class="bi bi-printer fs-6"></i>
