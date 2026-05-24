@@ -1334,7 +1334,7 @@
             <div class="dropdown" style="display: contents;">
                 <a href="#" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="0,15">
                     <div class="dock-icon-wrapper">
-                        <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 20px; height: 20px; background: #fff;">
+                        <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 24px; height: 24px; background: #fff;">
                             <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                     </div>
