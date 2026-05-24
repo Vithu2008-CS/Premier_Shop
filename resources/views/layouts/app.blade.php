@@ -92,9 +92,20 @@
         }
         
         .dock-item i {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            line-height: 1;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             color: #8E8E93;
+        }
+        
+        .dock-icon-wrapper {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .dock-item:hover, .dock-item.active {
@@ -114,7 +125,7 @@
             text-shadow: 0 0 10px rgba(162, 155, 254, 0.5);
         }
         
-        .dock-item.active i, .dock-item.active .dock-avatar {
+        .dock-item.active .dock-icon-wrapper {
             transform: scale(1.2) translateY(-4px);
         }
         
@@ -1290,15 +1301,21 @@
     <div class="mobile-bottom-dock d-lg-none">
         <div class="dock-wrapper d-flex justify-content-around align-items-center">
             <a href="{{ route('home') }}" class="dock-item {{ request()->routeIs('home') ? 'active' : '' }}">
-                <i class="bi bi-house-door"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-house-door"></i>
+                </div>
                 <span>Home</span>
             </a>
             <a href="javascript:void(0)" id="dockOpenCategories" class="dock-item">
-                <i class="bi bi-grid-3x3-gap"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                </div>
                 <span>Categories</span>
             </a>
             <a href="{{ auth()->check() ? route('cart.index') : route('login') }}" class="dock-item {{ request()->routeIs('cart.index') ? 'active' : '' }} position-relative">
-                <i class="bi bi-bag"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-bag"></i>
+                </div>
                 <span>Cart</span>
                 @auth
                     @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
@@ -1308,14 +1325,18 @@
                 @endauth
             </a>
             <a href="{{ auth()->check() ? route('wishlists.index') : route('login') }}" class="dock-item {{ request()->routeIs('wishlists.index') ? 'active' : '' }}">
-                <i class="bi bi-heart"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-heart"></i>
+                </div>
                 <span>Wishlist</span>
             </a>
             @auth
-            <div class="dropdown">
+            <div class="dropdown" style="display: contents;">
                 <a href="#" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="0,15">
-                    <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 22px; height: 22px; background: #fff; margin-bottom: 2px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
-                        <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="dock-icon-wrapper">
+                        <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 22px; height: 22px; background: #fff;">
+                            <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
                     </div>
                     <span>Profile</span>
                 </a>
@@ -1335,7 +1356,9 @@
             </div>
             @else
             <a href="{{ route('login') }}" class="dock-item">
-                <i class="bi bi-person-circle"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-person-circle"></i>
+                </div>
                 <span>Profile</span>
             </a>
             @endauth

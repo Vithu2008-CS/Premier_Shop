@@ -278,6 +278,39 @@
     .osb-shipped    { background: rgba(108,92,231,0.15); color: #A29BFE; }
     .osb-processing { background: rgba(253,203,110,0.15); color: #fdcb6e; }
     .osb-delivered  { background: rgba(0,184,148,0.12); color: #55efc4; }
+
+    /* ── Mobile fixes ──────────────────────────────────────── */
+    @media (max-width: 767px) {
+        .od-title { font-size: 1.25rem; }
+        .od-subtitle { font-size: 0.78rem; }
+
+        .od-card { border-radius: 16px; margin-bottom: 14px; }
+        .od-card-header { padding: 13px 16px; }
+        .od-card-body { padding: 14px 16px; }
+
+        .customer-avatar { width: 44px; height: 44px; font-size: 1.1rem; }
+        .customer-name { font-size: 0.95rem; }
+        .addr-block { padding: 12px 14px; margin-top: 14px; }
+        .addr-row { font-size: 0.82rem; gap: 8px; }
+
+        /* prevent long product names from overflowing */
+        .item-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .item-row { gap: 10px; padding: 10px 0; }
+        .item-thumb { width: 40px; height: 40px; border-radius: 9px; }
+        .item-price { font-size: 0.85rem; }
+        .item-qty { font-size: 0.72rem; }
+        .order-total-val { font-size: 1.15rem; }
+
+        .od-file-wrap { padding: 16px 12px; }
+        .od-file-icon { font-size: 1.5rem; margin-bottom: 6px; }
+        .od-file-text { font-size: 0.76rem; }
+        .btn-mark-delivered { padding: 12px; font-size: 0.88rem; }
+    }
 </style>
 @endpush
 

@@ -181,6 +181,15 @@
             color: rgba(255,255,255,0.2);
             font-size: 0.78rem;
         }
+
+        /* ── Navbar mobile ─────────────────────────────────────── */
+        @media (max-width: 575px) {
+            .driver-nav { padding: 8px 0; }
+            .driver-brand { font-size: 0.95rem; }
+            .brand-icon { width: 30px; height: 30px; font-size: 0.85rem; border-radius: 9px; }
+            .driver-role-badge { font-size: 0.52rem; padding: 2px 6px; }
+            .driver-avatar { width: 32px; height: 32px; font-size: 0.75rem; }
+        }
     </style>
 </head>
 <body>
