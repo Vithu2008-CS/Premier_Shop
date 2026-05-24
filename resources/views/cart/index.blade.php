@@ -99,9 +99,9 @@
                                             <div class="col-7 col-md-3">
                                                 <div class="mb-1 small fw-bold text-muted d-none d-md-block">Quantity:</div>
                                                 <div class="qty-stepper d-flex align-items-center border rounded-3 bg-white shadow-sm p-1">
-                                                    <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 40px; border-radius: 8px;">−</button>
+                                                    <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 44px; border-radius: 8px;">−</button>
                                                     <input type="number" id="qty-{{ $item->id }}" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control text-center border-0 qty-input fw-bold" style="width:50px; font-size: 1.1rem;" readonly>
-                                                    <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 40px; border-radius: 8px;">+</button>
+                                                    <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 44px; border-radius: 8px;">+</button>
                                                 </div>
                                                 <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Stock: {{ $item->product->stock }}</small>
                                             </div>

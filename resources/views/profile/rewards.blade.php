@@ -40,7 +40,7 @@
                 </div>
                 <div class="card-body p-4 position-relative z-index-1">
                     <h6 class="text-uppercase fw-bold letter-spacing-1 mb-4 opacity-75">Available Balance</h6>
-                    <h1 class="display-3 fw-bold mb-0 text-white">{{ number_format($user->loyalty_points) }}</h1>
+                    <h1 class="display-3 fw-bold mb-0 text-white rewards-balance-num">{{ number_format($user->loyalty_points) }}</h1>
                     <p class="fs-5 opacity-75 mb-0">Pts</p>
                     <div class="mt-4 pt-3 border-top border-white border-opacity-25">
                         <span class="fs-6 opacity-75">Cash Value: <strong class="text-white">£{{ number_format($financialValue, 2) }}</strong></span>
@@ -150,5 +150,8 @@
 
 <style>
 .z-index-1 { z-index: 1; }
+@media (max-width: 575px) {
+    .rewards-balance-num { font-size: clamp(2rem, 12vw, 4.5rem) !important; }
+}
 </style>
 @endsection

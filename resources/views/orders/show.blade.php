@@ -51,13 +51,13 @@
                     <h5 class="fw-bold mb-4">Order Items</h5>
                     @foreach($order->items as $item)
                     <div class="d-flex align-items-center justify-content-between border-bottom py-3 hover-link">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="{{ $item->product->first_image }}" alt="" 
-                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px;" 
+                        <div class="d-flex align-items-center gap-3" style="min-width:0;flex:1;overflow:hidden;">
+                            <img src="{{ $item->product->first_image }}" alt=""
+                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; flex-shrink:0;"
                                  class="shadow-sm" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
-                            <div>
-                                <h6 class="fw-bold mb-1">{{ $item->product->name }}</h6>
-                                <p class="text-muted small mb-0">Quantity: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}</p>
+                            <div style="min-width:0;">
+                                <h6 class="fw-bold mb-1 text-truncate">{{ $item->product->name }}</h6>
+                                <p class="text-muted small mb-0">Qty: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}</p>
                             </div>
                         </div>
                         <div class="text-end">

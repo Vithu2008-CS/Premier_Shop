@@ -22,7 +22,7 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-4 p-lg-5">
                     <div class="d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom">
                         <div>
                             <h4 class="fw-bold mb-1">Return Request</h4>
@@ -58,18 +58,18 @@
                     <div class="list-group list-group-flush border-top">
                         @foreach($return->items as $reqItem)
                             <div class="list-group-item d-flex align-items-center gap-3 py-3 px-0 border-bottom">
-                                <div class="rounded-3 overflow-hidden bg-light" style="width: 50px; height: 50px;">
+                                <div class="rounded-3 overflow-hidden bg-light flex-shrink-0" style="width: 50px; height: 50px;">
                                     @if($reqItem->orderItem->product->images && count($reqItem->orderItem->product->images) > 0)
                                         <img src="{{ $reqItem->orderItem->product->images[0] }}" alt="" style="width:100%;height:100%;object-fit:cover;">
                                     @else
                                         <i class="bi bi-image text-muted d-flex justify-content-center align-items-center h-100"></i>
                                     @endif
                                 </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1 fw-bold">{{ $reqItem->orderItem->product->name }}</h6>
+                                <div class="flex-grow-1" style="min-width:0;">
+                                    <h6 class="mb-1 fw-bold text-truncate">{{ $reqItem->orderItem->product->name }}</h6>
                                     <span class="text-muted small">Qty Returned: {{ $reqItem->quantity }}</span>
                                 </div>
-                                <div class="fw-bold">
+                                <div class="fw-bold flex-shrink-0">
                                     £{{ number_format($reqItem->orderItem->price * $reqItem->quantity, 2) }}
                                 </div>
                             </div>

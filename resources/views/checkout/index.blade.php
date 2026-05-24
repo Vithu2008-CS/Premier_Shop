@@ -19,6 +19,15 @@
 @extends('layouts.app')
 @section('title', 'Checkout - Premier Shop')
 
+@push('styles')
+<style>
+    .x-small { font-size: 0.72rem; line-height: 1.4; }
+    @media (max-width: 767px) {
+        .checkout-item-list { max-height: 180px !important; }
+    }
+</style>
+@endpush
+
 @section('content')
 <section class="section-padding">
     <div class="container">
@@ -26,7 +35,7 @@
     <div class="row g-4">
         <div class="col-lg-7 reveal-slide-left">
             <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-4 p-lg-5">
                     <h5 class="fw-bold mb-4 d-flex align-items-center justify-content-between">
                         <div>
                             <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle me-3" style="width:32px;height:32px;font-size:0.9rem;">1</span>
@@ -146,7 +155,7 @@
                                     <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Sort Code:</span> <strong class="text-dark">12-34-56</strong></div>
                                     <div class="d-flex justify-content-between small"><span class="text-muted">Account Number:</span> <strong class="text-dark">98765432</strong></div>
                                 </div>
-                                <div class="x-small text-warning bg-warning bg-opacity-10 p-2.5 rounded text-center">
+                                <div class="x-small text-warning bg-warning bg-opacity-10 p-2 rounded text-center">
                                     <i class="bi bi-exclamation-circle-fill me-1"></i> Please use your Order Number as the transfer reference!
                                 </div>
                             </div>

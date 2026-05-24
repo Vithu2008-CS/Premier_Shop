@@ -88,14 +88,14 @@
                         @endphp
                         <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:40px;height:40px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                            <button type="submit" class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:44px;height:44px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
                                 <i class="bi bi-heart{{ $inWishlist ? '-fill text-danger' : '' }} fs-5"></i>
                             </button>
                         </form>
                     @endauth
                 </div>
 
-                <h1 class="fw-bold mb-3" style="font-size:2rem;letter-spacing:-0.5px;">{{ $product->name }}</h1>
+                <h1 class="fw-bold mb-3" style="font-size:clamp(1.3rem,5vw,2rem);letter-spacing:-0.5px;">{{ $product->name }}</h1>
 
                 {{-- Rating Summary --}}
                 @if($product->reviews_count > 0)
@@ -156,16 +156,16 @@
 
                 {{-- Add to Cart --}}
                 @if($product->stock > 0)
-                    <div class="desktop-action-bar reveal-fade delay-2">
+                    <div class="desktop-action-bar d-none d-md-block reveal-fade delay-2">
                         <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <div class="row g-3 mb-4">
                                 <div class="col-md-4">
                                     <div class="qty-stepper d-flex align-items-center border rounded-pill p-1 bg-light">
-                                        <button type="button" class="btn btn-white qty-minus shadow-sm rounded-circle p-0" style="width:36px;height:36px;">−</button>
+                                        <button type="button" class="btn btn-white qty-minus shadow-sm rounded-circle p-0" style="width:44px;height:44px;">−</button>
                                         <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="form-control text-center border-0 bg-transparent fw-bold" style="width:50px;" readonly>
-                                        <button type="button" class="btn btn-white qty-plus shadow-sm rounded-circle p-0" style="width:36px;height:36px;">+</button>
+                                        <button type="button" class="btn btn-white qty-plus shadow-sm rounded-circle p-0" style="width:44px;height:44px;">+</button>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -472,8 +472,8 @@
     @if($product->stock > 0)
         <div class="mobile-sticky-action-bar d-md-none glass-card shadow-lg">
             <div class="container d-flex align-items-center justify-content-between py-2 px-3">
-                <div class="product-info-minimal">
-                    <div class="fw-bold text-dark truncate-1" style="font-size: 0.85rem; max-width: 140px;">{{ $product->name }}</div>
+                <div class="product-info-minimal" style="min-width:0;flex:1;overflow:hidden;">
+                    <div class="fw-bold text-dark" style="font-size: 0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $product->name }}</div>
                     <div class="text-primary fw-bold" style="font-size: 1rem;">£{{ number_format($product->price, 2) }}</div>
                 </div>
                 <div class="d-flex gap-2">
@@ -481,7 +481,7 @@
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill p-2" style="width:42px; height:42px;">
+                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill p-2" style="width:44px; height:44px;">
                             <i class="bi bi-bag-plus-fill fs-5"></i>
                         </button>
                     </form>
@@ -489,7 +489,7 @@
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" style="background: var(--ps-gradient); border: none; height: 42px;">
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" style="background: var(--ps-gradient); border: none; height: 44px;">
                             Buy Now
                         </button>
                     </form>
