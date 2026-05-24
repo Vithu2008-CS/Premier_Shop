@@ -92,9 +92,20 @@
         }
         
         .dock-item i {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            line-height: 1;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             color: #8E8E93;
+        }
+        
+        .dock-icon-wrapper {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
         .dock-item:hover, .dock-item.active {
@@ -114,7 +125,7 @@
             text-shadow: 0 0 10px rgba(162, 155, 254, 0.5);
         }
         
-        .dock-item.active i, .dock-item.active .dock-avatar {
+        .dock-item.active .dock-icon-wrapper {
             transform: scale(1.2) translateY(-4px);
         }
         
@@ -1290,15 +1301,21 @@
     <div class="mobile-bottom-dock d-lg-none">
         <div class="dock-wrapper d-flex justify-content-around align-items-center">
             <a href="{{ route('home') }}" class="dock-item {{ request()->routeIs('home') ? 'active' : '' }}">
-                <i class="bi bi-house-door"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-house-door"></i>
+                </div>
                 <span>Home</span>
             </a>
             <a href="javascript:void(0)" id="dockOpenCategories" class="dock-item">
-                <i class="bi bi-grid-3x3-gap"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                </div>
                 <span>Categories</span>
             </a>
             <a href="{{ auth()->check() ? route('cart.index') : route('login') }}" class="dock-item {{ request()->routeIs('cart.index') ? 'active' : '' }} position-relative">
-                <i class="bi bi-bag"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-bag"></i>
+                </div>
                 <span>Cart</span>
                 @auth
                     @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
@@ -1308,19 +1325,43 @@
                 @endauth
             </a>
             <a href="{{ auth()->check() ? route('wishlists.index') : route('login') }}" class="dock-item {{ request()->routeIs('wishlists.index') ? 'active' : '' }}">
-                <i class="bi bi-heart"></i>
+                <div class="dock-icon-wrapper">
+                    <i class="bi bi-heart"></i>
+                </div>
                 <span>Wishlist</span>
             </a>
-            <a href="{{ auth()->check() ? route('profile.edit') : route('login') }}" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
-                @auth
-                    <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 22px; height: 22px; background: #fff; margin-bottom: 2px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
-                        <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+            @auth
+            <div class="dropdown" style="display: contents;">
+                <a href="#" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="0,15">
+                    <div class="dock-icon-wrapper">
+                        <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 24px; height: 24px; background: #fff;">
+                            <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
                     </div>
-                @else
+                    <span>Profile</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 bg-white" style="border-radius: 16px; min-width: 180px; z-index: 1100; margin-bottom: 10px;">
+                    <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2 text-muted"></i>Profile Settings</a></li>
+                    @if(auth()->user()->isAdmin())
+                        <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2 text-muted"></i>Admin Dashboard</a></li>
+                    @endif
+                    <li><hr class="dropdown-divider my-1 opacity-10"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item py-2.5 text-danger small" style="border: none; background: none; width: 100%; text-align: left; font-weight: 600;"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            @else
+            <a href="{{ route('login') }}" class="dock-item">
+                <div class="dock-icon-wrapper">
                     <i class="bi bi-person-circle"></i>
-                @endauth
+                </div>
                 <span>Profile</span>
             </a>
+            @endauth
         </div>
     </div>
 
