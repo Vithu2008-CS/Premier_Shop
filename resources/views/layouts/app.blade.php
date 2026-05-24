@@ -1311,16 +1311,34 @@
                 <i class="bi bi-heart"></i>
                 <span>Wishlist</span>
             </a>
-            <a href="{{ auth()->check() ? route('profile.edit') : route('login') }}" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
-                @auth
+            @auth
+            <div class="dropdown">
+                <a href="#" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="0,15">
                     <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 22px; height: 22px; background: #fff; margin-bottom: 2px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
                         <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                @else
-                    <i class="bi bi-person-circle"></i>
-                @endauth
+                    <span>Profile</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 bg-white" style="border-radius: 16px; min-width: 180px; z-index: 1100; margin-bottom: 10px;">
+                    <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2 text-muted"></i>Profile Settings</a></li>
+                    @if(auth()->user()->isAdmin())
+                        <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2 text-muted"></i>Admin Dashboard</a></li>
+                    @endif
+                    <li><hr class="dropdown-divider my-1 opacity-10"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item py-2.5 text-danger small" style="border: none; background: none; width: 100%; text-align: left; font-weight: 600;"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            @else
+            <a href="{{ route('login') }}" class="dock-item">
+                <i class="bi bi-person-circle"></i>
                 <span>Profile</span>
             </a>
+            @endauth
         </div>
     </div>
 
