@@ -55,11 +55,11 @@ class ProductController extends Controller
         $validated['is_active']          = true;
         $validated['offer_active']       = $request->has('offer_active');
 
-        // Upload each product image to /storage/products and store its public path
+        // Upload each product image to /storage/products and store its public path as WebP
         $images = [];
         if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
-                $path     = $image->store('products', 'public');
+                $path     = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
                 $images[] = '/storage/'.$path;
             }
         }
@@ -106,11 +106,11 @@ class ProductController extends Controller
         $validated['is_age_restricted'] = $request->has('is_age_restricted');
         $validated['offer_active']      = $request->has('offer_active');
 
-        // Append any new uploads to the product's existing image array
+        // Append any new WebP uploads to the product's existing image array
         if ($request->hasFile('product_images')) {
             $images = $product->images ?? [];
             foreach ($request->file('product_images') as $image) {
-                $path     = $image->store('products', 'public');
+                $path     = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
                 $images[] = '/storage/'.$path;
             }
             $validated['images'] = $images;

@@ -131,6 +131,11 @@
                             <i data-feather="truck" class="icon-xs mr-2 text-primary"></i> 
                             {{ $order->shipping_address['phone'] }}
                         </p>
+                        <hr class="my-2">
+                        <p class="text-muted small mb-0 font-weight-bold">
+                            <i data-feather="credit-card" class="icon-xs mr-2 text-success"></i> 
+                            {{ $order->payment_method ?? 'Debit/Credit Card' }} ({{ ucfirst($order->payment_status) }})
+                        </p>
                     @endif
                 @else
                     <p class="text-muted small italic">No shipping address recorded</p>
@@ -150,6 +155,14 @@
                             @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
                             <option value="{{ $s }}" {{ $order->status === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
                             @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="small text-muted font-weight-bold">Payment Status</label>
+                        <select name="payment_status" class="form-control">
+                            <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pending (Unpaid)</option>
+                            <option value="completed" {{ $order->payment_status === 'completed' ? 'selected' : '' }}>Completed (Paid)</option>
                         </select>
                     </div>
 

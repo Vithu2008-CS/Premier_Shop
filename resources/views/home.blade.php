@@ -368,9 +368,9 @@
     ═══════════════════════════════════════════════════════════ --}}
     <section class="milestone-section" aria-label="Our Milestones">
         <div class="container">
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="0">
-                    <div class="milestone-card">
+            <div class="row g-3 justify-content-center">
+                <div class="col-6 col-md-6 col-lg-3 scroll-reveal" data-delay="0">
+                    <div class="milestone-card h-100">
                         <div class="milestone-icon">
                             <i class="bi bi-people-fill"></i>
                         </div>
@@ -380,8 +380,8 @@
                     </div>
                 </div>
                 
-                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="100">
-                    <div class="milestone-card">
+                <div class="col-6 col-md-6 col-lg-3 scroll-reveal" data-delay="100">
+                    <div class="milestone-card h-100">
                         <div class="milestone-icon">
                             <i class="bi bi-box-fill"></i>
                         </div>
@@ -391,8 +391,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="200">
-                    <div class="milestone-card">
+                <div class="col-6 col-md-6 col-lg-3 scroll-reveal" data-delay="200">
+                    <div class="milestone-card h-100">
                         <div class="milestone-icon">
                             <i class="bi bi-award-fill"></i>
                         </div>
@@ -402,8 +402,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-3 scroll-reveal" data-delay="300">
-                    <div class="milestone-card">
+                <div class="col-6 col-md-6 col-lg-3 scroll-reveal" data-delay="300">
+                    <div class="milestone-card h-100">
                         <div class="milestone-icon">
                             <i class="bi bi-chat-heart-fill"></i>
                         </div>
@@ -421,9 +421,9 @@
     ═══════════════════════════════════════════════════════════ --}}
     <section class="trust-bar-modern" aria-label="Why Shop With Us">
         <div class="container">
-            <div class="row g-4">
+            <div class="row g-3">
                 <div class="col-6 col-md-3 scroll-reveal" data-delay="0">
-                    <div class="trust-card">
+                    <div class="trust-card h-100">
                         <div class="trust-card-icon">
                             <i class="bi bi-truck"></i>
                         </div>
@@ -432,7 +432,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-3 scroll-reveal" data-delay="100">
-                    <div class="trust-card">
+                    <div class="trust-card h-100">
                         <div class="trust-card-icon">
                             <i class="bi bi-shield-check"></i>
                         </div>
@@ -441,7 +441,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-3 scroll-reveal" data-delay="200">
-                    <div class="trust-card">
+                    <div class="trust-card h-100">
                         <div class="trust-card-icon">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </div>
@@ -450,7 +450,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-3 scroll-reveal" data-delay="300">
-                    <div class="trust-card">
+                    <div class="trust-card h-100">
                         <div class="trust-card-icon">
                             <i class="bi bi-headset"></i>
                         </div>

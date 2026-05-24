@@ -82,6 +82,7 @@
                 <div class="section-title">Invoice Details</div>
                 <div style="margin-bottom: 5px;"><strong>Receipt #:</strong> <span style="color: #3498db;">{{ $order->order_number }}</span></div>
                 <div style="margin-bottom: 5px;"><strong>Date:</strong> {{ $order->created_at->format('F d, Y') }}</div>
+                <div style="margin-bottom: 5px;"><strong>Payment:</strong> <span style="text-transform: capitalize;">{{ $order->payment_method ?? 'Debit/Credit Card' }}</span></div>
                 <div><strong>Status:</strong> 
                     <span class="badge badge-{{ $order->status }}">{{ strtoupper($order->status) }}</span>
                 </div>

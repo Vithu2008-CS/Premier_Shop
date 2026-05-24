@@ -74,6 +74,461 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
     
+    <style>
+        /* Premium Mobile Bottom Dock (App-Like Sticky Nav) */
+        .mobile-bottom-dock {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 28px;
+            padding: 10px 16px;
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.08), 0 5px 15px rgba(0, 0, 0, 0.03);
+            z-index: 1050;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        [data-bs-theme="dark"] .mobile-bottom-dock {
+            background: rgba(15, 14, 23, 0.75);
+            border-color: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .dock-wrapper {
+            width: 100%;
+        }
+        
+        .dock-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8E8E93;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 2px;
+            position: relative;
+        }
+        
+        .dock-item i {
+            font-size: 1.4rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #8E8E93;
+        }
+        
+        .dock-item:hover, .dock-item.active {
+            color: #6C5CE7;
+        }
+        
+        [data-bs-theme="dark"] .dock-item:hover, [data-bs-theme="dark"] .dock-item.active {
+            color: #A29BFE;
+        }
+        
+        .dock-item:hover i, .dock-item.active i {
+            color: #6C5CE7;
+        }
+        
+        [data-bs-theme="dark"] .dock-item:hover i, [data-bs-theme="dark"] .dock-item.active i {
+            color: #A29BFE;
+            text-shadow: 0 0 10px rgba(162, 155, 254, 0.5);
+        }
+        
+        .dock-item.active i, .dock-item.active .dock-avatar {
+            transform: scale(1.2) translateY(-4px);
+        }
+        
+        /* Subtle glowing dot beneath active item */
+        .dock-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 5px;
+            height: 5px;
+            background-color: #6C5CE7;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #6C5CE7;
+            transition: all 0.3s ease;
+        }
+        
+        [data-bs-theme="dark"] .dock-item.active::after {
+            background-color: #A29BFE;
+            box-shadow: 0 0 8px #A29BFE;
+        }
+        
+        /* Beautiful Premium Footer Enhancements */
+        .footer-premium {
+            position: relative;
+            background: linear-gradient(180deg, #0b0a11 0%, #040307 100%) !important;
+            border-top: 1px solid rgba(162, 155, 254, 0.08) !important;
+            overflow: hidden;
+            padding: 80px 0 0 !important;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .footer-premium::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(162, 155, 254, 0.08) 0%, rgba(162, 155, 254, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .footer-heading {
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            color: #ffffff !important;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 35px;
+            height: 2.5px;
+            background: linear-gradient(90deg, #6C5CE7, #A29BFE);
+            border-radius: 5px;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links li a {
+            position: relative;
+            padding-left: 0;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-block;
+            color: rgba(255, 255, 255, 0.6) !important;
+            text-decoration: none;
+            font-size: 0.88rem;
+        }
+        
+        .footer-links li a:hover {
+            padding-left: 12px;
+            color: #A29BFE !important;
+        }
+        
+        .footer-links li a::before {
+            content: '→';
+            position: absolute;
+            left: -12px;
+            opacity: 0;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #A29BFE;
+            font-weight: bold;
+        }
+        
+        .footer-links li a:hover::before {
+            left: 0px;
+            opacity: 1;
+        }
+        
+        .footer-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 30%, #A29BFE 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .social-icons a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7) !important;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .social-icons a:hover {
+            background: rgba(162, 155, 254, 0.15);
+            border-color: rgba(162, 155, 254, 0.3);
+            color: #A29BFE !important;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(162, 155, 254, 0.2);
+        }
+        
+        .footer-bottom {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px !important;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 60px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Mobile Categories Popover Drawer */
+        .mobile-categories-drawer {
+            position: fixed;
+            bottom: -100%;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            z-index: 1045;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        [data-bs-theme="dark"] .mobile-categories-drawer {
+            background: rgba(20, 19, 30, 0.95);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+        }
+        
+        .mobile-categories-drawer.show {
+            bottom: 95px;
+        }
+        
+        .category-drawer-tile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 10px 12px;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        [data-bs-theme="dark"] .category-drawer-tile {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .category-drawer-tile:hover {
+            background: rgba(108, 92, 231, 0.08);
+            border-color: rgba(108, 92, 231, 0.2);
+        }
+        
+        [data-bs-theme="dark"] .category-drawer-tile:hover {
+            background: rgba(162, 155, 254, 0.15);
+            border-color: rgba(162, 155, 254, 0.3);
+        }
+        
+        .category-drawer-tile .tile-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(108, 92, 231, 0.1);
+            color: #6C5CE7;
+        }
+        
+        [data-bs-theme="dark"] .category-drawer-tile .tile-icon {
+            background: rgba(162, 155, 254, 0.15);
+            color: #A29BFE;
+        }
+        
+        .category-drawer-tile .tile-icon img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+        
+        .category-drawer-tile .tile-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--bs-body-color);
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        .btn-close-custom {
+            background: none;
+            border: none;
+            color: var(--bs-body-color);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        
+        .btn-close-custom:hover {
+            color: #6C5CE7;
+        }
+        
+        /* Compact Milestone & Trust cards on mobile */
+        @media (max-width: 576px) {
+            .milestone-section {
+                padding: 40px 0 !important;
+            }
+            .milestone-card {
+                padding: 15px 10px !important;
+                border-radius: 16px !important;
+            }
+            .milestone-card .milestone-icon {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 1.2rem !important;
+                margin-bottom: 8px !important;
+            }
+            .milestone-card .counter-num {
+                font-size: 1.3rem !important;
+                margin-bottom: 4px !important;
+            }
+            .milestone-card h6 {
+                font-size: 0.75rem !important;
+                margin-bottom: 2px !important;
+            }
+            .milestone-card p {
+                font-size: 0.6rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            .trust-bar-modern {
+                padding: 30px 0 !important;
+            }
+            .trust-card {
+                padding: 12px 8px !important;
+                border-radius: 16px !important;
+            }
+            .trust-card-icon {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 1.1rem !important;
+                margin-bottom: 6px !important;
+            }
+            .trust-card h6 {
+                font-size: 0.75rem !important;
+                margin-bottom: 2px !important;
+            }
+            .trust-card small {
+                font-size: 0.6rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            /* Neat single-row footer column settings */
+            .footer-premium {
+                padding: 50px 0 0 !important;
+            }
+            .footer-heading {
+                font-size: 0.75rem !important;
+                margin-bottom: 12px !important;
+                padding-bottom: 6px !important;
+            }
+            .footer-heading::after {
+                width: 20px !important;
+                height: 1.5px !important;
+            }
+            .footer-links li {
+                margin-bottom: 6px !important;
+            }
+            .footer-links li a {
+                font-size: 0.72rem !important;
+            }
+            .footer-links li a:hover {
+                padding-left: 6px !important;
+            }
+            .footer-links li a::before {
+                left: -8px !important;
+            }
+            .footer-bottom {
+                margin-top: 30px !important;
+                padding: 20px !important;
+            }
+        }
+
+        /* Layout Padding Offset for Sticky Dock */
+        body {
+            padding-bottom: 95px !important;
+        }
+        
+        @media (min-width: 992px) {
+            body {
+                padding-bottom: 0 !important;
+            }
+        }
+
+        /* Avatar Upload Premium Styles */
+        .avatar-upload-wrapper {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .avatar-preview-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        [data-bs-theme="dark"] .avatar-preview-container {
+            background: #1e1d2c;
+        }
+        
+        .avatar-upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .avatar-upload-wrapper:hover .avatar-upload-overlay {
+            opacity: 1;
+        }
+    </style>
+    
     {{-- Pre-render Theme Logic --}}
     <script>
         (function() {
@@ -115,21 +570,13 @@
 
             {{-- Mobile Icons --}}
             <div class="d-flex align-items-center gap-2 d-lg-none">
-                <button class="btn btn-link p-2" data-bs-toggle="modal" data-bs-target="#searchModal">
-                    <i class="bi bi-search fs-5"></i>
+                @if(!auth()->user()?->isDriver())
+                <button class="theme-toggle-btn" data-bs-toggle="modal" data-bs-target="#searchModal" title="Search">
+                    <i class="bi bi-search"></i>
                 </button>
-                @auth
-                    @if(!auth()->user()->isDriver())
-                    <a href="{{ route('cart.index') }}" class="btn btn-link p-2 cart-badge">
-                        <i class="bi bi-bag fs-5"></i>
-                        @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
-                        <span class="badge cart-count-badge" id="cartCountBadgeMobile" style="{{ $cartCount > 0 ? '' : 'display:none;' }}">{{ $cartCount }}</span>
-                    </a>
-                    @endif
-                @endauth
-                <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#mobileMenu">
-                    <i class="bi bi-list fs-4"></i>
+                @endif
+                <button class="theme-toggle-btn" id="mobileThemeToggleTop" title="Toggle Theme">
+                    <i class="bi bi-moon-stars"></i>
                 </button>
             </div>
 
@@ -197,8 +644,10 @@
                         </li>
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> 
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+                                <div class="overflow-hidden rounded-circle border" style="width: 26px; height: 26px; background: #fff;">
+                                    <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
                                 <span class="d-none d-lg-inline">{{ explode(' ', auth()->user()->name)[0] }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -324,117 +773,36 @@
     {{-- Full-Page Menu Backdrop --}}
     <div class="menu-backdrop-overlay" id="menuBackdrop"></div>
 
-    {{-- Mobile Off-Canvas Menu --}}
-    {{-- Mobile Off-Canvas Menu (Premium Redesign) --}}
-    <div class="offcanvas offcanvas-end mobile-offcanvas" id="mobileMenu" tabindex="-1">
-        <div class="offcanvas-header py-4">
-            <div class="d-flex align-items-center gap-3">
-                @auth
-                    <div class="user-avatar-mini bg-primary bg-opacity-20 text-primary border border-primary border-opacity-25 shadow-sm">
-                        {{ substr(auth()->user()->name, 0, 1) }}
-                    </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold small welcome-text">Hello, {{ explode(' ', auth()->user()->name)[0] }}</h6>
-                        <span class="welcome-subtext x-small">Welcome back</span>
-                    </div>
-                @else
-                    <div class="user-avatar-mini guest-avatar">
-                        <i class="bi bi-person"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold small welcome-text">Guest User</h6>
-                        <a href="{{ route('login') }}" class="text-primary text-decoration-none x-small fw-bold">Login / Sign Up</a>
-                    </div>
-                @endauth
+    {{-- Smart Floating Categories Popover Drawer --}}
+    <div class="mobile-categories-drawer d-lg-none" id="mobileCategoriesDrawer">
+        <div class="drawer-header d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+            <h6 class="mb-0 fw-bold" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-tags-fill text-primary me-2"></i>Categories</h6>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-link p-1 text-decoration-none text-reset" id="mobileThemeToggle" title="Toggle Theme" style="font-size: 1.15rem; line-height: 1;">
+                    <i class="bi bi-moon-stars text-primary"></i>
+                </button>
+                <button type="button" class="btn-close-custom" id="btnCloseCategoriesDrawer" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-            <button type="button" class="btn-close mobile-offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body p-0">
-            {{-- Mobile Search --}}
-            <div class="px-4 py-3">
-                <form action="{{ route('products.index') }}" method="GET" class="mobile-search-form">
-                    <div class="input-group mobile-search-group rounded-pill overflow-hidden">
-                        <span class="input-group-text bg-transparent border-0 mobile-search-icon ps-3">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control bg-transparent border-0 mobile-search-input small py-2 ps-1" placeholder="Search products...">
-                    </div>
-                </form>
-            </div>
-
-            <div class="mobile-nav-groups px-4 pb-5">
-                {{-- Main Links --}}
-                <div class="nav-group mb-4">
-                    <h6 class="nav-group-title">Main Menu</h6>
-                    <ul class="nav flex-column gap-2 mt-2">
-                        <li><a class="mobile-nav-link" href="{{ route('home') }}"><i class="bi bi-house-door"></i>Home</a></li>
-                        <li><a class="mobile-nav-link" href="{{ route('products.index') }}"><i class="bi bi-grid-fill"></i>All Products</a></li>
-                        <li><a class="mobile-nav-link" href="{{ route('offers') }}"><i class="bi bi-brightness-high-fill text-warning"></i>Hot Offers</a></li>
-                    </ul>
-                </div>
-
-                {{-- Shopping --}}
-                <div class="nav-group mb-4">
-                    <h6 class="nav-group-title">Shopping Tools</h6>
-                    <ul class="nav flex-column gap-2 mt-2">
-                        @auth
-                            <li><a class="mobile-nav-link" href="{{ route('cart.index') }}"><i class="bi bi-bag-check"></i>My Cart</a></li>
-                            <li><a class="mobile-nav-link" href="{{ route('wishlists.index') }}"><i class="bi bi-heart"></i>Wishlist</a></li>
-                            <li><a class="mobile-nav-link" href="{{ route('orders.index') }}"><i class="bi bi-receipt"></i>My Orders</a></li>
-                        @else
-                            <li><a class="mobile-nav-link" href="{{ route('login') }}"><i class="bi bi-bag"></i>View Cart</a></li>
-                        @endauth
-                    </ul>
-                </div>
-
-                {{-- Categories Section --}}
-                <div class="nav-group mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="nav-group-title">Top Categories</h6>
-                        <a href="{{ route('products.index') }}" class="text-primary x-small text-decoration-none fw-bold">See All</a>
-                    </div>
-                    <div class="mobile-cat-grid mt-3">
-                        @foreach($globalCategories->take(6) as $cat)
-                            <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="mobile-cat-pill">
+        <div class="drawer-body">
+            <div class="row g-2">
+                @foreach($globalCategories as $cat)
+                    <div class="col-6">
+                        <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="category-drawer-tile text-decoration-none">
+                            <div class="tile-icon">
                                 @if($cat->image)
                                     <img src="{{ $cat->image }}" alt="">
                                 @else
-                                    <div class="pill-icon-fallback"><i class="bi bi-tag"></i></div>
+                                    <i class="bi bi-tag text-primary"></i>
                                 @endif
-                                <span>{{ $cat->name }}</span>
-                            </a>
-                        @endforeach
+                            </div>
+                            <span class="tile-name text-truncate">{{ $cat->name }}</span>
+                        </a>
                     </div>
-                </div>
-
-                {{-- Account & Settings --}}
-                <div class="nav-group mt-5 mobile-nav-footer-divider pt-4">
-                    <ul class="nav flex-column gap-2">
-                        @auth
-                            <li><a class="mobile-nav-link" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear"></i>Settings</a></li>
-                            @if(auth()->user()->isAdmin())
-                                <li><a class="mobile-nav-link text-warning" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2"></i>Admin Dashboard</a></li>
-                            @endif
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button class="mobile-nav-link w-100 text-start border-0 bg-transparent text-danger">
-                                        <i class="bi bi-box-arrow-right"></i>Sign Out
-                                    </button>
-                                </form>
-                            </li>
-                        @else
-                            <li><a class="mobile-nav-link" href="{{ route('login') }}"><i class="bi bi-shield-lock"></i>Sign In</a></li>
-                        @endauth
-                    </ul>
-                </div>
+                @endforeach
             </div>
-        </div>
-        <div class="px-4 py-3 mobile-nav-footer-toggle">
-            <button class="btn mobile-theme-btn w-100 rounded-pill d-flex align-items-center justify-content-center gap-2" id="mobileThemeToggle">
-                <i class="bi bi-moon-stars"></i>
-                <span id="mobileThemeText">Switch Theme</span>
-            </button>
         </div>
     </div>
 
@@ -526,33 +894,33 @@
                         <a href="#"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-3 mb-4 mb-lg-0">
-                    <h6 class="footer-heading">Shop</h6>
+                <div class="col-4 col-lg-2 col-md-4 mb-4 mb-lg-0">
+                    <h6 class="footer-heading text-truncate">Shop</h6>
                     <ul class="footer-links">
                         <li><a href="{{ route('offers') }}">Offers</a></li>
-                        <li><a href="{{ route('products.index') }}">All Products</a></li>
+                        <li><a href="{{ route('products.index') }}">Products</a></li>
                         <li><a href="{{ route('categories') }}">Categories</a></li>
                         @foreach(\App\Models\Category::take(3)->get() as $cat)
-                            <li><a href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ $cat->name }}</a>
+                            <li><a href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ Str::limit($cat->name, 10) }}</a>
                             </li>
                         @endforeach
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-3 mb-4 mb-lg-0">
-                    <h6 class="footer-heading">Account</h6>
+                <div class="col-4 col-lg-2 col-md-4 mb-4 mb-lg-0">
+                    <h6 class="footer-heading text-truncate">Account</h6>
                     <ul class="footer-links">
                         <li><a href="{{ route('login') }}">Login</a></li>
                         <li><a href="{{ route('register') }}">Sign Up</a></li>
-                        <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                        <li><a href="{{ route('contact') }}">Contact</a></li>
                         @auth
-                            <li><a href="{{ route('orders.index') }}">My Orders</a></li>
-                            <li><a href="{{ route('cart.index') }}">My Cart</a></li>
+                            <li><a href="{{ route('orders.index') }}">Orders</a></li>
+                            <li><a href="{{ route('cart.index') }}">Cart</a></li>
                         @endauth
                     </ul>
                 </div>
-                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
-                    <h6 class="footer-heading">Shop Hours</h6>
-                     <ul class="footer-links" style="font-size:0.85rem;">
+                <div class="col-4 col-lg-3 col-md-4 mb-4 mb-lg-0">
+                    <h6 class="footer-heading text-truncate">Hours</h6>
+                     <ul class="footer-links" style="font-size:0.8rem;">
                         @php
                             $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                             $settings = \App\Models\Setting::first();
@@ -565,13 +933,13 @@
                                 $close = $hours['close'] ?? '';
                                 $isClosed = $hours['closed'] ?? false;
                             @endphp
-                            <li class="d-flex justify-content-between mb-1">
-                                <span class="text-capitalize text-muted">{{ substr($day, 0, 3) }}:</span>
-                                <span>
+                            <li class="d-flex justify-content-between mb-1" style="font-size: 0.75rem;">
+                                <span class="text-capitalize text-white-50">{{ substr($day, 0, 3) }}:</span>
+                                <span class="text-light text-end">
                                     @if($isClosed || (!$open && !$close))
-                                        <span class="text-danger">Closed</span>
+                                        <span class="text-danger fw-bold" style="font-size: 0.7rem;">Closed</span>
                                     @else
-                                        {{ $open ? \Carbon\Carbon::parse($open)->format('H:i') : '' }} - {{ $close ? \Carbon\Carbon::parse($close)->format('H:i') : '' }}
+                                        {{ $open ? \Carbon\Carbon::parse($open)->format('H:i') : '' }}-{{ $close ? \Carbon\Carbon::parse($close)->format('H:i') : '' }}
                                     @endif
                                 </span>
                             </li>
@@ -587,8 +955,15 @@
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom text-center">
-                &copy; {{ date('Y') }} Premier Shop. All rights reserved.
+            <div class="footer-bottom text-center" style="margin-top: 50px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.06);">
+                <p class="mb-0 text-white-50">&copy; {{ date('Y') }} Premier Shop. All rights reserved.</p>
+                <div class="d-inline-flex gap-3 mt-2 small text-white-50">
+                    <a href="#" class="text-decoration-none hover-primary text-reset">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#" class="text-decoration-none hover-primary text-reset">Terms of Service</a>
+                    <span>•</span>
+                    <a href="#" class="text-decoration-none hover-primary text-reset">Sitemap</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -754,20 +1129,31 @@
             const navbar = document.querySelector('.navbar-premium');
             const themeToggle = document.getElementById('themeToggle');
             const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+            const mobileThemeToggleTop = document.getElementById('mobileThemeToggleTop');
             const htmlElement = document.documentElement;
-            const themeIcon = themeToggle.querySelector('i');
-            const mobileThemeIcon = mobileThemeToggle.querySelector('i');
-            const mobileThemeText = document.getElementById('mobileThemeText');
+            const themeIcon = themeToggle ? themeToggle.querySelector('i') : null;
+            const mobileThemeIcon = mobileThemeToggle ? mobileThemeToggle.querySelector('i') : null;
 
             function updateThemeUI(theme) {
-                if (theme === 'dark') {
-                    themeIcon.className = 'bi bi-sun';
-                    mobileThemeIcon.className = 'bi bi-sun';
-                    mobileThemeText.textContent = 'Light Mode';
-                } else {
-                    themeIcon.className = 'bi bi-moon-stars';
-                    mobileThemeIcon.className = 'bi bi-moon-stars';
-                    mobileThemeText.textContent = 'Dark Mode';
+                const isDark = theme === 'dark';
+                
+                // Update Desktop Toggle
+                if (themeIcon) {
+                    themeIcon.className = isDark ? 'bi bi-sun' : 'bi bi-moon-stars';
+                }
+                
+                // Update Mobile Drawer Toggle
+                if (mobileThemeIcon) {
+                    mobileThemeIcon.className = isDark ? 'bi bi-sun text-warning' : 'bi bi-moon-stars text-primary';
+                }
+                
+                // Update Mobile Top Toggle
+                const topMobileToggle = document.getElementById('mobileThemeToggleTop');
+                if (topMobileToggle) {
+                    const topIcon = topMobileToggle.querySelector('i');
+                    if (topIcon) {
+                        topIcon.className = isDark ? 'bi bi-sun text-warning' : 'bi bi-moon-stars text-primary';
+                    }
                 }
             }
 
@@ -781,8 +1167,9 @@
                 updateThemeUI(newTheme);
             }
 
-            themeToggle.addEventListener('click', toggleTheme);
-            if(mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
+            if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+            if (mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
+            if (mobileThemeToggleTop) mobileThemeToggleTop.addEventListener('click', toggleTheme);
             
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 20) {
@@ -837,8 +1224,111 @@
                     });
                 });
             }
+
+            // Mobile Categories Popover Drawer Interactivity
+            const dockOpenCategories = document.getElementById('dockOpenCategories');
+            const categoriesDrawer = document.getElementById('mobileCategoriesDrawer');
+            const btnCloseDrawer = document.getElementById('btnCloseCategoriesDrawer');
+            
+            function toggleCategoriesDrawer() {
+                if (categoriesDrawer) {
+                    const isShown = categoriesDrawer.classList.toggle('show');
+                    if (dockOpenCategories) {
+                        if (isShown) {
+                            document.querySelectorAll('.dock-item').forEach(el => el.classList.remove('active'));
+                            dockOpenCategories.classList.add('active');
+                        } else {
+                            dockOpenCategories.classList.remove('active');
+                            restoreActiveDockState();
+                        }
+                    }
+                }
+            }
+
+            function restoreActiveDockState() {
+                const currentPath = window.location.pathname;
+                document.querySelectorAll('.dock-item').forEach(el => {
+                    const href = el.getAttribute('href');
+                    if (href && href !== 'javascript:void(0)') {
+                        try {
+                            const urlObj = new URL(href, window.location.origin);
+                            if (currentPath === urlObj.pathname) {
+                                el.classList.add('active');
+                            }
+                        } catch(e) {}
+                    }
+                });
+            }
+            
+            if (dockOpenCategories) {
+                dockOpenCategories.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleCategoriesDrawer();
+                });
+            }
+            
+            if (btnCloseDrawer) {
+                btnCloseDrawer.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (categoriesDrawer) categoriesDrawer.classList.remove('show');
+                    if (dockOpenCategories) dockOpenCategories.classList.remove('active');
+                    restoreActiveDockState();
+                });
+            }
+            
+            // Close drawer when clicking outside
+            document.addEventListener('click', function(e) {
+                if (categoriesDrawer && categoriesDrawer.classList.contains('show')) {
+                    if (!categoriesDrawer.contains(e.target) && e.target !== dockOpenCategories && !dockOpenCategories.contains(e.target)) {
+                        categoriesDrawer.classList.remove('show');
+                        if (dockOpenCategories) dockOpenCategories.classList.remove('active');
+                        restoreActiveDockState();
+                    }
+                }
+            });
         });
     </script>
+    
+    {{-- Premium Mobile Bottom Dock --}}
+    <div class="mobile-bottom-dock d-lg-none">
+        <div class="dock-wrapper d-flex justify-content-around align-items-center">
+            <a href="{{ route('home') }}" class="dock-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                <i class="bi bi-house-door"></i>
+                <span>Home</span>
+            </a>
+            <a href="javascript:void(0)" id="dockOpenCategories" class="dock-item">
+                <i class="bi bi-grid-3x3-gap"></i>
+                <span>Categories</span>
+            </a>
+            <a href="{{ auth()->check() ? route('cart.index') : route('login') }}" class="dock-item {{ request()->routeIs('cart.index') ? 'active' : '' }} position-relative">
+                <i class="bi bi-bag"></i>
+                <span>Cart</span>
+                @auth
+                    @php $cartCount = auth()->user()->cartItems()->sum('quantity'); @endphp
+                    <span class="badge cart-count-badge position-absolute top-0 start-50 translate-middle-y bg-danger rounded-circle" id="cartCountBadgeDock" style="font-size: 0.65rem; padding: 0.3em 0.5em; min-width: 18px; {{ $cartCount > 0 ? '' : 'display:none;' }}">{{ $cartCount }}</span>
+                @else
+                    <span class="badge cart-count-badge position-absolute top-0 start-50 translate-middle-y bg-danger rounded-circle" id="cartCountBadgeDock" style="font-size: 0.65rem; padding: 0.3em 0.5em; min-width: 18px; display:none;">0</span>
+                @endauth
+            </a>
+            <a href="{{ auth()->check() ? route('wishlists.index') : route('login') }}" class="dock-item {{ request()->routeIs('wishlists.index') ? 'active' : '' }}">
+                <i class="bi bi-heart"></i>
+                <span>Wishlist</span>
+            </a>
+            <a href="{{ auth()->check() ? route('profile.edit') : route('login') }}" class="dock-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
+                @auth
+                    <div class="overflow-hidden rounded-circle border dock-avatar" style="width: 22px; height: 22px; background: #fff; margin-bottom: 2px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+                        <img src="{{ auth()->user()->profile_photo_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                @else
+                    <i class="bi bi-person-circle"></i>
+                @endauth
+                <span>Profile</span>
+            </a>
+        </div>
+    </div>
+
     @stack('scripts')
 </body>
 

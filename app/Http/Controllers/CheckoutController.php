@@ -142,6 +142,7 @@ class CheckoutController extends Controller
             'address_line' => 'required|string|max:255',
             'city'         => 'required|string|max:100',
             'phone'        => 'required|string|max:20',
+            'payment_method' => 'required|string|in:Debit/Credit Card,Bank Transfer',
             'items'        => 'nullable|array',
         ]);
 
@@ -232,7 +233,7 @@ class CheckoutController extends Controller
         try {
             $order = DB::transaction(function () use (
                 $request, $purchasedItems, $subtotal, $discount, $couponCode,
-                $shippingCost, $distance, $total, $settings, $pointsDiscount, $pointsUsed
+                $shippingCost, $distance, $total, $settings, $pointsDiscount, $pointsUsed, $loyaltyEnabled
             ) {
                 // Pre-flight validation inside the transaction so stock checks are atomic
                 foreach ($purchasedItems as $item) {
@@ -261,7 +262,8 @@ class CheckoutController extends Controller
                         'city'         => $request->city,
                         'phone'        => $request->phone,
                     ],
-                    'payment_status'  => 'completed',
+                    'payment_method'  => $request->payment_method,
+                    'payment_status'  => $request->payment_method === 'Debit/Credit Card' ? 'completed' : 'pending',
                 ]);
 
                 // Snapshot item prices at time of purchase (price can change later)

@@ -44,7 +44,7 @@ class SliderController extends Controller
         // Resolve image: uploaded file takes priority over external link
         $imagePath = null;
         if ($request->hasFile('image_file')) {
-            $imagePath = $request->file('image_file')->store('sliders', 'public');
+            $imagePath = \App\Helpers\ImageHelper::storeAsWebp($request->file('image_file'), 'sliders');
         } elseif ($request->image_link) {
             $imagePath = $request->image_link;
         }
@@ -105,7 +105,7 @@ class SliderController extends Controller
             if ($slider->image_path && ! str_contains($slider->image_path, 'http')) {
                 Storage::disk('public')->delete($slider->image_path);
             }
-            $data['image_path'] = $request->file('image_file')->store('sliders', 'public');
+            $data['image_path'] = \App\Helpers\ImageHelper::storeAsWebp($request->file('image_file'), 'sliders');
         } elseif ($request->image_link) {
             if ($slider->image_path && ! str_contains($slider->image_path, 'http')) {
                 Storage::disk('public')->delete($slider->image_path);
