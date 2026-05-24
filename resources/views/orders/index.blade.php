@@ -45,6 +45,25 @@
         border-bottom-color: rgba(255, 255, 255, 0.05);
     }
 
+    .order-card-body-left {
+        border-right: 1px solid rgba(108, 92, 231, 0.08);
+    }
+
+    [data-bs-theme="dark"] .order-card-body-left {
+        border-right-color: rgba(255, 255, 255, 0.06);
+    }
+
+    @media (max-width: 991.98px) {
+        .order-card-body-left {
+            border-right: none;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.08);
+            padding-bottom: 20px;
+        }
+        [data-bs-theme="dark"] .order-card-body-left {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+    }
+
     .order-product-thumbnail-group {
         display: flex;
         align-items: center;
@@ -118,8 +137,8 @@
     }
 
     .order-info-pill {
-        background: rgba(0, 0, 0, 0.02);
-        border: 1px solid rgba(0, 0, 0, 0.04);
+        background: rgba(108, 92, 231, 0.04);
+        border: 1px solid rgba(108, 92, 231, 0.08);
         padding: 6px 14px;
         border-radius: 100px;
         font-size: 0.78rem;
@@ -128,12 +147,25 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        transition: all 0.3s ease;
     }
 
     [data-bs-theme="dark"] .order-info-pill {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.6);
+        background: rgba(162, 155, 254, 0.05);
+        border-color: rgba(162, 155, 254, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .order-info-pill:hover {
+        background: rgba(108, 92, 231, 0.08);
+        border-color: rgba(108, 92, 231, 0.15);
+        color: #6C5CE7;
+    }
+
+    [data-bs-theme="dark"] .order-info-pill:hover {
+        background: rgba(162, 155, 254, 0.1);
+        border-color: rgba(162, 155, 254, 0.2);
+        color: #A29BFE;
     }
 
     .order-total-price {
@@ -165,49 +197,52 @@
             @foreach($orders as $order)
                 <div class="col-12 fade-up">
                     <div class="order-card">
-                        <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
-                            <div class="d-flex flex-wrap align-items-center gap-2">
-                                <span class="order-info-pill">
-                                    <i class="bi bi-hash text-primary"></i>
-                                    <span class="text-body fw-bold">#{{ $order->order_number }}</span>
-                                </span>
-                                <span class="order-info-pill">
-                                    <i class="bi bi-calendar3 text-primary"></i>
-                                    {{ $order->created_at->format('d M Y') }}
-                                </span>
-                                @if($order->payment_method)
-                                    <span class="order-info-pill">
-                                        <i class="bi bi-credit-card-2-front text-primary"></i>
-                                        {{ $order->payment_method === 'bank_transfer' ? 'Bank Transfer' : 'Stripe Card' }}
-                                    </span>
-                                @endif
-                            </div>
-                            
-                            <div class="d-flex align-items-center gap-3 ms-md-auto">
-                                <div class="text-md-end text-start">
-                                    <span class="order-total-price">£{{ number_format($order->total, 2) }}</span>
+                        <div class="order-card-header">
+                            <div class="row align-items-center g-2">
+                                <div class="col-12 col-md-8">
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span class="order-info-pill">
+                                            <i class="bi bi-hash text-primary"></i>
+                                            <span class="text-body fw-bold">#{{ $order->order_number }}</span>
+                                        </span>
+                                        <span class="order-info-pill">
+                                            <i class="bi bi-calendar3 text-primary"></i>
+                                            {{ $order->created_at->format('d M Y') }}
+                                        </span>
+                                        @if($order->payment_method)
+                                            <span class="order-info-pill">
+                                                <i class="bi bi-credit-card-2-front text-primary"></i>
+                                                {{ $order->payment_method === 'bank_transfer' ? 'Bank Transfer' : 'Stripe Card' }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-                                
-                                @php
-                                    $statusIcons = [
-                                        'pending' => 'bi-clock',
-                                        'processing' => 'bi-gear',
-                                        'shipped' => 'bi-truck',
-                                        'delivered' => 'bi-check2',
-                                        'cancelled' => 'bi-x-circle'
-                                    ];
-                                    $statusClass = $order->status;
-                                @endphp
-                                <span class="status-badge status-{{ $statusClass }} py-1 px-3">
-                                    <i class="bi {{ $statusIcons[$order->status] ?? 'bi-info-circle' }}"></i>
-                                    {{ ucfirst($order->status) }}
-                                </span>
+                                <div class="col-12 col-md-4 text-md-end d-flex align-items-center justify-content-between justify-content-md-end gap-3 mt-2 mt-md-0">
+                                    <div>
+                                        <span class="order-total-price">£{{ number_format($order->total, 2) }}</span>
+                                    </div>
+                                    
+                                    @php
+                                        $statusIcons = [
+                                            'pending' => 'bi-clock',
+                                            'processing' => 'bi-gear',
+                                            'shipped' => 'bi-truck',
+                                            'delivered' => 'bi-check2',
+                                            'cancelled' => 'bi-x-circle'
+                                        ];
+                                        $statusClass = $order->status;
+                                    @endphp
+                                    <span class="status-badge status-{{ $statusClass }} py-1 px-3">
+                                        <i class="bi {{ $statusIcons[$order->status] ?? 'bi-info-circle' }}"></i>
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="p-4">
                             <div class="row align-items-center g-4">
-                                <div class="col-lg-8 border-end-lg">
+                                <div class="col-lg-8 order-card-body-left">
                                     <div class="order-product-thumbnail-group flex-wrap">
                                         @foreach($order->items->take(4) as $item)
                                             <a href="{{ route('products.show', $item->product->slug) }}" class="order-product-thumbnail shadow-sm" title="{{ $item->product->name }}">
@@ -225,8 +260,8 @@
                                     </div>
                                 </div>
                                 
-                                <div class="col-lg-4 text-center">
-                                    <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-end">
+                                <div class="col-lg-4 text-start text-lg-end">
+                                    <div class="d-flex flex-wrap gap-2 justify-content-start justify-content-lg-end w-100">
                                         <a href="{{ route('orders.show', $order) }}" class="btn btn-premium-gradient rounded-pill px-4 py-2.5 text-white d-inline-flex align-items-center gap-2 hover-up shadow-sm">
                                             <span>Track Order</span>
                                             <i class="bi bi-arrow-right-short fs-5 transition-transform"></i>
