@@ -9,6 +9,150 @@
 @extends('layouts.app')
 @section('title', 'My Orders - Premier Shop')
 
+@push('styles')
+<style>
+    /* Sleek order history style overrides */
+    .order-card {
+        background: var(--ps-surface-glass, #ffffff);
+        border: 1px solid var(--ps-card-border, rgba(0, 0, 0, 0.05));
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.015);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    [data-bs-theme="dark"] .order-card {
+        background: rgba(20, 19, 30, 0.6);
+        border-color: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(108, 92, 231, 0.1), 0 4px 12px rgba(0, 0, 0, 0.02);
+        border-color: rgba(108, 92, 231, 0.25);
+    }
+
+    .order-card-header {
+        background: rgba(108, 92, 231, 0.02);
+        border-bottom: 1px solid rgba(108, 92, 231, 0.05);
+        padding: 20px 24px;
+    }
+
+    [data-bs-theme="dark"] .order-card-header {
+        background: rgba(162, 155, 254, 0.02);
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .order-product-thumbnail-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .order-product-thumbnail {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid var(--ps-card-border, rgba(0, 0, 0, 0.05));
+        background: #fff;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    [data-bs-theme="dark"] .order-product-thumbnail {
+        background: #15141e;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .order-product-thumbnail:hover {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: 0 8px 16px rgba(108, 92, 231, 0.15);
+        border-color: #6C5CE7;
+    }
+
+    .order-product-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .order-remaining-badge {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: rgba(108, 92, 231, 0.08);
+        border: 2px dashed rgba(108, 92, 231, 0.25);
+        color: #6C5CE7;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-family: 'Outfit', sans-serif;
+        text-decoration: none;
+    }
+
+    [data-bs-theme="dark"] .order-remaining-badge {
+        background: rgba(162, 155, 254, 0.1);
+        border-color: rgba(162, 155, 254, 0.3);
+        color: #A29BFE;
+    }
+
+    .order-remaining-badge:hover {
+        background: #6C5CE7;
+        border-color: #6C5CE7;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    [data-bs-theme="dark"] .order-remaining-badge:hover {
+        background: #A29BFE;
+        border-color: #A29BFE;
+        color: #0f0e17;
+    }
+
+    .order-info-pill {
+        background: rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        padding: 6px 14px;
+        border-radius: 100px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ps-text-muted, #747d8c);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    [data-bs-theme="dark"] .order-info-pill {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .order-total-price {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 1.35rem;
+        background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    [data-bs-theme="dark"] .order-total-price {
+        background: linear-gradient(135deg, #A29BFE 0%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container section-padding">
     <div class="mb-5 reveal-3d">
@@ -17,22 +161,31 @@
     </div>
 
     @if($orders->count() > 0)
-        <div class="row g-4 stagger-children">
+        <div class="row stagger-children">
             @foreach($orders as $order)
                 <div class="col-12 fade-up">
-                    <div class="order-card h-100">
-                        <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-hash text-primary fs-5"></i>
-                                <div>
-                                    <h6 class="fw-bold mb-0">{{ $order->order_number }}</h6>
-                                    <small class="text-muted">{{ $order->created_at->format('d M Y') }}</small>
-                                </div>
+                    <div class="order-card">
+                        <div class="order-card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="order-info-pill">
+                                    <i class="bi bi-hash text-primary"></i>
+                                    <span class="text-body fw-bold">#{{ $order->order_number }}</span>
+                                </span>
+                                <span class="order-info-pill">
+                                    <i class="bi bi-calendar3 text-primary"></i>
+                                    {{ $order->created_at->format('d M Y') }}
+                                </span>
+                                @if($order->payment_method)
+                                    <span class="order-info-pill">
+                                        <i class="bi bi-credit-card-2-front text-primary"></i>
+                                        {{ $order->payment_method === 'bank_transfer' ? 'Bank Transfer' : 'Stripe Card' }}
+                                    </span>
+                                @endif
                             </div>
                             
                             <div class="d-flex align-items-center gap-3 ms-md-auto">
-                                <div class="text-md-end text-start order-1 order-md-0">
-                                    <h5 class="fw-bold text-primary mb-0">£{{ number_format($order->total, 2) }}</h5>
+                                <div class="text-md-end text-start">
+                                    <span class="order-total-price">£{{ number_format($order->total, 2) }}</span>
                                 </div>
                                 
                                 @php
@@ -52,33 +205,34 @@
                             </div>
                         </div>
                         
-                        <div class="p-3">
-                            <div class="row align-items-center">
-                                <div class="col-lg-8 border-end-lg mb-4 mb-lg-0">
-                                    <div class="d-flex flex-wrap gap-2">
+                        <div class="p-4">
+                            <div class="row align-items-center g-4">
+                                <div class="col-lg-8 border-end-lg">
+                                    <div class="order-product-thumbnail-group flex-wrap">
                                         @foreach($order->items->take(4) as $item)
-                                            <div class="order-item-mini" title="{{ $item->product->name }}">
-                                                <img src="{{ $item->product->first_image }}" alt="" class="mini-img shadow-sm" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
-                                                @if($loop->last && $order->items->count() > 4)
-                                                    <div class="bg-light rounded-circle ms-1 d-flex align-items-center justify-content-center" style="width:44px; height:44px; font-size: 0.8rem; font-weight: 700; border: 1px dashed #ddd;">
-                                                        +{{ $order->items->count() - 4 }}
-                                                    </div>
-                                                @endif
-                                            </div>
+                                            <a href="{{ route('products.show', $item->product->slug) }}" class="order-product-thumbnail shadow-sm" title="{{ $item->product->name }}">
+                                                <img src="{{ $item->product->first_image }}" alt="" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
+                                            </a>
                                         @endforeach
+                                        @if($order->items->count() > 4)
+                                            <a href="{{ route('orders.show', $order) }}" class="order-remaining-badge">
+                                                +{{ $order->items->count() - 4 }}
+                                            </a>
+                                        @endif
                                     </div>
-                                    <div class="mt-3 text-muted small">
+                                    <div class="mt-3 text-muted small fw-semibold">
                                         {{ $order->items->count() }} {{ Str::plural('item', $order->items->count()) }} in this order
                                     </div>
                                 </div>
                                 
                                 <div class="col-lg-4 text-center">
-                                    <div class="d-grid gap-2 d-md-flex justify-content-center">
-                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-primary rounded-pill px-4 shadow-sm hover-up">
-                                            Track Order <i class="bi bi-arrow-right ms-2"></i>
+                                    <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-end">
+                                        <a href="{{ route('orders.show', $order) }}" class="btn btn-premium-gradient rounded-pill px-4 py-2.5 text-white d-inline-flex align-items-center gap-2 hover-up shadow-sm">
+                                            <span>Track Order</span>
+                                            <i class="bi bi-arrow-right-short fs-5 transition-transform"></i>
                                         </a>
-                                        <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-dark rounded-pill px-4 hover-up">
-                                            <i class="bi bi-printer"></i>
+                                        <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-dark rounded-pill px-3 py-2.5 hover-up" title="Print Invoice">
+                                            <i class="bi bi-printer fs-6"></i>
                                         </a>
                                     </div>
                                 </div>
