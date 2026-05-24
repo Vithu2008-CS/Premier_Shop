@@ -297,7 +297,7 @@
         let baseTotal = parseFloat(cartTotalDisplay.dataset.baseTotal);
         const userPointsValue = {{ isset($maxDiscount) ? $maxDiscount : 0 }};
         let currentShippingCost = 0;
-        const shippingUrl = "{{ route('checkout.calculateShipping') }}";
+        const shippingUrl = "{{ route('checkout.calculateShippingDynamic') }}";
 
         // Handle Saved Address Selection
         document.querySelectorAll('.address-selector').forEach(item => {

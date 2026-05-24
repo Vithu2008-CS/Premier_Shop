@@ -48,7 +48,10 @@
               @forelse($products as $product)
                 <tr>
                   <td>
-                    <div class="d-flex align-items-center">
+                    <a href="{{ route('admin.products.edit', $product) }}" class="text-reset text-decoration-none d-flex align-items-center" 
+                       style="transition: color 0.2s ease-in-out;" 
+                       onmouseover="this.style.color='var(--primary, #6C5CE7)'" 
+                       onmouseout="this.style.color=''">
                         <div class="mr-3">
                             @if($product->images && count($product->images) > 0)
                                 <img src="{{ $product->images[0] }}" class="wd-40 h-40 rounded" style="object-fit: cover;" alt="product">
@@ -64,7 +67,7 @@
                                 <small class="text-muted">{{ $product->barcode }}</small>
                             @endif
                         </div>
-                    </div>
+                    </a>
                   </td>
                   <td>
                     @if($product->category)

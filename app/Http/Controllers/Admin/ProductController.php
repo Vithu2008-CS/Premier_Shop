@@ -46,6 +46,7 @@ class ProductController extends Controller
             'product_images.*'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'offer_min_qty'           => 'nullable|integer|min:1',
             'offer_discount_percent'  => 'nullable|numeric|min:0|max:100',
+            'weight'                  => 'required|numeric|gt:0',
         ]);
 
         // Derive URL-friendly slug from the product name
@@ -101,6 +102,7 @@ class ProductController extends Controller
             'product_images.*'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'offer_min_qty'           => 'nullable|integer|min:1',
             'offer_discount_percent'  => 'nullable|numeric|min:0|max:100',
+            'weight'                  => 'required|numeric|gt:0',
         ]);
 
         $validated['is_age_restricted'] = $request->has('is_age_restricted');
