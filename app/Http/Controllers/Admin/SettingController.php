@@ -98,10 +98,10 @@ class SettingController extends Controller
             'contact_email_availability' => 'required|string|max:100',
             'contact_address'            => 'required|string|max:255',
             'contact_hours'              => 'required|string|max:255',
-            'social_facebook'            => 'nullable|url|max:255',
-            'social_instagram'           => 'nullable|url|max:255',
-            'social_twitter'             => 'nullable|url|max:255',
-            'social_tiktok'              => 'nullable|url|max:255',
+            'social_facebook'            => 'nullable|url:http,https|max:255',
+            'social_instagram'           => 'nullable|url:http,https|max:255',
+            'social_twitter'             => 'nullable|url:http,https|max:255',
+            'social_tiktok'              => 'nullable|url:http,https|max:255',
         ]);
 
         $settings = Setting::first() ?? new Setting;
