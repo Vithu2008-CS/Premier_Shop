@@ -14,13 +14,13 @@
     /* Premium Profile Swoosh Wave Header */
     .profile-card-header {
         position: relative;
-        background: linear-gradient(135deg, #F80759 0%, #BC4E9C 100%);
+        background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
         border-radius: 0 0 40px 40px;
         padding: 50px 20px 40px;
         color: #ffffff;
         text-align: center;
         overflow: hidden;
-        box-shadow: 0 10px 25px rgba(248, 7, 89, 0.15);
+        box-shadow: 0 10px 25px rgba(108, 92, 231, 0.15);
     }
     
     .profile-card-header::before {
@@ -107,7 +107,7 @@
     .camera-badge-profile:hover {
         background: #f0f0f0;
         transform: scale(1.1);
-        color: #F80759;
+        color: var(--bs-primary, #6C5CE7);
     }
 
     .profile-name-bold {
@@ -255,7 +255,7 @@
     }
 
     .action-row-item:hover {
-        color: #F80759;
+        color: var(--bs-primary, #6C5CE7);
     }
 
     .action-row-left {
@@ -272,7 +272,7 @@
     }
 
     .action-row-item:hover .action-row-icon {
-        color: #F80759;
+        color: var(--bs-primary, #6C5CE7);
     }
 
     .action-row-text {

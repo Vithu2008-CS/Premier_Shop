@@ -45,27 +45,28 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-floating-custom">
-                                    <input type="text" name="name" id="contact-name" class="form-control @error('name') is-invalid @enderror" placeholder="Your Name" value="{{ old('name') }}" required>
                                     <label for="contact-name"><i class="bi bi-person me-1"></i>Your Name</label>
+                                    <input type="text" name="name" id="contact-name" class="form-control @error('name') is-invalid @enderror" placeholder="Your Name" value="{{ old('name') }}" required>
                                     @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating-custom">
-                                    <input type="email" name="email" id="contact-email" class="form-control @error('email') is-invalid @enderror" placeholder="Email Address" value="{{ old('email') }}" required>
                                     <label for="contact-email"><i class="bi bi-envelope me-1"></i>Email Address</label>
+                                    <input type="email" name="email" id="contact-email" class="form-control @error('email') is-invalid @enderror" placeholder="Email Address" value="{{ old('email') }}" required>
                                     @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating-custom">
-                                    <input type="tel" name="phone" id="contact-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone (Optional)" value="{{ old('phone') }}">
                                     <label for="contact-phone"><i class="bi bi-telephone me-1"></i>Phone (Optional)</label>
+                                    <input type="tel" name="phone" id="contact-phone" class="form-control @error('phone') is-invalid @enderror" placeholder="Phone (Optional)" value="{{ old('phone') }}">
                                     @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating-custom">
+                                    <label for="contact-subject"><i class="bi bi-tag me-1"></i>Subject</label>
                                     <select name="subject" id="contact-subject" class="form-select @error('subject') is-invalid @enderror" required>
                                         <option value="">Choose a topic</option>
                                         <option value="General Inquiry" {{ old('subject') == 'General Inquiry' ? 'selected' : '' }}>General Inquiry</option>
@@ -75,14 +76,13 @@
                                         <option value="Partnership" {{ old('subject') == 'Partnership' ? 'selected' : '' }}>Partnership</option>
                                         <option value="Other" {{ old('subject') == 'Other' ? 'selected' : '' }}>Other</option>
                                     </select>
-                                    <label for="contact-subject"><i class="bi bi-tag me-1"></i>Subject</label>
                                     @error('subject')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-floating-custom">
-                                    <textarea name="message" id="contact-message" class="form-control @error('message') is-invalid @enderror" rows="5" placeholder="Your message..." style="min-height: 140px;" required>{{ old('message') }}</textarea>
                                     <label for="contact-message"><i class="bi bi-pencil me-1"></i>Your Message</label>
+                                    <textarea name="message" id="contact-message" class="form-control @error('message') is-invalid @enderror" rows="5" placeholder="Your message..." style="min-height: 140px;" required>{{ old('message') }}</textarea>
                                     @error('message')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                         </div>
                         <div>
                             <h6 class="fw-bold mb-1">Visit Our Store</h6>
-                            <p class="text-muted mb-0 small">London, United Kingdom<br>Open Mon–Sat, 9 AM – 6 PM</p>
+                            <p class="text-muted mb-0 small">{{ \App\Models\Setting::get('contact_address', 'London, United Kingdom') }}<br>{{ \App\Models\Setting::get('contact_hours', 'Open Mon–Sat, 9 AM – 6 PM') }}</p>
                         </div>
                     </div>
 
@@ -118,7 +118,7 @@
                         </div>
                         <div>
                             <h6 class="fw-bold mb-1">Call Us</h6>
-                            <p class="text-muted mb-0 small">+44 770 000 0000<br>Available 24/7 for support</p>
+                            <p class="text-muted mb-0 small">{{ \App\Models\Setting::get('contact_phone', '+44 770 000 0000') }}<br>{{ \App\Models\Setting::get('contact_phone_availability', 'Available 24/7 for support') }}</p>
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@
                         </div>
                         <div>
                             <h6 class="fw-bold mb-1">Email Us</h6>
-                            <p class="text-muted mb-0 small">info@premiershop.com<br>We reply within 24 hours</p>
+                            <p class="text-muted mb-0 small">{{ \App\Models\Setting::get('contact_email', 'info@premiershop.com') }}<br>{{ \App\Models\Setting::get('contact_email_availability', 'We reply within 24 hours') }}</p>
                         </div>
                     </div>
 
@@ -141,10 +141,10 @@
                         <div>
                             <h6 class="fw-bold mb-1">Follow Us</h6>
                             <div class="d-flex gap-2 mt-1">
-                                <a href="#" class="contact-social-btn"><i class="bi bi-facebook"></i></a>
-                                <a href="#" class="contact-social-btn"><i class="bi bi-instagram"></i></a>
-                                <a href="#" class="contact-social-btn"><i class="bi bi-twitter-x"></i></a>
-                                <a href="#" class="contact-social-btn"><i class="bi bi-tiktok"></i></a>
+                                <a href="{{ \App\Models\Setting::get('social_facebook', '#') }}" target="_blank" class="contact-social-btn"><i class="bi bi-facebook"></i></a>
+                                <a href="{{ \App\Models\Setting::get('social_instagram', '#') }}" target="_blank" class="contact-social-btn"><i class="bi bi-instagram"></i></a>
+                                <a href="{{ \App\Models\Setting::get('social_twitter', '#') }}" target="_blank" class="contact-social-btn"><i class="bi bi-twitter-x"></i></a>
+                                <a href="{{ \App\Models\Setting::get('social_tiktok', '#') }}" target="_blank" class="contact-social-btn"><i class="bi bi-tiktok"></i></a>
                             </div>
                         </div>
                     </div>

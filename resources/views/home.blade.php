@@ -54,42 +54,55 @@
                     @foreach($sliders as $i => $slider)
                         <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
                             <div class="parallax-bg" style="background-image: url('{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}');" aria-label="{{ $slider->title ?? 'Promotional slide' }}"></div>
+                            
+                            {{-- Gradient Overlay inside the item --}}
+                            <div class="hero-overlay"></div>
+
+                            {{-- Hero Content --}}
+                            <div class="hero-content align-{{ $slider->text_align ?? 'center' }}">
+                                <div class="container">
+                                    <div class="hero-badge scroll-reveal" data-delay="0">
+                                        <span class="badge-pill">
+                                            <span class="badge-dot"></span>
+                                            <span class="text-uppercase tracking-widest fw-bold" style="font-size: 0.7rem;">Curated Selection</span>
+                                        </span>
+                                    </div>
+                                    <h1 class="hero-title scroll-reveal" data-delay="100">
+                                        @php
+                                            $title = $slider->title ?? 'New Slider';
+                                            $words = explode(' ', $title);
+                                            if (count($words) > 1) {
+                                                $accent = array_pop($words);
+                                                $lead = implode(' ', $words);
+                                            } else {
+                                                $lead = '';
+                                                $accent = $title;
+                                            }
+                                        @endphp
+                                        @if($lead)
+                                            <span class="hero-title-lead">{{ $lead }}</span>
+                                        @endif
+                                        <span class="hero-title-accent">{{ $accent }}</span>
+                                    </h1>
+                                    @if($slider->subtitle)
+                                        <p class="hero-subtitle scroll-reveal" data-delay="200">
+                                            {{ $slider->subtitle }}
+                                        </p>
+                                    @endif
+                                    <div class="hero-actions scroll-reveal" data-delay="300">
+                                        <a href="{{ $slider->link_url ?? route('products.index') }}" class="btn-hero-primary premium-btn">
+                                            <span>{{ $slider->button_text ?: 'Shop Now' }}</span>
+                                            <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                        <a href="{{ route('offers') }}" class="btn-hero-glass">
+                                            <i class="bi bi-lightning-charge-fill text-warning"></i>
+                                            <span>View Offers</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
-                </div>
-            </div>
-
-            {{-- Gradient Overlay --}}
-            <div class="hero-overlay"></div>
-
-
-
-            {{-- Hero Content --}}
-            <div class="hero-content">
-                <div class="container text-center">
-                    <div class="hero-badge scroll-reveal" data-delay="0">
-                        <span class="badge-pill">
-                            <span class="badge-dot"></span>
-                            <span class="text-uppercase tracking-widest fw-bold" style="font-size: 0.7rem;">Curated Selection</span>
-                        </span>
-                    </div>
-                    <h1 class="hero-title scroll-reveal" data-delay="100">
-                        <span class="hero-title-lead">Elevate Your</span>
-                        <span class="hero-title-accent">Shopping Experience</span>
-                    </h1>
-                    <p class="hero-subtitle scroll-reveal" data-delay="200">
-                        Premium products, unbeatable prices, and fast delivery straight to your door.
-                    </p>
-                    <div class="hero-actions scroll-reveal" data-delay="300">
-                        <a href="{{ route('products.index') }}" class="btn-hero-primary premium-btn">
-                            <span>Shop Now</span>
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
-                        <a href="{{ route('offers') }}" class="btn-hero-glass">
-                            <i class="bi bi-lightning-charge-fill text-warning"></i>
-                            <span>View Offers</span>
-                        </a>
-                    </div>
                 </div>
             </div>
 

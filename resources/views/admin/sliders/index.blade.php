@@ -66,11 +66,17 @@
                     <span class="badge badge-outline-secondary">{{ $slider->order_priority }}</span>
                   </td>
                   <td>
-                    @if($slider->is_active)
-                        <span class="badge badge-success">ACTIVE</span>
-                    @else
-                        <span class="badge badge-light">INACTIVE</span>
-                    @endif
+                    <form action="{{ route('admin.sliders.toggle-active', $slider) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent animate-press" title="Click to Toggle Status" style="box-shadow: none;">
+                            @if($slider->is_active)
+                                <span class="badge badge-success cursor-pointer" style="cursor: pointer;">ACTIVE</span>
+                            @else
+                                <span class="badge badge-light cursor-pointer" style="cursor: pointer;">INACTIVE</span>
+                            @endif
+                        </button>
+                    </form>
                   </td>
                   <td class="text-right">
                     <div class="dropdown">
@@ -81,6 +87,14 @@
                           <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.sliders.edit', $slider) }}">
                               <i data-feather="edit-2" class="icon-sm mr-2"></i> Edit Banner
                           </a>
+                          <form action="{{ route('admin.sliders.toggle-active', $slider) }}" method="POST" class="d-inline">
+                              @csrf
+                              @method('PATCH')
+                              <button type="submit" class="dropdown-item d-flex align-items-center">
+                                  <i data-feather="{{ $slider->is_active ? 'eye-off' : 'eye' }}" class="icon-sm mr-2"></i>
+                                  {{ $slider->is_active ? 'Deactivate' : 'Activate' }}
+                              </button>
+                          </form>
                           <div class="dropdown-divider"></div>
                           <form action="{{ route('admin.sliders.destroy', $slider) }}" method="POST" onsubmit="return confirm('Truly delete this banner?');">
                               @csrf @method('DELETE')

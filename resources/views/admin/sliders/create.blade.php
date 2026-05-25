@@ -59,6 +59,17 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Text Alignment</label>
+                    <select name="text_align" class="form-control">
+                        <option value="left" {{ old('text_align') == 'left' ? 'selected' : '' }}>Left</option>
+                        <option value="center" {{ old('text_align') == 'center' || !old('text_align') ? 'selected' : '' }}>Center</option>
+                        <option value="right" {{ old('text_align') == 'right' ? 'selected' : '' }}>Right</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="row items-center">
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Display Order (Priority)</label>

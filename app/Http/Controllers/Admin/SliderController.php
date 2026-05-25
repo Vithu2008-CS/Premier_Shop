@@ -38,6 +38,7 @@ class SliderController extends Controller
             'image_link'     => 'nullable|url',
             'link_url'       => 'nullable|url',
             'button_text'    => 'nullable|string|max:50',
+            'text_align'     => 'nullable|in:left,center,right',
             'order_priority' => 'integer',
         ]);
 
@@ -59,6 +60,7 @@ class SliderController extends Controller
             'image_path'     => $imagePath,
             'link_url'       => $request->link_url,
             'button_text'    => $request->button_text,
+            'text_align'     => $request->text_align ?? 'center',
             'type'           => 'slider',   // differentiates from banner-type promotions
             'order_priority' => $request->order_priority ?? 0,
             'is_active'      => $request->boolean('is_active', true),
@@ -94,10 +96,11 @@ class SliderController extends Controller
             'image_link'     => 'nullable|url',
             'link_url'       => 'nullable|url',
             'button_text'    => 'nullable|string|max:50',
+            'text_align'     => 'nullable|in:left,center,right',
             'order_priority' => 'integer',
         ]);
 
-        $data              = $request->only(['title', 'subtitle', 'link_url', 'button_text', 'order_priority']);
+        $data              = $request->only(['title', 'subtitle', 'link_url', 'button_text', 'text_align', 'order_priority']);
         $data['is_active'] = $request->boolean('is_active');
 
         // Replace image and clean up the old local file if applicable
@@ -116,6 +119,20 @@ class SliderController extends Controller
         $slider->update($data);
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider updated successfully.');
+    }
+
+    /** Toggle the active/inactive visibility status of a slider. */
+    public function toggleActive(Promotion $slider)
+    {
+        if ($slider->type !== 'slider') {
+            abort(404);
+        }
+
+        $slider->update([
+            'is_active' => !$slider->is_active
+        ]);
+
+        return redirect()->back()->with('success', 'Slider status updated successfully.');
     }
 
     /** Delete a slider and its locally stored image file. */
