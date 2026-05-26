@@ -199,18 +199,6 @@ Visit `http://localhost:8000`
 
 ---
 
-## Demo Credentials
-
-| Role | Email | Password | Access |
-|---|---|---|---|
-| **Admin** | `vithu@example.com` | `12345678` | Full admin panel |
-| **Driver** | `driver@example.com` | `12345678` | Driver delivery app |
-| **Customer** | `john@example.com` | `password` | Storefront |
-
-> Register a new customer account at `/register` to go through the OTP email verification flow.
-
----
-
 ## Key Design Decisions
 
 **Single-table cart + wishlist** — `user_items` uses a `type` column (`cart` / `wishlist`) to avoid two near-identical tables. The `getLineTotalAttribute` accessor applies bulk-offer pricing at the model layer.
