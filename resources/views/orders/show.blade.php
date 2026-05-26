@@ -51,23 +51,23 @@
                     <h5 class="fw-bold mb-4">Order Items</h5>
                     @foreach($order->items as $item)
                     <div class="d-flex align-items-center justify-content-between border-bottom py-3 hover-link">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="{{ $item->product->first_image }}" alt="" 
-                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px;" 
+                        <div class="d-flex align-items-center gap-3" style="min-width:0;flex:1;overflow:hidden;">
+                            <img src="{{ $item->product->first_image }}" alt=""
+                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; flex-shrink:0;"
                                  class="shadow-sm" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
-                            <div>
-                                <h6 class="fw-bold mb-1">{{ $item->product->name }}</h6>
-                                <p class="text-muted small mb-0">Quantity: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}</p>
+                            <div style="min-width:0;">
+                                <h6 class="fw-bold mb-1 text-truncate">{{ $item->product->name }}</h6>
+                                <p class="text-muted small mb-0">Qty: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}</p>
                             </div>
                         </div>
                         <div class="text-end">
-                            <span class="fw-bold text-dark fs-5">£{{ number_format($item->price * $item->quantity, 2) }}</span>
+                            <span class="fw-bold text-body fs-5">£{{ number_format($item->price * $item->quantity, 2) }}</span>
                         </div>
                     </div>
                     @endforeach
 
                     <div class="mt-4 pt-3 d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                        <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-dark rounded-pill px-4 hover-up shadow-sm">
+                        <a href="{{ route('orders.print', $order) }}" class="btn btn-outline-secondary rounded-pill px-4 hover-up shadow-sm">
                             <i class="bi bi-printer me-2"></i>Invoice
                         </a>
                         
@@ -92,13 +92,13 @@
                         <h6 class="fw-bold mb-3 text-uppercase small letter-spacing-1">
                             <i class="bi bi-geo-alt-fill text-primary me-2"></i>Delivery To
                         </h6>
-                        <div class="p-3 bg-light rounded-4 border">
+                        <div class="p-3 rounded-4 border" style="background: var(--ps-surface-secondary); border-color: var(--ps-border) !important;">
                             <p class="mb-1 fw-bold small">{{ auth()->user()->name }}</p>
                             <p class="mb-0 text-muted small">{{ $order->shipping_address['address_line'] ?? 'N/A' }}</p>
                             <p class="mb-0 text-muted small">{{ $order->shipping_address['city'] ?? '' }}</p>
                             <p class="mt-2 mb-0 small text-primary"><i class="bi bi-telephone-fill me-1"></i> {{ $order->shipping_address['phone'] ?? 'N/A' }}</p>
                             <hr class="my-2 opacity-10">
-                            <p class="mb-0 small text-dark"><i class="bi bi-credit-card-2-front-fill me-1 text-primary"></i> <strong>Payment:</strong> {{ $order->payment_method ?? 'Debit/Credit Card' }}</p>
+                            <p class="mb-0 small text-body"><i class="bi bi-credit-card-2-front-fill me-1 text-primary"></i> <strong>Payment:</strong> {{ $order->payment_method ?? 'Debit/Credit Card' }}</p>
                         </div>
                     </div>
                 </div>
@@ -107,7 +107,7 @@
                         <h6 class="fw-bold mb-3 text-uppercase small letter-spacing-1">
                             <i class="bi bi-receipt-cutoff text-primary me-2"></i>Summary
                         </h6>
-                        <div class="p-3 bg-light rounded-4 border">
+                        <div class="p-3 rounded-4 border" style="background: var(--ps-surface-secondary); border-color: var(--ps-border) !important;">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small">Subtotal</span>
                                 <span class="fw-bold small">£{{ number_format($order->subtotal, 2) }}</span>
@@ -208,7 +208,7 @@
                                 <p class="text-muted">Are you sure you want to cancel order <strong>{{ $order->order_number }}</strong>? This action cannot be undone and your items will be returned to stock.</p>
                                 <div class="mt-4">
                                     <label class="form-label fw-bold">Reason for cancellation <span class="text-danger">*</span></label>
-                                    <textarea name="cancellation_reason" class="form-control border-0 bg-light p-3" rows="4" required placeholder="Please let us know how we can improve..."></textarea>
+                                    <textarea name="cancellation_reason" class="form-control border-0 p-3" style="background: var(--ps-surface-secondary); color: var(--ps-text);" rows="4" required placeholder="Please let us know how we can improve..."></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer border-0 p-4 pt-0">

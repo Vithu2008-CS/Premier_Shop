@@ -19,6 +19,15 @@
 @extends('layouts.app')
 @section('title', 'Checkout - Premier Shop')
 
+@push('styles')
+<style>
+    .x-small { font-size: 0.72rem; line-height: 1.4; }
+    @media (max-width: 767px) {
+        .checkout-item-list { max-height: 180px !important; }
+    }
+</style>
+@endpush
+
 @section('content')
 <section class="section-padding">
     <div class="container">
@@ -26,7 +35,7 @@
     <div class="row g-4">
         <div class="col-lg-7 reveal-slide-left">
             <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-4 p-lg-5">
                     <h5 class="fw-bold mb-4 d-flex align-items-center justify-content-between">
                         <div>
                             <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle me-3" style="width:32px;height:32px;font-size:0.9rem;">1</span>
@@ -37,7 +46,7 @@
                             <button class="btn btn-sm btn-outline-primary rounded-pill dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-geo-alt me-1"></i> Saved Addresses
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 bg-white" style="border-radius: 12px; min-width: 250px;">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; min-width: 250px;">
                                 @foreach(auth()->user()->addresses as $address)
                                 <li>
                                     <a class="dropdown-item py-2 address-selector" href="#" 
@@ -104,52 +113,52 @@
                             </div>
                             @error('payment_method') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
 
-                            <!-- Secure Card Details Drawer -->
-                            <div id="cardDetailsContainer" class="mt-4 p-4 border rounded-4 bg-light shadow-sm" style="border-radius: 16px; transition: all 0.3s ease;">
-                                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                                    <i class="bi bi-shield-lock-fill text-success fs-5"></i>
-                                    Secure Card Details
-                                </h6>
-                                <div class="mb-3">
-                                    <label class="form-label small fw-bold text-muted px-1">CARDHOLDER NAME</label>
-                                    <input type="text" name="card_name" id="card_name" class="form-control form-control-lg border-0 bg-white" placeholder="John Doe" style="border-radius: 10px;" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label small fw-bold text-muted px-1">CARD NUMBER</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-0 pe-0" style="border-radius: 10px 0 0 10px;"><i class="bi bi-credit-card text-muted"></i></span>
-                                        <input type="text" name="card_number" id="card_number" class="form-control form-control-lg border-0 bg-white ps-2" placeholder="4111 2222 3333 4444" style="border-radius: 0 10px 10px 0;" required>
-                                    </div>
-                                </div>
-                                <div class="row g-3">
-                                    <div class="col-6">
-                                        <label class="form-label small fw-bold text-muted px-1">EXPIRY DATE</label>
-                                        <input type="text" name="card_expiry" id="card_expiry" class="form-control form-control-lg border-0 bg-white" placeholder="MM/YY" style="border-radius: 10px;" required>
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small fw-bold text-muted px-1">CVV</label>
-                                        <input type="password" name="card_cvv" id="card_cvv" class="form-control form-control-lg border-0 bg-white" placeholder="•••" maxlength="3" style="border-radius: 10px;" required>
-                                    </div>
-                                </div>
-                            </div>
+                             <!-- Secure Card Details Drawer -->
+                             <div id="cardDetailsContainer" class="mt-4 p-4 border rounded-4 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: var(--ps-surface-secondary);">
+                                 <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                     <i class="bi bi-shield-lock-fill text-success fs-5"></i>
+                                     Secure Card Details
+                                 </h6>
+                                 <div class="mb-3">
+                                     <label class="form-label small fw-bold text-muted px-1">CARDHOLDER NAME</label>
+                                     <input type="text" name="card_name" id="card_name" class="form-control form-control-lg border-0" placeholder="John Doe" style="border-radius: 10px; background: var(--ps-surface-bg); color: var(--ps-text);" required>
+                                 </div>
+                                 <div class="mb-3">
+                                     <label class="form-label small fw-bold text-muted px-1">CARD NUMBER</label>
+                                     <div class="input-group">
+                                         <span class="input-group-text border-0 pe-0" style="border-radius: 10px 0 0 10px; background: var(--ps-surface-bg);"><i class="bi bi-credit-card text-muted"></i></span>
+                                         <input type="text" name="card_number" id="card_number" class="form-control form-control-lg border-0 ps-2" placeholder="4111 2222 3333 4444" style="border-radius: 0 10px 10px 0; background: var(--ps-surface-bg); color: var(--ps-text);" required>
+                                     </div>
+                                 </div>
+                                 <div class="row g-3">
+                                     <div class="col-6">
+                                         <label class="form-label small fw-bold text-muted px-1">EXPIRY DATE</label>
+                                         <input type="text" name="card_expiry" id="card_expiry" class="form-control form-control-lg border-0" placeholder="MM/YY" style="border-radius: 10px; background: var(--ps-surface-bg); color: var(--ps-text);" required>
+                                     </div>
+                                     <div class="col-6">
+                                         <label class="form-label small fw-bold text-muted px-1">CVV</label>
+                                         <input type="password" name="card_cvv" id="card_cvv" class="form-control form-control-lg border-0" placeholder="•••" maxlength="3" style="border-radius: 10px; background: var(--ps-surface-bg); color: var(--ps-text);" required>
+                                     </div>
+                                 </div>
+                             </div>
 
-                            <!-- Bank Transfer Details Drawer (Collapsible) -->
-                            <div id="bankDetailsContainer" class="mt-4 p-4 border rounded-4 bg-light shadow-sm d-none" style="border-radius: 16px; transition: all 0.3s ease;">
-                                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                                    <i class="bi bi-info-circle-fill text-primary fs-5"></i>
-                                    Bank Transfer Instructions
-                                </h6>
-                                <p class="small text-muted mb-3">Please transfer the total amount to the bank account below. Your order will be processed once the funds clear.</p>
-                                <div class="bg-white p-3 rounded-3 mb-2">
-                                    <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Bank Name:</span> <strong class="text-dark">Premier Retail Bank</strong></div>
-                                    <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Account Name:</span> <strong class="text-dark">Premier Shop Ltd</strong></div>
-                                    <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Sort Code:</span> <strong class="text-dark">12-34-56</strong></div>
-                                    <div class="d-flex justify-content-between small"><span class="text-muted">Account Number:</span> <strong class="text-dark">98765432</strong></div>
-                                </div>
-                                <div class="x-small text-warning bg-warning bg-opacity-10 p-2.5 rounded text-center">
-                                    <i class="bi bi-exclamation-circle-fill me-1"></i> Please use your Order Number as the transfer reference!
-                                </div>
-                            </div>
+                             <!-- Bank Transfer Details Drawer (Collapsible) -->
+                             <div id="bankDetailsContainer" class="mt-4 p-4 border rounded-4 shadow-sm d-none" style="border-radius: 16px; transition: all 0.3s ease; background: var(--ps-surface-secondary);">
+                                 <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                                     <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+                                     Bank Transfer Instructions
+                                 </h6>
+                                 <p class="small text-muted mb-3">Please transfer the total amount to the bank account below. Your order will be processed once the funds clear.</p>
+                                 <div class="p-3 rounded-3 mb-2" style="background: var(--ps-surface-bg);">
+                                     <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Bank Name:</span> <strong class="text-body">Premier Retail Bank</strong></div>
+                                     <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Account Name:</span> <strong class="text-body">Premier Shop Ltd</strong></div>
+                                     <div class="d-flex justify-content-between mb-1 small"><span class="text-muted">Sort Code:</span> <strong class="text-body">12-34-56</strong></div>
+                                     <div class="d-flex justify-content-between small"><span class="text-muted">Account Number:</span> <strong class="text-body">98765432</strong></div>
+                                 </div>
+                                 <div class="x-small text-warning bg-warning bg-opacity-10 p-2 rounded text-center">
+                                     <i class="bi bi-exclamation-circle-fill me-1"></i> Please use your Order Number as the transfer reference!
+                                 </div>
+                             </div>
                         </div>
 
                         <div class="d-none d-lg-block">

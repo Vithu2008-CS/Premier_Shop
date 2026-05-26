@@ -118,6 +118,12 @@
           <span class="link-title">Shipping Rates</span>
         </a>
       </li>
+      <li class="nav-item {{ Request::is('admin/contact-settings*') ? 'active' : '' }}">
+        <a href="{{ route('admin.settings.contact') }}" class="nav-link">
+          <i class="link-icon" data-feather="share-2"></i>
+          <span class="link-title">Contact & Socials</span>
+        </a>
+      </li>
       <li class="nav-item {{ Request::is('admin/settings*') ? 'active' : '' }}">
         <a href="{{ route('admin.settings.index') }}" class="nav-link">
           <i class="link-icon" data-feather="settings"></i>

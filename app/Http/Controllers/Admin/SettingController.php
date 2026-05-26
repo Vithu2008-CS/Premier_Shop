@@ -79,4 +79,49 @@ class SettingController extends Controller
 
         return back()->with('success', 'Settings updated successfully.');
     }
+
+    /** Renders the contact & social settings form. */
+    public function contactIndex()
+    {
+        $settings = Setting::first() ?? new Setting;
+
+        return view('admin.settings.contact', compact('settings'));
+    }
+
+    /** Updates and persists the contact & social settings in other_settings. */
+    public function contactStore(Request $request)
+    {
+        $request->validate([
+            'contact_phone'              => 'required|string|max:50',
+            'contact_phone_availability' => 'required|string|max:100',
+            'contact_email'              => 'required|email|max:100',
+            'contact_email_availability' => 'required|string|max:100',
+            'contact_address'            => 'required|string|max:255',
+            'contact_hours'              => 'required|string|max:255',
+            'social_facebook'            => 'nullable|url:http,https|max:255',
+            'social_instagram'           => 'nullable|url:http,https|max:255',
+            'social_twitter'             => 'nullable|url:http,https|max:255',
+            'social_tiktok'              => 'nullable|url:http,https|max:255',
+        ]);
+
+        $settings = Setting::first() ?? new Setting;
+        $other = $settings->other_settings ?? [];
+
+        $other['contact_phone']              = $request->contact_phone;
+        $other['contact_phone_availability'] = $request->contact_phone_availability;
+        $other['contact_email']              = $request->contact_email;
+        $other['contact_email_availability'] = $request->contact_email_availability;
+        $other['contact_address']            = $request->contact_address;
+        $other['contact_hours']              = $request->contact_hours;
+        
+        $other['social_facebook']            = $request->social_facebook;
+        $other['social_instagram']           = $request->social_instagram;
+        $other['social_twitter']             = $request->social_twitter;
+        $other['social_tiktok']              = $request->social_tiktok;
+
+        $settings->other_settings = $other;
+        $settings->save();
+
+        return back()->with('success', 'Contact and Social settings updated successfully.');
+    }
 }

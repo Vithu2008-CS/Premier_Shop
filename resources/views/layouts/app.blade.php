@@ -193,6 +193,11 @@
             border-radius: 5px;
         }
         
+        .text-center .footer-heading::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
         .footer-links {
             list-style: none;
             padding-left: 0;
@@ -648,7 +653,7 @@
                                 <span class="badge notification-count badge-danger bg-danger rounded-circle position-absolute top-0 start-100 translate-middle" style="font-size: 0.6rem; padding: 0.25em 0.4em; {{ $unreadNotifs > 0 ? '' : 'display:none;' }}" id="notificationBadgeBadge">{{ $unreadNotifs }}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0" style="width: 350px; border-radius: 12px; overflow: hidden;" id="notificationDropdownMenu">
-                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: var(--ps-surface-secondary); border-bottom-color: var(--ps-border) !important;">
                                     <h6 class="mb-0 fw-bold">Notifications</h6>
                                 </div>
                                 <div id="notificationListContent">
@@ -897,44 +902,47 @@
     <footer class="footer-premium">
         <div class="container">
             <div class="row g-4">
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                {{-- Column 1: About Premier Shop --}}
+                <div class="col-12 col-lg-5 mb-4 mb-lg-0">
                     <div class="footer-brand">🛍️ Premier Shop</div>
-                    <p class="mb-4" style="font-size:0.9rem;">Your one-stop destination for quality products at
-                        unbeatable prices.</p>
+                    <p class="mb-4 text-white-50" style="font-size:0.9rem; line-height: 1.6;">
+                        Your one-stop destination for quality products at unbeatable prices.
+                    </p>
+                    <ul class="footer-links list-unstyled mb-4" style="font-size: 0.88rem;">
+                        <li class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i>{{ \App\Models\Setting::get('contact_address', 'London, United Kingdom') }}</li>
+                        <li class="mb-2"><i class="bi bi-envelope me-2 text-primary"></i>{{ \App\Models\Setting::get('contact_email', 'info@premiershop.com') }}</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2 text-primary"></i>{{ \App\Models\Setting::get('contact_phone', '+44 770 000 0000') }}</li>
+                    </ul>
                     <div class="social-icons">
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-tiktok"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_facebook', '#') }}" target="_blank"><i class="bi bi-facebook"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_twitter', '#') }}" target="_blank"><i class="bi bi-twitter-x"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_instagram', '#') }}" target="_blank"><i class="bi bi-instagram"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_tiktok', '#') }}" target="_blank"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
-                <div class="col-4 col-lg-2 col-md-4 mb-4 mb-lg-0">
-                    <h6 class="footer-heading text-truncate">Shop</h6>
-                    <ul class="footer-links">
-                        <li><a href="{{ route('offers') }}">Offers</a></li>
-                        <li><a href="{{ route('products.index') }}">Products</a></li>
-                        <li><a href="{{ route('categories') }}">Categories</a></li>
-                        @foreach(\App\Models\Category::take(3)->get() as $cat)
-                            <li><a href="{{ route('products.index', ['category' => $cat->slug]) }}">{{ Str::limit($cat->name, 10) }}</a>
-                            </li>
-                        @endforeach
+
+                {{-- Column 2: Quick Links --}}
+                <div class="col-6 col-lg-3 mb-4 mb-lg-0 text-start">
+                    <h6 class="footer-heading">Quick Links</h6>
+                    <ul class="footer-links list-unstyled">
+                        @guest
+                            <li><a href="{{ route('login') }}">Sign In / Register</a></li>
+                        @else
+                            <li><a href="{{ route('profile.edit') }}">My Profile</a></li>
+                        @endguest
+                        <li><a href="{{ route('products.index') }}">Browse Products</a></li>
+                        <li><a href="{{ route('offers') }}">Special Offers</a></li>
+                        <li><a href="{{ route('categories') }}">Product Categories</a></li>
+                        <li><a href="{{ route('orders.index') }}">Track My Order</a></li>
+                        <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
                     </ul>
                 </div>
-                <div class="col-4 col-lg-2 col-md-4 mb-4 mb-lg-0">
-                    <h6 class="footer-heading text-truncate">Account</h6>
-                    <ul class="footer-links">
-                        <li><a href="{{ route('login') }}">Login</a></li>
-                        <li><a href="{{ route('register') }}">Sign Up</a></li>
-                        <li><a href="{{ route('contact') }}">Contact</a></li>
-                        @auth
-                            <li><a href="{{ route('orders.index') }}">Orders</a></li>
-                            <li><a href="{{ route('cart.index') }}">Cart</a></li>
-                        @endauth
-                    </ul>
-                </div>
-                <div class="col-4 col-lg-3 col-md-4 mb-4 mb-lg-0">
-                    <h6 class="footer-heading text-truncate">Hours</h6>
-                     <ul class="footer-links" style="font-size:0.8rem;">
+
+                {{-- Column 3: Hours --}}
+                <div class="col-6 col-lg-4 mb-4 mb-lg-0 text-start">
+                    <h6 class="footer-heading">Hours</h6>
+                    <ul class="footer-links" style="font-size:0.8rem;">
                         @php
                             $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
                             $settings = \App\Models\Setting::first();
@@ -958,14 +966,6 @@
                                 </span>
                             </li>
                         @endforeach
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0 text-md-start text-center">
-                    <h6 class="footer-heading">Get In Touch</h6>
-                    <ul class="footer-links list-unstyled">
-                        <li class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i>London, United Kingdom</li>
-                        <li class="mb-2"><i class="bi bi-envelope me-2 text-primary"></i>info@premiershop.com</li>
-                        <li class="mb-2"><i class="bi bi-telephone me-2 text-primary"></i>+44 770 000 0000</li>
                     </ul>
                 </div>
             </div>
@@ -1340,10 +1340,10 @@
                     </div>
                     <span>Profile</span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0 bg-white" style="border-radius: 16px; min-width: 180px; z-index: 1100; margin-bottom: 10px;">
-                    <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2 text-muted"></i>Profile Settings</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 16px; min-width: 180px; z-index: 1100; margin-bottom: 10px;">
+                    <li><a class="dropdown-item py-2.5 fw-semibold small" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2 text-muted"></i>Profile Settings</a></li>
                     @if(auth()->user()->isAdmin())
-                        <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2 text-muted"></i>Admin Dashboard</a></li>
+                        <li><a class="dropdown-item py-2.5 fw-semibold small" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2 text-muted"></i>Admin Dashboard</a></li>
                     @endif
                     <li><hr class="dropdown-divider my-1 opacity-10"></li>
                     <li>
