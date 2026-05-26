@@ -42,7 +42,7 @@
                     </div>
 
                     <h6 class="fw-bold mb-3 text-muted">RETURN REASON</h6>
-                    <div class="p-4 bg-light rounded-4 mb-4">
+                    <div class="p-4 rounded-4 mb-4" style="background: var(--ps-surface-secondary);">
                         <h6 class="fw-bold mb-2">{{ $return->reason }}</h6>
                         <p class="mb-0 text-muted">{{ $return->customer_note ?: 'No additional notes provided.' }}</p>
                     </div>
@@ -58,7 +58,7 @@
                     <div class="list-group list-group-flush border-top">
                         @foreach($return->items as $reqItem)
                             <div class="list-group-item d-flex align-items-center gap-3 py-3 px-0 border-bottom">
-                                <div class="rounded-3 overflow-hidden bg-light flex-shrink-0" style="width: 50px; height: 50px;">
+                                <div class="rounded-3 overflow-hidden flex-shrink-0" style="width: 50px; height: 50px; background: var(--ps-surface-secondary);">
                                     @if($reqItem->orderItem->product->images && count($reqItem->orderItem->product->images) > 0)
                                         <img src="{{ $reqItem->orderItem->product->images[0] }}" alt="" style="width:100%;height:100%;object-fit:cover;">
                                     @else

@@ -310,6 +310,21 @@
     .profile-settings-collapse {
         margin-top: 24px;
     }
+
+    [data-bs-theme="dark"] .avatar-circle-profile {
+        border-color: var(--ps-surface-secondary);
+        background: var(--ps-surface-secondary);
+    }
+    [data-bs-theme="dark"] .camera-badge-profile {
+        background: var(--ps-surface-secondary);
+        color: var(--ps-text);
+    }
+    [data-bs-theme="dark"] .camera-badge-profile:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    [data-bs-theme="dark"] .profile-name-bold {
+        color: var(--ps-text);
+    }
 </style>
 
 {{-- Direct Camera Photo Form --}}

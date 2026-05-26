@@ -25,7 +25,7 @@
     <div class="row">
         <div class="col-lg-8 mx-auto">
             <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-bottom p-4">
+                <div class="card-header bg-transparent border-bottom p-4">
                     <h4 class="mb-0 fw-bold">Request a Return</h4>
                     <p class="text-muted mb-0 small">Please select the items you wish to return and tell us why.</p>
                 </div>
@@ -37,7 +37,7 @@
                         <div class="list-group mb-4">
                             @foreach($order->items as $item)
                                 <div class="list-group-item list-group-item-action d-flex align-items-center gap-2 gap-sm-3 p-3">
-                                    <div class="rounded-3 overflow-hidden flex-shrink-0" style="width: 52px; height: 52px; background: #f8f9fa;">
+                                    <div class="rounded-3 overflow-hidden flex-shrink-0" style="width: 52px; height: 52px; background: var(--ps-surface-secondary);">
                                         @if($item->product->images && count($item->product->images) > 0)
                                             <img src="{{ $item->product->images[0] }}" alt="" style="width:100%;height:100%;object-fit:cover;">
                                         @else

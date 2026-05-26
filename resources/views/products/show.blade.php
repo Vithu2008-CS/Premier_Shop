@@ -30,7 +30,7 @@
             <div class="col-lg-6 reveal-slide-left">
                 <div class="product-gallery-wrapper">
                     @if($product->images && count($product->images) > 0)
-                        <div id="productCarousel" class="carousel slide carousel-fade shadow-sm rounded-4 overflow-hidden bg-white" data-bs-ride="false">
+                        <div id="productCarousel" class="carousel slide carousel-fade shadow-sm rounded-4 overflow-hidden" style="background: var(--ps-surface-bg);" data-bs-ride="false">
                             <div class="carousel-inner">
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
@@ -60,7 +60,7 @@
                             </div>
                         @endif
                     @else
-                        <div class="d-flex align-items-center justify-content-center" style="aspect-ratio:1;background:#f0f0f5;">
+                        <div class="d-flex align-items-center justify-content-center" style="aspect-ratio:1;background:var(--ps-surface-secondary);">
                             <i class="bi bi-image text-muted" style="font-size:5rem;"></i>
                         </div>
                     @endif
@@ -162,10 +162,10 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <div class="row g-3 mb-4">
                                 <div class="col-md-4">
-                                    <div class="qty-stepper d-flex align-items-center border rounded-pill p-1 bg-light">
-                                        <button type="button" class="btn btn-white qty-minus shadow-sm rounded-circle p-0" style="width:44px;height:44px;">−</button>
+                                    <div class="qty-stepper d-flex align-items-center border rounded-pill p-1" style="background: var(--ps-surface-bg); border-color: var(--ps-border) !important;">
+                                        <button type="button" class="btn qty-minus shadow-sm rounded-circle p-0" style="width:44px;height:44px;background: var(--ps-surface-bg); color: var(--ps-text); border: 1px solid var(--ps-border);">−</button>
                                         <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="form-control text-center border-0 bg-transparent fw-bold" style="width:50px;" readonly>
-                                        <button type="button" class="btn btn-white qty-plus shadow-sm rounded-circle p-0" style="width:44px;height:44px;">+</button>
+                                        <button type="button" class="btn qty-plus shadow-sm rounded-circle p-0" style="width:44px;height:44px;background: var(--ps-surface-bg); color: var(--ps-text); border: 1px solid var(--ps-border);">+</button>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -190,19 +190,19 @@
                 {{-- Features --}}
                 <div class="row g-3">
                     <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:#f8f9fe;">
+                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
                             <i class="bi bi-shield-check text-primary"></i>
                             <small class="fw-600">Secure checkout</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:#f8f9fe;">
+                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
                             <i class="bi bi-arrow-counterclockwise text-primary"></i>
                             <small class="fw-600">30-day returns</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:#f8f9fe;">
+                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
                             <i class="bi bi-award text-primary"></i>
                             <small class="fw-600">Quality guaranteed</small>
                         </div>
@@ -243,7 +243,7 @@
                                     <div class="d-flex align-items-center mb-2" style="font-size:0.85rem;">
                                         <span class="text-muted me-2" style="width:12px;">{{ $i }}</span>
                                         <i class="bi bi-star-fill text-warning me-2"></i>
-                                        <div class="progress flex-grow-1 mx-2" style="height:8px; border-radius:10px; background:#f0f2f5;">
+                                        <div class="progress flex-grow-1 mx-2" style="height:8px; border-radius:10px; background:var(--ps-surface-secondary);">
                                             <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percentage }}%; border-radius:10px;"></div>
                                         </div>
                                         <span class="text-muted ms-2" style="width:30px; text-align:right;">{{ $count }}</span>
@@ -310,7 +310,7 @@
                     @if($approvedReviews->count() > 0)
                         <div class="d-flex flex-column gap-4">
                             @foreach($approvedReviews as $review)
-                                <div class="card border-0 rounded-4 p-4" style="background:#f8f9fa;">
+                                <div class="card border-0 rounded-4 p-4" style="background:var(--ps-surface-secondary);">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
                                             <div class="d-flex align-items-center gap-2 mb-1">
@@ -333,14 +333,14 @@
                                     @endif
                                     
                                     @if($review->comment)
-                                        <p class="mb-3 text-dark">{{ $review->comment }}</p>
+                                        <p class="mb-3 text-body">{{ $review->comment }}</p>
                                     @endif
 
                                     @if($review->photos && count($review->photos) > 0)
                                         <div class="d-flex gap-2 mb-3 overflow-auto custom-scrollbar pb-2">
                                             @foreach($review->photos as $photo)
                                                 <a href="{{ Storage::url($photo) }}" target="_blank">
-                                                    <img src="{{ Storage::url($photo) }}" class="rounded-3" style="width:80px;height:80px;object-fit:cover;border:1px solid #dee2e6;" alt="Review Image">
+                                                    <img src="{{ Storage::url($photo) }}" class="rounded-3" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--ps-border);" alt="Review Image">
                                                 </a>
                                             @endforeach
                                         </div>
@@ -350,7 +350,7 @@
                                         <div class="p-3 mt-2 rounded-3" style="background:rgba(108, 92, 231, 0.05); border-left:3px solid var(--ps-primary);">
                                             <div class="d-flex align-items-center gap-2 mb-2">
                                                 <i class="bi bi-shop text-primary"></i>
-                                                <strong class="text-dark small">Response from Premier Shop</strong>
+                                                <strong class="text-body small">Response from Premier Shop</strong>
                                             </div>
                                             <p class="mb-0 small text-muted">{{ $review->admin_reply }}</p>
                                         </div>
@@ -385,7 +385,7 @@
                     <form action="{{ route('reviews.store', $product->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
-                            <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:#f8f9fa;">
+                            <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
                                 <img src="{{ $product->images[0] ?? '' }}" class="rounded" style="width:50px;height:50px;object-fit:cover;">
                                 <div>
                                     <div class="fw-bold fs-6 lh-sm">{{ $product->name }}</div>
@@ -473,7 +473,7 @@
         <div class="mobile-sticky-action-bar d-md-none glass-card shadow-lg">
             <div class="container d-flex align-items-center justify-content-between py-2 px-3">
                 <div class="product-info-minimal" style="min-width:0;flex:1;overflow:hidden;">
-                    <div class="fw-bold text-dark" style="font-size: 0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $product->name }}</div>
+                    <div class="fw-bold text-body" style="font-size: 0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $product->name }}</div>
                     <div class="text-primary fw-bold" style="font-size: 1rem;">£{{ number_format($product->price, 2) }}</div>
                 </div>
                 <div class="d-flex gap-2">

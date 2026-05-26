@@ -653,7 +653,7 @@
                                 <span class="badge notification-count badge-danger bg-danger rounded-circle position-absolute top-0 start-100 translate-middle" style="font-size: 0.6rem; padding: 0.25em 0.4em; {{ $unreadNotifs > 0 ? '' : 'display:none;' }}" id="notificationBadgeBadge">{{ $unreadNotifs }}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end p-0 shadow-lg border-0" style="width: 350px; border-radius: 12px; overflow: hidden;" id="notificationDropdownMenu">
-                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: var(--ps-surface-secondary); border-bottom-color: var(--ps-border) !important;">
                                     <h6 class="mb-0 fw-bold">Notifications</h6>
                                 </div>
                                 <div id="notificationListContent">
@@ -1340,10 +1340,10 @@
                     </div>
                     <span>Profile</span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0 bg-white" style="border-radius: 16px; min-width: 180px; z-index: 1100; margin-bottom: 10px;">
-                    <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2 text-muted"></i>Profile Settings</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 16px; min-width: 180px; z-index: 1100; margin-bottom: 10px;">
+                    <li><a class="dropdown-item py-2.5 fw-semibold small" href="{{ route('profile.edit') }}"><i class="bi bi-gear me-2 text-muted"></i>Profile Settings</a></li>
                     @if(auth()->user()->isAdmin())
-                        <li><a class="dropdown-item py-2.5 fw-semibold text-dark small" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2 text-muted"></i>Admin Dashboard</a></li>
+                        <li><a class="dropdown-item py-2.5 fw-semibold small" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2 text-muted"></i>Admin Dashboard</a></li>
                     @endif
                     <li><hr class="dropdown-divider my-1 opacity-10"></li>
                     <li>

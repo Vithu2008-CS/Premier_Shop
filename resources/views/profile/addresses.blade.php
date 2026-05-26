@@ -38,7 +38,7 @@
     @endif
 
     @if($addresses->isEmpty())
-        <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+        <div class="text-center py-5 rounded-4 shadow-sm border">
             <div class="mb-3">
                 <i class="bi bi-geo-alt text-muted" style="font-size: 3rem;"></i>
             </div>

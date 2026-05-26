@@ -53,7 +53,7 @@
         <div class="col-md-8">
             <div class="row g-4 h-100">
                 <div class="col-sm-6">
-                    <div class="card bg-white border-0 shadow-sm rounded-4 h-100">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4 d-flex flex-column justify-content-center">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-3">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <div class="card bg-white border-0 shadow-sm rounded-4 h-100">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4 d-flex flex-column justify-content-center">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 me-3">
@@ -84,13 +84,13 @@
 
     <!-- Transaction History -->
     <div class="card border-0 shadow-sm rounded-4 reveal-slide-up" style="transition-delay: 0.1s;">
-        <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i> Points History</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-muted small">
+                    <thead class="text-muted small">
                         <tr>
                             <th class="ps-4 py-3">Date</th>
                             <th class="py-3">Description</th>
