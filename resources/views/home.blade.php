@@ -47,50 +47,62 @@
          PARALLAX HERO SECTION
     ═══════════════════════════════════════════════════════════ --}}
     @if(isset($sliders) && $sliders->count() > 0)
+        @php $sliderCount = $sliders->count(); @endphp
         <section class="parallax-hero" id="heroSection">
-            {{-- Background Carousel (parallax-driven) --}}
-            <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="6000">
+
+            {{-- Background Carousel --}}
+            <div id="heroCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
                     @foreach($sliders as $i => $slider)
+                        @php
+                            $imgSrc = str_starts_with($slider->image_path, 'http')
+                                ? $slider->image_path
+                                : asset('storage/' . $slider->image_path);
+                            $align  = $slider->text_align ?? 'center';
+                            $title  = $slider->title ?? 'New Arrival';
+                            $words  = explode(' ', $title);
+                            if (count($words) > 1) {
+                                $accent = array_pop($words);
+                                $lead   = implode(' ', $words);
+                            } else {
+                                $lead   = '';
+                                $accent = $title;
+                            }
+                        @endphp
                         <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
-                            <div class="parallax-bg" style="background-image: url('{{ (str_starts_with($slider->image_path, 'http') || str_starts_with($slider->image_path, 'data:')) ? $slider->image_path : asset('storage/' . $slider->image_path) }}');" aria-label="{{ $slider->title ?? 'Promotional slide' }}"></div>
-                            
-                            {{-- Gradient Overlay inside the item --}}
-                            <div class="hero-overlay"></div>
+                            <div class="parallax-bg" style="background-image: url('{{ $imgSrc }}');" aria-label="{{ $slider->title ?? 'Promotional slide' }}"></div>
 
-                            {{-- Hero Content --}}
-                            <div class="hero-content align-{{ $slider->text_align ?? 'center' }}">
+                            {{-- Directional gradient: darkens on the content side for readability --}}
+                            <div class="hero-overlay hero-overlay-{{ $align }}"></div>
+
+                            {{-- Slide content --}}
+                            <div class="hero-content align-{{ $align }}">
                                 <div class="container">
-                                    <div class="hero-badge scroll-reveal" data-delay="0">
+
+                                    {{-- Badge --}}
+                                    <div class="hero-badge" data-delay="0">
                                         <span class="badge-pill">
                                             <span class="badge-dot"></span>
-                                            <span class="text-uppercase tracking-widest fw-bold" style="font-size: 0.7rem;">Curated Selection</span>
+                                            <span class="text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.18em;">Curated Selection</span>
                                         </span>
                                     </div>
-                                    <h1 class="hero-title scroll-reveal" data-delay="100">
-                                        @php
-                                            $title = $slider->title ?? 'New Slider';
-                                            $words = explode(' ', $title);
-                                            if (count($words) > 1) {
-                                                $accent = array_pop($words);
-                                                $lead = implode(' ', $words);
-                                            } else {
-                                                $lead = '';
-                                                $accent = $title;
-                                            }
-                                        @endphp
+
+                                    {{-- Title --}}
+                                    <h1 class="hero-title" data-delay="100">
                                         @if($lead)
                                             <span class="hero-title-lead">{{ $lead }}</span>
                                         @endif
                                         <span class="hero-title-accent">{{ $accent }}</span>
                                     </h1>
+
+                                    {{-- Subtitle --}}
                                     @if($slider->subtitle)
-                                        <p class="hero-subtitle scroll-reveal" data-delay="200">
-                                            {{ $slider->subtitle }}
-                                        </p>
+                                        <p class="hero-subtitle" data-delay="200">{{ $slider->subtitle }}</p>
                                     @endif
-                                    <div class="hero-actions scroll-reveal" data-delay="300">
-                                        <a href="{{ $slider->link_url ?? route('products.index') }}" class="btn-hero-primary premium-btn">
+
+                                    {{-- CTA Buttons --}}
+                                    <div class="hero-actions" data-delay="300">
+                                        <a href="{{ $slider->link_url ?? route('products.index') }}" class="btn-hero-primary">
                                             <span>{{ $slider->button_text ?: 'Shop Now' }}</span>
                                             <i class="bi bi-arrow-right"></i>
                                         </a>
@@ -99,6 +111,7 @@
                                             <span>View Offers</span>
                                         </a>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -106,57 +119,83 @@
                 </div>
             </div>
 
-            {{-- Frosted Section Divider --}}
-            <div class="frosted-divider"></div>
+            {{-- Prev / Next arrows (only when multiple slides) --}}
+            @if($sliderCount > 1)
+                <button class="hero-nav-arrow hero-nav-prev" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous slide">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="hero-nav-arrow hero-nav-next" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Next slide">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            @endif
 
             {{-- Scroll Indicator --}}
             <div class="scroll-indicator">
-                <div class="mouse">
-                    <div class="wheel"></div>
-                </div>
+                <div class="mouse"><div class="wheel"></div></div>
                 <span>Scroll to explore</span>
             </div>
 
-            {{-- Carousel Indicators --}}
-            @if($sliders->count() > 1)
-            <div class="hero-carousel-dots">
-                @foreach($sliders as $i => $slider)
-                    <button data-bs-target="#heroCarousel" data-bs-slide-to="{{ $i }}" class="{{ $i == 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}"></button>
-                @endforeach
-            </div>
+            {{-- Dot indicators --}}
+            @if($sliderCount > 1)
+                <div class="hero-carousel-dots">
+                    @foreach($sliders as $i => $slider)
+                        <button data-bs-target="#heroCarousel" data-bs-slide-to="{{ $i }}" class="{{ $i == 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}"></button>
+                    @endforeach
+                </div>
             @endif
+
+            {{-- Slide counter --}}
+            @if($sliderCount > 1)
+                <div class="hero-slide-counter" id="heroSlideCounter">
+                    <span class="counter-current">01</span>
+                    <span class="counter-sep">/</span>
+                    <span class="counter-total">{{ str_pad($sliderCount, 2, '0', STR_PAD_LEFT) }}</span>
+                </div>
+            @endif
+
+            {{-- Progress bar --}}
+            <div class="hero-progress-bar">
+                <div class="hero-progress-fill" id="heroProgressFill"></div>
+            </div>
+
         </section>
     @else
-        {{-- Fallback Hero --}}
+        {{-- Fallback static hero when no sliders are configured --}}
         <section class="parallax-hero" id="heroSection">
             <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1920&auto=format&fit=crop');"></div>
-            <div class="hero-overlay"></div>
-
-            <div class="hero-content">
-                <div class="container text-center">
-                    <div class="hero-badge scroll-reveal" data-delay="0">
-                        <span class="badge-dot"></span>
-                        <span>Curated Selection</span>
+            <div class="hero-overlay hero-overlay-center"></div>
+            <div class="hero-content align-center">
+                <div class="container">
+                    <div class="hero-badge">
+                        <span class="badge-pill">
+                            <span class="badge-dot"></span>
+                            <span class="text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.18em;">Curated Selection</span>
+                        </span>
                     </div>
-                    <h1 class="hero-title scroll-reveal" data-delay="100">
+                    <h1 class="hero-title">
                         <span class="hero-title-lead">Discover</span>
                         <span class="hero-title-accent">Quality Goods</span>
                     </h1>
-                    <p class="hero-subtitle scroll-reveal" data-delay="200">
+                    <p class="hero-subtitle">
                         Explore a curated selection of premium electronics, lifestyle accessories, and everyday essentials.
                     </p>
-                    <div class="hero-actions scroll-reveal" data-delay="300">
+                    <div class="hero-actions">
                         <a href="{{ route('products.index') }}" class="btn-hero-primary">
                             <span>Shop Now</span>
                             <i class="bi bi-arrow-right"></i>
                         </a>
                         <a href="{{ route('offers') }}" class="btn-hero-glass">
-                            <i class="bi bi-lightning-charge-fill"></i>
+                            <i class="bi bi-lightning-charge-fill text-warning"></i>
                             <span>View Offers</span>
                         </a>
                     </div>
                 </div>
             </div>
+            <div class="scroll-indicator">
+                <div class="mouse"><div class="wheel"></div></div>
+                <span>Scroll to explore</span>
+            </div>
+        </section>
     @endif
 
 
@@ -587,19 +626,18 @@
                         const heroHeight = heroSection.offsetHeight;
 
                         if (scrolled < heroHeight) {
-                            const yPos = scrolled * 0.4;
+                            const yPos = scrolled * 0.18;
                             parallaxBgs.forEach(bg => {
-                                bg.style.transform = 'translate3d(0, ' + yPos + 'px, 0) scale(1.1)';
+                                bg.style.transform = 'translate3d(0, ' + yPos + 'px, 0)';
                             });
 
-                            // Fade hero content on scroll
-                            const heroContent = heroSection.querySelector('.hero-content');
-                            if (heroContent) {
-                                const opacity = 1 - (scrolled / (heroHeight * 0.6));
-                                const translateY = scrolled * 0.2;
-                                heroContent.style.opacity = Math.max(0, opacity);
-                                heroContent.style.transform = 'translateY(' + translateY + 'px)';
-                            }
+                            // Fade and float all hero contents on scroll
+                            const floatY  = scrolled * -0.06;
+                            const opacity = 1 - (scrolled / (heroHeight * 0.65));
+                            heroSection.querySelectorAll('.hero-content').forEach(function(hc) {
+                                hc.style.opacity   = Math.max(0, opacity);
+                                hc.style.transform = 'translateY(' + floatY + 'px)';
+                            });
                         }
                         ticking = false;
                     });
@@ -631,15 +669,46 @@
             });
         }
 
-        // ── Bootstrap Carousel Init ────────────────────────────
-        var myCarousel = document.querySelector('#heroCarousel');
-        if (myCarousel) {
-            var carousel = new bootstrap.Carousel(myCarousel, {
+        // ── Bootstrap Carousel Init + Counter + Progress Bar ──
+        const heroCarouselEl = document.querySelector('#heroCarousel');
+        if (heroCarouselEl) {
+            const carousel = new bootstrap.Carousel(heroCarouselEl, {
                 interval: 6000,
                 ride: 'carousel',
                 pause: false
             });
             carousel.cycle();
+
+            const counterEl  = document.getElementById('heroSlideCounter');
+            const progressEl = document.getElementById('heroProgressFill');
+            const dotsEl     = heroCarouselEl.closest('.parallax-hero')?.querySelectorAll('.hero-carousel-dots button');
+
+            function startProgress() {
+                if (!progressEl) return;
+                progressEl.classList.remove('running');
+                void progressEl.offsetWidth; // force reflow
+                progressEl.classList.add('running');
+            }
+
+            function updateCounter(index) {
+                if (!counterEl) return;
+                counterEl.querySelector('.counter-current').textContent =
+                    String(index + 1).padStart(2, '0');
+            }
+
+            function syncDots(index) {
+                if (!dotsEl) return;
+                dotsEl.forEach((btn, i) => btn.classList.toggle('active', i === index));
+            }
+
+            heroCarouselEl.addEventListener('slide.bs.carousel', function (e) {
+                updateCounter(e.to);
+                syncDots(e.to);
+                startProgress();
+            });
+
+            // Kick off first progress fill
+            startProgress();
         }
 
         // ── Smooth Scroll Indicator ────────────────────────────
