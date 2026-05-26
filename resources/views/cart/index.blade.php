@@ -58,7 +58,7 @@
                                                 <input class="form-check-input item-checkbox border-primary" type="checkbox" name="items[]" value="{{ $item->id }}" checked>
                                             </div>
                                             <h6 class="fw-bold mb-0 truncate-1">
-                                                <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-dark">{{ $item->product->name }}</a>
+                                                <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-body">{{ $item->product->name }}</a>
                                             </h6>
                                         </div>
 
@@ -75,7 +75,7 @@
                                                     @if($item->product->images && count($item->product->images) > 0)
                                                         <img src="{{ $item->product->images[0] }}" class="w-100 h-100" style="object-fit:cover;" alt="{{ $item->product->name }}">
                                                     @else
-                                                        <div class="d-flex align-items-center justify-content-center h-100 w-100" style="background:#f0f0f5;">
+                                                        <div class="d-flex align-items-center justify-content-center h-100 w-100" style="background: var(--ps-surface-secondary);">
                                                             <i class="bi bi-image text-muted"></i>
                                                         </div>
                                                     @endif
@@ -85,7 +85,7 @@
                                             <div class="col-8 col-md-3">
                                                 <div class="d-none d-md-block">
                                                     <h6 class="fw-bold mb-1">
-                                                        <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-dark">{{ $item->product->name }}</a>
+                                                        <a href="{{ route('products.show', $item->product->slug) }}" class="text-decoration-none text-body">{{ $item->product->name }}</a>
                                                     </h6>
                                                     <p class="text-muted small mb-0">{{ $item->product->category?->name }}</p>
                                                 </div>
@@ -98,17 +98,17 @@
                                             {{-- Quantity --}}
                                             <div class="col-7 col-md-3">
                                                 <div class="mb-1 small fw-bold text-muted d-none d-md-block">Quantity:</div>
-                                                <div class="qty-stepper d-flex align-items-center border rounded-3 bg-white shadow-sm p-1">
-                                                    <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 40px; border-radius: 8px;">−</button>
-                                                    <input type="number" id="qty-{{ $item->id }}" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control text-center border-0 qty-input fw-bold" style="width:50px; font-size: 1.1rem;" readonly>
-                                                    <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 40px; border-radius: 8px;">+</button>
+                                                <div class="qty-stepper d-flex align-items-center border rounded-3 shadow-sm p-1" style="background: var(--ps-surface-bg);">
+                                                    <button type="button" class="btn btn-light btn-sm qty-minus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 44px; border-radius: 8px;">−</button>
+                                                    <input type="number" id="qty-{{ $item->id }}" value="{{ $item->quantity }}" min="1" max="{{ $item->product->stock }}" class="form-control text-center border-0 qty-input fw-bold bg-transparent" style="width:50px; font-size: 1.1rem; color: var(--ps-text);" readonly>
+                                                    <button type="button" class="btn btn-light btn-sm qty-plus border-0 px-3 py-2" data-item-id="{{ $item->id }}" style="height: 44px; border-radius: 8px;">+</button>
                                                 </div>
                                                 <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">Stock: {{ $item->product->stock }}</small>
                                             </div>
                                             {{-- Line Total + Remove --}}
                                             <div class="col-5 col-md-2 text-end">
                                                 <div class="small fw-bold text-muted mb-1 d-none d-md-block">Item Total:</div>
-                                                <div class="fw-bold mb-2 item-line-total text-dark" id="line-total-{{ $item->id }}" style="font-size:1.15rem;">£{{ number_format($item->line_total, 2) }}</div>
+                                                <div class="fw-bold mb-2 item-line-total text-body" id="line-total-{{ $item->id }}" style="font-size:1.15rem;">£{{ number_format($item->line_total, 2) }}</div>
                                                 <button type="button" class="btn btn-link text-danger p-0 text-decoration-none small remove-item-btn fw-bold" data-item-id="{{ $item->id }}">
                                                     <i class="bi bi-trash3-fill me-1"></i>Remove
                                                 </button>

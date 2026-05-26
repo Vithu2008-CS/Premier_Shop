@@ -141,6 +141,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('categories', CategoryController::class)->except(['show']);
 
     // Sliders & Banners (Promotion model, type='slider'|'banner')
+    Route::patch('sliders/{slider}/toggle-active', [\App\Http\Controllers\Admin\SliderController::class, 'toggleActive'])->name('sliders.toggle-active');
     Route::resource('sliders', \App\Http\Controllers\Admin\SliderController::class)->except(['show']);
 
     // Coupons
@@ -177,6 +178,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Settings — shop config: shipping, loyalty rates, shop info
     Route::get('settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
+    Route::get('contact-settings', [App\Http\Controllers\Admin\SettingController::class, 'contactIndex'])->name('settings.contact');
+    Route::post('contact-settings', [App\Http\Controllers\Admin\SettingController::class, 'contactStore'])->name('settings.contact.store');
 
     // Shipping Rates — base, distance, and weight rates
     Route::get('shipping-rates', [App\Http\Controllers\Admin\ShippingRateController::class, 'index'])->name('shipping-rates.index');

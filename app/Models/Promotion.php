@@ -31,6 +31,7 @@ class Promotion extends Model
         'image_path',
         'link_url',
         'button_text',
+        'text_align',
         'type',           // 'slider' or 'banner'
         'start_date',
         'end_date',
