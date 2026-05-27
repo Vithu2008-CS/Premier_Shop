@@ -122,7 +122,48 @@
 
                     {{-- Order Summary --}}
                     <div class="col-lg-4 reveal-slide-right">
-                        <div class="card fade-up shadow-sm border-0" style="position:sticky;top:90px; border-radius: 20px;">
+                        <div style="position:sticky;top:90px;" class="d-flex flex-column gap-4">
+                            
+                            <!-- Checkout Perks Card (Dynamic Milestones) -->
+                            <div class="card fade-up shadow-sm border-0" style="border-radius: 20px;">
+                                <div class="card-body p-4">
+                                    <h6 class="fw-bold mb-3 d-flex align-items-center text-body" style="font-family: 'Outfit', sans-serif;">
+                                        <i class="bi bi-gift text-primary me-2"></i> Active Checkout Perks
+                                    </h6>
+                                    
+                                    <!-- Perk 1: Free Local Delivery -->
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1 small">
+                                            <span class="text-muted">Free Delivery Target</span>
+                                            <span class="fw-bold text-body" id="perk-shipping-value">£0 / £50</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px; border-radius: 10px; background: var(--ps-surface-secondary);">
+                                            <div id="perk-shipping-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%; border-radius: 10px;"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Perk 2: 1.5x Rewards Booster -->
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between mb-1 small">
+                                            <span class="text-muted">1.5x Points Booster Target</span>
+                                            <span class="fw-bold text-body" id="perk-points-value">£0 / £100</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px; border-radius: 10px; background: var(--ps-surface-secondary);">
+                                            <div id="perk-points-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%; border-radius: 10px;"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Milestone Insight Banner -->
+                                    <div class="p-3 mt-3 rounded-4 border border-dashed text-start" style="background: rgba(108, 92, 231, 0.05); border-color: var(--ps-primary) !important;">
+                                        <p id="perk-insight-text" class="small text-muted mb-0 fw-semibold" style="line-height: 1.5;">
+                                            Calculating eligible order incentives...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Existing Order Summary Card -->
+                            <div class="card fade-up shadow-sm border-0" style="border-radius: 20px;">
                             <div class="card-body p-4">
                                 <h5 class="fw-bold mb-4">Order Summary</h5>
                                 <div class="d-flex justify-content-between mb-2">
@@ -155,6 +196,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </div> <!-- Close the sticky container div -->
                         </div>
                     </div>
                 </div>
@@ -229,6 +271,39 @@ document.addEventListener('DOMContentLoaded', function() {
             checkoutError.classList.remove('d-none');
         } else {
             checkoutError.classList.add('d-none');
+        }
+
+        // Dynamic Checkout Perks Progress Logic
+        const shippingBar = document.getElementById('perk-shipping-bar');
+        const shippingLabel = document.getElementById('perk-shipping-value');
+        const pointsBar = document.getElementById('perk-points-bar');
+        const pointsLabel = document.getElementById('perk-points-value');
+        const insightText = document.getElementById('perk-insight-text');
+
+        if (shippingBar && pointsBar && insightText) {
+            // Shipping calculation
+            const shipPct = Math.min((subtotal / threshold) * 100, 100);
+            shippingBar.style.width = shipPct + '%';
+            shippingLabel.textContent = '£' + Math.min(subtotal, threshold).toFixed(0) + ' / £' + threshold;
+            
+            // Points calculation (Target 100)
+            const pointsTarget = 100;
+            const pointsPct = Math.min((subtotal / pointsTarget) * 100, 100);
+            pointsBar.style.width = pointsPct + '%';
+            pointsLabel.textContent = '£' + Math.min(subtotal, pointsTarget).toFixed(0) + ' / £' + pointsTarget;
+            
+            // Dynamic helpful text recommendations
+            if (subtotal === 0) {
+                insightText.innerHTML = "Select items above to activate milestones.";
+            } else if (subtotal < threshold) {
+                const diff = threshold - subtotal;
+                insightText.innerHTML = `<i class="bi bi-truck text-primary me-1"></i> Add <strong>£${diff.toFixed(2)}</strong> more to unlock <strong>Free Local Delivery</strong>!`;
+            } else if (subtotal < pointsTarget) {
+                const diff = pointsTarget - subtotal;
+                insightText.innerHTML = `<i class="bi bi-award-fill text-success me-1"></i> Free delivery unlocked! Add <strong>£${diff.toFixed(2)}</strong> more to activate a <strong>1.5x Rewards Point Booster</strong>!`;
+            } else {
+                insightText.innerHTML = `<i class="bi bi-stars text-warning me-1"></i> <strong>Elite Status:</strong> Free delivery & 1.5x loyalty multiplier activated!`;
+            }
         }
     }
 
