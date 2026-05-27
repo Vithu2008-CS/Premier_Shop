@@ -300,6 +300,12 @@ class CheckoutController extends Controller
                 if ($loyaltyEnabled) {
                     $ptsPerPound      = $settings->other_settings['points_per_pound'] ?? 1;
                     $earnableSubtotal = $subtotal - $discount - $pointsDiscount;
+                    
+                    // Premium perk: Apply 1.5x points booster if the customer spent £100 or more
+                    if ($earnableSubtotal >= 100) {
+                        $ptsPerPound = $ptsPerPound * 1.5;
+                    }
+                    
                     $pointsEarned     = (int) floor($earnableSubtotal * $ptsPerPound);
 
                     if ($pointsEarned > 0) {
