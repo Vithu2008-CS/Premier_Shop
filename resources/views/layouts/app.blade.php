@@ -1386,6 +1386,309 @@
         });
     </script>
     @stack('scripts')
+
+    @if(!auth()->user()?->isDriver())
+        <!-- Premier Assist AI Shopping Companion Floating Widget -->
+        <div id="premier-assist-widget" class="premier-assist-container">
+            <!-- Floating Bubble Trigger -->
+            <button id="premier-assist-trigger" class="premier-assist-bubble shadow-lg hover-up transition-all duration-300" title="Premier Assist">
+                <i class="bi bi-robot fs-4 text-white"></i>
+                <span id="premier-assist-alert" class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle" style="animation: pulse-alert 2s infinite;"></span>
+            </button>
+            
+            <!-- Floating Chat Panel -->
+            <div id="premier-assist-chat" class="premier-assist-chat-window shadow-xl border d-none flex-column overflow-hidden transition-all duration-300">
+                <!-- Header -->
+                <div class="chat-header d-flex justify-content-between align-items-center p-3 border-bottom text-white" style="background: var(--ps-gradient); border-bottom-color: rgba(255,255,255,0.06) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded-circle" style="width: 36px; height: 36px;">
+                            <i class="bi bi-robot fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 small-caps" style="font-family: 'Outfit', sans-serif; font-size: 0.95rem;">Premier Assist</h6>
+                            <span class="d-flex align-items-center gap-1" style="font-size: 0.7rem; opacity: 0.9;">
+                                <span class="d-inline-block rounded-circle bg-success" style="width: 6px; height: 6px;"></span> Virtual Agent Online
+                            </span>
+                        </div>
+                    </div>
+                    <button type="button" id="premier-assist-close" class="btn-close btn-close-white" aria-label="Close" style="font-size: 0.8rem;"></button>
+                </div>
+                
+                <!-- Chat Message Box -->
+                <div id="premier-assist-messages" class="chat-messages p-3 d-flex flex-column gap-3 overflow-auto custom-scrollbar flex-grow-1" style="background: var(--ps-surface-bg); min-height: 280px; max-height: 380px;">
+                    <!-- Bot Greeting -->
+                    <div class="message-bubble bot-bubble">
+                        <div class="message-content shadow-sm p-3 rounded-4" style="background: var(--ps-surface-secondary); color: var(--ps-text); border: 1px solid var(--ps-border); border-top-left-radius: 4px; font-size: 0.85rem; line-height: 1.5;">
+                            Hello! I am <strong>Premier Assist</strong>, your personal shopping advisor. I can help you track orders, manage loyalty points, check return policies, and find deals. How can I help you today?
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Replies -->
+                    <div class="quick-replies d-flex flex-wrap gap-1.5 mt-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="where is my order">📦 Where is my order?</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="loyalty points">💰 Check loyalty points</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="return policy">💳 Returns policy</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="active coupons">🎁 Active coupons</button>
+                    </div>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div id="premier-assist-typing" class="px-3 py-2 d-none align-items-center gap-2" style="background: var(--ps-surface-bg);">
+                    <div class="typing-indicator d-flex gap-1 align-items-center p-2 rounded-4" style="background: var(--ps-surface-secondary); border: 1px solid var(--ps-border);">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.75rem;">Assistant is thinking...</span>
+                </div>
+                
+                <!-- Chat Input Panel -->
+                <div class="chat-input p-3 border-top" style="background: var(--ps-surface-secondary); border-top-color: var(--ps-border) !important;">
+                    <form id="premier-assist-form" class="d-flex gap-2">
+                        <input type="text" id="premier-assist-input" class="form-control rounded-pill border-0 px-3 py-2 shadow-sm text-body" placeholder="Ask a question..." style="background: var(--ps-surface-bg); font-size: 0.85rem;" autocomplete="off">
+                        <button type="submit" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0" style="width: 36px; height: 36px; background: var(--ps-gradient); border: none; flex-shrink: 0;">
+                            <i class="bi bi-send-fill text-white fs-6"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assistant Stylesheet -->
+        <style>
+            .premier-assist-container {
+                position: fixed;
+                bottom: 90px;
+                right: 24px;
+                z-index: 1050;
+                font-family: 'Outfit', sans-serif;
+            }
+            .premier-assist-bubble {
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: var(--ps-gradient);
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                position: relative;
+            }
+            .premier-assist-chat-window {
+                position: absolute;
+                bottom: 70px;
+                right: 0;
+                width: 340px;
+                border-radius: 20px;
+                background: var(--ps-surface-bg);
+                border-color: var(--ps-border) !important;
+                z-index: 1051;
+            }
+            @media (max-width: 576px) {
+                .premier-assist-chat-window {
+                    width: 300px;
+                    right: -10px;
+                }
+            }
+            .message-bubble {
+                display: flex;
+                width: 100%;
+            }
+            .user-bubble {
+                justify-content: flex-end;
+            }
+            .bot-bubble {
+                justify-content: flex-start;
+            }
+            .quick-replies {
+                display: flex;
+                gap: 6px;
+            }
+            .typing-indicator span {
+                width: 6px;
+                height: 6px;
+                background: var(--ps-text);
+                border-radius: 50%;
+                opacity: 0.4;
+                animation: typing 1.4s infinite both;
+            }
+            .typing-indicator span:nth-child(2) { animation-delay: .2s; }
+            .typing-indicator span:nth-child(3) { animation-delay: .4s; }
+            
+            @keyframes typing {
+                0% { transform: scale(1); opacity: 0.4; }
+                20% { transform: scale(1.3); opacity: 1; }
+                100% { transform: scale(1); opacity: 0.4; }
+            }
+            @keyframes pulse-alert {
+                0% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.3); opacity: 0.6; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+        </style>
+        
+        <!-- Assistant Dialog System -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const trigger = document.getElementById('premier-assist-trigger');
+                const chatWindow = document.getElementById('premier-assist-chat');
+                const closeBtn = document.getElementById('premier-assist-close');
+                const alertEl = document.getElementById('premier-assist-alert');
+                const form = document.getElementById('premier-assist-form');
+                const input = document.getElementById('premier-assist-input');
+                const msgContainer = document.getElementById('premier-assist-messages');
+                const typingInd = document.getElementById('premier-assist-typing');
+                
+                // Toggle Chat Window
+                trigger.addEventListener('click', function() {
+                    chatWindow.classList.toggle('d-none');
+                    chatWindow.classList.toggle('d-flex');
+                    if (alertEl) alertEl.remove(); // Dismiss alert bubble on click
+                    scrollToBottom();
+                });
+                
+                closeBtn.addEventListener('click', function() {
+                    chatWindow.classList.remove('d-flex');
+                    chatWindow.classList.add('d-none');
+                });
+                
+                // Form Submission
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const text = input.value.trim();
+                    if (!text) return;
+                    
+                    addUserMessage(text);
+                    input.value = '';
+                    
+                    showTypingIndicator();
+                    
+                    // Simulate thinking delay (1.2s)
+                    setTimeout(function() {
+                        const reply = getAssistantResponse(text);
+                        addBotMessage(reply);
+                        hideTypingIndicator();
+                    }, 1200);
+                });
+                
+                // Quick Reply Clicks
+                document.querySelectorAll('.qr-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const query = this.dataset.query;
+                        addUserMessage(query);
+                        
+                        showTypingIndicator();
+                        
+                        setTimeout(function() {
+                            const reply = getAssistantResponse(query);
+                            addBotMessage(reply);
+                            hideTypingIndicator();
+                        }, 1200);
+                    });
+                });
+                
+                function addUserMessage(text) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'message-bubble user-bubble';
+                    bubble.innerHTML = `
+                        <div class="message-content shadow-sm p-3 rounded-4" style="background: var(--ps-primary); color: white; border-top-right-radius: 4px; font-size: 0.85rem; line-height: 1.5; max-width: 80%;">
+                            ${escapeHTML(text)}
+                        </div>
+                    `;
+                    msgContainer.appendChild(bubble);
+                    scrollToBottom();
+                }
+                
+                function addBotMessage(text) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'message-bubble bot-bubble';
+                    bubble.innerHTML = `
+                        <div class="message-content shadow-sm p-3 rounded-4" style="background: var(--ps-surface-secondary); color: var(--ps-text); border: 1px solid var(--ps-border); border-top-left-radius: 4px; font-size: 0.85rem; line-height: 1.5; max-width: 80%;">
+                            ${text}
+                        </div>
+                    `;
+                    msgContainer.appendChild(bubble);
+                    scrollToBottom();
+                }
+                
+                function showTypingIndicator() {
+                    typingInd.classList.remove('d-none');
+                    typingInd.classList.add('d-flex');
+                    scrollToBottom();
+                }
+                
+                function hideTypingIndicator() {
+                    typingInd.classList.remove('d-flex');
+                    typingInd.classList.add('d-none');
+                }
+                
+                function scrollToBottom() {
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                }
+                
+                function escapeHTML(str) {
+                    return str.replace(/[&<>'"]/g, 
+                        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+                    );
+                }
+                
+                // Context-Aware Response Engine
+                function getAssistantResponse(query) {
+                    const q = query.toLowerCase();
+                    
+                    const customerName = "{{ auth()->check() ? auth()->user()->name : '' }}";
+                    const cartCount = parseInt("{{ auth()->check() ? auth()->user()->cartItems()->sum('quantity') : 0 }}");
+                    const loyaltyPoints = parseInt("{{ auth()->check() ? auth()->user()->loyalty_points : 0 }}");
+                    
+                    const greetingName = customerName ? ' ' + escapeHTML(customerName.split(' ')[0]) : '';
+                    
+                    // Route Matches
+                    if (q.includes('order') || q.includes('track') || q.includes('status')) {
+                        return `I can definitely help you with that! You can review your active deliveries, assigned couriers, and tracking timelines on your <a href="{{ route('orders.index') }}" class="fw-bold text-primary text-decoration-none">Orders Dashboard</a>. Shipped orders feature real-time interactive mapping so you can watch your package travel in real-time!`;
+                    }
+                    
+                    if (q.includes('point') || q.includes('loyalty') || q.includes('reward')) {
+                        return `Hi${greetingName}! You currently have <strong>${loyaltyPoints}</strong> loyalty rewards points in your wallet. At checkout, you can redeem these directly to receive cash reductions (each point is worth £0.01). Browse your loyalty transactions in your <a href="{{ route('profile.rewards') }}" class="fw-bold text-primary text-decoration-none">Rewards Wallet</a>!`;
+                    }
+                    
+                    if (q.includes('return') || q.includes('refund')) {
+                        return `Returns are fully automated at Premier Shop! If you are not satisfied with an item, you can submit a return request within **30 days** of delivery. Just go to your <a href="{{ route('orders.index') }}" class="fw-bold text-primary text-decoration-none">Orders Page</a>, find the delivered order, and click <strong>'Request Return'</strong> to upload your proof photos.`;
+                    }
+                    
+                    if (q.includes('coupon') || q.includes('discount') || q.includes('code') || q.includes('offer')) {
+                        return `We love discounts! Check out active promotional campaigns and deals on our <a href="{{ route('offers') }}" class="fw-bold text-primary text-decoration-none">Special Offers Page</a>. You can enter active codes (like 'SAVE10') inside your cart or during checkout to deduct prices instantly.`;
+                    }
+                    
+                    if (q.includes('cart') || q.includes('basket') || q.includes('buy')) {
+                        if (cartCount > 0) {
+                            return `You currently have <strong>${cartCount}</strong> premium item(s) waiting in your shopping cart. Don't miss out! <a href="{{ route('cart.index') }}" class="fw-bold text-primary text-decoration-none">Click here to view your cart</a> and complete your secure checkout.`;
+                        } else {
+                            return `Your cart is currently empty! Explore our curated <a href="{{ route('products.index') }}" class="fw-bold text-primary text-decoration-none">Product Catalog</a> to find something special to add to your collection.`;
+                        }
+                    }
+                    
+                    if (q.includes('hi') || q.includes('hello') || q.includes('hey') || q.includes('assist')) {
+                        return `Hello${greetingName}! Welcome to Premier Shop. I'm here to answer questions about tracking, available points, or return policies. What can I help you discover today?`;
+                    }
+                    
+                    if (q.includes('thank') || q.includes('thanks') || q.includes('awesome')) {
+                        return `You are very welcome! If you need anything else, feel free to type another question. Happy shopping! 🛍️`;
+                    }
+                    
+                    // Fallback response with helpful hints
+                    return `That's an interesting question! I am optimized for checkouts, order tracking, returns, and loyalty point rewards. Try asking me about:
+                        <ul class="mt-2 mb-0 ps-3 small text-muted text-start" style="line-height: 1.5;">
+                            <li>"Where is my order?"</li>
+                            <li>"Check my loyalty points balance"</li>
+                            <li>"Returns and refund policies"</li>
+                            <li>"Do you have any active coupons?"</li>
+                        </ul>`;
+                }
+            });
+        </script>
+    @endif
 </body>
 
 </html>
