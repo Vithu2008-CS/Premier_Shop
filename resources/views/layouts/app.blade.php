@@ -1388,6 +1388,39 @@
     @stack('scripts')
 
     @if(!auth()->user()?->isDriver())
+        @php
+            $activeCoupons = \App\Models\Coupon::where('is_active', true)
+                ->where(function ($query) {
+                    $query->whereNull('valid_until')->orWhere('valid_until', '>', now());
+                })
+                ->get(['code', 'discount_type', 'discount_value', 'min_order_amount'])
+                ->toArray();
+
+            $userOrders = auth()->check()
+                ? auth()->user()->orders()
+                    ->with(['driver'])
+                    ->latest()
+                    ->get(['id', 'order_number', 'status', 'total', 'created_at', 'shipped_date', 'delivered_date'])
+                    ->map(function ($order) {
+                        return [
+                            'order_number' => $order->order_number,
+                            'status' => $order->status,
+                            'total' => (float) $order->total,
+                            'created_at' => $order->created_at->format('d M Y'),
+                            'shipped_date' => $order->shipped_date ? $order->shipped_date->format('d M Y') : null,
+                            'delivered_date' => $order->delivered_date ? $order->delivered_date->format('d M Y') : null,
+                            'driver_name' => $order->driver->name ?? null,
+                            'url' => route('orders.show', $order),
+                        ];
+                    })
+                    ->toArray()
+                : [];
+
+            $activeCartSubtotal = auth()->check()
+                ? (float) auth()->user()->cartItems()->with('product')->get()->sum('line_total')
+                : 0.0;
+        @endphp
+
         <!-- Premier Assist AI Shopping Companion Floating Widget -->
         <div id="premier-assist-widget" class="premier-assist-container">
             <!-- Floating Bubble Trigger -->
@@ -1450,6 +1483,14 @@
                             <i class="bi bi-send-fill text-white fs-6"></i>
                         </button>
                     </form>
+                </div>
+            </div>
+            
+            <!-- Floating Toast Notification -->
+            <div id="premier-assist-toast" class="assist-toast-container">
+                <div class="assist-toast shadow" style="background: rgba(45, 52, 54, 0.95); backdrop-filter: blur(10px); color: white; font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 10px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-info-circle-fill text-primary"></i>
+                    <span id="premier-assist-toast-text">Toast Message</span>
                 </div>
             </div>
         </div>
@@ -1526,6 +1567,144 @@
                 50% { transform: scale(1.3); opacity: 0.6; }
                 100% { transform: scale(1); opacity: 1; }
             }
+
+            /* Advanced Coupons Ticket Stub Styles */
+            .coupon-ticket {
+                background: linear-gradient(135deg, rgba(108, 92, 231, 0.08), rgba(108, 92, 231, 0.02));
+                border: 2px dashed rgba(108, 92, 231, 0.25);
+                border-radius: 14px;
+                position: relative;
+                padding: 12px;
+                margin-top: 10px;
+                margin-bottom: 8px;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            [data-bs-theme="dark"] .coupon-ticket {
+                background: linear-gradient(135deg, rgba(162, 155, 254, 0.08), rgba(162, 155, 254, 0.02));
+                border-color: rgba(162, 155, 254, 0.25);
+            }
+            .coupon-ticket:hover {
+                border-color: var(--ps-primary);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(108, 92, 231, 0.08);
+            }
+            .coupon-ticket::before, .coupon-ticket::after {
+                content: '';
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                background: var(--ps-surface-bg);
+                border: 2px solid rgba(108, 92, 231, 0.25);
+                border-radius: 50%;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            [data-bs-theme="dark"] .coupon-ticket::before, [data-bs-theme="dark"] .coupon-ticket::after {
+                border-color: rgba(162, 155, 254, 0.25);
+            }
+            .coupon-ticket::before { left: -8px; border-left: none; }
+            .coupon-ticket::after { right: -8px; border-right: none; }
+
+            /* Advanced Visual Timeline Styles */
+            .assist-timeline {
+                position: relative;
+                padding-left: 20px;
+                border-left: 2px solid var(--ps-border);
+                margin: 12px 4px 6px;
+            }
+            .assist-timeline-item {
+                position: relative;
+                margin-bottom: 12px;
+            }
+            .assist-timeline-item:last-child {
+                margin-bottom: 0;
+            }
+            .assist-timeline-dot {
+                position: absolute;
+                left: -26px;
+                top: 3px;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: var(--ps-text-muted);
+                border: 2px solid var(--ps-surface-bg);
+                transition: all 0.3s ease;
+            }
+            .assist-timeline-item.active .assist-timeline-dot {
+                background: var(--ps-primary);
+                box-shadow: 0 0 8px var(--ps-primary);
+            }
+            .assist-timeline-item.completed .assist-timeline-dot {
+                background: #00b894;
+                box-shadow: 0 0 8px #00b894;
+            }
+
+            /* Circular Progress / Loyalty Wheel styles */
+            .loyalty-progress-container {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                background: rgba(108, 92, 231, 0.04);
+                border: 1px solid var(--ps-border);
+                border-radius: 16px;
+                padding: 12px;
+                margin-top: 10px;
+            }
+            .loyalty-wheel {
+                position: relative;
+                width: 60px;
+                height: 60px;
+                flex-shrink: 0;
+            }
+            .loyalty-wheel svg {
+                width: 100%;
+                height: 100%;
+                transform: rotate(-90deg);
+            }
+            .loyalty-wheel circle {
+                fill: none;
+                stroke-width: 4;
+            }
+            .loyalty-wheel .bg-circle {
+                stroke: var(--ps-border);
+            }
+            .loyalty-wheel .progress-circle {
+                stroke: var(--ps-primary);
+                stroke-linecap: round;
+                transition: stroke-dashoffset 0.6s ease;
+            }
+
+            /* Global floating toast styles inside the chat window */
+            .assist-toast-container {
+                position: absolute;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%) translateY(20px);
+                z-index: 1100;
+                pointer-events: none;
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+                opacity: 0;
+                width: 90%;
+                max-width: 300px;
+            }
+            .assist-toast-container.show {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            .assist-toast {
+                background: rgba(45, 52, 54, 0.95);
+                backdrop-filter: blur(10px);
+                color: white;
+                font-family: 'Outfit', sans-serif;
+                font-size: 0.8rem;
+                font-weight: 600;
+                padding: 10px 20px;
+                border-radius: 50px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
         </style>
         
         <!-- Assistant Dialog System -->
@@ -1539,6 +1718,10 @@
                 const input = document.getElementById('premier-assist-input');
                 const msgContainer = document.getElementById('premier-assist-messages');
                 const typingInd = document.getElementById('premier-assist-typing');
+                
+                // Active DB Datasets injected securely
+                const activeCouponsList = {!! json_encode($activeCoupons) !!};
+                const userOrdersList = {!! json_encode($userOrders) !!};
                 
                 // Toggle Chat Window
                 trigger.addEventListener('click', function() {
@@ -1563,13 +1746,7 @@
                     input.value = '';
                     
                     showTypingIndicator();
-                    
-                    // Simulate thinking delay (1.2s)
-                    setTimeout(function() {
-                        const reply = getAssistantResponse(text);
-                        addBotMessage(reply);
-                        hideTypingIndicator();
-                    }, 1200);
+                    processMessage(text);
                 });
                 
                 // Quick Reply Clicks
@@ -1580,13 +1757,21 @@
                         addUserMessage(query);
                         
                         showTypingIndicator();
-                        
-                        setTimeout(function() {
-                            const reply = getAssistantResponse(query);
-                            addBotMessage(reply);
-                            hideTypingIndicator();
-                        }, 1200);
+                        processMessage(query);
                     });
+                });
+                
+                // Handle dynamic quick tracking buttons inside the chatbot dynamically
+                msgContainer.addEventListener('click', function(e) {
+                    const btn = e.target.closest('.tracking-quick-btn');
+                    if (btn) {
+                        e.preventDefault();
+                        const orderNum = btn.dataset.ord;
+                        addUserMessage(orderNum);
+                        
+                        showTypingIndicator();
+                        processMessage(orderNum);
+                    }
                 });
                 
                 function addUserMessage(text) {
@@ -1605,7 +1790,7 @@
                     const bubble = document.createElement('div');
                     bubble.className = 'message-bubble bot-bubble';
                     bubble.innerHTML = `
-                        <div class="message-content shadow-sm p-3 rounded-4" style="background: var(--ps-surface-secondary); color: var(--ps-text); border: 1px solid var(--ps-border); border-top-left-radius: 4px; font-size: 0.85rem; line-height: 1.5; max-width: 80%;">
+                        <div class="message-content shadow-sm p-3 rounded-4 text-start" style="background: var(--ps-surface-secondary); color: var(--ps-text); border: 1px solid var(--ps-border); border-top-left-radius: 4px; font-size: 0.85rem; line-height: 1.5; max-width: 80%;">
                             ${text}
                         </div>
                     `;
@@ -1633,32 +1818,310 @@
                         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
                     );
                 }
+
+                // Dynamic Message Processor to support Async / AJAX fetches
+                function processMessage(text) {
+                    const q = text.toLowerCase().trim();
+                    const orderMatch = q.match(/ps-[0-9a-f]+/i);
+                    
+                    if (orderMatch) {
+                        const matchNum = orderMatch[0].toUpperCase();
+                        // 1. First search locally
+                        const localOrder = userOrdersList.find(o => o.order_number.toUpperCase() === matchNum);
+                        if (localOrder) {
+                            setTimeout(() => {
+                                renderTrackingTimeline(localOrder);
+                                hideTypingIndicator();
+                            }, 1000);
+                        } else {
+                            // 2. Perform dynamic AJAX server lookup
+                            fetch(`/api/orders/track/${matchNum}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.success && data.order) {
+                                        renderTrackingTimeline(data.order);
+                                    } else {
+                                        addBotMessage(`I found the order number <strong>${matchNum}</strong> in your query, but it is not registered to your account or database. Please check the spelling and try again.`);
+                                    }
+                                    hideTypingIndicator();
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    addBotMessage(`I searched for order <strong>${matchNum}</strong>, but encountered a system error querying the database. Please try again in a few moments.`);
+                                    hideTypingIndicator();
+                                });
+                        }
+                    } else {
+                        // Standard Synchronous dialog engine
+                        setTimeout(() => {
+                            const reply = getAssistantResponse(text);
+                            addBotMessage(reply);
+                            hideTypingIndicator();
+                        }, 1000);
+                    }
+                }
+
+                // Interactive Toast Notification
+                const toastEl = document.getElementById('premier-assist-toast');
+                const toastTextEl = document.getElementById('premier-assist-toast-text');
+                window.showToast = function(msg) {
+                    toastTextEl.textContent = msg;
+                    toastEl.classList.add('show');
+                    setTimeout(() => {
+                        toastEl.classList.remove('show');
+                    }, 2500);
+                }
+
+                // Global Copy Coupon callback
+                window.copyCoupon = function(code, btn) {
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(code).then(() => {
+                            showToast("🎟️ Coupon code copied!");
+                            btn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Copied`;
+                            setTimeout(() => { btn.innerHTML = `<i class="bi bi-copy"></i> Copy`; }, 2000);
+                        });
+                    } else {
+                        const el = document.createElement('textarea');
+                        el.value = code;
+                        document.body.appendChild(el);
+                        el.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(el);
+                        showToast("🎟️ Coupon code copied!");
+                        btn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Copied`;
+                        setTimeout(() => { btn.innerHTML = `<i class="bi bi-copy"></i> Copy`; }, 2000);
+                    }
+                };
+
+                // Global Apply Coupon callback for checkout pages
+                window.applyCouponDirect = function(code, btn) {
+                    const inputField = document.querySelector('input[name="coupon_code"]');
+                    const formField = document.getElementById('applyCouponForm');
+                    if (inputField && formField) {
+                        inputField.value = code;
+                        btn.innerHTML = `<i class="bi bi-gear-fill spin"></i> Applying...`;
+                        setTimeout(() => {
+                            const submitBtn = formField.querySelector('button[type="submit"]');
+                            if (submitBtn) {
+                                submitBtn.click();
+                            } else {
+                                formField.submit();
+                            }
+                            btn.innerHTML = `<i class="bi bi-check2"></i> Applied`;
+                            showToast("🎉 Coupon applied successfully!");
+                            setTimeout(() => { btn.innerHTML = `<i class="bi bi-lightning-fill"></i> Apply`; }, 2000);
+                        }, 800);
+                    } else {
+                        showToast("⚠️ Go to the checkout page to apply coupons.");
+                    }
+                };
+
+                function renderTrackingTimeline(order) {
+                    let step1 = 'completed', step2 = '', step3 = '', step4 = '';
+                    let statusBadge = '';
+                    
+                    if (order.status === 'pending') {
+                        step2 = 'active';
+                        statusBadge = '<span class="badge bg-warning text-dark px-2 py-1 rounded-pill mt-1 small" style="font-size:0.7rem;">Status: PENDING</span>';
+                    } else if (order.status === 'processing') {
+                        step1 = 'completed'; step2 = 'completed'; step3 = 'active';
+                        statusBadge = '<span class="badge bg-info text-white px-2 py-1 rounded-pill mt-1 small" style="font-size:0.7rem;">Status: PROCESSING</span>';
+                    } else if (order.status === 'shipped') {
+                        step1 = 'completed'; step2 = 'completed'; step3 = 'completed'; step4 = 'active';
+                        statusBadge = '<span class="badge bg-primary text-white px-2 py-1 rounded-pill mt-1 small" style="font-size:0.7rem;">Status: SHIPPED</span>';
+                    } else if (order.status === 'delivered') {
+                        step1 = 'completed'; step2 = 'completed'; step3 = 'completed'; step4 = 'completed';
+                        statusBadge = '<span class="badge bg-success text-white px-2 py-1 rounded-pill mt-1 small" style="font-size:0.7rem;">Status: DELIVERED</span>';
+                    } else if (order.status === 'cancelled') {
+                        statusBadge = '<span class="badge bg-danger text-white px-2 py-1 rounded-pill mt-1 small" style="font-size:0.7rem;">Status: CANCELLED</span>';
+                    }
+
+                    let trackingUrlBtn = '';
+                    if (order.url) {
+                        trackingUrlBtn = `
+                            <div class="mt-3 text-start">
+                                <a href="${order.url}" class="btn btn-primary btn-sm rounded-pill text-white text-decoration-none px-3 py-1.5 fw-bold" style="font-size:0.7rem; background: var(--ps-gradient); border:none;"><i class="bi bi-geo-alt-fill me-1"></i> View Delivery Map</a>
+                            </div>`;
+                    }
+
+                    const html = `
+                        <strong>Order Status Found: ${escapeHTML(order.order_number)}</strong><br>
+                        ${statusBadge}
+                        
+                        <div class="assist-timeline text-start">
+                            <div class="assist-timeline-item ${step1}">
+                                <div class="assist-timeline-dot"></div>
+                                <div class="small fw-bold">🛒 Placed & Confirmed</div>
+                                <div class="text-muted" style="font-size:0.68rem;">Order recorded on: ${order.created_at}</div>
+                            </div>
+                            <div class="assist-timeline-item ${step2}">
+                                <div class="assist-timeline-dot"></div>
+                                <div class="small fw-bold">⚙️ Preparing Package</div>
+                                <div class="text-muted" style="font-size:0.68rem;">Quality checking & boxing</div>
+                            </div>
+                            <div class="assist-timeline-item ${step3}">
+                                <div class="assist-timeline-dot"></div>
+                                <div class="small fw-bold">🚚 Dispatched In-Transit</div>
+                                <div class="text-muted" style="font-size:0.68rem;">${order.shipped_date ? `Sent out: ${order.shipped_date}` : 'Awaiting courier pickup'}</div>
+                            </div>
+                            <div class="assist-timeline-item ${step4}">
+                                <div class="assist-timeline-dot"></div>
+                                <div class="small fw-bold">📦 Delivered & Proofed</div>
+                                <div class="text-muted" style="font-size:0.68rem;">${order.delivered_date ? `Received: ${order.delivered_date}` : 'Estimated soon'}</div>
+                            </div>
+                        </div>
+                        
+                        <ul class="list-unstyled ps-0 mb-0 mt-2 small text-muted text-start" style="line-height: 1.5; font-size:0.78rem; border-top: 1px solid var(--ps-border); padding-top: 8px;">
+                            ${order.driver_name ? `<li>• Courier assigned: <strong>${escapeHTML(order.driver_name)}</strong></li>` : ''}
+                            <li>• Total: <strong>£${order.total.toFixed(2)}</strong></li>
+                        </ul>
+                        ${trackingUrlBtn}
+                    `;
+                    addBotMessage(html);
+                }
                 
-                // Context-Aware Response Engine
+                // Context-Aware Response Engine (Hardened with live active query layers)
                 function getAssistantResponse(query) {
-                    const q = query.toLowerCase();
+                    const q = query.toLowerCase().trim();
                     
                     const customerName = "{{ auth()->check() ? auth()->user()->name : '' }}";
                     const cartCount = parseInt("{{ auth()->check() ? auth()->user()->cartItems()->sum('quantity') : 0 }}");
                     const loyaltyPoints = parseInt("{{ auth()->check() ? auth()->user()->loyalty_points : 0 }}");
+                    const activeCartSubtotal = parseFloat("{{ $activeCartSubtotal }}");
                     
                     const greetingName = customerName ? ' ' + escapeHTML(customerName.split(' ')[0]) : '';
+                    const isCheckoutPage = window.location.pathname.includes('/checkout');
                     
-                    // Route Matches
-                    if (q.includes('order') || q.includes('track') || q.includes('status')) {
-                        return `I can definitely help you with that! You can review your active deliveries, assigned couriers, and tracking timelines on your <a href="{{ route('orders.index') }}" class="fw-bold text-primary text-decoration-none">Orders Dashboard</a>. Shipped orders feature real-time interactive mapping so you can watch your package travel in real-time!`;
+                    // 1. Coupon Check
+                    if (q.includes('coupon') || q.includes('discount') || q.includes('code') || q.includes('offer')) {
+                        if (activeCouponsList && activeCouponsList.length > 0) {
+                            let couponListHtml = `
+                                <strong>🎁 Store Active Coupons</strong>
+                                <p class="my-1.5 small text-muted" style="font-size:0.75rem;">Here are active coupon offers. You can copy them or apply instantly during checkout!</p>
+                                <div class="d-flex flex-column gap-2 mt-2 text-start">`;
+                            
+                            activeCouponsList.forEach(cp => {
+                                const valStr = cp.discount_type === 'percentage' ? `${parseFloat(cp.discount_value)}%` : `£${parseFloat(cp.discount_value)}`;
+                                const minStr = parseFloat(cp.min_order_amount) > 0 ? ` (Min spend £${parseFloat(cp.min_order_amount)})` : '';
+                                
+                                couponListHtml += `
+                                    <div class="coupon-ticket">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="badge bg-primary bg-opacity-10 text-primary small fw-bold font-monospace" style="font-size:0.8rem; letter-spacing:0.5px;">${escapeHTML(cp.code)}</span>
+                                            <span class="fw-bold text-success" style="font-size:0.85rem;">${valStr} OFF</span>
+                                        </div>
+                                        <div class="text-muted" style="font-size:0.7rem; line-height: 1.3;">
+                                            🎟️ Storewide Discount${minStr}
+                                        </div>
+                                        <div class="d-flex gap-1.5 mt-2 justify-content-end">
+                                            <button onclick="copyCoupon('${escapeHTML(cp.code)}', this)" class="btn btn-outline-secondary btn-xs rounded-pill px-2.5 py-1 text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:600; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);"><i class="bi bi-copy"></i> Copy</button>
+                                            ${isCheckoutPage ? `<button onclick="applyCouponDirect('${escapeHTML(cp.code)}', this)" class="btn btn-primary btn-xs rounded-pill px-2.5 py-1 text-white text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:700; background: var(--ps-gradient); border:none;"><i class="bi bi-lightning-fill"></i> Apply</button>` : ''}
+                                        </div>
+                                    </div>`;
+                            });
+                            
+                            couponListHtml += `</div>`;
+                            return couponListHtml;
+                        } else {
+                            return `We don't have any active discount codes at this moment. However, you can check out special retail markdowns directly on our <a href="{{ route('offers') }}" class="fw-bold text-primary text-decoration-none">Offers Page</a>!`;
+                        }
                     }
                     
+                    // 2. Order status tracking (General prompt showing customer's active orders)
+                    if (q.includes('order') || q.includes('track') || q.includes('status')) {
+                        if (userOrdersList && userOrdersList.length > 0) {
+                            let reply = `I can track your order status instantly! If you know your order number (e.g. <code>PS-60C1F...</code>), please type it below. <br><br><strong>Your Recent Orders:</strong><div class="d-flex flex-column gap-2 mt-2">`;
+                            userOrdersList.slice(0, 3).forEach(ord => {
+                                reply += `<button class="btn btn-light btn-sm text-start rounded-pill border px-3 py-2 font-monospace text-primary tracking-quick-btn" style="font-size:0.75rem; background: var(--ps-surface-bg); border-color: var(--ps-border) !important;" data-ord="${ord.order_number}"><i class="bi bi-clock-history me-1 text-muted"></i> ${ord.order_number} (${ord.status})</button>`;
+                            });
+                            reply += `</div>`;
+                            return reply;
+                        } else {
+                            return `I would be happy to track your delivery! You don't have any recent orders registered to your profile yet. Browse our <a href="{{ route('products.index') }}" class="fw-bold text-primary text-decoration-none">Catalog</a> to place your first order!`;
+                        }
+                    }
+                    
+                    // 3. Loyalty points details
                     if (q.includes('point') || q.includes('loyalty') || q.includes('reward')) {
-                        return `Hi${greetingName}! You currently have <strong>${loyaltyPoints}</strong> loyalty rewards points in your wallet. At checkout, you can redeem these directly to receive cash reductions (each point is worth £0.01). Browse your loyalty transactions in your <a href="{{ route('profile.rewards') }}" class="fw-bold text-primary text-decoration-none">Rewards Wallet</a>!`;
+                        const pointsVal = (loyaltyPoints * 0.01).toFixed(2);
+                        
+                        // VIP Tier Badging
+                        let tierBadge = '🥉 Bronze VIP';
+                        let nextTierName = '🥈 Silver VIP';
+                        let nextTierPoints = 500;
+                        let prevTierPoints = 0;
+                        
+                        if (loyaltyPoints >= 1500) {
+                            tierBadge = '💎 Platinum Legend';
+                            nextTierName = 'MAX';
+                            nextTierPoints = 1500;
+                            prevTierPoints = 1500;
+                        } else if (loyaltyPoints >= 501) {
+                            tierBadge = '🥇 Gold VIP';
+                            nextTierName = '💎 Platinum Legend';
+                            nextTierPoints = 1500;
+                            prevTierPoints = 501;
+                        } else if (loyaltyPoints >= 101) {
+                            tierBadge = '🥈 Silver VIP';
+                            nextTierName = '🥇 Gold VIP';
+                            nextTierPoints = 500;
+                            prevTierPoints = 101;
+                        }
+                        
+                        // Percent progress calculations for wheel
+                        let percent = 0;
+                        if (nextTierPoints !== prevTierPoints) {
+                            percent = ((loyaltyPoints - prevTierPoints) / (nextTierPoints - prevTierPoints)) * 100;
+                        } else {
+                            percent = 100;
+                        }
+                        percent = Math.max(0, Math.min(100, Math.round(percent)));
+                        const strokeOffset = 157 - (157 * percent) / 100;
+                        
+                        // Live Cart Points Booster Card
+                        let boosterWidget = '';
+                        if (activeCartSubtotal >= 100) {
+                            boosterWidget = `
+                                <div class="mt-2 p-2 rounded bg-success bg-opacity-10 text-success small" style="font-size:0.75rem; border: 1px solid rgba(0, 184, 148, 0.2);">
+                                    🔥 <strong>1.5x Points Booster ACTIVE!</strong> Your basket subtotal of <strong>£${activeCartSubtotal.toFixed(2)}</strong> qualifies for 1.5x rewards!
+                                </div>`;
+                        } else if (activeCartSubtotal > 0) {
+                            const needed = 100 - activeCartSubtotal;
+                            boosterWidget = `
+                                <div class="mt-2 p-2 rounded bg-warning bg-opacity-10 text-warning-emphasis small" style="font-size:0.75rem; border: 1px solid rgba(253, 203, 110, 0.2);">
+                                    💡 <strong>Points Booster Progress:</strong> Add only <strong>£${needed.toFixed(2)}</strong> more to your cart to trigger the **1.5x Points Booster**!
+                                </div>`;
+                        } else {
+                            boosterWidget = `
+                                <div class="mt-2 p-2 rounded bg-light text-muted small" style="font-size:0.75rem; border: 1px solid var(--ps-border);">
+                                    💡 Spend <strong>£100</strong> or more in one order to unlock the **1.5x Points Booster** rewards!
+                                </div>`;
+                        }
+
+                        return `
+                            <strong>⭐ Loyalty Rewards Wallet</strong>
+                            
+                            <div class="loyalty-progress-container text-start mt-2">
+                                <div class="loyalty-wheel">
+                                    <svg>
+                                        <circle class="bg-circle" cx="30" cy="30" r="25" />
+                                        <circle class="progress-circle" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="${strokeOffset}" />
+                                    </svg>
+                                    <div class="position-absolute top-50 start-50 translate-middle fw-bold" style="font-size:0.7rem;">${percent}%</div>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-primary" style="font-size:0.9rem;">${tierBadge}</div>
+                                    <div class="small text-muted" style="font-size:0.75rem;">Balance: <strong>${loyaltyPoints} Points</strong> (worth <strong>£${pointsVal}</strong>)</div>
+                                    ${nextTierName !== 'MAX' ? `<div class="small text-muted" style="font-size:0.68rem; opacity:0.8;">Need ${nextTierPoints - loyaltyPoints} pts to reach ${nextTierName}</div>` : ''}
+                                </div>
+                            </div>
+                            
+                            ${boosterWidget}
+                        `;
                     }
                     
                     if (q.includes('return') || q.includes('refund')) {
                         return `Returns are fully automated at Premier Shop! If you are not satisfied with an item, you can submit a return request within **30 days** of delivery. Just go to your <a href="{{ route('orders.index') }}" class="fw-bold text-primary text-decoration-none">Orders Page</a>, find the delivered order, and click <strong>'Request Return'</strong> to upload your proof photos.`;
-                    }
-                    
-                    if (q.includes('coupon') || q.includes('discount') || q.includes('code') || q.includes('offer')) {
-                        return `We love discounts! Check out active promotional campaigns and deals on our <a href="{{ route('offers') }}" class="fw-bold text-primary text-decoration-none">Special Offers Page</a>. You can enter active codes (like 'SAVE10') inside your cart or during checkout to deduct prices instantly.`;
                     }
                     
                     if (q.includes('cart') || q.includes('basket') || q.includes('buy')) {
@@ -1670,7 +2133,7 @@
                     }
                     
                     if (q.includes('hi') || q.includes('hello') || q.includes('hey') || q.includes('assist')) {
-                        return `Hello${greetingName}! Welcome to Premier Shop. I'm here to answer questions about tracking, available points, or return policies. What can I help you discover today?`;
+                        return `Hello${greetingName}! Welcome to Premier Shop. I'm here to answer questions about tracking, available points, or active coupons. What can I help you discover today?`;
                     }
                     
                     if (q.includes('thank') || q.includes('thanks') || q.includes('awesome')) {

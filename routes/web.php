@@ -47,6 +47,8 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->na
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/suggest', [ProductController::class, 'suggest'])->name('products.suggest'); // AJAX autocomplete
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/api/orders/track/{order_number}', [OrderController::class, 'trackPublic'])->name('orders.trackPublic');
+
 
 // ── AUTHENTICATED CUSTOMER ROUTES ────────────────────────────────────────────
 // Requires login. Covers cart, checkout, orders, profile, reviews, wishlist,
