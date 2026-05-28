@@ -14,7 +14,7 @@
 .pcard {
     position: relative;
     background: #ffffff;
-    border-radius: 22px;
+    border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.055);
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0,0,0,0.03);
@@ -120,8 +120,8 @@
     z-index: 10;
 }
 .pcard-wish-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     border: none;
     background: rgba(255,255,255,0.88);
@@ -134,7 +134,7 @@
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    font-size: 0.88rem;
+    font-size: 0.84rem;
     text-decoration: none;
 }
 [data-bs-theme="dark"] .pcard-wish-btn {
@@ -164,20 +164,20 @@
     left: 0;
     right: 0;
     z-index: 8;
-    padding: 0 12px 13px;
+    padding: 0 10px 11px;
     transform: translateY(110%);
     transition: transform 0.32s cubic-bezier(0.16,1,0.3,1);
 }
 .pcard:hover .pcard-quick-add { transform: translateY(0); }
 .pcard-add-btn {
     width: 100%;
-    padding: 11px 16px;
+    padding: 9px 14px;
     border: none;
-    border-radius: 14px;
+    border-radius: 12px;
     background: linear-gradient(135deg, #6C5CE7 0%, #8E2DE2 100%);
     color: #fff;
     font-weight: 700;
-    font-size: 0.83rem;
+    font-size: 0.78rem;
     font-family: 'Outfit', sans-serif;
     cursor: pointer;
     display: flex;
@@ -185,7 +185,7 @@
     justify-content: center;
     gap: 7px;
     transition: filter 0.2s ease, transform 0.15s ease;
-    box-shadow: 0 4px 18px rgba(108,92,231,0.4);
+    box-shadow: 0 4px 18px rgba(108,92,231,0.3);
 }
 .pcard-add-btn:hover {
     filter: brightness(1.1);
@@ -194,7 +194,7 @@
 
 /* ── Body ── */
 .pcard-body {
-    padding: 14px 16px 8px;
+    padding: 11px 13px 7px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -203,10 +203,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 .pcard-cat {
-    font-size: 0.67rem;
+    font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.9px;
     text-transform: uppercase;
@@ -218,15 +218,15 @@
     display: flex;
     align-items: center;
     gap: 3px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #f39c12;
 }
 .pcard-name {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    line-height: 1.38;
-    margin-bottom: 9px;
+    line-height: 1.34;
+    margin-bottom: 5px;
     font-family: 'Outfit', sans-serif;
     color: #2D3436;
     display: -webkit-box;
@@ -246,19 +246,19 @@
 .pcard-price-row {
     display: flex;
     align-items: baseline;
-    gap: 7px;
+    gap: 6px;
     margin-top: auto;
 }
 .pcard-price {
     font-family: 'Outfit', sans-serif;
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #2D3436;
     line-height: 1;
 }
 [data-bs-theme="dark"] .pcard-price { color: #ffffff; }
 .pcard-old-price {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #b2bec3;
     text-decoration: line-through;
     font-weight: 500;
@@ -271,13 +271,13 @@
     justify-content: center;
     gap: 5px;
     width: 100%;
-    margin-top: 10px;
-    padding: 8px 12px;
+    margin-top: 8px;
+    padding: 7px 10px;
     border: 1.5px solid rgba(108,92,231,0.28);
-    border-radius: 11px;
+    border-radius: 10px;
     background: transparent;
     color: #6C5CE7;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 700;
     font-family: 'Outfit', sans-serif;
     cursor: pointer;
@@ -295,7 +295,7 @@
 
 /* ── Footer ── */
 .pcard-footer {
-    padding: 8px 16px 12px;
+    padding: 6px 13px 9px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -308,15 +308,15 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 600;
     font-family: 'Outfit', sans-serif;
 }
 .pcard-stock.in-stock  { color: #00b894; }
 .pcard-stock.out-stock { color: #b2bec3; }
 .pcard-stock-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: currentColor;
     flex-shrink: 0;
@@ -329,7 +329,7 @@
     50%       { box-shadow: 0 0 0 5px rgba(0,184,148,0); }
 }
 .pcard-low-stock {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 700;
     color: #e17055;
     background: rgba(225,112,85,0.1);
@@ -340,12 +340,12 @@
 
 /* ── Mobile tweaks ── */
 @media (max-width: 575px) {
-    .pcard { border-radius: 18px; }
-    .pcard-body { padding: 10px 12px 6px; }
-    .pcard-name { font-size: 0.8rem; }
-    .pcard-price { font-size: 0.98rem; }
-    .pcard-footer { padding: 6px 12px 10px; }
-    .pcard-wish-btn { width: 32px; height: 32px; font-size: 0.82rem; }
+    .pcard { border-radius: 14px; }
+    .pcard-body { padding: 8px 10px 5px; }
+    .pcard-name { font-size: 0.78rem; }
+    .pcard-price { font-size: 0.88rem; }
+    .pcard-footer { padding: 5px 10px 8px; }
+    .pcard-wish-btn { width: 28px; height: 28px; font-size: 0.78rem; }
 }
 </style>
 @endpush

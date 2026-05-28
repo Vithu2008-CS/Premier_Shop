@@ -3434,22 +3434,24 @@ h3 { font-size: var(--fs-h3); }
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 15px;
     background: #fff;
+    max-height: 420px;
+    overflow: hidden;
     
     img {
       max-width: 100%;
-      max-height: 100%;
+      max-height: 380px;
       object-fit: contain;
       transition: transform 0.5s ease;
     }
   }
 
   .thumb-wrap {
-    width: 70px;
-    height: 70px;
+    width: 56px;
+    height: 56px;
     flex-shrink: 0;
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
     border: 2px solid transparent;
