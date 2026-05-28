@@ -3426,7 +3426,7 @@ h3 { font-size: var(--fs-h3); }
 // ============================================================
 .product-gallery-wrapper {
   .carousel-item {
-    background: #fff;
+    background: transparent;
     border-radius: 16px;
   }
   .product-img-main-wrap {
@@ -3434,8 +3434,8 @@ h3 { font-size: var(--fs-h3); }
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 15px;
-    background: #fff;
+    padding: 0;
+    background: transparent;
     overflow: hidden;
     
     img {
@@ -3453,10 +3453,10 @@ h3 { font-size: var(--fs-h3); }
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 1px solid var(--ps-border);
     transition: all 0.3s ease;
     opacity: 0.6;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.05);
 
     img {
       width: 100%;

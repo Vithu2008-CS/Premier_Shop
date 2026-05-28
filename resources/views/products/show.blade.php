@@ -34,7 +34,7 @@
                             <div class="carousel-inner">
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                                        <div class="product-img-main-wrap" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; padding: 15px;">
+                                        <div class="product-img-main-wrap" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: transparent; overflow: hidden; padding: 0;">
                                             <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit: contain;">
                                         </div>
                                     </div>
@@ -53,7 +53,7 @@
                         @if(count($product->images) > 1)
                             <div class="d-flex gap-2 mt-3 overflow-auto pb-2 custom-scrollbar justify-content-center">
                                 @foreach($product->images as $i => $img)
-                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" onclick="bootstrap.Carousel.getOrCreateInstance('#productCarousel').to({{ $i }})" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; opacity: 0.6; background: #fff;">
+                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" onclick="bootstrap.Carousel.getOrCreateInstance('#productCarousel').to({{ $i }})" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; opacity: 0.6; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--ps-border);">
                                         <img src="{{ $img }}" class="w-100 h-100" style="object-fit: cover;" alt="Thumb {{ $i + 1 }}">
                                     </div>
                                 @endforeach
