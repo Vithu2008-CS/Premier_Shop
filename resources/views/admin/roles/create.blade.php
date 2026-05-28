@@ -57,17 +57,27 @@
         <div class="col-md-8 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="card-title">Assign Privileges</h6>
+                    <div class="mb-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 border-bottom pb-3">
+                        <h6 class="card-title mb-0">Assign Privileges</h6>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2.5" onclick="toggleAllPrivileges(true)">Select All</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5" onclick="toggleAllPrivileges(false)">Clear All</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <input type="text" id="permissionSearch" class="form-control" placeholder="🔍 Search privileges by name or module..." style="border-radius: 12px; padding: 10px 15px;">
+                    </div>
                     
                     @foreach($permissions as $group => $groupPerms)
-                        <div class="mb-4">
+                        <div class="mb-4 permission-group-block">
                             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                                 <h6 class="mb-0 text-muted font-weight-bold text-uppercase tx-12">{{ $group }}</h6>
-                                <button type="button" class="btn btn-xs btn-outline-light text-primary" onclick="toggleGroup(this, '{{ Str::slug($group) }}')">Select All</button>
+                                <button type="button" class="btn btn-xs btn-outline-light text-primary" onclick="toggleGroup(this, '{{ Str::slug($group) }}')">Select Group</button>
                             </div>
                             <div class="row">
                                 @foreach($groupPerms as $perm)
-                                <div class="col-md-4 mb-2">
+                                <div class="col-md-4 mb-2 perm-item">
                                     <div class="form-check">
                                         <label class="form-check-label">
                                             <input type="checkbox" name="permissions[]" class="form-check-input perm-{{ Str::slug($group) }}" value="{{ $perm->id }}" {{ in_array($perm->id, old('permissions', [])) ? 'checked' : '' }}>
@@ -92,7 +102,26 @@ function toggleGroup(btn, groupClass) {
     const checkboxes = document.querySelectorAll('.perm-' + groupClass);
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);
     checkboxes.forEach(cb => cb.checked = !allChecked);
-    btn.textContent = allChecked ? 'Select All' : 'Deselect All';
+    btn.textContent = allChecked ? 'Select Group' : 'Deselect Group';
 }
+
+function toggleAllPrivileges(check) {
+    const checkboxes = document.querySelectorAll('input[name="permissions[]"]');
+    checkboxes.forEach(cb => cb.checked = check);
+}
+
+document.getElementById('permissionSearch')?.addEventListener('input', function() {
+    const term = this.value.toLowerCase().trim();
+    document.querySelectorAll('.permission-group-block').forEach(group => {
+        let groupHasMatch = false;
+        group.querySelectorAll('.perm-item').forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const isMatch = text.includes(term);
+            item.style.display = isMatch ? 'block' : 'none';
+            if (isMatch) groupHasMatch = true;
+        });
+        group.style.display = (groupHasMatch || term === '') ? 'block' : 'none';
+    });
+});
 </script>
 @endpush
