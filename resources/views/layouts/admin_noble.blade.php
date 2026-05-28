@@ -41,6 +41,7 @@
     <script>
         (function() {
             const savedTheme = localStorage.getItem('admin_theme') || 'light';
+            document.documentElement.setAttribute('data-admin-theme', savedTheme);
             // Set document background color immediately to match the active theme and prevent the white flash
             if (savedTheme === 'dark') {
                 document.documentElement.style.backgroundColor = '#0c1427';
@@ -161,18 +162,21 @@
                 } else {
                     document.documentElement.style.backgroundColor = '#f9fafb';
                 }
+                document.documentElement.setAttribute('data-admin-theme', newTheme);
                 localStorage.setItem('admin_theme', newTheme);
                 updateThemeIcon(newTheme);
             });
 
             // Notifications Logic
-            $('#adminNotificationMenuTrigger').on('show.bs.dropdown', function () {
+            function fetchAdminNotifications() {
                 $.get('{{ route("notifications.latest") }}', function(html) {
                     $('#adminNotificationListContent').html(html);
                 }).fail(function() {
                     $('#adminNotificationListContent').html('<div class="p-3 text-center text-danger">Failed to load.</div>');
                 });
-            });
+            }
+            $('.nav-notifications').on('show.bs.dropdown', fetchAdminNotifications);
+            $('#adminNotificationMenuTrigger').on('click', fetchAdminNotifications);
         });
         
         function showToast(message, type = 'success') {
