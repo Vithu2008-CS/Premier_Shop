@@ -25,13 +25,87 @@
     @media (max-width: 767px) {
         .checkout-item-list { max-height: 180px !important; }
     }
+    
+    /* Stepper Styling */
+    .stepper-step {
+        transition: all 0.3s ease;
+    }
+    .stepper-line {
+        transition: background 0.3s ease;
+    }
+    
+    /* Timer Pulse */
+    @keyframes pulseTimer {
+        0% { transform: scale(1); box-shadow: 0 0 0 rgba(225,112,85,0); }
+        100% { transform: scale(1.02); box-shadow: 0 0 8px rgba(225,112,85,0.15); }
+    }
+    
+    /* Coupon Tickets */
+    .coupon-ticket-stub {
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .coupon-ticket-stub:hover {
+        transform: translateY(-2px);
+        background: rgba(108, 92, 231, 0.05) !important;
+        border-color: var(--ps-primary) !important;
+        box-shadow: 0 4px 10px rgba(108, 92, 231, 0.08);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--ps-border);
+        border-radius: 10px;
+    }
 </style>
 @endpush
 
 @section('content')
+@php
+    $checkoutActiveCoupons = \App\Models\Coupon::where('is_active', true)
+        ->where(function ($query) {
+            $query->whereNull('valid_until')->orWhere('valid_until', '>', now());
+        })
+        ->get(['code', 'discount_type', 'discount_value', 'min_order_amount']);
+@endphp
 <section class="section-padding">
     <div class="container">
         <h2 class="section-title mb-4 reveal-3d"><i class="bi bi-bag-check me-2"></i>Check<span class="gradient-text">out</span></h2>
+        
+        <!-- Glassmorphic Progress Stepper & Live Stock Reservation Widget -->
+        <div class="card border-0 mb-4 shadow-sm" style="border-radius: 20px; background: var(--ps-surface-glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--ps-border) !important;">
+            <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <!-- Stepper Progress Phase -->
+                <div class="d-flex align-items-center gap-3 flex-wrap justify-content-center">
+                    <div class="stepper-step active d-flex align-items-center gap-2">
+                        <span class="step-num rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:28px; height:28px; background: var(--ps-gradient); color:#fff; font-size:0.85rem;">1</span>
+                        <span class="step-label fw-bold small">Details</span>
+                    </div>
+                    <div class="stepper-line" style="width: 40px; height: 2px; background: var(--ps-border);"></div>
+                    <div class="stepper-step active d-flex align-items-center gap-2">
+                        <span class="step-num rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:28px; height:28px; background: rgba(108,92,231,0.15); color:var(--ps-primary); border: 1px solid var(--ps-primary); font-size:0.85rem;">2</span>
+                        <span class="step-label fw-bold small text-primary">Secure Pay</span>
+                    </div>
+                    <div class="stepper-line" style="width: 40px; height: 2px; background: var(--ps-border);"></div>
+                    <div class="stepper-step text-muted d-flex align-items-center gap-2">
+                        <span class="step-num rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:28px; height:28px; background: var(--ps-border); color:var(--ps-text-muted); font-size:0.85rem;">3</span>
+                        <span class="step-label fw-bold small">Success</span>
+                    </div>
+                </div>
+                
+                <!-- Countdown Timer -->
+                <div class="stock-reservation-widget p-2.5 px-4 rounded-pill d-flex align-items-center gap-2 bg-danger bg-opacity-10 text-danger" style="border: 1px solid rgba(225,112,85,0.2); animation: pulseTimer 2s infinite alternate;" id="stockTimerWidget">
+                    <i class="bi bi-hourglass-split fs-5"></i>
+                    <span class="fw-bold small" style="font-family: 'Outfit', sans-serif;">
+                        Stock Reserved for <span id="checkoutCountdown" class="font-monospace">15:00</span> mins
+                    </span>
+                </div>
+            </div>
+        </div>
+
     <div class="row g-4">
         <div class="col-lg-7 reveal-slide-left">
             <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
@@ -194,6 +268,25 @@
                         <button type="submit" class="btn btn-outline-primary px-4" style="border-radius: 12px; font-weight: 600;">Apply</button>
                     </form>
                     @endif
+
+                    @if(!session('coupon') && isset($checkoutActiveCoupons) && $checkoutActiveCoupons->isNotEmpty())
+                    <div class="mt-3" id="availableCouponsContainer">
+                        <small class="text-muted fw-bold d-block mb-2">Available Coupons (Click to Apply):</small>
+                        <div class="d-flex gap-2 overflow-auto pb-2 custom-scrollbar" style="white-space: nowrap;">
+                            @foreach($checkoutActiveCoupons as $cp)
+                                @php
+                                    $valStr = $cp->discount_type === 'percentage' ? ((float)$cp->discount_value).'%' : '£'.((float)$cp->discount_value);
+                                    $minStr = (float)$cp->min_order_amount > 0 ? 'Min spend £'.((float)$cp->min_order_amount) : 'No min spend';
+                                @endphp
+                                <div class="coupon-ticket-stub d-inline-flex flex-column align-items-start p-2.5 border rounded-3 position-relative" style="background: var(--ps-surface-secondary); cursor: pointer; min-width: 140px; border: 1px dashed var(--ps-border) !important;" onclick="applyCouponDirect('{{ $cp->code }}', this)">
+                                    <div class="fw-bold text-primary font-monospace small mb-1">{{ $cp->code }}</div>
+                                    <div class="fw-bold text-success" style="font-size:0.75rem;">{{ $valStr }} OFF</div>
+                                    <div class="text-muted x-small" style="font-size: 0.65rem;">{{ $minStr }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -293,6 +386,52 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // ⏳ LocalStorage-backed Live Stock Reservation Countdown Widget
+        const COUNTDOWN_KEY = 'checkout_reservation_timer';
+        const DURATION = 15 * 60 * 1000; // 15 minutes
+        
+        let timerEnd = localStorage.getItem(COUNTDOWN_KEY);
+        const now = Date.now();
+        
+        if (!timerEnd || parseInt(timerEnd) < now) {
+            timerEnd = now + DURATION;
+            localStorage.setItem(COUNTDOWN_KEY, timerEnd);
+        } else {
+            timerEnd = parseInt(timerEnd);
+        }
+        
+        const countdownEl = document.getElementById('checkoutCountdown');
+        const timerWidget = document.getElementById('stockTimerWidget');
+        
+        function updateTimer() {
+            const timeLeft = timerEnd - Date.now();
+            
+            if (timeLeft <= 0) {
+                localStorage.setItem(COUNTDOWN_KEY, Date.now() + DURATION);
+                timerEnd = Date.now() + DURATION;
+                updateTimer();
+                return;
+            }
+            
+            const minutes = Math.floor(timeLeft / (60 * 1000));
+            const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+            
+            countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft < 2 * 60 * 1000) {
+                timerWidget.classList.add('bg-danger', 'text-white');
+                timerWidget.classList.remove('bg-danger', 'bg-opacity-10', 'text-danger');
+                timerWidget.style.animationDuration = '0.5s';
+            } else {
+                timerWidget.classList.add('bg-danger', 'bg-opacity-10', 'text-danger');
+                timerWidget.classList.remove('bg-danger', 'text-white');
+                timerWidget.style.animationDuration = '2s';
+            }
+        }
+        
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+
         const addressInput = document.getElementById('address_line');
         const cityInput = document.getElementById('city');
         const phoneInput = document.getElementById('phone');
@@ -419,6 +558,8 @@
                         location.reload(); // Fallback for complex state
                     }
                     applyCouponForm.style.setProperty('display', 'none', 'important');
+                    const avCoupons = document.getElementById('availableCouponsContainer');
+                    if (avCoupons) avCoupons.style.display = 'none';
                 } else {
                     // Removed
                     discountRow.classList.add('d-none');
@@ -426,6 +567,8 @@
                         couponInfoAlert.style.display = 'none';
                     }
                     applyCouponForm.style.setProperty('display', 'flex', 'important');
+                    const avCoupons = document.getElementById('availableCouponsContainer');
+                    if (avCoupons) avCoupons.style.display = 'block';
                 }
 
                 // Update totals

@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Cart ─────────────────────────────────────────────────────────────────
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/api/cart/items', [CartController::class, 'itemsJson'])->name('cart.itemsJson');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/buy-now', [CartController::class, 'buyNow'])->name('cart.buyNow'); // skip cart, go direct to checkout
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
@@ -132,7 +133,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Products — full CRUD + QR management + stock update
+    // Products — full CRUD + QR management + stock update + image uploads
+    Route::post('products/upload-image', [AdminProductController::class, 'uploadImage'])->name('products.uploadImage');
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::post('products/{product}/regenerate-qr', [AdminProductController::class, 'regenerateQr'])->name('products.regenerateQr');
     Route::get('scanner', [AdminProductController::class, 'scanner'])->name('scanner');          // camera QR scanner page

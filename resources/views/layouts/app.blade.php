@@ -1175,10 +1175,17 @@
             updateThemeUI(currentTheme);
 
             function toggleTheme() {
-                const newTheme = htmlElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-                htmlElement.setAttribute('data-bs-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeUI(newTheme);
+                document.body.style.transition = 'opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    const newTheme = htmlElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                    htmlElement.setAttribute('data-bs-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeUI(newTheme);
+                    setTimeout(() => {
+                        document.body.style.opacity = '1';
+                    }, 50);
+                }, 250);
             }
 
             if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
@@ -2140,7 +2147,6 @@
                         return `You are very welcome! If you need anything else, feel free to type another question. Happy shopping! 🛍️`;
                     }
                     
-                    // Fallback response with helpful hints
                     return `That's an interesting question! I am optimized for checkouts, order tracking, returns, and loyalty point rewards. Try asking me about:
                         <ul class="mt-2 mb-0 ps-3 small text-muted text-start" style="line-height: 1.5;">
                             <li>"Where is my order?"</li>
@@ -2152,6 +2158,256 @@
             });
         </script>
     @endif
+
+    {{-- Glassmorphic Interactive Mini-Cart Side Drawer --}}
+    @auth
+        @if(!auth()->user()->isDriver())
+            <div class="minicart-backdrop" id="miniCartBackdrop" onclick="toggleMiniCart(false)"></div>
+            <div class="minicart-drawer" id="miniCartDrawer">
+                <div class="minicart-header">
+                    <h5 class="fw-bold mb-0 d-flex align-items-center" style="font-family: 'Outfit', sans-serif;">
+                        <i class="bi bi-bag-heart-fill me-2 text-primary" style="font-size:1.25rem;"></i> Shopping Basket
+                    </h5>
+                    <button class="btn-close" onclick="toggleMiniCart(false)"></button>
+                </div>
+                <div class="minicart-body" id="miniCartBody">
+                    {{-- Dynamically loaded via AJAX --}}
+                </div>
+                <div class="minicart-footer border-top d-flex flex-column gap-3" id="miniCartFooter">
+                    {{-- Dynamic totals and progress bar --}}
+                </div>
+            </div>
+
+            <script>
+                // Toggle Mini-Cart Drawer Visibility
+                function toggleMiniCart(show = true) {
+                    const drawer = document.getElementById('miniCartDrawer');
+                    const backdrop = document.getElementById('miniCartBackdrop');
+                    if (!drawer || !backdrop) return;
+                    
+                    if (show) {
+                        drawer.classList.add('active');
+                        backdrop.classList.add('active');
+                        fetchMiniCartItems();
+                    } else {
+                        drawer.classList.remove('active');
+                        backdrop.classList.remove('active');
+                    }
+                }
+
+                // Fetch and Render Mini-Cart Items via AJAX
+                function fetchMiniCartItems() {
+                    const body = document.getElementById('miniCartBody');
+                    const footer = document.getElementById('miniCartFooter');
+                    if (!body || !footer) return;
+
+                    body.innerHTML = '<div class="text-center py-5"><div class="spinner-border spinner-border-sm text-primary"></div></div>';
+
+                    fetch('{{ route("cart.itemsJson") }}', {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.items && data.items.length > 0) {
+                            let itemsHtml = '<div class="d-flex flex-column gap-3">';
+                            data.items.forEach(item => {
+                                itemsHtml += `
+                                    <div class="minicart-item" id="minicart-item-${item.id}">
+                                        <div class="item-img-wrap shadow-sm">
+                                            <img src="${item.product.first_image}" alt="${item.product.name}">
+                                        </div>
+                                        <div class="item-details d-flex flex-column justify-content-between">
+                                            <div>
+                                                <div class="fw-bold small text-truncate" style="max-width: 220px;" title="${item.product.name}">${item.product.name}</div>
+                                                <div class="text-primary fw-bold small mt-1" style="font-family: 'Outfit', sans-serif;">£${parseFloat(item.product.price).toFixed(2)}</div>
+                                            </div>
+                                            
+                                            <div class="d-flex align-items-center mt-2 justify-content-between">
+                                                <div class="qty-stepper d-flex align-items-center border rounded-pill p-0.5" style="border-color: var(--ps-border) !important; background: var(--ps-surface-bg);">
+                                                    <button type="button" class="btn qty-minus rounded-circle p-0 d-flex align-items-center justify-content-center" style="width:22px; height:22px; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);" onclick="updateMiniCartQty(${item.id}, ${item.quantity - 1})">−</button>
+                                                    <span class="px-2.5 small fw-bold" style="min-width: 22px; text-align: center;">${item.quantity}</span>
+                                                    <button type="button" class="btn qty-plus rounded-circle p-0 d-flex align-items-center justify-content-center" style="width:22px; height:22px; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);" onclick="updateMiniCartQty(${item.id}, ${item.quantity + 1})">+</button>
+                                                </div>
+                                                <button type="button" class="btn btn-link text-muted p-0 border-0" onclick="removeMiniCartItem(${item.id})" title="Remove item"><i class="bi bi-trash" style="font-size:0.95rem;"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            itemsHtml += '</div>';
+                            body.innerHTML = itemsHtml;
+
+                            // Free Shipping Progress calculation
+                            const neededForFree = data.freeDeliveryThreshold - data.subtotal;
+                            let progressHtml = '';
+                            if (neededForFree > 0) {
+                                const percent = Math.min(100, Math.max(0, (data.subtotal / data.freeDeliveryThreshold) * 100));
+                                progressHtml += `
+                                    <div class="booster-bar-wrap mb-2">
+                                        <div class="d-flex justify-content-between fw-bold mb-1" style="font-size: 0.72rem;">
+                                            <span>🚚 Shipping Progress</span>
+                                            <span class="text-primary">Add £${neededForFree.toFixed(2)} more for FREE delivery</span>
+                                        </div>
+                                        <div class="booster-progress" style="background: rgba(108,92,231,0.05);">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: ${percent}%; height: 100%;"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                progressHtml += `
+                                    <div class="booster-bar-wrap text-success fw-bold d-flex align-items-center gap-1.5 mb-2" style="font-size: 0.72rem;">
+                                        🎉 <span>Your order qualifies for <strong>FREE Delivery!</strong></span>
+                                    </div>
+                                `;
+                            }
+
+                            // Points Booster Progress
+                            const neededForBooster = 100 - data.subtotal;
+                            if (neededForBooster > 0) {
+                                const percentBooster = Math.min(100, Math.max(0, (data.subtotal / 100) * 100));
+                                progressHtml += `
+                                    <div class="booster-bar-wrap mb-1">
+                                        <div class="d-flex justify-content-between fw-bold mb-1" style="font-size: 0.72rem;">
+                                            <span>🔥 Points Booster</span>
+                                            <span class="text-warning">Add £${neededForBooster.toFixed(2)} more for 1.5x rewards</span>
+                                        </div>
+                                        <div class="booster-progress" style="background: rgba(253, 203, 110, 0.05);">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: ${percentBooster}%; height: 100%;"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                progressHtml += `
+                                    <div class="booster-bar-wrap text-warning fw-bold d-flex align-items-center gap-1.5 mb-1" style="font-size: 0.72rem;">
+                                        🚀 <span><strong>1.5x Points Booster ACTIVE!</strong> Earn 1.5x rewards!</span>
+                                    </div>
+                                `;
+                            }
+
+                            footer.innerHTML = `
+                                ${progressHtml}
+                                <div class="d-flex justify-content-between fw-bold mt-2" style="font-size: 1rem; font-family: 'Outfit', sans-serif;">
+                                    <span>Subtotal:</span>
+                                    <span class="text-primary">£${data.subtotal.toFixed(2)}</span>
+                                </div>
+                                <div class="d-grid gap-2 mt-2">
+                                    <a href="{{ route('checkout.index') }}" class="btn btn-primary rounded-pill py-2.5 fw-bold" style="background: var(--ps-gradient); border:none; box-shadow: 0 4px 15px rgba(108,92,231,0.25);">
+                                        <i class="bi bi-shield-lock-fill me-1"></i> Proceed to Checkout
+                                    </a>
+                                    <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill py-2 fw-bold" style="border-color: var(--ps-border); color: var(--ps-text); background: var(--ps-surface-bg);">
+                                        View Full Cart
+                                    </a>
+                                </div>
+                            `;
+                        } else {
+                            body.innerHTML = `
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-cart-x fs-1 opacity-50 mb-3 d-block text-primary"></i>
+                                    <h6 class="fw-bold">Your basket is empty</h6>
+                                    <p class="small text-muted mb-0">Explore our products to add items.</p>
+                                </div>
+                            `;
+                            footer.innerHTML = `
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('products.index') }}" class="btn btn-primary rounded-pill py-2.5 fw-bold" onclick="toggleMiniCart(false)">
+                                        Browse Catalogue
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    })
+                    .catch(err => {
+                        body.innerHTML = '<div class="text-center text-danger py-4 small">Failed to load basket.</div>';
+                    });
+                }
+
+                // Update Quantity via AJAX
+                function updateMiniCartQty(itemId, newQty) {
+                    if (newQty < 1) {
+                        removeMiniCartItem(itemId);
+                        return;
+                    }
+
+                    fetch(`/cart/${itemId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ quantity: newQty })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update nav cart badges
+                            document.querySelectorAll('.cart-count-badge').forEach(el => {
+                                el.textContent = data.totalItems;
+                                el.style.display = data.totalItems > 0 ? 'inline-block' : 'none';
+                            });
+                            
+                            // Refresh list
+                            fetchMiniCartItems();
+                        } else {
+                            showToast(data.message || 'Error updating item.', 'bg-danger');
+                        }
+                    })
+                    .catch(err => console.error(err));
+                }
+
+                // Remove Item via AJAX
+                function removeMiniCartItem(itemId) {
+                    fetch(`/cart/${itemId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update nav cart badges
+                            document.querySelectorAll('.cart-count-badge').forEach(el => {
+                                el.textContent = data.totalItems || 0;
+                                el.style.display = (data.totalItems && data.totalItems > 0) ? 'inline-block' : 'none';
+                            });
+                            
+                            // Refresh list
+                            fetchMiniCartItems();
+                            showToast(data.message || 'Item removed from basket.', 'bg-success');
+                        } else {
+                            showToast(data.message || 'Error removing item.', 'bg-danger');
+                        }
+                    })
+                    .catch(err => console.error(err));
+                }
+
+                // Hook Cart click triggers to slide drawer open
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.querySelectorAll('.cart-badge').forEach(el => {
+                        el.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            toggleMiniCart(true);
+                        });
+                    });
+
+                    // Trigger drawer update when AJAX forms succeed
+                    document.addEventListener('ajax-form-success', function(e) {
+                        const formAction = e.detail.form.getAttribute('action') || '';
+                        if (formAction.includes('/cart/add')) {
+                            toggleMiniCart(true);
+                        }
+                    });
+                });
+            </script>
+        @endif
+    @endauth
 </body>
 
 </html>

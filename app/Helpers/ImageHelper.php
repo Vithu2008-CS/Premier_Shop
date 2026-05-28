@@ -43,17 +43,40 @@ class ImageHelper
                 return $file->store($folder, $disk);
             }
 
+            // Ensure transparency and truecolor are preserved
+            imagepalettetotruecolor($image);
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
+
+            // Resize image to maximum 800px boundary if larger (maintains original ratio)
+            $width = imagesx($image);
+            $height = imagesy($image);
+            $maxSize = 800;
+
+            if ($width > $maxSize || $height > $maxSize) {
+                if ($width > $height) {
+                    $newWidth = $maxSize;
+                    $newHeight = (int) ($height * ($maxSize / $width));
+                } else {
+                    $newHeight = $maxSize;
+                    $newWidth = (int) ($width * ($maxSize / $height));
+                }
+
+                $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+                imagealphablending($resizedImage, false);
+                imagesavealpha($resizedImage, true);
+
+                imagecopyresampled($resizedImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                imagedestroy($image);
+                $image = $resizedImage;
+            }
+
             // Create a temp file path
             $tempFile = tempnam(sys_get_temp_dir(), 'webp');
             if ($tempFile === false) {
                 imagedestroy($image);
                 return $file->store($folder, $disk);
             }
-
-            // Ensure transparency and truecolor are preserved
-            imagepalettetotruecolor($image);
-            imagealphablending($image, false);
-            imagesavealpha($image, true);
 
             // Write webp data to the temp file
             $success = @imagewebp($image, $tempFile, $quality);

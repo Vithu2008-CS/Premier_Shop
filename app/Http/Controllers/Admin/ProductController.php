@@ -58,6 +58,9 @@ class ProductController extends Controller
 
         // Upload each product image to /storage/products and store its public path as WebP
         $images = [];
+        if ($request->filled('images')) {
+            $images = is_string($request->images) ? json_decode($request->images, true) : $request->images;
+        }
         if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
                 $path     = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
@@ -108,19 +111,38 @@ class ProductController extends Controller
         $validated['is_age_restricted'] = $request->has('is_age_restricted');
         $validated['offer_active']      = $request->has('offer_active');
 
-        // Append any new WebP uploads to the product's existing image array
-        if ($request->hasFile('product_images')) {
+        // Append any new WebP uploads to the product's existing image array in priority order
+        $images = [];
+        if ($request->has('images')) {
+            $images = is_string($request->images) ? json_decode($request->images, true) : $request->images;
+        } else {
             $images = $product->images ?? [];
+        }
+        if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
                 $path     = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
                 $images[] = '/storage/'.$path;
             }
-            $validated['images'] = $images;
         }
+        $validated['images'] = $images;
 
         $product->update($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated!');
+    }
+
+    /** Upload an image via AJAX and return WebP storage URL. */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        $path = \App\Helpers\ImageHelper::storeAsWebp($request->file('file'), 'products');
+
+        return response()->json([
+            'url' => '/storage/' . $path
+        ]);
     }
 
     /** Soft-delete a product. */
