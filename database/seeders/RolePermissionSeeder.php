@@ -97,6 +97,29 @@ class RolePermissionSeeder extends Seeder
                 'roles.update' => 'Update Roles',
                 'roles.delete' => 'Delete Roles',
             ],
+            'Drivers' => [
+                'drivers.view' => 'View Drivers',
+                'drivers.create' => 'Create Drivers',
+                'drivers.update' => 'Update Drivers',
+                'drivers.delete' => 'Delete Drivers',
+            ],
+            'Returns' => [
+                'returns.view' => 'View Returns',
+                'returns.update' => 'Update Returns',
+            ],
+            'Reviews' => [
+                'reviews.view' => 'View Reviews',
+                'reviews.update' => 'Update Reviews',
+                'reviews.delete' => 'Delete Reviews',
+            ],
+            'Shipping Rates' => [
+                'shipping_rates.view' => 'View Shipping Rates',
+                'shipping_rates.update' => 'Update Shipping Rates',
+            ],
+            'Mail' => [
+                'mail.view' => 'View Mail Centre',
+                'mail.manage' => 'Manage Mail Messages',
+            ],
         ];
 
         $allPermissions = [];
@@ -121,6 +144,11 @@ class RolePermissionSeeder extends Seeder
             'coupons.view', 'coupons.create', 'coupons.update',
             'sliders.view', 'sliders.create', 'sliders.update',
             'reports.view',
+            'drivers.view', 'drivers.create', 'drivers.update',
+            'returns.view', 'returns.update',
+            'reviews.view', 'reviews.update', 'reviews.delete',
+            'shipping_rates.view', 'shipping_rates.update',
+            'mail.view', 'mail.manage',
         ])->pluck('id');
         $manager->permissions()->sync($managerPerms);
 
@@ -130,6 +158,11 @@ class RolePermissionSeeder extends Seeder
             'orders.view', 'orders.update',
             'customers.view',
             'reports.view',
+            'drivers.view',
+            'returns.view',
+            'reviews.view',
+            'shipping_rates.view',
+            'mail.view',
         ])->pluck('id');
         $accountant->permissions()->sync($accountantPerms);
 
