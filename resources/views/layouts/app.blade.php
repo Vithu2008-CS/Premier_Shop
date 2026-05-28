@@ -972,9 +972,9 @@
             <div class="footer-bottom text-center" style="margin-top: 50px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.06);">
                 <p class="mb-0 text-white-50">&copy; {{ date('Y') }} Premier Shop. All rights reserved.</p>
                 <div class="d-inline-flex gap-3 mt-2 small text-white-50">
-                    <a href="#" class="text-decoration-none hover-primary text-reset">Privacy Policy</a>
+                    <a href="{{ route('privacy') }}" class="text-decoration-none hover-primary text-reset">Privacy Policy</a>
                     <span>•</span>
-                    <a href="#" class="text-decoration-none hover-primary text-reset">Terms of Service</a>
+                    <a href="{{ route('terms') }}" class="text-decoration-none hover-primary text-reset">Terms of Service</a>
                     <span>•</span>
                     <a href="#" class="text-decoration-none hover-primary text-reset">Sitemap</a>
                 </div>
