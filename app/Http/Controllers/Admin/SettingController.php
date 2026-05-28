@@ -32,6 +32,8 @@ class SettingController extends Controller
         $request->validate([
             'shop_name'                  => 'nullable|string|max:255',
             'origin_address'             => 'nullable|string|max:255',
+            'origin_latitude'            => 'nullable|numeric|between:-90,90',
+            'origin_longitude'           => 'nullable|numeric|between:-180,180',
             'free_delivery_threshold'    => 'nullable|numeric|min:0',
             'free_delivery_radius_miles' => 'nullable|numeric|min:0',
             'surcharge_per_mile'         => 'nullable|numeric|min:0',
@@ -56,6 +58,13 @@ class SettingController extends Controller
 
         // Merge into the JSON column — start from existing data so unrelated keys survive
         $other = $settings->other_settings ?? [];
+
+        if ($request->has('origin_latitude')) {
+            $other['origin_latitude'] = $request->filled('origin_latitude') ? (float)$request->origin_latitude : null;
+        }
+        if ($request->has('origin_longitude')) {
+            $other['origin_longitude'] = $request->filled('origin_longitude') ? (float)$request->origin_longitude : null;
+        }
 
         if ($request->has('shop_hours')) {
             $other['shop_hours'] = $request->shop_hours;
