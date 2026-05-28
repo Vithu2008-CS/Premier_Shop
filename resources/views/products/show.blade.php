@@ -27,15 +27,15 @@
 
         <div class="row g-5">
             {{-- Product Images --}}
-            <div class="col-lg-6 reveal-slide-left">
-                <div class="product-gallery-wrapper">
+            <div class="col-lg-5 reveal-slide-left">
+                <div class="product-gallery-wrapper" style="max-width: 480px; margin: 0 auto; width: 100%;">
                     @if($product->images && count($product->images) > 0)
                         <div id="productCarousel" class="carousel slide carousel-fade shadow-sm rounded-4 overflow-hidden" style="background: var(--ps-surface-bg);" data-bs-ride="false">
                             <div class="carousel-inner">
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                                        <div class="product-img-main-wrap">
-                                            <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit:contain;">
+                                        <div class="product-img-main-wrap" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #fff; max-height: 420px; overflow: hidden; padding: 15px;">
+                                            <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit:contain; max-height: 380px;">
                                         </div>
                                     </div>
                                 @endforeach
@@ -51,16 +51,16 @@
                         </div>
                         {{-- Thumbnail Strip --}}
                         @if(count($product->images) > 1)
-                            <div class="d-flex gap-2 mt-3 overflow-auto pb-2 custom-scrollbar">
+                            <div class="d-flex gap-2 mt-3 overflow-auto pb-2 custom-scrollbar justify-content-center">
                                 @foreach($product->images as $i => $img)
-                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" onclick="bootstrap.Carousel.getOrCreateInstance('#productCarousel').to({{ $i }})">
-                                        <img src="{{ $img }}" class="rounded-3" alt="Thumb {{ $i + 1 }}">
+                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" onclick="bootstrap.Carousel.getOrCreateInstance('#productCarousel').to({{ $i }})" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; opacity: 0.6; background: #fff;">
+                                        <img src="{{ $img }}" class="w-100 h-100" style="object-fit: cover;" alt="Thumb {{ $i + 1 }}">
                                     </div>
                                 @endforeach
                             </div>
                         @endif
                     @else
-                        <div class="d-flex align-items-center justify-content-center" style="aspect-ratio:1;background:var(--ps-surface-secondary);">
+                        <div class="d-flex align-items-center justify-content-center border rounded-4" style="aspect-ratio:1;background:var(--ps-surface-secondary); max-height: 420px;">
                             <i class="bi bi-image text-muted" style="font-size:5rem;"></i>
                         </div>
                     @endif
@@ -68,7 +68,7 @@
             </div>
 
             {{-- Product Details --}}
-            <div class="col-lg-6 reveal-slide-right">
+            <div class="col-lg-7 reveal-slide-right">
                 {{-- Category + Badges --}}
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div class="d-flex gap-2">
