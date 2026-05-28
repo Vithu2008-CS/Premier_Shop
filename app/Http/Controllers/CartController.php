@@ -24,6 +24,42 @@ class CartController extends Controller
         return view('cart.index', compact('items'));
     }
 
+    /** Return all active cart items and calculations as JSON. */
+    public function itemsJson()
+    {
+        $items = auth()->user()->cartItems()
+            ->with('product')
+            ->whereHas('product', fn ($q) => $q->where('is_active', true))
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'quantity' => $item->quantity,
+                    'line_total' => $item->line_total,
+                    'product' => [
+                        'id' => $item->product->id,
+                        'name' => $item->product->name,
+                        'slug' => $item->product->slug,
+                        'price' => (float) $item->product->price,
+                        'first_image' => $item->product->first_image,
+                        'stock' => $item->product->stock,
+                    ]
+                ];
+            });
+
+        $subtotal  = $items->sum('line_total');
+        $threshold = Setting::get('free_delivery_threshold', 50);
+        $baseFee   = Setting::get('flat_rate_fee', 5.99);
+
+        return response()->json([
+            'items' => $items,
+            'subtotal' => (float) $subtotal,
+            'freeDeliveryThreshold' => (float) $threshold,
+            'flatRateFee' => (float) $baseFee,
+            'cartCount' => auth()->user()->cartItems()->sum('quantity'),
+        ]);
+    }
+
     /**
      * Add a product to the cart and stay on the current page.
      * Delegates to addToCart() so logic is shared with buyNow().

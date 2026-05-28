@@ -28,7 +28,16 @@
                         <i data-feather="camera" class="icon-sm mr-1"></i> Start Camera
                     </button>
                 </div>
-                <div id="qr-reader" style="width:100%;max-width:400px;margin:0 auto;border-radius:10px;overflow:hidden;"></div>
+                <div class="position-relative" style="width:100%;max-width:400px;margin:0 auto;border-radius:10px;overflow:hidden;">
+                    <div id="qr-reader" style="width:100%;"></div>
+                    <div class="laser-scanner-overlay d-none" id="laserOverlay">
+                        <div class="laser-line"></div>
+                        <div class="scanner-corner corner-tl"></div>
+                        <div class="scanner-corner corner-tr"></div>
+                        <div class="scanner-corner corner-bl"></div>
+                        <div class="scanner-corner corner-br"></div>
+                    </div>
+                </div>
                 <p class="text-muted text-center mt-3">
                     <i data-feather="camera" class="icon-sm mr-1"></i> Point your camera at a product QR code
                 </p>
@@ -81,11 +90,101 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .laser-scanner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+        background: rgba(0, 255, 0, 0.03);
+        border: 2px solid rgba(0, 255, 0, 0.2) !important;
+        border-radius: 10px;
+    }
+    .laser-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 50%, rgba(0,255,0,0) 100%);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.9), 0 0 5px rgba(0, 255, 0, 0.6);
+        animation: laserSweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+    }
+    @keyframes laserSweep {
+        0% { top: 0%; }
+        100% { top: 100%; }
+    }
+    .scanner-corner {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-color: #00FF00;
+        border-style: solid;
+        border-width: 0;
+        filter: drop-shadow(0 0 4px rgba(0,255,0,0.5));
+    }
+    .corner-tl { top: 15px; left: 15px; border-top-width: 4px; border-left-width: 4px; }
+    .corner-tr { top: 15px; right: 15px; border-top-width: 4px; border-right-width: 4px; }
+    .corner-bl { bottom: 15px; left: 15px; border-bottom-width: 4px; border-left-width: 4px; }
+    .corner-br { bottom: 15px; right: 15px; border-bottom-width: 4px; border-right-width: 4px; }
+</style>
+@endpush
+
 @push('scripts')
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
     let currentProductId = null;
     let html5QrCode = null;
+
+    function playSynthBeep() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc1 = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
+            
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(400, audioCtx.currentTime);
+            
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+            
+            osc1.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            osc1.start();
+            osc1.stop(audioCtx.currentTime + 0.16);
+            
+            setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                const gainNode2 = audioCtx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1320, audioCtx.currentTime); // E6 note
+                
+                gainNode2.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode2.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.02);
+                gainNode2.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+                
+                osc2.connect(gainNode2);
+                gainNode2.connect(audioCtx.destination);
+                
+                osc2.start();
+                osc2.stop(audioCtx.currentTime + 0.12);
+            }, 40);
+            
+        } catch (e) {
+            console.warn("Audio Context beep failed", e);
+        }
+    }
 
     function startScanner() {
         document.getElementById('startCamBtn').style.display = 'none';
@@ -96,16 +195,26 @@
 
         const onScan = (decodedText) => {
             const match = decodedText.match(/products\/(\d+)\/qr-lookup/);
-            if (match) fetchProduct(match[1]);
+            if (match) {
+                playSynthBeep();
+                fetchProduct(match[1]);
+            }
         };
 
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
+        const handleStartSuccess = () => {
+            const overlay = document.getElementById('laserOverlay');
+            if (overlay) overlay.classList.remove('d-none');
+        };
+
         // Try environment (mobile back cam), fallback to user (desktop webcam), fallback to any
         html5QrCode.start({ facingMode: "environment" }, config, onScan, () => {})
+            .then(handleStartSuccess)
             .catch(() => {
                 html5QrCode = new Html5Qrcode("qr-reader");
-                return html5QrCode.start({ facingMode: "user" }, config, onScan, () => {});
+                return html5QrCode.start({ facingMode: "user" }, config, onScan, () => {})
+                    .then(handleStartSuccess);
             })
             .catch(err => {
                 showScannerError(err);
