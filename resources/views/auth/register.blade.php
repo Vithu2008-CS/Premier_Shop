@@ -117,7 +117,7 @@
             </form>
 
             <div class="auth-footer-text">
-                By creating an account, you agree to our Terms of Service and Privacy Policy. Join our community and enjoy a seamless shopping experience.
+                By creating an account, you agree to our <a href="{{ route('terms') }}" class="text-primary text-decoration-none fw-bold">Terms of Service</a> and <a href="{{ route('privacy') }}" class="text-primary text-decoration-none fw-bold">Privacy Policy</a>. Join our community and enjoy a seamless shopping experience.
             </div>
         </div>
     </div>
