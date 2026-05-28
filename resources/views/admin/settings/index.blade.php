@@ -25,6 +25,11 @@
                 <h6 class="card-title">General Shop Settings</h6>
                 <form action="{{ route('admin.settings.store') }}" method="POST">
                     @csrf
+                    
+                    {{-- Hidden coordinate fields --}}
+                    <input type="hidden" name="origin_latitude" id="origin_latitude" value="{{ $settings->other_settings['origin_latitude'] ?? '' }}">
+                    <input type="hidden" name="origin_longitude" id="origin_longitude" value="{{ $settings->other_settings['origin_longitude'] ?? '' }}">
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Shop Name</label>
@@ -32,9 +37,21 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Store Address (Origin)</label>
-                            <input type="text" name="origin_address" class="form-control" value="{{ $settings->origin_address }}" placeholder="Full store address">
+                            <input type="text" name="origin_address" id="origin_address" class="form-control" value="{{ $settings->origin_address }}" placeholder="Full store address">
                         </div>
                     </div>
+
+                    {{-- Map Location Picker --}}
+                    <div class="row mt-2">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label font-weight-bold">Shop Location on Map</label>
+                            <div id="settingsMap" style="height: 320px; border-radius: 12px; border: 1px solid #e8ebf1; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 10px;"></div>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle text-primary me-1"></i> Drag the marker or click on the map to set your shop's physical location. The address text above will be updated automatically via reverse-geocoding.
+                            </small>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end mt-2">
                         <button type="submit" class="btn btn-primary">
                             <i data-feather="save" class="icon-sm mr-2"></i> Update General Info
@@ -184,6 +201,145 @@
             });
         });
     });
+</script>
+@endpush
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+    /* Premium style details for Leaflet Map in Settings */
+    #settingsMap {
+        transition: all 0.3s ease;
+        z-index: 5;
+    }
+    #settingsMap:hover {
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
+    }
+    /* Style for leaflet popup in admin settings */
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        font-family: inherit;
+    }
+    .leaflet-popup-content {
+        font-weight: 500;
+        color: #0f172a;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Elements
+    const latInput = document.getElementById('origin_latitude');
+    const lngInput = document.getElementById('origin_longitude');
+    const addressInput = document.getElementById('origin_address');
+    
+    // 2. Initial coordinates
+    let initialLat = parseFloat(latInput.value);
+    let initialLng = parseFloat(lngInput.value);
+    
+    // Default to London (SW1A 1AA) if coordinates are not configured
+    const defaultLat = 51.5074;
+    const defaultLng = -0.1278;
+    const isUsingDefault = isNaN(initialLat) || isNaN(initialLng);
+    
+    const startLat = isUsingDefault ? defaultLat : initialLat;
+    const startLng = isUsingDefault ? defaultLng : initialLng;
+    
+    // 3. Initialize Map
+    const map = L.map('settingsMap').setView([startLat, startLng], isUsingDefault ? 12 : 16);
+    
+    // Modern tile layer (OpenStreetMap / CartoDB Voyager feels very clean and premium)
+    const activeTheme = localStorage.getItem('admin_theme') || 'light';
+    const tileUrl = activeTheme === 'dark' 
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' 
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        
+    const attribution = activeTheme === 'dark'
+        ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+    L.tileLayer(tileUrl, {
+        attribution: attribution,
+        maxZoom: 20
+    }).addTo(map);
+    
+    // 4. Create Draggable Marker
+    const marker = L.marker([startLat, startLng], {
+        draggable: true,
+        autoPan: true
+    }).addTo(map);
+    
+    if (!isUsingDefault) {
+        marker.bindPopup("<b>Shop Location</b><br>Currently configured origin.").openPopup();
+    } else {
+        marker.bindPopup("<b>Default Location</b><br>Drag me to set your shop!").openPopup();
+    }
+    
+    // 5. If using default, but an address exists, geocode it!
+    if (isUsingDefault && addressInput.value.trim().length > 0) {
+        const address = addressInput.value.trim();
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    map.setView([lat, lon], 16);
+                    marker.setLatLng([lat, lon]);
+                    latInput.value = lat;
+                    lngInput.value = lon;
+                    marker.bindPopup("<b>Geocoded Address</b><br>Centered based on address text.").openPopup();
+                }
+            })
+            .catch(err => console.error("Error geocoding initial address:", err));
+    }
+    
+    // 6. Geolocation Callback (Reverse Geocoding)
+    let geocodeTimeout = null;
+    function reverseGeocode(lat, lng) {
+        if (geocodeTimeout) clearTimeout(geocodeTimeout);
+        
+        geocodeTimeout = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        addressInput.value = data.display_name;
+                        marker.bindPopup(`<b>Location Set!</b><br>${data.name || 'Shop Origin'}`).openPopup();
+                    }
+                })
+                .catch(err => {
+                    console.error("Error reverse geocoding coordinates:", err);
+                    marker.bindPopup("<b>Location Set!</b><br>Address lookup limit reached.").openPopup();
+                });
+        }, 800); // 800ms debounce
+    }
+    
+    // 7. Event Handlers
+    function updateCoordinates(lat, lng, doGeocode = true) {
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+        if (doGeocode) {
+            reverseGeocode(lat, lng);
+        }
+    }
+    
+    marker.on('dragend', function(e) {
+        const position = marker.getLatLng();
+        updateCoordinates(position.lat, position.lng, true);
+    });
+    
+    map.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        marker.setLatLng([lat, lng]);
+        updateCoordinates(lat, lng, true);
+    });
+});
 </script>
 @endpush
 

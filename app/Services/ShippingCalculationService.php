@@ -42,7 +42,19 @@ class ShippingCalculationService
     public function calculateDrivingDistance(string $destination): ?float
     {
         $settings = Setting::first();
-        $origin   = $settings->origin_address ?? 'SW1A 1AA, London, UK'; // Warehouse fallback postcode
+        
+        $origin = 'SW1A 1AA, London, UK'; // Warehouse fallback postcode
+        if ($settings) {
+            $other = $settings->other_settings ?? [];
+            $lat = $other['origin_latitude'] ?? null;
+            $lng = $other['origin_longitude'] ?? null;
+            if ($lat !== null && $lng !== null) {
+                $origin = "{$lat},{$lng}";
+            } else {
+                $origin = $settings->origin_address ?? $origin;
+            }
+        }
+
         $apiKey   = config('services.google.maps_key');
 
         if (! $apiKey) {

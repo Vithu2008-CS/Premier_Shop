@@ -383,7 +383,14 @@ class CheckoutController extends Controller
         $items    = auth()->user()->cartItems()->with('product')->get();
         $subtotal = $items->sum('line_total');
 
-        $origin      = $settings->origin_address ?? 'United Kingdom';
+        $other = $settings->other_settings ?? [];
+        $lat = $other['origin_latitude'] ?? null;
+        $lng = $other['origin_longitude'] ?? null;
+        if ($lat !== null && $lng !== null) {
+            $origin = "{$lat},{$lng}";
+        } else {
+            $origin = $settings->origin_address ?? 'United Kingdom';
+        }
         $destination = "{$request->address_line}, {$request->city}, UK";
         $distance    = $this->shippingService->calculateDrivingDistance($origin, $destination);
 

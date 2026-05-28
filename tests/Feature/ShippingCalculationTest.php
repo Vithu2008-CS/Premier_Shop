@@ -47,12 +47,41 @@ class ShippingCalculationTest extends TestCase
             'type' => 'cart',
         ]);
 
-        // Mock Google Maps API - return flat rate for all addresses
+        // Smart dynamic Google Maps API mock - handles coordinate tests and fallback postcodes beautifully
         \Illuminate\Support\Facades\Http::fake([
-            'maps.googleapis.com/*' => \Illuminate\Support\Facades\Http::response([
-                'status' => 'ZERO_RESULTS',
-                'rows' => [['elements' => [['status' => 'ZERO_RESULTS']]]],
-            ]),
+            'maps.googleapis.com/*' => function ($request) {
+                if (str_contains($request->url(), 'distancematrix/json')) {
+                    $origins = $request['origins'] ?? '';
+                    $destinations = $request['destinations'] ?? '';
+                    
+                    if (str_contains($origins, '51.5074,-0.1278')) {
+                        // 8046.72 meters = 5 miles (exactly the free local delivery radius)
+                        // 16093.44 meters = 10 miles (for calculation service test)
+                        $meters = str_contains($destinations, 'Manchester') || str_contains($destinations, 'London') ? 8046.72 : 16093.44;
+                        
+                        return \Illuminate\Support\Facades\Http::response([
+                            'status' => 'OK',
+                            'rows' => [
+                                [
+                                    'elements' => [
+                                        [
+                                            'status' => 'OK',
+                                            'distance' => [
+                                                'value' => $meters,
+                                            ],
+                                        ]
+                                    ]
+                                ]
+                            ],
+                        ]);
+                    }
+                }
+                
+                return \Illuminate\Support\Facades\Http::response([
+                    'status' => 'ZERO_RESULTS',
+                    'rows' => [['elements' => [['status' => 'ZERO_RESULTS']]]],
+                ]);
+            }
         ]);
     }
 
@@ -107,5 +136,64 @@ class ShippingCalculationTest extends TestCase
             ]);
 
         $response->assertStatus(422); // Validation error
+    }
+
+    public function test_shipping_calculation_uses_coordinates_if_set()
+    {
+        // Set mock API key config so services do not exit early
+        config(['services.google.maps_key' => 'mocked-key']);
+
+        // 1. Configure settings with coordinates in other_settings
+        $settings = Setting::first();
+        $settings->update([
+            'other_settings' => [
+                'origin_latitude' => 51.5074,
+                'origin_longitude' => -0.1278,
+            ]
+        ]);
+
+        // 2. Request shipping calculation preview (uses ShippingService in CheckoutController)
+        $response = $this->actingAs($this->user)
+            ->postJson(route('checkout.calculateShipping'), [
+                'address_line' => '10 Downing Street',
+                'city' => 'London',
+            ]);
+
+        // 3. Verify coordinates were sent as origin in ShippingService call
+        \Illuminate\Support\Facades\Http::assertSent(function ($request) {
+            return str_contains($request->url(), 'maps.googleapis.com/maps/api/distancematrix/json')
+                && str_contains($request['origins'], '51.5074,-0.1278');
+        });
+
+        $response->assertStatus(200);
+        $this->assertEquals(0.00, $response->json('cost'));
+        $this->assertStringContainsString('Free local delivery', $response->json('message'));
+    }
+
+    public function test_shipping_calculation_service_uses_coordinates_directly()
+    {
+        // Set mock API key config so services do not exit early
+        config(['services.google.maps_key' => 'mocked-key']);
+
+        // 1. Configure settings with coordinates in other_settings
+        $settings = Setting::first();
+        $settings->update([
+            'other_settings' => [
+                'origin_latitude' => 51.5074,
+                'origin_longitude' => -0.1278,
+            ]
+        ]);
+
+        // 2. Use ShippingCalculationService directly
+        $service = new \App\Services\ShippingCalculationService();
+        $distanceMiles = $service->calculateDrivingDistance('New Street, Birmingham, UK');
+
+        // 3. Verify coordinates were sent as origin in ShippingCalculationService call
+        \Illuminate\Support\Facades\Http::assertSent(function ($request) {
+            return str_contains($request->url(), 'maps.googleapis.com/maps/api/distancematrix/json')
+                && str_contains($request['origins'], '51.5074,-0.1278');
+        });
+
+        $this->assertEquals(10.00, $distanceMiles);
     }
 }
