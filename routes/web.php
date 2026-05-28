@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Cart ─────────────────────────────────────────────────────────────────
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/api/cart/items', [CartController::class, 'itemsJson'])->name('cart.itemsJson');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::post('/cart/buy-now', [CartController::class, 'buyNow'])->name('cart.buyNow'); // skip cart, go direct to checkout
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
