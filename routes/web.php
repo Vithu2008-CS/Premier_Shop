@@ -49,6 +49,10 @@ Route::get('/products/suggest', [ProductController::class, 'suggest'])->name('pr
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/api/orders/track/{order_number}', [OrderController::class, 'trackPublic'])->name('orders.trackPublic');
 
+// Privacy Policy & Terms of Service - UK Compliant
+Route::view('/privacy-policy', 'privacy')->name('privacy');
+Route::view('/terms-of-service', 'terms')->name('terms');
+
 
 // ── AUTHENTICATED CUSTOMER ROUTES ────────────────────────────────────────────
 // Requires login. Covers cart, checkout, orders, profile, reviews, wishlist,
