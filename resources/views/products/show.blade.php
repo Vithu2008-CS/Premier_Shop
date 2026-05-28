@@ -34,8 +34,8 @@
                             <div class="carousel-inner">
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                                        <div class="product-img-main-wrap" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #fff; max-height: 420px; overflow: hidden; padding: 15px;">
-                                            <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit:contain; max-height: 380px;">
+                                        <div class="product-img-main-wrap" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; padding: 15px;">
+                                            <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit: contain;">
                                         </div>
                                     </div>
                                 @endforeach
@@ -60,8 +60,8 @@
                             </div>
                         @endif
                     @else
-                        <div class="d-flex align-items-center justify-content-center border rounded-4" style="aspect-ratio:1;background:var(--ps-surface-secondary); max-height: 420px;">
-                            <i class="bi bi-image text-muted" style="font-size:5rem;"></i>
+                        <div class="d-flex align-items-center justify-content-center border rounded-4" style="aspect-ratio: 1; background: var(--ps-surface-secondary);">
+                            <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
                         </div>
                     @endif
                 </div>
