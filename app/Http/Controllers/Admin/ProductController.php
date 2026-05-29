@@ -37,6 +37,39 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products', 'search'));
     }
 
+    /** API — search suggestions for admin product index. */
+    public function suggest(Request $request)
+    {
+        $q = $request->get('q', '');
+
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $products = Product::with('category:id,name')
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhere('barcode', 'like', "%{$q}%")
+                      ->orWhereHas('category', function ($catQuery) use ($q) {
+                          $catQuery->where('name', 'like', "%{$q}%");
+                      });
+            })
+            ->limit(8)
+            ->get(['id', 'name', 'price', 'images', 'category_id', 'stock']);
+
+        return response()->json(
+            $products->map(fn ($p) => [
+                'id'       => $p->id,
+                'name'     => $p->name,
+                'price'    => '£'.number_format($p->price, 2),
+                'stock'    => $p->stock,
+                'image'    => $p->first_image,
+                'category' => $p->category?->name,
+                'url'      => route('admin.products.edit', $p),
+            ])
+        );
+    }
+
     /** Show the create-product form with category options. */
     public function create()
     {

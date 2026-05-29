@@ -139,6 +139,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Products — full CRUD + QR management + stock update + image uploads
     Route::post('products/upload-image', [AdminProductController::class, 'uploadImage'])->name('products.uploadImage');
+    Route::get('products/suggest', [AdminProductController::class, 'suggest'])->name('products.suggest');
     Route::resource('products', AdminProductController::class)->except(['show']);
     Route::post('products/{product}/regenerate-qr', [AdminProductController::class, 'regenerateQr'])->name('products.regenerateQr');
     Route::get('scanner', [AdminProductController::class, 'scanner'])->name('scanner');          // camera QR scanner page
