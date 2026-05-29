@@ -114,4 +114,26 @@ class ProductControllerTest extends TestCase
         $product = Product::latest('id')->first();
         $this->assertEquals([], $product->images);
     }
+
+    public function test_admin_can_search_products()
+    {
+        $product1 = Product::factory()->create(['name' => 'Apple Juice', 'barcode' => '12345']);
+        $product2 = Product::factory()->create(['name' => 'Orange Juice', 'barcode' => '67890']);
+        $product3 = Product::factory()->create(['name' => 'Whole Milk', 'barcode' => '11111']);
+
+        // Search by name
+        $response = $this->actingAs($this->admin)->get(route('admin.products.index', ['search' => 'Juice']));
+        $response->assertStatus(200);
+        $response->assertSee('Apple Juice');
+        $response->assertSee('Orange Juice');
+        $response->assertDontSee('Whole Milk');
+
+        // Search by barcode
+        $response = $this->actingAs($this->admin)->get(route('admin.products.index', ['search' => '67890']));
+        $response->assertStatus(200);
+        $response->assertDontSee('Apple Juice');
+        $response->assertSee('Orange Juice');
+        $response->assertDontSee('Whole Milk');
+    }
 }
+

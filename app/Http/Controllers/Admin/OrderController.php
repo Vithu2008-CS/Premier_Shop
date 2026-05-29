@@ -89,28 +89,29 @@ class OrderController extends Controller
 
         // Only fire notifications when the status actually changed
         if ($statusChanged) {
-            try {
-                // send_email defaults true; admin can suppress it via the UI toggle
-                if ($request->send_email ?? true) {
+            // Always save in-app notification + sent-folder record regardless of SMTP outcome
+            \App\Models\AppNotification::notifyOrderStatus($order);
+
+            $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
+            \App\Models\ContactMessage::create([
+                'name'    => 'System ('.(auth()->user()->name ?? 'Admin').')',
+                'email'   => $order->user->email,
+                'subject' => 'Your order #'.$order->order_number.' status has been updated to '.$order->status,
+                'message' => $htmlContent,
+                'is_read' => true,
+                'folder'  => 'sent',
+            ]);
+
+            // Send customer email — failure flashes a warning but doesn't block the status update
+            if ($request->boolean('send_email', true)) {
+                try {
                     \Illuminate\Support\Facades\Mail::to($order->user->email)
                         ->send(new \App\Mail\OrderStatusUpdated($order));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send order status email: '.$e->getMessage());
+                    return back()
+                        ->with('warning', 'Order updated, but the customer notification email could not be sent: '.$e->getMessage());
                 }
-
-                // Push an in-app notification to the customer
-                \App\Models\AppNotification::notifyOrderStatus($order);
-
-                // Archive a copy of the status email in the admin mail sent folder
-                $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
-                \App\Models\ContactMessage::create([
-                    'name'    => 'System ('.( auth()->user()->name ?? 'Admin').')',
-                    'email'   => $order->user->email,
-                    'subject' => 'Your order #'.$order->order_number.' status has been updated to '.$order->status,
-                    'message' => $htmlContent,
-                    'is_read' => true,
-                    'folder'  => 'sent',
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Failed to send order status email: '.$e->getMessage());
             }
         }
 
