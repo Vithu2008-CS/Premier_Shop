@@ -15,11 +15,26 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     /** List all products paginated with their category. */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->paginate(15);
+        $search = $request->input('search');
 
-        return view('admin.products.index', compact('products'));
+        $query = Product::with('category')->latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($catQuery) use ($search) {
+                      $catQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $products = $query->paginate(15)->withQueryString();
+
+        return view('admin.products.index', compact('products', 'search'));
     }
 
     /** Show the create-product form with category options. */

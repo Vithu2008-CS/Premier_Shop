@@ -23,12 +23,29 @@
   <div class="col-md-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h6 class="card-title mb-0">Product Management</h6>
-            <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-icon-text">
-                <i class="btn-icon-prepend" data-feather="plus-square"></i>
-                Add Product
-            </a>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <h6 class="card-title mb-md-0 mb-3">Product Management</h6>
+            <div class="d-flex align-items-center flex-wrap">
+                <form action="{{ route('admin.products.index') }}" method="GET" class="mr-2 mb-2 mb-md-0">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="search" class="form-control font-weight-medium" placeholder="Search products..." value="{{ request('search') }}" style="width: 220px; border-radius: 20px 0 0 20px;">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit" style="border-radius: 0 20px 20px 0;">
+                                <i data-feather="search" class="icon-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                @if(request()->filled('search'))
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-outline-secondary mr-2 mb-2 mb-md-0" style="border-radius: 20px;">
+                        Clear
+                    </a>
+                @endif
+                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
+                    <i class="btn-icon-prepend" data-feather="plus-square"></i>
+                    Add Product
+                </a>
+            </div>
         </div>
         
         <div class="table-responsive">
@@ -46,12 +63,9 @@
             </thead>
             <tbody>
               @forelse($products as $product)
-                <tr>
+                <tr class="product-row-btn align-middle" onclick="window.location='{{ route('admin.products.edit', $product) }}'">
                   <td>
-                    <a href="{{ route('admin.products.edit', $product) }}" class="text-reset text-decoration-none d-flex align-items-center" 
-                       style="transition: color 0.2s ease-in-out;" 
-                       onmouseover="this.style.color='var(--primary, #6C5CE7)'" 
-                       onmouseout="this.style.color=''">
+                    <div class="d-flex align-items-center">
                         <div class="mr-3">
                             @if($product->images && count($product->images) > 0)
                                 <img src="{{ $product->images[0] }}" class="wd-40 h-40 rounded" style="object-fit: cover;" alt="product">
@@ -62,12 +76,12 @@
                             @endif
                         </div>
                         <div>
-                            <span class="font-weight-bold d-block">{{ Str::limit($product->name, 40) }}</span>
+                            <span class="font-weight-bold d-block text-primary-hover mb-1" style="font-size: 0.95rem; transition: color 0.15s ease;">{{ Str::limit($product->name, 40) }}</span>
                             @if($product->barcode)
                                 <small class="text-muted">{{ $product->barcode }}</small>
                             @endif
                         </div>
-                    </a>
+                    </div>
                   </td>
                   <td>
                     @if($product->category)
@@ -100,29 +114,13 @@
                         <span class="text-muted small">—</span>
                     @endif
                   </td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                        <button class="btn btn-link p-0" type="button" id="dropdownMenuButton{{ $product->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton{{ $product->id }}">
-                          <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.products.edit', $product) }}">
-                              <i data-feather="edit-2" class="icon-sm mr-2"></i> Edit
-                          </a>
-                          @if($product->qr_code)
-                            <a class="dropdown-item d-flex align-items-center" href="{{ $product->qr_code }}" download>
-                                <i data-feather="maximize" class="icon-sm mr-2"></i> Download QR
-                            </a>
-                          @endif
-                          <div class="dropdown-divider"></div>
-                          <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Truly delete this product?')">
-                              @csrf @method('DELETE')
-                              <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
-                                  <i data-feather="trash-2" class="icon-sm mr-2"></i> Delete
-                              </button>
-                          </form>
-                        </div>
-                    </div>
+                  <td class="text-right" onclick="event.stopPropagation();">
+                      <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Truly delete this product?');" class="d-inline-block">
+                          @csrf @method('DELETE')
+                          <button type="submit" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1.5 font-weight-bold" style="transition: all 0.2s ease;">
+                              <i data-feather="trash-2" class="wd-10 h-10 mr-1" style="width: 12px; height: 12px; vertical-align: -1px;"></i> Delete
+                          </button>
+                      </form>
                   </td>
                 </tr>
               @empty
@@ -147,4 +145,26 @@
     </div>
   </div>
 </div>
+
+<style>
+/* Custom Premium Sibling Row buttons styling */
+.product-row-btn {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.product-row-btn:hover {
+    background-color: rgba(108, 92, 231, 0.04) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+html[data-admin-theme="dark"] .product-row-btn:hover {
+    background-color: rgba(167, 139, 250, 0.05) !important;
+}
+.product-row-btn:hover .text-primary-hover {
+    color: #6c5ce7 !important;
+}
+html[data-admin-theme="dark"] .product-row-btn:hover .text-primary-hover {
+    color: #a78bfa !important;
+}
+</style>
 @endsection
