@@ -230,9 +230,9 @@
         <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
             {{-- Collapsible Live Preview Card --}}
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-                <div class="card-header p-0 border-bottom d-flex align-items-center justify-content-between" style="background: rgba(108,92,231,0.02); height: 48px;">
-                    <button class="btn btn-link w-100 h-100 text-start text-decoration-none p-3 d-flex align-items-center justify-content-between fw-bold text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#live-preview-collapse" aria-expanded="true">
-                        <span class="small text-uppercase letter-spacing-1 d-flex align-items-center" style="font-size: 0.72rem;">
+                <div class="card-header p-0 border-bottom" style="background: rgba(108,92,231,0.02); height: 48px;">
+                    <button class="btn btn-link w-100 h-100 text-start text-decoration-none px-4 py-3 d-flex align-items-center justify-content-between fw-bold text-muted collapse-trigger-btn" type="button" data-bs-toggle="collapse" data-bs-target="#live-preview-collapse" aria-expanded="true">
+                        <span class="small text-uppercase letter-spacing-1 d-flex align-items-center" style="font-size: 0.72rem; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">
                             <span class="live-indicator me-2"></span> Live Page Preview
                         </span>
                         <i class="bi bi-chevron-down fs-6 collapse-icon"></i>
@@ -511,6 +511,38 @@ html[data-admin-theme="dark"] .device-desc-text {
     color: #94a3b8 !important;
 }
 
+/* Premium Collapsible Card Header trigger and rotation styling */
+.collapse-trigger-btn {
+    color: #475569 !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+html[data-admin-theme="dark"] .collapse-trigger-btn {
+    color: #cbd5e1 !important;
+}
+.collapse-trigger-btn:hover {
+    color: #6c5ce7 !important;
+    background-color: rgba(108, 92, 231, 0.04) !important;
+    text-decoration: none !important;
+}
+html[data-admin-theme="dark"] .collapse-trigger-btn:hover {
+    color: #a78bfa !important;
+    background-color: rgba(167, 139, 250, 0.04) !important;
+}
+.collapse-trigger-btn:focus {
+    text-decoration: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.collapse-icon {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.collapse-trigger-btn[aria-expanded="false"] .collapse-icon,
+.collapse-trigger-btn.collapsed .collapse-icon {
+    transform: rotate(180deg);
+}
 
 /* Media Manager Zone */
 .upload-dropzone {
