@@ -130,4 +130,11 @@ class OrderController extends Controller
 
         return back()->with('success', 'Order status and tracking updated.');
     }
+
+    /** Delete an order. */
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return back()->with('success', 'Order deleted successfully.');
+    }
 }
