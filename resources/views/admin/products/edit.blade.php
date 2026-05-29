@@ -27,103 +27,128 @@
     <div class="row">
         {{-- Left Column: Form Details & Media Priority Manager --}}
         <div class="col-lg-8 grid-margin stretch-card d-flex flex-column gap-4">
-            {{-- Product Details Card --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="info" class="icon-md mr-2 text-primary"></i> Product Details
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-9 mb-3">
-                            <label class="form-label fw-600">Product Name <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-tag-fill text-primary"></i></span>
-                                <input type="text" name="name" id="product_name" class="form-control border-start-0 @error('name') is-invalid @enderror" value="{{ old('name', $product->name) }}" required placeholder="Enter product name">
-                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            @php
+                $activeTab = 'info';
+                if ($errors->hasAny(['price', 'wholesale_price', 'stock', 'weight'])) {
+                    $activeTab = 'pricing';
+                } elseif ($errors->hasAny(['offer_min_qty', 'offer_discount_percent'])) {
+                    $activeTab = 'offers';
+                }
+            @endphp
+
+            {{-- Product Workspace Card (Tabbed) --}}
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-transparent border-0 pb-0 pt-3" style="background: rgba(108,92,231,0.02) !important;">
+                    <ul class="nav nav-tabs card-header-tabs border-0 gap-2" id="product-workspace-tabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link {{ $activeTab === 'info' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab">
+                                <i class="bi bi-info-circle-fill text-primary"></i> Information
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $activeTab === 'pricing' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="pricing-tab" data-bs-toggle="tab" data-bs-target="#pricing-pane" type="button" role="tab">
+                                <i class="bi bi-currency-pound text-success"></i> Pricing & Stock
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $activeTab === 'offers' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="offers-tab" data-bs-toggle="tab" data-bs-target="#offers-pane" type="button" role="tab">
+                                <i class="bi bi-percent text-danger"></i> Bulk Offers
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body pt-4">
+                    <div class="tab-content" id="product-workspace-tab-content">
+                        {{-- Tab 1: Information --}}
+                        <div class="tab-pane fade {{ $activeTab === 'info' ? 'show active' : '' }}" id="info-pane" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-9 mb-3">
+                                    <label class="form-label fw-600">Product Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-tag-fill text-primary"></i></span>
+                                        <input type="text" name="name" id="product_name" class="form-control border-start-0 @error('name') is-invalid @enderror" value="{{ old('name', $product->name) }}" required placeholder="Enter product name">
+                                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Barcode <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="EAN, UPC, or custom scannable product code"></i></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-upc-scan text-info"></i></span>
+                                        <input type="text" name="barcode" class="form-control border-start-0" value="{{ old('barcode', $product->barcode) }}" placeholder="Optional">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-600">Description</label>
+                                <textarea name="description" id="product_description" class="form-control" rows="4" placeholder="Write a compelling product description...">{{ old('description', $product->description) }}</textarea>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Barcode <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="EAN, UPC, or custom scannable product code"></i></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-upc-scan text-info"></i></span>
-                                <input type="text" name="barcode" class="form-control border-start-0" value="{{ old('barcode', $product->barcode) }}" placeholder="Optional">
+
+                        {{-- Tab 2: Pricing & Stock --}}
+                        <div class="tab-pane fade {{ $activeTab === 'pricing' ? 'show active' : '' }}" id="pricing-pane" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Retail Price (£) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-currency-pound text-success"></i></span>
+                                        <input type="number" name="price" id="product_price" class="form-control border-start-0 @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
+                                        @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Wholesale Price (£) <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Optional cost value or discounted wholesale unit price"></i></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-currency-pound" style="color: #0d9488 !important;"></i></span>
+                                        <input type="number" name="wholesale_price" class="form-control border-start-0" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-archive-fill text-warning"></i></span>
+                                        <input type="number" name="stock" id="product_stock" class="form-control border-start-0 @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
+                                        @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div id="stock-val-badge" class="mt-1" style="min-height: 20px;"></div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span> <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Used to calculate shipping rates at checkout"></i></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-speedometer2" style="color: #ea580c !important;"></i></span>
+                                        <input type="number" name="weight" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight) }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
+                                        @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-600">Description</label>
-                        <textarea name="description" id="product_description" class="form-control" rows="6" placeholder="Write a compelling product description...">{{ old('description', $product->description) }}</textarea>
-                    </div>
-                    
-                    <hr class="my-4 opacity-5">
-                    
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="dollar-sign" class="icon-md mr-2 text-primary"></i> Pricing & Inventory
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Retail Price (£) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-currency-pound text-success"></i></span>
-                                <input type="number" name="price" id="product_price" class="form-control border-start-0 @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
-                                @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Wholesale Price (£) <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Optional cost value or discounted wholesale unit price"></i></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-currency-pound" style="color: #0d9488 !important;"></i></span>
-                                <input type="number" name="wholesale_price" class="form-control border-start-0" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-archive-fill text-warning"></i></span>
-                                <input type="number" name="stock" id="product_stock" class="form-control border-start-0 @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
-                                @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                            <div id="stock-val-badge" class="mt-1" style="min-height: 20px;"></div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span> <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Used to calculate shipping rates at checkout"></i></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-speedometer2" style="color: #ea580c !important;"></i></span>
-                                <input type="number" name="weight" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight) }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
-                                @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <hr class="my-4 opacity-5">
-                    
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="percent" class="icon-md mr-2 text-primary"></i> Bulk Offer Configuration
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-5 mb-3">
-                            <label class="form-label fw-600">Min Quantity for Offer</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-calculator" style="color: #db2777 !important;"></i></span>
-                                <input type="number" name="offer_min_qty" class="form-control border-start-0" value="{{ old('offer_min_qty', $product->offer_min_qty) }}" min="1">
-                            </div>
-                            <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-600">Discount Percentage (%)</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
-                                <input type="number" name="offer_discount_percent" class="form-control border-start-0" value="{{ old('offer_discount_percent', $product->offer_discount_percent) }}" min="0" max="100" step="0.01">
-                            </div>
-                            <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
-                        </div>
-                        <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <div class="form-check mb-2 bg-light p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
-                                <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input ms-0 mt-0" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
-                                <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active">
-                                    Activate Offer
-                                </label>
-                            </div>
+
+                        {{-- Tab 3: Bulk Offers --}}
+                        <div class="tab-pane fade {{ $activeTab === 'offers' ? 'show active' : '' }}" id="offers-pane" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label class="form-label fw-600">Min Quantity for Offer</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calculator" style="color: #db2777 !important;"></i></span>
+                                        <input type="number" name="offer_min_qty" class="form-control border-start-0" value="{{ old('offer_min_qty', $product->offer_min_qty) }}" min="1">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-600">Discount Percentage (%)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
+                                        <input type="number" name="offer_discount_percent" class="form-control border-start-0" value="{{ old('offer_discount_percent', $product->offer_discount_percent) }}" min="0" max="100" step="0.01">
+                                    </div>
+                                    <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
+                                </div>
+                                <div class="col-md-3 mb-3 d-flex align-items-end">
+                                    <div class="form-check mb-2 bg-light p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
+                                        <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input ms-0 mt-0" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active">
+                                            Activate Offer
+                                        </label>
+                                    </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -146,15 +171,10 @@
 
                     {{-- Upload Dropzone --}}
                     <div class="upload-dropzone mb-4" id="dropzone">
-                        <i data-feather="upload-cloud" class="text-primary mb-3" style="width: 44px; height: 44px;"></i>
-                        <h5 class="fw-bold mb-1">Drag & Drop Product Images</h5>
-                        <p class="text-muted small mb-3">Or click here to browse files. WebP conversion is automatic.</p>
+                        <i data-feather="upload-cloud" class="text-primary mb-2" style="width: 28px; height: 28px;"></i>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.85rem;">Drag & drop images here or <span class="text-primary cursor-pointer">browse</span></h6>
                         <input type="file" id="dropzone-input" class="d-none" multiple accept="image/*">
-                        <div class="d-flex justify-content-center">
-                            <button type="button" class="btn btn-outline-primary btn-sm px-4 rounded-pill fw-bold" onclick="document.getElementById('dropzone-input').click()">
-                                Select Files
-                            </button>
-                        </div>
+                    </div>
                         {{-- Upload Progress --}}
                         <div class="progress mt-3 d-none" id="upload-progress-bar" style="height: 6px; border-radius: 10px;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
@@ -178,16 +198,18 @@
 
         {{-- Right Column: Mockup Preview, Classification & Actions --}}
         <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
-            {{-- Sleek Live Mobile Page Preview Mockup --}}
+            {{-- Collapsible Live Preview Card --}}
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-                <div class="card-body p-0">
-                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="background: rgba(108,92,231,0.02);">
-                        <span class="fw-bold small text-muted text-uppercase letter-spacing-1 d-flex align-items-center">
+                <div class="card-header p-0 border-bottom d-flex align-items-center justify-content-between" style="background: rgba(108,92,231,0.02); height: 48px;">
+                    <button class="btn btn-link w-100 h-100 text-start text-decoration-none p-3 d-flex align-items-center justify-content-between fw-bold text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#live-preview-collapse" aria-expanded="true">
+                        <span class="small text-uppercase letter-spacing-1 d-flex align-items-center" style="font-size: 0.72rem;">
                             <span class="live-indicator me-2"></span> Live Page Preview
                         </span>
-                        <span class="badge bg-secondary font-weight-600">Smart View</span>
-                    </div>
-                    <div class="p-4" style="background: #0b0f19;">
+                        <i class="bi bi-chevron-down fs-6 collapse-icon"></i>
+                    </button>
+                </div>
+                <div id="live-preview-collapse" class="collapse show">
+                    <div class="card-body p-4" style="background: #0b0f19;">
                         {{-- Premium Device Mockup --}}
                         <div class="device-container">
                             <div class="device-notch"></div>
@@ -1003,6 +1025,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     if (inputOfferActive) {
         inputOfferActive.addEventListener('change', updateLiveCalculations);
+    }
+
+    // Collapse preview on mobile viewports dynamically
+    const previewCollapseEl = document.getElementById('live-preview-collapse');
+    if (window.innerWidth < 992 && previewCollapseEl) {
+        const bsCollapse = new bootstrap.Collapse(previewCollapseEl, { toggle: false });
+        bsCollapse.hide();
     }
 
     // Initial render
