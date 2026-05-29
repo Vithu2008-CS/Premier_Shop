@@ -45,6 +45,7 @@ class ProductController extends Controller
             'product_images.*'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'offer_min_qty'           => 'nullable|integer|min:1',
             'offer_discount_percent'  => 'nullable|numeric|min:0|max:100',
+            'retail_offer_percentage' => 'required_if:retail_offer,1|nullable|numeric|min:0|max:100',
         ];
 
         if ($request->has('weight_matters')) {
@@ -62,12 +63,14 @@ class ProductController extends Controller
         $validated['is_active']          = true;
         $validated['offer_active']       = $request->has('offer_active');
         $validated['retail_offer']       = $request->has('retail_offer');
+        $validated['retail_offer_percentage'] = $request->has('retail_offer') ? $request->input('retail_offer_percentage', 0.00) : 0.00;
         $validated['weight']             = $request->has('weight_matters') ? $request->input('weight', 0.00) : 0.00;
 
         // Upload each product image to /storage/products and store its public path as WebP
         $images = [];
         if ($request->filled('images')) {
-            $images = is_string($request->images) ? json_decode($request->images, true) : $request->images;
+            $decoded = is_string($request->images) ? json_decode($request->images, true) : $request->images;
+            $images = is_array($decoded) ? $decoded : [];
         }
         if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
@@ -112,6 +115,7 @@ class ProductController extends Controller
             'product_images.*'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'offer_min_qty'           => 'nullable|integer|min:1',
             'offer_discount_percent'  => 'nullable|numeric|min:0|max:100',
+            'retail_offer_percentage' => 'required_if:retail_offer,1|nullable|numeric|min:0|max:100',
         ];
 
         if ($request->has('weight_matters')) {
@@ -125,12 +129,14 @@ class ProductController extends Controller
         $validated['is_age_restricted'] = $request->has('is_age_restricted');
         $validated['offer_active']      = $request->has('offer_active');
         $validated['retail_offer']      = $request->has('retail_offer');
+        $validated['retail_offer_percentage'] = $request->has('retail_offer') ? $request->input('retail_offer_percentage', 0.00) : 0.00;
         $validated['weight']            = $request->has('weight_matters') ? $request->input('weight', 0.00) : 0.00;
 
         // Append any new WebP uploads to the product's existing image array in priority order
         $images = [];
-        if ($request->has('images')) {
-            $images = is_string($request->images) ? json_decode($request->images, true) : $request->images;
+        if ($request->has('images') && $request->filled('images')) {
+            $decoded = is_string($request->images) ? json_decode($request->images, true) : $request->images;
+            $images = is_array($decoded) ? $decoded : [];
         } else {
             $images = $product->images ?? [];
         }

@@ -104,15 +104,7 @@
                                 </div>
                             </div>
                             <div class="row align-items-center mb-3">
-                                <div class="col-md-6 mb-2">
-                                    <div class="form-check mb-0 p-2.5 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px;">
-                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input ms-0 mt-0" value="1" {{ old('is_age_restricted') ? 'checked' : '' }}>
-                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted">
-                                            Age Restricted (16+)
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-2 text-start">
+                                <div class="col-12 text-start">
                                     <div class="bg-light p-2 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
                                         <i class="bi bi-qr-code text-muted"></i>
                                         <span class="small text-muted" style="font-size: 0.72rem;">QR Code will be auto-generated on save.</span>
@@ -158,13 +150,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-2 border-top pt-3">
+                            <div class="row mt-2 border-top pt-3 align-items-end">
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label fw-600">Retail Promo Options</label>
+                                    <label class="form-label fw-600">Retail Offer Options</label>
                                     <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
                                         <input type="checkbox" name="retail_offer" id="retail_offer" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('retail_offer') ? 'checked' : '' }}>
                                         <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="retail_offer" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
                                             Enable Retail Offer
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3" id="retail-offer-percentage-container" style="display: none;">
+                                    <label class="form-label fw-600">Offer Percentage (%) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
+                                        <input type="number" name="retail_offer_percentage" id="retail_offer_percentage" class="form-control border-start-0 @error('retail_offer_percentage') is-invalid @enderror" value="{{ old('retail_offer_percentage') }}" step="0.01" min="0" max="100" placeholder="e.g. 10">
+                                        @error('retail_offer_percentage') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-600">Restrictions</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('is_age_restricted') ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
+                                            Age Restricted (16+)
                                         </label>
                                     </div>
                                 </div>
@@ -1240,6 +1249,27 @@ document.addEventListener('DOMContentLoaded', function() {
         weightMattersCheckbox.addEventListener('change', toggleWeightInput);
         // Initial execution
         toggleWeightInput();
+    }
+
+    // Retail Offer Toggle logic
+    const retailOfferCheckbox = document.getElementById('retail_offer');
+    const retailOfferPercentageContainer = document.getElementById('retail-offer-percentage-container');
+    const retailOfferPercentageInput = document.getElementById('retail_offer_percentage');
+
+    function toggleRetailOfferInput() {
+        if (retailOfferCheckbox.checked) {
+            retailOfferPercentageContainer.style.display = 'block';
+            retailOfferPercentageInput.setAttribute('required', 'required');
+        } else {
+            retailOfferPercentageContainer.style.display = 'none';
+            retailOfferPercentageInput.removeAttribute('required');
+        }
+    }
+
+    if (retailOfferCheckbox && retailOfferPercentageContainer && retailOfferPercentageInput) {
+        retailOfferCheckbox.addEventListener('change', toggleRetailOfferInput);
+        // Initial execution
+        toggleRetailOfferInput();
     }
 
     // Collapse preview on mobile viewports dynamically

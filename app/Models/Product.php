@@ -26,11 +26,11 @@ class Product extends Model
         'category_id', 'images', 'product_type', 'is_age_restricted',
         'qr_code', 'barcode', 'is_active',
         'offer_min_qty', 'offer_discount_percent', 'offer_active',
-        'weight', 'retail_offer',
+        'weight', 'retail_offer', 'retail_offer_percentage',
     ];
 
     // These virtual attributes are included in toArray() / toJson()
-    protected $appends = ['first_image', 'has_offer', 'offer_price'];
+    protected $appends = ['first_image', 'has_offer', 'offer_price', 'active_price'];
 
     protected function casts(): array
     {
@@ -44,6 +44,7 @@ class Product extends Model
             'offer_discount_percent' => 'decimal:2',
             'weight'                 => 'decimal:2',
             'retail_offer'           => 'boolean',
+            'retail_offer_percentage'=> 'decimal:2',
         ];
     }
 
@@ -89,6 +90,15 @@ class Product extends Model
     public function getAverageRatingAttribute(): float
     {
         return (float) ($this->reviews()->approved()->avg('rating') ?? 0);
+    }
+
+    /** Get the current active retail price of the product, taking into account any active retail offer. */
+    public function getActivePriceAttribute(): float
+    {
+        if ($this->retail_offer && $this->retail_offer_percentage > 0) {
+            return round($this->price * (1 - $this->retail_offer_percentage / 100), 2);
+        }
+        return (float) $this->price;
     }
 
     /** Count of approved reviews displayed on the product page. */

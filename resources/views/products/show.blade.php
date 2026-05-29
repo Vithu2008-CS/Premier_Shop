@@ -79,7 +79,7 @@
                             <span class="badge bg-danger">🔞 Age 16+ Only</span>
                         @endif
                         @if($product->retail_offer)
-                            <span class="badge bg-warning text-dark">🔥 Retail Offer</span>
+                            <span class="badge bg-warning text-dark">🔥 Retail Offer {{ $product->retail_offer_percentage > 0 ? '(' . round($product->retail_offer_percentage) . '% OFF)' : '' }}</span>
                         @endif
                         @if($product->stock > 0 && $product->stock <= 10)
                             <span class="badge bg-warning text-dark">Only {{ $product->stock }} left!</span>
@@ -123,9 +123,14 @@
 
                 {{-- Price --}}
                 <div class="d-flex align-items-baseline gap-3 mb-4 reveal-fade delay-1">
-                    <span class="gradient-text" style="font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -1px;">£{{ number_format($product->price, 2) }}</span>
-                    @if($product->wholesale_price && $product->wholesale_price > $product->price)
-                        <span class="text-muted" style="text-decoration: line-through; font-size: 1.1rem;">£{{ number_format($product->wholesale_price, 2) }}</span>
+                    @if($product->retail_offer && $product->retail_offer_percentage > 0)
+                        <span class="gradient-text" style="font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -1px;">£{{ number_format($product->active_price, 2) }}</span>
+                        <span class="text-muted" style="text-decoration: line-through; font-size: 1.1rem;">£{{ number_format($product->price, 2) }}</span>
+                    @else
+                        <span class="gradient-text" style="font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -1px;">£{{ number_format($product->price, 2) }}</span>
+                        @if($product->wholesale_price && $product->wholesale_price > $product->price)
+                            <span class="text-muted" style="text-decoration: line-through; font-size: 1.1rem;">£{{ number_format($product->wholesale_price, 2) }}</span>
+                        @endif
                     @endif
                 </div>
 
