@@ -23,7 +23,7 @@
       <div class="card-body">
         <h6 class="card-title">Category Information</h6>
         
-        <form action="{{ route('admin.categories.update', $category) }}" method="POST" enctype="multipart/form-data">
+        <form id="edit-category-form" action="{{ route('admin.categories.update', $category) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="row">
@@ -66,17 +66,101 @@
                 </div>
             </div>
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary mr-2">
-                    <i data-feather="upload" class="icon-sm mr-2"></i> Update Category
-                </button>
-                <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-secondary">
-                    Cancel
-                </a>
-            </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+{{-- Modern Floating Action Bar --}}
+<div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
+    <div class="d-flex align-items-center gap-3 text-white">
+        <span class="live-indicator me-1"></span>
+        <div style="font-family: 'Outfit', sans-serif;">
+            <small class="text-muted text-uppercase d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Currently Editing</small>
+            <span class="fw-bold small text-white" style="font-size: 0.85rem;" id="floating-category-title">{{ $category->name }}</span>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-danger rounded-pill px-4 btn-sm font-weight-bold shadow-sm" onclick="event.preventDefault(); if(confirm('Delete this category?')) document.getElementById('delete-category-form').submit();">
+            <i class="bi bi-trash-fill me-1"></i> Delete Category
+        </button>
+        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light rounded-pill px-4 btn-sm font-weight-bold" style="border-color: rgba(255,255,255,0.25); color: #fff;">
+            Cancel
+        </a>
+        <button type="submit" form="edit-category-form" class="btn btn-primary rounded-pill px-4 btn-sm font-weight-bold shadow-sm" style="background: linear-gradient(135deg, #6c5ce7, #a78bfa); border: none;">
+            <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+        </button>
+    </div>
+</div>
+
+{{-- Hidden Deletion Form --}}
+<form id="delete-category-form" action="{{ route('admin.categories.destroy', $category) }}" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<style>
+/* Scoped custom premium styles for floating actions and indicator */
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blinkIndicator 1.5s infinite ease-in-out;
+}
+@keyframes blinkIndicator {
+    0%, 100% { opacity: 0.3; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.15); }
+}
+
+.floating-save-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: calc(100% - 32px);
+    max-width: 780px;
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-admin-theme="dark"] .floating-save-bar {
+    background: rgba(10, 15, 28, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+@media (max-width: 575px) {
+    .floating-save-bar {
+        border-radius: 18px !important;
+        padding: 10px 16px !important;
+        bottom: 12px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch !important;
+        text-align: center;
+    }
+    .floating-save-bar .d-flex {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputName = document.getElementsByName('name')[0];
+    const floatTitle = document.getElementById('floating-category-title');
+    
+    if (inputName && floatTitle) {
+        inputName.addEventListener('input', function() {
+            floatTitle.innerText = inputName.value.trim() || 'Category Name';
+        });
+    }
+});
+</script>
 @endsection
