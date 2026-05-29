@@ -261,7 +261,7 @@
                     </button>
                 </div>
                 <div id="live-preview-collapse" class="collapse show">
-                    <div class="card-body p-4" style="background: #0b0f19;">
+                    <div class="card-body p-4 live-preview-body">
                         {{-- Premium Device Mockup --}}
                         <div class="device-container">
                             <div class="device-notch"></div>
@@ -283,7 +283,7 @@
                                     <span class="device-badge bg-success" id="preview-stock-badge">In Stock</span>
                                 </div>
 
-                                <div class="mt-3" style="font-size: 0.7rem; color: #94a3b8; line-height: 1.5; height: 45px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" id="preview-desc">
+                                <div class="mt-3 device-desc-text" style="font-size: 0.7rem; line-height: 1.5; height: 45px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" id="preview-desc">
                                     No description provided.
                                 </div>
 
@@ -401,6 +401,10 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
 }
 
 /* Device Mockup Display */
+.live-preview-body {
+    background-color: #f1f5f9 !important; /* Soft light-gray background */
+    transition: background-color 0.25s ease;
+}
 .device-container {
     max-width: 325px;
     margin: 0 auto;
@@ -426,22 +430,25 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
 }
 .device-screen {
     padding: 22px 12px 12px 12px;
-    color: #fff;
+    color: #0f172a; /* Dark text for light mode */
     font-family: 'Outfit', sans-serif;
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: #0f172a;
+    background: #ffffff; /* White screen for light mode */
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 .device-header {
     font-size: 0.7rem;
-    opacity: 0.6;
+    opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: #a78bfa;
+    color: #6c5ce7; /* Brand purple category header */
     font-weight: 700;
+    transition: color 0.25s ease;
 }
 .device-title {
+    color: #0f172a;
     font-size: 1.05rem;
     font-weight: 700;
     margin-top: 3px;
@@ -449,17 +456,19 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.25s ease;
 }
 .device-gallery-box {
     width: 100%;
     aspect-ratio: 1;
     border-radius: 12px;
     overflow: hidden;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: #f8fafc;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 .device-gallery-box img {
     width: 100%;
@@ -478,8 +487,8 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     width: 22px;
     height: 22px;
     border-radius: 5px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #f8fafc;
     overflow: hidden;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -502,7 +511,8 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
 .device-price {
     font-size: 1.2rem;
     font-weight: 800;
-    color: #a78bfa;
+    color: #6c5ce7; /* Brand purple price */
+    transition: color 0.25s ease;
 }
 .device-badge {
     font-size: 0.65rem;
@@ -524,6 +534,40 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     text-align: center;
     box-shadow: 0 4px 10px rgba(108,92,231,0.25);
 }
+.device-desc-text {
+    color: #475569 !important; /* Soft dark gray description */
+    transition: color 0.25s ease;
+}
+
+/* Dark Mode Overrides for Live Preview Mockup */
+html[data-admin-theme="dark"] .live-preview-body {
+    background-color: #0b0f19 !important;
+}
+html[data-admin-theme="dark"] .device-screen {
+    background: #0f172a;
+    color: #ffffff;
+}
+html[data-admin-theme="dark"] .device-header {
+    color: #a78bfa;
+}
+html[data-admin-theme="dark"] .device-title {
+    color: #ffffff;
+}
+html[data-admin-theme="dark"] .device-gallery-box {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+html[data-admin-theme="dark"] .device-thumb-dot {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+}
+html[data-admin-theme="dark"] .device-price {
+    color: #a78bfa;
+}
+html[data-admin-theme="dark"] .device-desc-text {
+    color: #94a3b8 !important;
+}
+
 
 /* Media Manager Zone */
 .upload-dropzone {
