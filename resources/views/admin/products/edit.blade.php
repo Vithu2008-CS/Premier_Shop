@@ -296,12 +296,10 @@
     
     {{-- Modern Floating Action Bar --}}
     <div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
-        <div class="d-flex align-items-center gap-3 text-white">
+        <div class="d-flex align-items-center gap-2 text-white" style="font-family: 'Outfit', sans-serif;">
             <span class="live-indicator me-1"></span>
-            <div style="font-family: 'Outfit', sans-serif;">
-                <small class="text-muted text-uppercase d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Currently Editing</small>
-                <span class="fw-bold small" style="font-size: 0.85rem;" id="floating-product-title">Product Name</span>
-            </div>
+            <span class="text-muted text-uppercase small" style="font-size: 0.68rem; letter-spacing: 0.5px; font-weight: 600; white-space: nowrap;">Currently Editing:</span>
+            <span class="fw-bold text-white text-nowrap" style="font-size: 0.85rem;" id="floating-product-title">Product Name</span>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.products.index') }}" class="btn btn-outline-light rounded-pill px-4 btn-sm font-weight-bold" style="border-color: rgba(255,255,255,0.25); color: #fff;">
@@ -801,7 +799,7 @@ html[data-admin-theme="dark"] .input-group .form-control {
 }
 .floating-save-bar {
     position: fixed;
-    bottom: 72px;
+    bottom: 120px;
     left: calc(50% + 120px);
     transform: translateX(-50%);
     z-index: 1000;

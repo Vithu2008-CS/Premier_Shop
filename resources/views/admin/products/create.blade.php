@@ -281,11 +281,11 @@
     
     {{-- Modern Floating Action Bar --}}
     <div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
-        <div class="d-flex align-items-center gap-3 text-white">
+        <div class="d-flex align-items-center gap-2 text-white" style="font-family: 'Outfit', sans-serif;">
             <span class="live-indicator me-1"></span>
-            <div style="font-family: 'Outfit', sans-serif;">
-                <small class="text-muted text-uppercase d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Currently Creating</small>
-                <span class="fw-bold small" style="font-size: 0.85rem;" id="floating-product-title">Product Name</span>
+            <div class="d-flex align-items-baseline gap-2">
+                <span class="text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px; font-weight: 600; white-space: nowrap; line-height: 1;">Currently Creating:</span>
+                <span class="fw-bold text-white text-nowrap" style="font-size: 0.85rem; line-height: 1;" id="floating-product-title">Product Name</span>
             </div>
         </div>
         <div class="d-flex gap-2">
@@ -751,7 +751,7 @@ html[data-admin-theme="dark"] .input-group .form-control {
 }
 .floating-save-bar {
     position: fixed;
-    bottom: 72px;
+    bottom: 168px;
     left: calc(50% + 120px);
     transform: translateX(-50%);
     z-index: 1000;
