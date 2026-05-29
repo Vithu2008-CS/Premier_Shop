@@ -353,9 +353,11 @@
 
 <div class="col-6 col-md-4 col-xl-3 fade-up delay-{{ $delay ?? 1 }}">
     <div class="pcard">
-
         {{-- ── Badges ── --}}
         <div class="pcard-badges">
+            @if($product->retail_offer)
+                <span class="pcard-badge pcard-badge-sale">OFFER</span>
+            @endif
             @if($product->on_sale)
                 @php
                     $discountPct = ($product->original_price > 0 && $product->original_price > $product->price)

@@ -120,7 +120,6 @@
                                 </div>
                             </div>
                         </div>
-
                         {{-- Tab 2: Pricing & Stock --}}
                         <div class="tab-pane fade {{ $activeTab === 'pricing' ? 'show active' : '' }}" id="pricing-pane" role="tabpanel" tabindex="0">
                             <div class="row">
@@ -133,13 +132,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label fw-600">Wholesale Price (£) <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Optional cost value or discounted wholesale unit price"></i></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-currency-pound" style="color: #0d9488 !important;"></i></span>
-                                        <input type="number" name="wholesale_price" class="form-control border-start-0" value="{{ old('wholesale_price') }}" step="0.01" min="0" placeholder="Optional">
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
                                     <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-archive-fill text-warning"></i></span>
@@ -149,11 +141,31 @@
                                     <div id="stock-val-badge" class="mt-1" style="min-height: 20px;"></div>
                                 </div>
                                 <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Weight Type</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="weight_matters" id="weight_matters" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('weight_matters') ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="weight_matters" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
+                                            Weight Matters
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3" id="weight-input-container" style="display: none;">
                                     <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span> <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Used to calculate shipping rates at checkout"></i></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-speedometer2" style="color: #ea580c !important;"></i></span>
-                                        <input type="number" name="weight" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight') }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
+                                        <input type="number" name="weight" id="weight_input" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight') }}" step="0.01" min="0.01" placeholder="e.g. 0.50">
                                         @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 border-top pt-3">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-600">Retail Promo Options</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="retail_offer" id="retail_offer" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('retail_offer') ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="retail_offer" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
+                                            Enable Retail Offer
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -1150,13 +1162,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function syncFloatingTitle() {
         floatTitle.innerText = inputName.value.trim() || 'Product Name';
     }
-
     // Live Calculations
-    const inputWholesale = document.getElementsByName('wholesale_price')[0];
     const inputDiscount = document.getElementsByName('offer_discount_percent')[0];
     const inputMinQty = document.getElementsByName('offer_min_qty')[0];
     const inputOfferActive = document.getElementsByName('offer_active')[0];
-
     const stockValBadge = document.getElementById('stock-val-badge');
     const offerCalcBadge = document.getElementById('offer-calc-badge');
 
@@ -1212,6 +1221,26 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputOfferActive) {
         inputOfferActive.addEventListener('change', updateLiveCalculations);
     }
+    // Weight Matters Toggle logic
+    const weightMattersCheckbox = document.getElementById('weight_matters');
+    const weightContainer = document.getElementById('weight-input-container');
+    const weightInput = document.getElementById('weight_input');
+
+    function toggleWeightInput() {
+        if (weightMattersCheckbox.checked) {
+            weightContainer.style.display = 'block';
+            weightInput.setAttribute('required', 'required');
+        } else {
+            weightContainer.style.display = 'none';
+            weightInput.removeAttribute('required');
+        }
+    }
+
+    if (weightMattersCheckbox && weightContainer && weightInput) {
+        weightMattersCheckbox.addEventListener('change', toggleWeightInput);
+        // Initial execution
+        toggleWeightInput();
+    }
 
     // Collapse preview on mobile viewports dynamically
     const previewCollapseEl = document.getElementById('live-preview-collapse');
@@ -1219,7 +1248,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const bsCollapse = new bootstrap.Collapse(previewCollapseEl, { toggle: false });
         bsCollapse.hide();
     }
-
     // Initial render
     updateImagesState();
     syncFloatingTitle();

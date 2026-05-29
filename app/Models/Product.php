@@ -26,7 +26,7 @@ class Product extends Model
         'category_id', 'images', 'product_type', 'is_age_restricted',
         'qr_code', 'barcode', 'is_active',
         'offer_min_qty', 'offer_discount_percent', 'offer_active',
-        'weight',
+        'weight', 'retail_offer',
     ];
 
     // These virtual attributes are included in toArray() / toJson()
@@ -43,6 +43,7 @@ class Product extends Model
             'offer_active'           => 'boolean',
             'offer_discount_percent' => 'decimal:2',
             'weight'                 => 'decimal:2',
+            'retail_offer'           => 'boolean',
         ];
     }
 

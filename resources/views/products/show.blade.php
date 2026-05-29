@@ -78,6 +78,9 @@
                         @if($product->is_age_restricted)
                             <span class="badge bg-danger">🔞 Age 16+ Only</span>
                         @endif
+                        @if($product->retail_offer)
+                            <span class="badge bg-warning text-dark">🔥 Retail Offer</span>
+                        @endif
                         @if($product->stock > 0 && $product->stock <= 10)
                             <span class="badge bg-warning text-dark">Only {{ $product->stock }} left!</span>
                         @endif
