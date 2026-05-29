@@ -128,7 +128,33 @@ class OrderControllerTest extends TestCase
         $html = $mailable->render();
         $this->assertNotEmpty($html);
     }
+
+    public function test_customer_order_detail_view_shows_assigned_driver()
+    {
+        $driver = User::factory()->create([
+            'name' => 'John Driver',
+            'phone' => '07888888888',
+        ]);
+
+        $order = Order::create([
+            'user_id' => $this->customer->id,
+            'order_number' => 'PS-987654',
+            'status' => 'processing',
+            'subtotal' => 20.00,
+            'total' => 20.00,
+            'shipping_address' => ['address_line' => '456 Delivery Rd', 'city' => 'Manchester', 'phone' => '07123456789'],
+            'payment_status' => 'completed',
+            'driver_id' => $driver->id,
+        ]);
+
+        $response = $this->actingAs($this->customer)->get(route('orders.show', $order));
+
+        $response->assertStatus(200);
+        $response->assertSee('John Driver');
+        $response->assertSee('Assigned Driver');
+    }
 }
+
 
 
 
