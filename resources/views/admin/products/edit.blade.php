@@ -19,7 +19,7 @@
   </ol>
 </nav>
 
-<form id="edit-product-form" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+<form id="edit-product-form" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" style="margin-bottom: 120px;">
     @csrf @method('PUT')
     
     <input type="hidden" name="images" id="product_images_json" value='@json($product->images ?? [])'>
@@ -101,29 +101,6 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row align-items-center mb-3">
-                                {{-- QR Code display (Only for Edit View) --}}
-                                @if(isset($product) && $product->qr_code)
-                                <div class="col-12">
-                                    <div class="qr-outer-container p-2 rounded-3 border d-flex align-items-center gap-3">
-                                        <div class="qr-code-container p-1 rounded flex-shrink-0" style="width: 50px; height: 50px;">
-                                            <img src="{{ $product->qr_code }}" alt="QR Code" class="qr-code-img w-100 h-100" style="object-fit: contain;">
-                                        </div>
-                                        <div class="d-flex flex-column gap-1">
-                                            <span class="small fw-bold d-block text-muted" style="font-size: 0.7rem; line-height:1.1;">Product QR Code</span>
-                                            <div class="d-flex gap-2">
-                                                <a href="{{ $product->qr_code }}" download class="text-primary small fw-600 text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.72rem;">
-                                                    <i class="bi bi-download"></i> Download
-                                                </a>
-                                                <button type="submit" form="regenerate-qr-form" class="btn btn-link p-0 text-muted small border-0 d-flex align-items-center gap-1" style="font-size: 0.72rem; text-decoration: none;">
-                                                    <i class="bi bi-arrow-clockwise"></i> Regenerate
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
                             </div>
                         </div>
                         {{-- Tab 2: Pricing & Stock --}}
@@ -222,11 +199,11 @@
                                         </label>
                                     </div>
                                 </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
             {{-- New Premium Media & Image Priority Manager Card --}}
             <div class="card shadow-sm border-0 rounded-4">
@@ -258,14 +235,14 @@
                     <div class="media-list-grid mb-4" id="media-list-manager">
                         {{-- Rendered via Javascript --}}
                     </div>
-                    </div>
                 </div>
             </div>
+        </div>
 
         {{-- Right Column: Mockup Preview, Classification & Actions --}}
         <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
             {{-- Collapsible Live Preview Card --}}
-            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
                 <div class="card-header p-0 border-bottom" style="background: rgba(108,92,231,0.02); height: 48px;">
                     <button class="btn btn-link w-100 h-100 text-start text-decoration-none px-4 py-3 d-flex align-items-center justify-content-between fw-bold text-muted collapse-trigger-btn" type="button" data-bs-toggle="collapse" data-bs-target="#live-preview-collapse" aria-expanded="true">
                         <span class="small text-uppercase letter-spacing-1 d-flex align-items-center" style="font-size: 0.72rem; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">
@@ -311,6 +288,35 @@
                 </div>
             </div>
 
+            {{-- Product QR Code Panel --}}
+            @if(isset($product) && $product->qr_code)
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h6 class="card-title fw-bold text-primary mb-3 d-flex align-items-center" style="font-family: 'Outfit', sans-serif;">
+                        <i class="bi bi-qr-code mr-2"></i> Product QR Code
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="qr-code-container p-1 flex-shrink-0 mr-3" style="width: 48px; height: 48px; border-radius: 8px !important; border: 1px solid rgba(0,0,0,0.08); background: #fff;">
+                            <img src="{{ $product->qr_code }}" alt="QR Code" class="qr-code-img w-100 h-100" style="object-fit: contain;">
+                        </div>
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <p class="text-muted mb-2" style="font-size: 0.76rem; line-height: 1.4;">
+                                Scan to lookup or update stock instantly using the admin scanner.
+                            </p>
+                            <div class="d-flex gap-2">
+                                <a href="{{ $product->qr_code }}" download class="btn btn-xs btn-primary rounded-pill px-3 py-1.5 font-weight-bold d-inline-flex align-items-center mr-2" style="font-size: 0.72rem; transition: all 0.2s ease;">
+                                    <i class="bi bi-download mr-1"></i> Download
+                                </a>
+                                <button type="submit" form="regenerate-qr-form" class="btn btn-xs btn-outline-secondary rounded-pill px-3 py-1.5 font-weight-bold d-inline-flex align-items-center" style="font-size: 0.72rem; transition: all 0.2s ease;">
+                                    <i class="bi bi-arrow-clockwise mr-1"></i> Regenerate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
         </div>
     </div>
     
@@ -318,12 +324,15 @@
     <div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
         <div class="d-flex align-items-center gap-2" style="font-family: 'Outfit', sans-serif;">
             <span class="live-indicator me-1"></span>
-            <div class="d-flex align-items-baseline gap-2">
+            <div class="d-flex align-items-center gap-2">
                 <span class="text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px; font-weight: 600; white-space: nowrap; line-height: 1;">Currently Editing:</span>
                 <span class="fw-bold text-nowrap floating-bar-title" style="font-size: 0.85rem; line-height: 1;" id="floating-product-title">Product Name</span>
             </div>
         </div>
         <div class="button-group">
+            <button type="button" class="btn btn-danger" onclick="event.preventDefault(); if(confirm('Delete this product?')) document.getElementById('delete-product-form').submit();">
+                <i class="bi bi-trash-fill me-1"></i> Delete
+            </button>
             <a href="{{ route('admin.products.index') }}" class="btn btn-outline-light">
                 Cancel
             </a>
@@ -332,6 +341,12 @@
             </button>
         </div>
     </div>
+</form>
+
+{{-- Hidden Deletion Form --}}
+<form id="delete-product-form" action="{{ route('admin.products.destroy', $product) }}" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
 </form>
 
 {{-- Hidden Regenerate Form --}}
@@ -387,11 +402,13 @@ html[data-admin-theme="dark"] .custom-premium-checkbox:checked {
 .qr-outer-container {
     background-color: rgba(0, 0, 0, 0.02);
     border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px !important;
     transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 .qr-code-container {
     background-color: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px !important;
     transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 .qr-code-img {
@@ -411,6 +428,23 @@ html[data-admin-theme="dark"] .qr-code-container {
 html[data-admin-theme="dark"] .qr-code-img {
     filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
     mix-blend-mode: screen;
+}
+
+/* Curved Form Inputs & Input Groups */
+.form-control, .form-select {
+    border-radius: 10px !important;
+}
+.input-group > .input-group-text {
+    border-radius: 10px !important;
+}
+.input-group > .input-group-text:first-child {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.input-group > .form-control:not(:first-child), 
+.input-group > .form-select:not(:first-child) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 /* Scoped custom premium styles for mobile preview & priority manager */
@@ -859,6 +893,19 @@ html[data-admin-theme="dark"] .input-group .form-control {
 .floating-save-bar .btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    color: #ffffff !important;
+}
+
+.floating-save-bar .btn-danger {
+    border: 1.5px solid transparent !important;
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+}
+.floating-save-bar .btn-danger:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3) !important;
     color: #ffffff !important;
 }
 

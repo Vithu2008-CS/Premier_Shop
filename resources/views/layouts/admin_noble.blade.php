@@ -100,6 +100,64 @@
         html[data-admin-theme="dark"] .form-control[type="file"]::file-selector-button:hover {
             background: rgba(255, 255, 255, 0.12) !important;
         }
+
+        /* Mail Service list date alignment */
+        .inbox-wrapper .email-content .email-list .email-list-item .email-list-detail {
+            align-items: center !important;
+        }
+        .inbox-wrapper .email-content .email-list .email-list-item .email-list-detail .date {
+            margin-top: 2px !important; /* Place the text a little bit down and align center */
+            align-self: center !important;
+        }
+
+        /* Global Panel & Card Curved Redesign */
+        .card {
+            border-radius: 18px !important;
+            border: none !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+            overflow: hidden;
+        }
+        html[data-admin-theme="dark"] .card {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Global Navigation Tab Curved Redesign */
+        .nav-tabs .nav-link {
+            border-radius: 8px !important;
+        }
+
+        /* Global Pagination Links Curved Redesign */
+        .pagination .page-item .page-link {
+            border-radius: 20px !important;
+            margin: 0 2px !important;
+        }
+
+        /* Global Form Controls & Curved Input Groups */
+        .form-control, .form-select {
+            border-radius: 10px !important;
+        }
+        
+        .input-group > .form-control,
+        .input-group > .form-select,
+        .input-group > .input-group-text,
+        .input-group > .input-group-append > .btn,
+        .input-group > .input-group-prepend > .btn {
+            border-radius: 10px !important;
+        }
+        
+        .input-group > :not(:last-child):not(.dropdown-toggle),
+        .input-group > .input-group-append:not(:last-child) > .btn,
+        .input-group > .input-group-prepend > .btn {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+        
+        .input-group > :not(:first-child),
+        .input-group > .input-group-append > .btn,
+        .input-group > .input-group-prepend:not(:first-child) > .btn {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
     </style>
 
     @stack('styles')
