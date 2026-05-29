@@ -103,18 +103,9 @@
                                 </div>
                             </div>
                             <div class="row align-items-center mb-3">
-                                <div class="col-md-6 mb-2">
-                                    <div class="form-check mb-0 p-2.5 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px;">
-                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input ms-0 mt-0" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
-                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted">
-                                            Age Restricted (16+)
-                                        </label>
-                                    </div>
-                                </div>
-                                
                                 {{-- QR Code display (Only for Edit View) --}}
                                 @if(isset($product) && $product->qr_code)
-                                <div class="col-md-6">
+                                <div class="col-12">
                                     <div class="qr-outer-container p-2 rounded-3 border d-flex align-items-center gap-3">
                                         <div class="qr-code-container p-1 rounded flex-shrink-0" style="width: 50px; height: 50px;">
                                             <img src="{{ $product->qr_code }}" alt="QR Code" class="qr-code-img w-100 h-100" style="object-fit: contain;">
@@ -135,11 +126,10 @@
                                 @endif
                             </div>
                         </div>
-
                         {{-- Tab 2: Pricing & Stock --}}
                         <div class="tab-pane fade {{ $activeTab === 'pricing' ? 'show active' : '' }}" id="pricing-pane" role="tabpanel" tabindex="0">
                             <div class="row">
-                                <div class="col-md-3 mb-3">
+                                <div class="col-6 col-md-3 mb-3">
                                     <label class="form-label fw-600">Retail Price (£) <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-currency-pound text-success"></i></span>
@@ -147,14 +137,7 @@
                                         @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label fw-600">Wholesale Price (£) <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Optional cost value or discounted wholesale unit price"></i></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-currency-pound" style="color: #0d9488 !important;"></i></span>
-                                        <input type="number" name="wholesale_price" class="form-control border-start-0" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-6 col-md-3 mb-3">
                                     <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-archive-fill text-warning"></i></span>
@@ -163,12 +146,49 @@
                                     </div>
                                     <div id="stock-val-badge" class="mt-1" style="min-height: 20px;"></div>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-6 col-md-3 mb-3">
+                                    <label class="form-label fw-600">Weight Type</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="weight_matters" id="weight_matters" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('weight_matters', $product->weight > 0) ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="weight_matters" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
+                                            Weight Matters
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3 mb-3" id="weight-input-container" style="display: none;">
                                     <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span> <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Used to calculate shipping rates at checkout"></i></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-speedometer2" style="color: #ea580c !important;"></i></span>
-                                        <input type="number" name="weight" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight) }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
+                                        <input type="number" name="weight" id="weight_input" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight > 0 ? $product->weight : '') }}" step="0.01" min="0.01" placeholder="e.g. 0.50">
                                         @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 border-top pt-3 align-items-end">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-600">Retail Offer Options</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="retail_offer" id="retail_offer" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('retail_offer', $product->retail_offer) ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="retail_offer" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
+                                            Enable Retail Offer
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3" id="retail-offer-percentage-container" style="display: none;">
+                                    <label class="form-label fw-600">Offer Percentage (%) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
+                                        <input type="number" name="retail_offer_percentage" id="retail_offer_percentage" class="form-control border-start-0 @error('retail_offer_percentage') is-invalid @enderror" value="{{ old('retail_offer_percentage', $product->retail_offer_percentage) }}" step="0.01" min="0" max="100" placeholder="e.g. 10">
+                                        @error('retail_offer_percentage') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-600">Restrictions</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
+                                            Age Restricted (16+)
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +197,7 @@
                         {{-- Tab 3: Bulk Offers --}}
                         <div class="tab-pane fade {{ $activeTab === 'offers' ? 'show active' : '' }}" id="offers-pane" role="tabpanel" tabindex="0">
                             <div class="row">
-                                <div class="col-md-5 mb-3">
+                                <div class="col-6 col-md-5 mb-3">
                                     <label class="form-label fw-600">Min Quantity for Offer</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-calculator" style="color: #db2777 !important;"></i></span>
@@ -185,7 +205,7 @@
                                     </div>
                                     <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
                                 </div>
-                                <div class="col-md-4 mb-3">
+                                <div class="col-6 col-md-4 mb-3">
                                     <label class="form-label fw-600">Discount Percentage (%)</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
@@ -193,7 +213,7 @@
                                     </div>
                                     <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
                                 </div>
-                                <div class="col-md-3 mb-3">
+                                <div class="col-12 col-md-3 mb-3">
                                     <label class="form-label fw-600">Offer Status</label>
                                     <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
                                         <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
@@ -844,6 +864,9 @@ html[data-admin-theme="dark"] .input-group .form-control {
 
 .floating-save-bar .floating-bar-title {
     color: #0f172a !important;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .floating-save-bar .text-muted {
     color: #64748b !important;
@@ -932,6 +955,26 @@ html[data-admin-theme="dark"] .form-check-label {
     }
     .floating-save-bar .d-flex {
         justify-content: center;
+    }
+    /* Nav tabs: horizontal scroll on mobile */
+    #product-workspace-tabs {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    #product-workspace-tabs::-webkit-scrollbar { display: none; }
+    #product-workspace-tabs .nav-link {
+        padding: 6px 12px !important;
+        font-size: 0.78rem !important;
+        white-space: nowrap;
+    }
+    /* Floating bar title truncation */
+    .floating-bar-title {
+        max-width: 140px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 }
 </style>
@@ -1194,13 +1237,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function syncFloatingTitle() {
         floatTitle.innerText = inputName.value.trim() || 'Product Name';
     }
-
     // Live Calculations
-    const inputWholesale = document.getElementsByName('wholesale_price')[0];
     const inputDiscount = document.getElementsByName('offer_discount_percent')[0];
     const inputMinQty = document.getElementsByName('offer_min_qty')[0];
     const inputOfferActive = document.getElementsByName('offer_active')[0];
-
     const stockValBadge = document.getElementById('stock-val-badge');
     const offerCalcBadge = document.getElementById('offer-calc-badge');
 
@@ -1256,6 +1296,47 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputOfferActive) {
         inputOfferActive.addEventListener('change', updateLiveCalculations);
     }
+    // Weight Matters Toggle logic
+    const weightMattersCheckbox = document.getElementById('weight_matters');
+    const weightContainer = document.getElementById('weight-input-container');
+    const weightInput = document.getElementById('weight_input');
+
+    function toggleWeightInput() {
+        if (weightMattersCheckbox.checked) {
+            weightContainer.style.display = 'block';
+            weightInput.setAttribute('required', 'required');
+        } else {
+            weightContainer.style.display = 'none';
+            weightInput.removeAttribute('required');
+        }
+    }
+
+    if (weightMattersCheckbox && weightContainer && weightInput) {
+        weightMattersCheckbox.addEventListener('change', toggleWeightInput);
+        // Initial execution
+        toggleWeightInput();
+    }
+
+    // Retail Offer Toggle logic
+    const retailOfferCheckbox = document.getElementById('retail_offer');
+    const retailOfferPercentageContainer = document.getElementById('retail-offer-percentage-container');
+    const retailOfferPercentageInput = document.getElementById('retail_offer_percentage');
+
+    function toggleRetailOfferInput() {
+        if (retailOfferCheckbox.checked) {
+            retailOfferPercentageContainer.style.display = 'block';
+            retailOfferPercentageInput.setAttribute('required', 'required');
+        } else {
+            retailOfferPercentageContainer.style.display = 'none';
+            retailOfferPercentageInput.removeAttribute('required');
+        }
+    }
+
+    if (retailOfferCheckbox && retailOfferPercentageContainer && retailOfferPercentageInput) {
+        retailOfferCheckbox.addEventListener('change', toggleRetailOfferInput);
+        // Initial execution
+        toggleRetailOfferInput();
+    }
 
     // Collapse preview on mobile viewports dynamically
     const previewCollapseEl = document.getElementById('live-preview-collapse');
@@ -1263,7 +1344,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const bsCollapse = new bootstrap.Collapse(previewCollapseEl, { toggle: false });
         bsCollapse.hide();
     }
-
     // Initial render
     updateImagesState();
     syncFloatingTitle();
