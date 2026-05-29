@@ -11,15 +11,25 @@
 @section('title', 'Edit Product')
 
 @section('content')
-<nav class="page-breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-    <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($product->name, 30) }}</li>
-  </ol>
-</nav>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <nav class="page-breadcrumb mb-0">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+      <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($product->name, 30) }}</li>
+    </ol>
+  </nav>
+  <div class="d-flex gap-2">
+    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary rounded-pill px-4 font-weight-bold">
+      Cancel
+    </a>
+    <button type="submit" form="edit-product-form" class="btn btn-primary rounded-pill px-4 font-weight-bold shadow-sm">
+      <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+    </button>
+  </div>
+</div>
 
-<form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+<form id="edit-product-form" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
     @csrf @method('PUT')
     
     <input type="hidden" name="images" id="product_images_json" value='@json($product->images ?? [])'>
