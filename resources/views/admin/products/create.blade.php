@@ -117,10 +117,15 @@
             {{-- Premium Media & Image Priority Manager Card --}}
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h6 class="card-title fw-bold text-primary mb-0 d-flex align-items-center">
-                            <i data-feather="image" class="icon-md mr-2 text-primary"></i> Product Media & Priority Manager
-                        </h6>
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <div>
+                            <h6 class="card-title fw-bold text-primary mb-1 d-flex align-items-center">
+                                <i data-feather="image" class="icon-md mr-2 text-primary"></i> Product Media & Priority Manager
+                            </h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.78rem; line-height: 1.4;">
+                                Click the star icon (<span class="text-warning">★</span>) to set an image as the **Primary Storefront Image** (Priority #1, shown in all product list and card views). Use the arrow buttons to adjust the storefront image display order sequence.
+                            </p>
+                        </div>
                         <span class="badge bg-soft-primary px-3 py-2 rounded-pill font-weight-bold" id="image-count-badge">0 Images</span>
                     </div>
 
@@ -423,7 +428,7 @@
     position: relative;
     transition: all 0.2s ease;
 }
-.dark-theme .media-sort-item {
+html[data-admin-theme="dark"] .media-sort-item {
     background: rgba(255,255,255,0.02);
     border-color: rgba(255,255,255,0.06);
 }
@@ -481,7 +486,7 @@
     transition: all 0.2s ease;
     padding: 0;
 }
-.dark-theme .media-btn-circle {
+html[data-admin-theme="dark"] .media-btn-circle {
     background: rgba(255,255,255,0.04);
     border-color: rgba(255,255,255,0.08);
     color: #cbd5e1;
@@ -491,10 +496,35 @@
     color: #fff;
     border-color: #6c5ce7;
 }
-.media-btn-circle.btn-star-active {
-    background: #eab308;
-    color: #fff;
-    border-color: #eab308;
+.media-btn-circle.btn-star-active,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-active,
+button.media-btn-circle.btn-star-active,
+html[data-admin-theme="dark"] button.media-btn-circle.btn-star-active {
+    background: rgba(234, 179, 8, 0.15) !important;
+    border-color: rgba(234, 179, 8, 0.6) !important;
+    color: #f59e0b !important;
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.3) !important;
+}
+.media-btn-circle.btn-star-active i,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-active i,
+button.media-btn-circle.btn-star-active i,
+html[data-admin-theme="dark"] button.media-btn-circle.btn-star-active i {
+    color: #f59e0b !important;
+}
+.media-btn-circle.btn-star-active:hover,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-active:hover {
+    background: rgba(234, 179, 8, 0.25) !important;
+    border-color: #f59e0b !important;
+}
+.media-btn-circle.btn-star-inactive:hover,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-inactive:hover {
+    background: rgba(234, 179, 8, 0.12) !important;
+    border-color: rgba(234, 179, 8, 0.5) !important;
+    color: #f59e0b !important;
+}
+.media-btn-circle.btn-star-inactive:hover i,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-inactive:hover i {
+    color: #f59e0b !important;
 }
 .media-btn-circle.btn-delete:hover {
     background: #ef4444;
@@ -654,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </span>
                     </div>
                     <div class="media-sort-actions">
-                        <button type="button" class="media-btn-circle ${isMain ? 'btn-star-active' : ''}" title="${isMain ? 'Main Image' : 'Set as Main'}" onclick="setImageAsMain(${i})">
+                        <button type="button" class="media-btn-circle ${isMain ? 'btn-star-active' : 'btn-star-inactive'}" title="${isMain ? 'Primary Storefront Image (Priority #1) — Shown in all list and card views' : 'Set as Primary Storefront Image (Priority #1)'}" onclick="setImageAsMain(${i})">
                             <i class="bi bi-star-fill" style="font-size: 0.75rem;"></i>
                         </button>
                         <div class="d-flex gap-1">
