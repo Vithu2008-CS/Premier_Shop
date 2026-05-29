@@ -178,10 +178,11 @@
                                     </div>
                                     <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
                                 </div>
-                                <div class="col-md-3 mb-3 d-flex align-items-end">
-                                    <div class="form-check mb-2 p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px;">
-                                        <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input ms-0 mt-0" value="1" {{ old('offer_active') ? 'checked' : '' }}>
-                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Offer Status</label>
+                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('offer_active') ? 'checked' : '' }}>
+                                        <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
                                             Activate Offer
                                         </label>
                                     </div>
@@ -299,6 +300,49 @@
 </form>
 
 <style>
+/* Custom Premium Checkbox Styling */
+.custom-premium-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 6px !important;
+    background-color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+html[data-admin-theme="dark"] .custom-premium-checkbox {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background-color: #0c1427 !important;
+}
+.custom-premium-checkbox:checked {
+    background-color: #6c5ce7 !important;
+    border-color: #6c5ce7 !important;
+}
+html[data-admin-theme="dark"] .custom-premium-checkbox:checked {
+    background-color: #a78bfa !important;
+    border-color: #a78bfa !important;
+}
+.custom-premium-checkbox:checked::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 9px;
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    position: absolute;
+    top: 1.5px;
+    left: 5px;
+}
+
 /* Scoped custom premium styles for mobile preview & priority manager */
 .fw-600 { font-weight: 600; }
 .bg-soft-primary { background: rgba(108,92,231,0.1); color: #6c5ce7; }
