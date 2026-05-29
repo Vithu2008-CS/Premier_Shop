@@ -115,9 +115,9 @@
                                 {{-- QR Code display (Only for Edit View) --}}
                                 @if(isset($product) && $product->qr_code)
                                 <div class="col-md-6">
-                                    <div class="bg-light p-2 rounded-3 border d-flex align-items-center gap-3" style="background: rgba(0,0,0,0.01);">
-                                        <div class="bg-white p-1 rounded border flex-shrink-0" style="width: 50px; height: 50px;">
-                                            <img src="{{ $product->qr_code }}" alt="QR Code" class="w-100 h-100" style="object-fit: contain; mix-blend-mode: multiply;">
+                                    <div class="qr-outer-container p-2 rounded-3 border d-flex align-items-center gap-3">
+                                        <div class="qr-code-container p-1 rounded flex-shrink-0" style="width: 50px; height: 50px;">
+                                            <img src="{{ $product->qr_code }}" alt="QR Code" class="qr-code-img w-100 h-100" style="object-fit: contain;">
                                         </div>
                                         <div class="d-flex flex-column gap-1">
                                             <span class="small fw-bold d-block text-muted" style="font-size: 0.7rem; line-height:1.1;">Product QR Code</span>
@@ -326,6 +326,36 @@
 </form>
 
 <style>
+/* Dynamic QR Code Theme Adaptation */
+.qr-outer-container {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.qr-code-container {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.qr-code-img {
+    mix-blend-mode: multiply;
+    transition: filter 0.25s ease, mix-blend-mode 0.25s ease;
+}
+
+/* Dark Mode Styles for QR Code and Panel */
+html[data-admin-theme="dark"] .qr-outer-container {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html[data-admin-theme="dark"] .qr-code-container {
+    background-color: #0c1427 !important; /* Matches Noble UI admin dark background */
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html[data-admin-theme="dark"] .qr-code-img {
+    filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
+    mix-blend-mode: screen;
+}
+
 /* Scoped custom premium styles for mobile preview & priority manager */
 .fw-600 { font-weight: 600; }
 .bg-soft-primary { background: rgba(108,92,231,0.1); color: #6c5ce7; }
