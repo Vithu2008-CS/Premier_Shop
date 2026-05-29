@@ -100,6 +100,40 @@
                             <hr class="my-2 opacity-10">
                             <p class="mb-0 small text-body"><i class="bi bi-credit-card-2-front-fill me-1 text-primary"></i> <strong>Payment:</strong> {{ $order->payment_method ?? 'Debit/Credit Card' }}</p>
                         </div>
+                        
+                        @if($order->driver && $order->status !== 'shipped')
+                        <div class="mt-4">
+                            <h6 class="fw-bold mb-3 text-uppercase small letter-spacing-1">
+                                <i class="bi bi-person-badge-fill text-primary me-2"></i>
+                                @if($order->status === 'delivered')
+                                    Delivered By
+                                @else
+                                    Assigned Driver
+                                @endif
+                            </h6>
+                            <div class="p-3 rounded-4 border d-flex align-items-center justify-content-between" style="background: var(--ps-surface-secondary); border-color: var(--ps-border) !important;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; border: 1px solid var(--ps-primary);">
+                                        <i class="bi bi-person-badge text-primary fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 small text-body">{{ $order->driver->name }}</h6>
+                                        <span class="text-success small d-flex align-items-center gap-1" style="font-size: 0.75rem;">
+                                            <span class="d-inline-block rounded-circle bg-success" style="width: 5px; height: 5px;"></span>
+                                            {{ $order->status === 'delivered' ? 'Completed' : 'On Duty' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                @if($order->driver->phone && $order->status !== 'delivered')
+                                <div>
+                                    <a href="tel:{{ $order->driver->phone }}" class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border: 1px solid var(--ps-border);">
+                                        <i class="bi bi-telephone-fill text-primary small"></i>
+                                    </a>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-7">
