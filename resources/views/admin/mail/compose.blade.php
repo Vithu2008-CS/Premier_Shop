@@ -92,15 +92,18 @@
                                 </div>
                                 <div class="email action-send">
                                     <div class="col-md-12">
-                                        <div class="form-group mb-0">
-                                            <button class="btn btn-primary btn-space" type="submit">
-                                                <i data-feather="send" class="icon-sm mr-1"></i> Send
+                                        <div class="form-group mb-0 d-flex flex-wrap">
+                                            <button class="btn btn-primary btn-space d-inline-flex align-items-center justify-content-center mr-2 mb-2" type="submit" style="height: 38px; border-radius: 20px; font-size: 0.875rem; padding: 0 18px;">
+                                                <i data-feather="send" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                                <span>Send</span>
                                             </button>
-                                            <button type="submit" name="save_draft" value="1" class="btn btn-info btn-space">
-                                                <i data-feather="save" class="icon-sm mr-1"></i> Save as Draft
+                                            <button type="submit" name="save_draft" value="1" class="btn btn-info btn-space d-inline-flex align-items-center justify-content-center mr-2 mb-2" style="height: 38px; border-radius: 20px; font-size: 0.875rem; padding: 0 18px;">
+                                                <i data-feather="save" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                                <span>Save as Draft</span>
                                             </button>
-                                            <a href="{{ route('admin.mail.inbox') }}" class="btn btn-secondary btn-space">
-                                                <i data-feather="x" class="icon-sm mr-1"></i> Cancel
+                                            <a href="{{ route('admin.mail.inbox') }}" class="btn btn-secondary btn-space d-inline-flex align-items-center justify-content-center mb-2" style="height: 38px; border-radius: 20px; font-size: 0.875rem; padding: 0 18px;">
+                                                <i data-feather="x" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                                <span>Cancel</span>
                                             </a>
                                         </div>
                                     </div>

@@ -21,9 +21,9 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h6 class="card-title mb-0">Category Management</h6>
-            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-icon-text">
-                <i class="btn-icon-prepend" data-feather="plus"></i>
-                Add Category
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center rounded-pill" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
+                <i data-feather="plus" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                <span>Add Category</span>
             </a>
         </div>
         
@@ -42,9 +42,9 @@
                 <tr class="category-row-btn align-middle" onclick="window.location='{{ route('admin.categories.edit', $category) }}'">
                   <td>
                     @if($category->image)
-                        <img src="{{ $category->image }}" class="wd-40 h-40 rounded" style="object-fit: cover;" alt="category">
+                        <img src="{{ $category->image }}" class="wd-40 ht-40 rounded" style="object-fit: cover;" alt="category">
                     @else
-                        <div class="wd-40 h-40 rounded bg-light-primary d-flex align-items-center justify-content-center">
+                        <div class="wd-40 ht-40 rounded bg-light-primary d-flex align-items-center justify-content-center">
                             <i data-feather="tag" class="text-primary icon-sm"></i>
                         </div>
                     @endif

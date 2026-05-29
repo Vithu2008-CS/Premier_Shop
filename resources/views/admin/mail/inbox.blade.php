@@ -29,13 +29,14 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <form action="{{ route('admin.mail.search') }}" method="GET" class="email-search">
-                                        <div class="input-group input-search">
-                                            <input class="form-control" type="text" name="q" placeholder="Search mail..."
-                                                   value="{{ request('q') }}">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-outline-secondary" type="submit"><i data-feather="search"></i></button>
-                                            </span>
+                                    <form action="{{ route('admin.mail.search') }}" method="GET" class="email-search d-flex justify-content-end">
+                                        <div class="input-group" style="width: 100%; max-width: 280px;">
+                                            <input class="form-control font-weight-medium" type="text" name="q" placeholder="Search mail..." value="{{ request('q') }}" style="height: 38px; border-radius: 20px 0 0 20px; font-size: 0.875rem;">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="submit" style="height: 38px; border-radius: 0 20px 20px 0; padding: 0 16px; display: flex; align-items: center; justify-content: center;">
+                                                    <i data-feather="search" class="icon-sm"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
@@ -66,8 +67,8 @@
                                     <span class="email-pagination-indicator">0 messages</span>
                                 @endif
                                 <div class="btn-group email-pagination-nav">
-                                    <a href="{{ $messages->previousPageUrl() }}" class="btn btn-outline-secondary btn-icon {{ $messages->onFirstPage() ? 'disabled' : '' }}"><i data-feather="chevron-left"></i></a>
-                                    <a href="{{ $messages->nextPageUrl() }}" class="btn btn-outline-secondary btn-icon {{ !$messages->hasMorePages() ? 'disabled' : '' }}"><i data-feather="chevron-right"></i></a>
+                                    <a href="{{ $messages->previousPageUrl() }}" class="btn btn-outline-secondary btn-icon {{ $messages->onFirstPage() ? 'disabled' : '' }}" style="border-radius: 20px 0 0 20px; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;"><i data-feather="chevron-left" style="width: 16px; height: 16px;"></i></a>
+                                    <a href="{{ $messages->nextPageUrl() }}" class="btn btn-outline-secondary btn-icon {{ !$messages->hasMorePages() ? 'disabled' : '' }}" style="border-radius: 0 20px 20px 0; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;"><i data-feather="chevron-right" style="width: 16px; height: 16px;"></i></a>
                                 </div>
                             </div>
                         </div>

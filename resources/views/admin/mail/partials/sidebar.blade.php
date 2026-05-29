@@ -18,7 +18,10 @@
             <p class="description">{{ auth()->user()->email }}</p>
         </div>
         <div class="aside-compose">
-            <a class="btn btn-primary btn-block" href="{{ route('admin.mail.compose') }}">Compose Email</a>
+            <a class="btn btn-primary btn-block d-inline-flex align-items-center justify-content-center" href="{{ route('admin.mail.compose') }}" style="height: 38px; border-radius: 20px; font-weight: 600; font-size: 0.875rem;">
+                <i data-feather="edit" style="width: 14px; height: 14px; margin-right: 6px;"></i>
+                <span>Compose Email</span>
+            </a>
         </div>
         <div class="aside-nav collapse">
             <ul class="nav">
@@ -49,3 +52,27 @@
         </div>
     </div>
 </div>
+
+<style>
+.email-aside .aside-nav .nav li a {
+    border-radius: 20px !important;
+    padding: 10px 18px !important;
+    margin-bottom: 4px !important;
+    transition: all 0.2s ease !important;
+}
+.email-aside .aside-nav .nav li.active a {
+    background-color: rgba(108, 92, 231, 0.15) !important;
+    color: #6c5ce7 !important;
+    font-weight: 700 !important;
+}
+html[data-admin-theme="dark"] .email-aside .aside-nav .nav li.active a {
+    background-color: rgba(167, 139, 250, 0.2) !important;
+    color: #a78bfa !important;
+}
+.email-aside .aside-nav .nav li a:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+html[data-admin-theme="dark"] .email-aside .aside-nav .nav li a:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+</style>
