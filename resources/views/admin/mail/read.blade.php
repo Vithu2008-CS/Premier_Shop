@@ -110,11 +110,13 @@
 
                         <div class="email-reply mt-4">
                             <a href="{{ route('admin.mail.compose', ['to' => $message->email, 'subject' => 'Re: ' . $message->subject]) }}"
-                               class="btn btn-primary btn-sm">
-                                <i data-feather="corner-up-left" class="icon-sm mr-1"></i> Reply
+                               class="btn btn-primary d-inline-flex align-items-center justify-content-center" style="height: 38px; border-radius: 20px; font-size: 0.875rem; padding: 0 18px;">
+                                <i data-feather="corner-up-left" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                <span>Reply</span>
                             </a>
-                            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary btn-sm ml-2">
-                                <i data-feather="arrow-left" class="icon-sm mr-1"></i> Back
+                            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center ml-2" style="height: 38px; border-radius: 20px; font-size: 0.875rem; padding: 0 18px;">
+                                <i data-feather="arrow-left" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                <span>Back</span>
                             </a>
                         </div>
                     </div>
