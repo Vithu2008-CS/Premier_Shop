@@ -61,19 +61,19 @@
 
 {{-- Modern Floating Action Bar --}}
 <div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
-    <div class="d-flex align-items-center gap-3 text-white">
+    <div class="d-flex align-items-center gap-2" style="font-family: 'Outfit', sans-serif;">
         <span class="live-indicator me-1"></span>
-        <div style="font-family: 'Outfit', sans-serif;">
-            <small class="text-muted text-uppercase d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Currently Creating</small>
-            <span class="fw-bold small text-white" style="font-size: 0.85rem;" id="floating-category-title">Category Name</span>
+        <div class="d-flex align-items-baseline gap-2">
+            <span class="text-muted text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px; font-weight: 600; white-space: nowrap; line-height: 1;">Currently Creating:</span>
+            <span class="fw-bold text-nowrap floating-bar-title" style="font-size: 0.85rem; line-height: 1;" id="floating-category-title">Category Name</span>
         </div>
     </div>
-    <div class="d-flex gap-2">
-        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light rounded-pill px-4 btn-sm font-weight-bold" style="border-color: rgba(255,255,255,0.25); color: #fff;">
+    <div class="button-group">
+        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light">
             Cancel
         </a>
-        <button type="submit" form="create-category-form" class="btn btn-primary rounded-pill px-4 btn-sm font-weight-bold shadow-sm" style="background: linear-gradient(135deg, #6c5ce7, #a78bfa); border: none;">
-            <i class="bi bi-plus-circle-fill me-1"></i> Create Category
+        <button type="submit" form="create-category-form" class="btn btn-primary">
+            <i class="bi bi-plus-circle-fill me-1"></i> Save
         </button>
     </div>
 </div>
@@ -93,24 +93,98 @@
     50% { opacity: 1; transform: scale(1.15); }
 }
 
+.floating-save-bar .button-group {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Perfect space between buttons */
+}
+
+.floating-save-bar .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px !important;
+    min-width: 110px !important;
+    padding: 0 24px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    border-radius: 30px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.floating-save-bar .btn-outline-light {
+    border: 1.5px solid rgba(0, 0, 0, 0.15) !important;
+    background: transparent !important;
+    color: #475569 !important;
+}
+.floating-save-bar .btn-outline-light:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border-color: rgba(0, 0, 0, 0.25) !important;
+    color: #1e293b !important;
+}
+
+.floating-save-bar .btn-primary {
+    border: 1.5px solid transparent !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #6c5ce7, #a78bfa)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+}
+.floating-save-bar .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    color: #ffffff !important;
+}
+
+.floating-save-bar .floating-bar-title {
+    color: #0f172a !important;
+}
+.floating-save-bar .text-muted {
+    color: #64748b !important;
+}
+
 .floating-save-bar {
     position: fixed;
-    bottom: 24px;
-    left: 50%;
+    bottom: 72px;
+    left: calc(50% + 120px);
     transform: translateX(-50%);
     z-index: 1000;
-    width: calc(100% - 32px);
-    max-width: 780px;
-    background: rgba(15, 23, 42, 0.8) !important;
+    width: calc(100% - 32px - 240px);
+    max-width: 920px;
+    background: rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 html[data-admin-theme="dark"] .floating-save-bar {
-    background: rgba(10, 15, 28, 0.85) !important;
-    border-color: rgba(255, 255, 255, 0.06) !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title {
+    color: #ffffff !important;
+}
+html[data-admin-theme="dark"] .floating-save-bar .text-muted {
+    color: #94a3b8 !important;
+}
+html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light {
+    border: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    background: transparent !important;
+    color: #ffffff !important;
+}
+html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+}
+
+@media (max-width: 991px) {
+    .floating-save-bar {
+        left: 50% !important;
+        width: calc(100% - 32px) !important;
+    }
 }
 
 @media (max-width: 575px) {
