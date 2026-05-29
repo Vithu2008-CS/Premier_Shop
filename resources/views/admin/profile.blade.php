@@ -38,10 +38,25 @@
 
                 {{-- Name & Role --}}
                 <h4 class="fw-bold mt-3 mb-1 theme-heading" style="font-family: 'Outfit', sans-serif;">{{ $user->name }}</h4>
-                <div class="mb-3">
-                    <span class="badge bg-soft-primary px-3 py-1.5 rounded-pill text-uppercase font-weight-bold" style="letter-spacing: 1px; font-size: 0.72rem;">
-                        <i class="bi bi-shield-check me-1 text-primary"></i>{{ $user->role->display_name ?? 'Staff Administrator' }}
-                    </span>
+                <div class="mb-3 d-flex flex-column align-items-center gap-2">
+                    <div>
+                        <span class="badge bg-soft-primary px-3 py-1.5 rounded-pill text-uppercase font-weight-bold" style="letter-spacing: 1px; font-size: 0.72rem;">
+                            <i class="bi bi-shield-check me-1 text-primary"></i>{{ $user->role->display_name ?? 'Staff Administrator' }}
+                        </span>
+                    </div>
+                    @if($user->isAdmin())
+                        <div>
+                            <span class="badge bg-soft-success px-2.5 py-1 rounded-pill small text-uppercase font-weight-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                                <i class="bi bi-check-circle-fill me-1 text-success"></i>Superuser / Full Access
+                            </span>
+                        </div>
+                    @else
+                        <div>
+                            <span class="badge bg-soft-info px-2.5 py-1 rounded-pill small text-uppercase font-weight-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                                <i class="bi bi-key-fill me-1 text-info"></i>{{ $user->role ? $user->role->permissions()->count() : 0 }} Permissions Active
+                            </span>
+                        </div>
+                    @endif
                 </div>
 
                 <hr class="theme-hr" style="margin: 20px 0;">
@@ -75,6 +90,33 @@
                             <span class="font-weight-medium">City</span>
                         </div>
                         <div class="theme-value">{{ $user->city ?? 'Not set' }}</div>
+                    </div>
+                </div>
+
+                <hr class="theme-hr" style="margin: 20px 0;">
+
+                {{-- Live Store Metrics --}}
+                <div class="text-left px-2 mb-2">
+                    <h6 class="theme-heading fw-bold small text-uppercase mb-3" style="letter-spacing: 0.5px;">Live Store Metrics</h6>
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <div class="p-2.5 rounded-3 glass-card border border-light border-opacity-10 d-flex flex-column h-100" style="background: rgba(114, 124, 245, 0.06); transition: all 0.3s ease;">
+                                <span class="fw-bold text-primary fs-5" style="font-family: 'Outfit', sans-serif;">{{ \App\Models\Order::count() }}</span>
+                                <span class="text-muted small mt-auto" style="font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2px;">Store Orders</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2.5 rounded-3 glass-card border border-light border-opacity-10 d-flex flex-column h-100" style="background: rgba(0, 206, 201, 0.06); transition: all 0.3s ease;">
+                                <span class="fw-bold text-info fs-5" style="font-family: 'Outfit', sans-serif;">{{ \App\Models\Product::count() }}</span>
+                                <span class="text-muted small mt-auto" style="font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2px;">Products</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2.5 rounded-3 glass-card border border-light border-opacity-10 d-flex flex-column h-100" style="background: rgba(220, 53, 69, 0.06); transition: all 0.3s ease;">
+                                <span class="fw-bold text-danger fs-5" style="font-family: 'Outfit', sans-serif;">{{ \App\Models\Review::where('is_approved', false)->count() }}</span>
+                                <span class="text-muted small mt-auto" style="font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2px;">Pending Rev.</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -144,38 +186,56 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="name" class="form-label font-weight-bold theme-label">Full Name</label>
-                                    <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
-                                    @error('name') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-person text-muted"></i></span>
+                                        <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name" />
+                                        @error('name') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="email" class="form-label font-weight-bold theme-label">Email Address</label>
-                                    <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required autocomplete="username" />
-                                    @error('email') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
+                                        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required autocomplete="username" />
+                                        @error('email') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="dob" class="form-label font-weight-bold theme-label">Date of Birth</label>
-                                    <input id="dob" name="dob" type="date" class="form-control @error('dob') is-invalid @enderror" value="{{ old('dob', $user->dob ? ($user->dob instanceof \Carbon\Carbon ? $user->dob->format('Y-m-d') : $user->dob) : '') }}" />
-                                    @error('dob') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-calendar-event text-muted"></i></span>
+                                        <input id="dob" name="dob" type="date" class="form-control @error('dob') is-invalid @enderror" value="{{ old('dob', $user->dob ? ($user->dob instanceof \Carbon\Carbon ? $user->dob->format('Y-m-d') : $user->dob) : '') }}" />
+                                        @error('dob') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label font-weight-bold theme-label">Phone Number</label>
-                                    <input id="phone" name="phone" type="text" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $user->phone) }}" autocomplete="tel" placeholder="E.g., +44 7700 900077" />
-                                    @error('phone') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-telephone text-muted"></i></span>
+                                        <input id="phone" name="phone" type="text" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $user->phone) }}" autocomplete="tel" placeholder="E.g., +44 7700 900077" />
+                                        @error('phone') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-12">
                                     <label for="address" class="form-label font-weight-bold theme-label">Street Address Line</label>
-                                    <input id="address" name="address" type="text" class="form-control @error('address') is-invalid @enderror" value="{{ old('address', $user->address) }}" autocomplete="street-address" placeholder="Full street address line" />
-                                    @error('address') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-geo-alt text-muted"></i></span>
+                                        <input id="address" name="address" type="text" class="form-control @error('address') is-invalid @enderror" value="{{ old('address', $user->address) }}" autocomplete="street-address" placeholder="Full street address line" />
+                                        @error('address') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="city" class="form-label font-weight-bold theme-label">City</label>
-                                    <input id="city" name="city" type="text" class="form-control @error('city') is-invalid @enderror" value="{{ old('city', $user->city) }}" autocomplete="address-level2" placeholder="E.g., London" />
-                                    @error('city') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
+                                        <input id="city" name="city" type="text" class="form-control @error('city') is-invalid @enderror" value="{{ old('city', $user->city) }}" autocomplete="address-level2" placeholder="E.g., London" />
+                                        @error('city') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
                             </div>
 
@@ -205,20 +265,29 @@
                             <div class="row g-3">
                                 <div class="col-md-12 mb-2">
                                     <label for="update_password_current_password" class="form-label font-weight-bold theme-label">Current Password</label>
-                                    <input id="update_password_current_password" name="current_password" type="password" class="form-control @error('current_password', 'updatePassword') is-invalid @enderror" autocomplete="current-password" placeholder="Enter active password" />
-                                    @error('current_password', 'updatePassword') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-shield-lock text-muted"></i></span>
+                                        <input id="update_password_current_password" name="current_password" type="password" class="form-control @error('current_password', 'updatePassword') is-invalid @enderror" autocomplete="current-password" placeholder="Enter active password" />
+                                        @error('current_password', 'updatePassword') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="update_password_password" class="form-label font-weight-bold theme-label">New Password</label>
-                                    <input id="update_password_password" name="password" type="password" class="form-control @error('password', 'updatePassword') is-invalid @enderror" autocomplete="new-password" placeholder="Min 12 characters" />
-                                    @error('password', 'updatePassword') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-key text-muted"></i></span>
+                                        <input id="update_password_password" name="password" type="password" class="form-control @error('password', 'updatePassword') is-invalid @enderror" autocomplete="new-password" placeholder="Min 12 characters" />
+                                        @error('password', 'updatePassword') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label for="update_password_password_confirmation" class="form-label font-weight-bold theme-label">Confirm New Password</label>
-                                    <input id="update_password_password_confirmation" name="password_confirmation" type="password" class="form-control @error('password_confirmation', 'updatePassword') is-invalid @enderror" autocomplete="new-password" placeholder="Repeat new password" />
-                                    @error('password_confirmation', 'updatePassword') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="bi bi-check2 text-muted"></i></span>
+                                        <input id="update_password_password_confirmation" name="password_confirmation" type="password" class="form-control @error('password_confirmation', 'updatePassword') is-invalid @enderror" autocomplete="new-password" placeholder="Repeat new password" />
+                                        @error('password_confirmation', 'updatePassword') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                                    </div>
                                 </div>
                             </div>
 
@@ -279,15 +348,18 @@
 
                     <div class="mb-2">
                         <label for="password_confirm" class="form-label small fw-bold theme-label">Password</label>
-                        <input
-                            id="password_confirm"
-                            name="password"
-                            type="password"
-                            class="form-control @error('password', 'userDeletion') is-invalid @enderror"
-                            placeholder="Enter your active password"
-                            required
-                        />
-                        @error('password', 'userDeletion') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-key text-muted"></i></span>
+                            <input
+                                id="password_confirm"
+                                name="password"
+                                type="password"
+                                class="form-control @error('password', 'userDeletion') is-invalid @enderror"
+                                placeholder="Enter your active password"
+                                required
+                            />
+                            @error('password', 'userDeletion') <div class="invalid-feedback font-weight-bold mt-1">{{ $message }}</div> @enderror
+                        </div>
                     </div>
                 </div>
 
