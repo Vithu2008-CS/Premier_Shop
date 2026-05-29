@@ -801,11 +801,11 @@ html[data-admin-theme="dark"] .input-group .form-control {
 }
 .floating-save-bar {
     position: fixed;
-    bottom: 24px;
-    left: 50%;
+    bottom: 72px;
+    left: calc(50% + 120px);
     transform: translateX(-50%);
     z-index: 1000;
-    width: calc(100% - 32px);
+    width: calc(100% - 32px - 240px);
     max-width: 780px;
     background: rgba(15, 23, 42, 0.8) !important;
     backdrop-filter: blur(12px) !important;
@@ -817,6 +817,13 @@ html[data-admin-theme="dark"] .input-group .form-control {
 html[data-admin-theme="dark"] .floating-save-bar {
     background: rgba(10, 15, 28, 0.85) !important;
     border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+@media (max-width: 991px) {
+    .floating-save-bar {
+        left: 50% !important;
+        width: calc(100% - 32px) !important;
+    }
 }
 .form-check {
     border-color: rgba(0,0,0,0.08) !important;

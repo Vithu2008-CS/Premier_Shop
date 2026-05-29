@@ -39,7 +39,7 @@
             </thead>
             <tbody>
               @forelse($categories as $category)
-                <tr>
+                <tr class="category-row-btn align-middle" onclick="window.location='{{ route('admin.categories.edit', $category) }}'">
                   <td>
                     @if($category->image)
                         <img src="{{ $category->image }}" class="wd-40 h-40 rounded" style="object-fit: cover;" alt="category">
@@ -50,15 +50,22 @@
                     @endif
                   </td>
                   <td>
-                    <span class="font-weight-bold d-block">{{ $category->name }}</span>
-                    @if($category->description)
-                        <small class="text-muted">{{ Str::limit($category->description, 60) }}</small>
-                    @endif
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="font-weight-bold d-block text-primary-hover mb-1" style="font-size: 0.95rem; transition: color 0.15s ease;">{{ $category->name }}</span>
+                            @if($category->description)
+                                <small class="text-muted d-block mt-0.5">{{ Str::limit($category->description, 80) }}</small>
+                            @endif
+                        </div>
+                        <span class="btn btn-xs btn-outline-primary rounded-pill opacity-0 hover-show-btn px-2.5 py-1" style="pointer-events: none; transition: all 0.2s ease; margin-left: 15px;">
+                            <i data-feather="edit-2" class="wd-10 h-10 mr-1" style="width: 11px; height: 11px;"></i> Edit
+                        </span>
+                    </div>
                   </td>
                   <td>
                     <span class="badge badge-light-info">{{ $category->products_count }} Products</span>
                   </td>
-                  <td class="text-right">
+                  <td class="text-right" onclick="event.stopPropagation();">
                     <div class="dropdown">
                         <button class="btn btn-link p-0" type="button" id="drop-{{ $category->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
@@ -96,4 +103,33 @@
     </div>
   </div>
 </div>
+
+<style>
+/* Custom Premium Sibling Row buttons styling */
+.category-row-btn {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.category-row-btn:hover {
+    background-color: rgba(108, 92, 231, 0.04) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+html[data-admin-theme="dark"] .category-row-btn:hover {
+    background-color: rgba(167, 139, 250, 0.05) !important;
+}
+.category-row-btn:hover .text-primary-hover {
+    color: #6c5ce7 !important;
+}
+html[data-admin-theme="dark"] .category-row-btn:hover .text-primary-hover {
+    color: #a78bfa !important;
+}
+.category-row-btn:hover .hover-show-btn {
+    opacity: 1 !important;
+}
+.hover-show-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+</style>
 @endsection
