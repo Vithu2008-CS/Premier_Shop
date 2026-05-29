@@ -205,6 +205,7 @@
                     </div>
                 </div>
             </div>
+        </div>
 
             {{-- New Premium Media & Image Priority Manager Card --}}
             <div class="card shadow-sm border-0 rounded-4">
@@ -231,7 +232,6 @@
                         <div class="progress mt-3 d-none" id="upload-progress-bar" style="height: 6px; border-radius: 10px;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
                         </div>
-                    </div>
 
                     {{-- Sorted Image List --}}
                     <div class="media-list-grid mb-4" id="media-list-manager">
@@ -240,7 +240,6 @@
                     </div>
                 </div>
             </div>
-        </div>
 
         {{-- Right Column: Mockup Preview, Classification & Actions --}}
         <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
