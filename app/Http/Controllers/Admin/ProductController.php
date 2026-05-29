@@ -67,7 +67,7 @@ class ProductController extends Controller
                 $images[] = '/storage/'.$path;
             }
         }
-        $validated['images'] = $images;
+        $validated['images'] = array_values(array_filter($images));
 
         $product = Product::create($validated);
 
@@ -124,7 +124,7 @@ class ProductController extends Controller
                 $images[] = '/storage/'.$path;
             }
         }
-        $validated['images'] = $images;
+        $validated['images'] = array_values(array_filter($images));
 
         $product->update($validated);
 

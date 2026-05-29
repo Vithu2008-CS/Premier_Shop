@@ -96,6 +96,24 @@ class Product extends Model
         return $this->reviews()->approved()->count();
     }
 
+    /**
+     * Always normalize the images array to sequential integer keys.
+     */
+    public function getImagesAttribute($value): array
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        $images = is_array($value) ? $value : json_decode($value, true);
+
+        if (! is_array($images)) {
+            return [];
+        }
+
+        return array_values(array_filter($images));
+    }
+
     /** Returns the first uploaded image path, or a placeholder fallback. */
     public function getFirstImageAttribute(): string
     {

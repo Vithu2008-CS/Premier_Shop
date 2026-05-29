@@ -12,15 +12,15 @@
 @section('title', 'Add Product')
 
 @section('content')
-<nav class="page-breadcrumb">
-  <ol class="breadcrumb">
+<nav class="page-breadcrumb mb-4">
+  <ol class="breadcrumb mb-0">
     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
     <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
     <li class="breadcrumb-item active" aria-current="page">Add New</li>
   </ol>
 </nav>
 
-<form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+<form id="create-product-form" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     
     <input type="hidden" name="images" id="product_images_json" value="[]">
@@ -28,76 +28,164 @@
     <div class="row">
         {{-- Left Column: Form Details & Media Priority Manager --}}
         <div class="col-lg-8 grid-margin stretch-card d-flex flex-column gap-4">
-            {{-- Product Details Card --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="info" class="icon-md mr-2 text-primary"></i> Product Details
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-9 mb-3">
-                            <label class="form-label fw-600">Product Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" id="product_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required placeholder="Enter product name">
-                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            @php
+                $activeTab = 'info';
+                if ($errors->hasAny(['price', 'wholesale_price', 'stock', 'weight'])) {
+                    $activeTab = 'pricing';
+                } elseif ($errors->hasAny(['offer_min_qty', 'offer_discount_percent'])) {
+                    $activeTab = 'offers';
+                }
+            @endphp
+
+            {{-- Product Workspace Card (Tabbed) --}}
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-transparent border-0 pb-0 pt-3" style="background: rgba(108,92,231,0.02) !important;">
+                    <ul class="nav nav-tabs card-header-tabs border-0 gap-2" id="product-workspace-tabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link {{ $activeTab === 'info' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="info-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#info-pane" data-bs-target="#info-pane" type="button" role="tab">
+                                <i class="bi bi-info-circle-fill text-primary"></i> Information
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $activeTab === 'pricing' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="pricing-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#pricing-pane" data-bs-target="#pricing-pane" type="button" role="tab">
+                                <i class="bi bi-currency-pound text-success"></i> Pricing & Stock
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link {{ $activeTab === 'offers' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="offers-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#offers-pane" data-bs-target="#offers-pane" type="button" role="tab">
+                                <i class="bi bi-percent text-danger"></i> Bulk Offers
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body pt-4">
+                    <div class="tab-content" id="product-workspace-tab-content">
+                        {{-- Tab 1: Information --}}
+                        <div class="tab-pane fade {{ $activeTab === 'info' ? 'show active' : '' }}" id="info-pane" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-600">Product Name <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-tag-fill text-primary"></i></span>
+                                        <input type="text" name="name" id="product_name" class="form-control border-start-0 @error('name') is-invalid @enderror" value="{{ old('name') }}" required placeholder="Enter product name">
+                                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-600">Description</label>
+                                <textarea name="description" id="product_description" class="form-control" rows="4" placeholder="Write a compelling product description...">{{ old('description') }}</textarea>
+                            </div>
+                            
+                            {{-- Classification & QR Code Notice (Moved inside Information Tab) --}}
+                            <div class="row mt-3 border-top pt-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-600">Category <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-grid-fill text-primary"></i></span>
+                                        <select name="category_id" id="product_category" class="form-control border-start-0 @error('category_id') is-invalid @enderror">
+                                            <option value="">Select Category</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('category_id') <span class="text-danger small mt-1 d-block">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-600">Product Type</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-tags-fill text-info"></i></span>
+                                        <select name="product_type" class="form-control border-start-0">
+                                            <option value="normal" {{ old('product_type') == 'normal' ? 'selected' : '' }}>Normal / Retail</option>
+                                            <option value="wholesale" {{ old('product_type') == 'wholesale' ? 'selected' : '' }}>Wholesale Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check mb-0 p-2.5 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px;">
+                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input ms-0 mt-0" value="1" {{ old('is_age_restricted') ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted">
+                                            Age Restricted (16+)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2 text-start">
+                                    <div class="bg-light p-2 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
+                                        <i class="bi bi-qr-code text-muted"></i>
+                                        <span class="small text-muted" style="font-size: 0.72rem;">QR Code will be auto-generated on save.</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Barcode</label>
-                            <input type="text" name="barcode" class="form-control" value="{{ old('barcode') }}" placeholder="Optional">
+
+                        {{-- Tab 2: Pricing & Stock --}}
+                        <div class="tab-pane fade {{ $activeTab === 'pricing' ? 'show active' : '' }}" id="pricing-pane" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Retail Price (£) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-currency-pound text-success"></i></span>
+                                        <input type="number" name="price" id="product_price" class="form-control border-start-0 @error('price') is-invalid @enderror" value="{{ old('price') }}" step="0.01" min="0" required placeholder="0.00">
+                                        @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Wholesale Price (£) <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Optional cost value or discounted wholesale unit price"></i></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-currency-pound" style="color: #0d9488 !important;"></i></span>
+                                        <input type="number" name="wholesale_price" class="form-control border-start-0" value="{{ old('wholesale_price') }}" step="0.01" min="0" placeholder="Optional">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-archive-fill text-warning"></i></span>
+                                        <input type="number" name="stock" id="product_stock" class="form-control border-start-0 @error('stock') is-invalid @enderror" value="{{ old('stock', 0) }}" min="0" required>
+                                        @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                    <div id="stock-val-badge" class="mt-1" style="min-height: 20px;"></div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span> <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Used to calculate shipping rates at checkout"></i></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-speedometer2" style="color: #ea580c !important;"></i></span>
+                                        <input type="number" name="weight" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight') }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
+                                        @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-600">Description</label>
-                        <textarea name="description" id="product_description" class="form-control" rows="6" placeholder="Write a compelling product description...">{{ old('description') }}</textarea>
-                    </div>
-                    
-                    <hr class="my-4 opacity-5">
-                    
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="dollar-sign" class="icon-md mr-2 text-primary"></i> Pricing & Inventory
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Retail Price (£) <span class="text-danger">*</span></label>
-                            <input type="number" name="price" id="product_price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" step="0.01" min="0" required placeholder="0.00">
-                            @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Wholesale Price (£)</label>
-                            <input type="number" name="wholesale_price" class="form-control" value="{{ old('wholesale_price') }}" step="0.01" min="0" placeholder="Optional">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
-                            <input type="number" name="stock" id="product_stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', 0) }}" min="0" required>
-                            @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span></label>
-                            <input type="number" name="weight" class="form-control @error('weight') is-invalid @enderror" value="{{ old('weight') }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
-                            @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-                    
-                    <hr class="my-4 opacity-5">
-                    
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="percent" class="icon-md mr-2 text-primary"></i> Bulk Offer Configuration
-                    </h6>
-                    <div class="row">
-                        <div class="col-md-5 mb-3">
-                            <label class="form-label fw-600">Min Quantity for Offer</label>
-                            <input type="number" name="offer_min_qty" class="form-control" value="{{ old('offer_min_qty') }}" min="1" placeholder="e.g. 12">
-                            <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-600">Discount Percentage (%)</label>
-                            <input type="number" name="offer_discount_percent" class="form-control" value="{{ old('offer_discount_percent') }}" min="0" max="100" step="0.01" placeholder="e.g. 10">
-                        </div>
-                        <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <div class="form-check mb-2">
-                                <label class="form-check-label font-weight-bold">
-                                    <input type="checkbox" name="offer_active" class="form-check-input" value="1" {{ old('offer_active') ? 'checked' : '' }}>
-                                    Activate Offer
-                                </label>
+
+                        {{-- Tab 3: Bulk Offers --}}
+                        <div class="tab-pane fade {{ $activeTab === 'offers' ? 'show active' : '' }}" id="offers-pane" role="tabpanel" tabindex="0">
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label class="form-label fw-600">Min Quantity for Offer</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calculator" style="color: #db2777 !important;"></i></span>
+                                        <input type="number" name="offer_min_qty" class="form-control border-start-0" value="{{ old('offer_min_qty') }}" min="1" placeholder="e.g. 12">
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-600">Discount Percentage (%)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
+                                        <input type="number" name="offer_discount_percent" class="form-control border-start-0" value="{{ old('offer_discount_percent') }}" min="0" max="100" step="0.01" placeholder="e.g. 10">
+                                    </div>
+                                    <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
+                                </div>
+                                <div class="col-md-3 mb-3 d-flex align-items-end">
+                                    <div class="form-check mb-2 p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px;">
+                                        <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input ms-0 mt-0" value="1" {{ old('offer_active') ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active">
+                                            Activate Offer
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,24 +195,23 @@
             {{-- Premium Media & Image Priority Manager Card --}}
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h6 class="card-title fw-bold text-primary mb-0 d-flex align-items-center">
-                            <i data-feather="image" class="icon-md mr-2 text-primary"></i> Product Media & Priority Manager
-                        </h6>
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <div>
+                            <h6 class="card-title fw-bold text-primary mb-1 d-flex align-items-center">
+                                <i data-feather="image" class="icon-md mr-2 text-primary"></i> Product Media & Priority Manager
+                            </h6>
+                            <p class="text-muted small mb-0" style="font-size: 0.78rem; line-height: 1.4;">
+                                Click the star icon (<span class="text-warning">★</span>) to set an image as the **Primary Storefront Image** (Priority #1).
+                            </p>
+                        </div>
                         <span class="badge bg-soft-primary px-3 py-2 rounded-pill font-weight-bold" id="image-count-badge">0 Images</span>
                     </div>
 
                     {{-- Upload Dropzone --}}
                     <div class="upload-dropzone mb-4" id="dropzone">
-                        <i data-feather="upload-cloud" class="text-primary mb-3" style="width: 44px; height: 44px;"></i>
-                        <h5 class="fw-bold mb-1">Drag & Drop Product Images</h5>
-                        <p class="text-muted small mb-3">Or click here to browse files. WebP conversion is automatic.</p>
+                        <i data-feather="upload-cloud" class="text-primary mb-2" style="width: 28px; height: 28px;"></i>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.85rem;">Drag & drop images here or <span class="text-primary cursor-pointer">browse</span></h6>
                         <input type="file" id="dropzone-input" class="d-none" multiple accept="image/*">
-                        <div class="d-flex justify-content-center">
-                            <button type="button" class="btn btn-outline-primary btn-sm px-4 rounded-pill fw-bold" onclick="document.getElementById('dropzone-input').click()">
-                                Select Files
-                            </button>
-                        </div>
                         {{-- Upload Progress --}}
                         <div class="progress mt-3 d-none" id="upload-progress-bar" style="height: 6px; border-radius: 10px;">
                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
@@ -135,29 +222,24 @@
                     <div class="media-list-grid mb-4" id="media-list-manager">
                         {{-- Rendered via Javascript --}}
                     </div>
-
-                    {{-- Quick Action Save Button --}}
-                    <div class="d-flex justify-content-end gap-2 border-top pt-3">
-                        <button type="submit" class="btn btn-primary px-4 rounded-pill font-weight-bold shadow-sm d-flex align-items-center">
-                            <i class="bi bi-plus-circle me-2"></i> Create Product & Media
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
 
         {{-- Right Column: Mockup Preview, Classification & Actions --}}
-        <div class="col-lg-4 grid-margin d-flex flex-column gap-4">
-            {{-- Sleek Live Mobile Page Preview Mockup --}}
+        <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
+            {{-- Collapsible Live Preview Card --}}
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-                <div class="card-body p-0">
-                    <div class="p-3 border-bottom d-flex align-items-center justify-content-between" style="background: rgba(108,92,231,0.02);">
-                        <span class="fw-bold small text-muted text-uppercase letter-spacing-1 d-flex align-items-center">
+                <div class="card-header p-0 border-bottom d-flex align-items-center justify-content-between" style="background: rgba(108,92,231,0.02); height: 48px;">
+                    <button class="btn btn-link w-100 h-100 text-start text-decoration-none p-3 d-flex align-items-center justify-content-between fw-bold text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#live-preview-collapse" aria-expanded="true">
+                        <span class="small text-uppercase letter-spacing-1 d-flex align-items-center" style="font-size: 0.72rem;">
                             <span class="live-indicator me-2"></span> Live Page Preview
                         </span>
-                        <span class="badge bg-secondary font-weight-600">Smart View</span>
-                    </div>
-                    <div class="p-4" style="background: #0b0f19;">
+                        <i class="bi bi-chevron-down fs-6 collapse-icon"></i>
+                    </button>
+                </div>
+                <div id="live-preview-collapse" class="collapse show">
+                    <div class="card-body p-4" style="background: #0b0f19;">
                         {{-- Premium Device Mockup --}}
                         <div class="device-container">
                             <div class="device-notch"></div>
@@ -193,49 +275,25 @@
                 </div>
             </div>
 
-            {{-- Classification Section --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="grid" class="icon-md mr-2 text-primary"></i> Classification
-                    </h6>
-                    <div class="mb-3">
-                        <label class="form-label fw-600">Category</label>
-                        <select name="category_id" id="product_category" class="form-control @error('category_id') is-invalid @enderror">
-                            <option value="">Select Category</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-600">Product Type</label>
-                        <select name="product_type" class="form-control">
-                            <option value="normal" {{ old('product_type') == 'normal' ? 'selected' : '' }}>Normal / Retail</option>
-                            <option value="wholesale" {{ old('product_type') == 'wholesale' ? 'selected' : '' }}>Wholesale Only</option>
-                        </select>
-                    </div>
-                    <div class="form-check mb-2">
-                        <label class="form-check-label font-weight-bold">
-                            <input type="checkbox" name="is_age_restricted" class="form-check-input" value="1" {{ old('is_age_restricted') ? 'checked' : '' }}>
-                            Age Restricted (16+)
-                        </label>
-                    </div>
-                </div>
+        </div>
+    </div>
+    
+    {{-- Modern Floating Action Bar --}}
+    <div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
+        <div class="d-flex align-items-center gap-3 text-white">
+            <span class="live-indicator me-1"></span>
+            <div style="font-family: 'Outfit', sans-serif;">
+                <small class="text-muted text-uppercase d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Currently Creating</small>
+                <span class="fw-bold small" style="font-size: 0.85rem;" id="floating-product-title">Product Name</span>
             </div>
-
-            {{-- Actions Card --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body d-flex flex-column gap-2">
-                    <button type="submit" class="btn btn-primary btn-block rounded-pill py-2.5 font-weight-bold" style="background: var(--ps-gradient); border: none;">
-                        <i data-feather="upload-cloud" class="icon-sm mr-2"></i> Save & Generate QR
-                    </button>
-                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-block rounded-pill py-2.5">
-                        Cancel
-                    </a>
-                </div>
-            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-light rounded-pill px-4 btn-sm font-weight-bold" style="border-color: rgba(255,255,255,0.25); color: #fff;">
+                Cancel
+            </a>
+            <button type="submit" form="create-product-form" class="btn btn-primary rounded-pill px-4 btn-sm font-weight-bold shadow-sm" style="background: var(--ps-gradient); border: none;">
+                <i class="bi bi-plus-circle-fill me-1"></i> Create Product
+            </button>
         </div>
     </div>
 </form>
@@ -257,9 +315,37 @@
     50% { opacity: 1; transform: scale(1.15); }
 }
 
+/* Premium Tab Navigation Styling */
+.nav-tabs {
+    border-bottom: none !important;
+}
+.nav-tabs .nav-link {
+    background: transparent !important;
+    color: #475569 !important;
+    border: none !important;
+    transition: all 0.25s ease !important;
+}
+html[data-admin-theme="dark"] .nav-tabs .nav-link {
+    color: #94a3b8 !important;
+}
+.nav-tabs .nav-link.active {
+    background: rgba(108, 92, 231, 0.1) !important;
+    color: #6c5ce7 !important;
+}
+html[data-admin-theme="dark"] .nav-tabs .nav-link.active {
+    background: rgba(167, 139, 250, 0.15) !important;
+    color: #a78bfa !important;
+}
+.nav-tabs .nav-link:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
 /* Device Mockup Display */
 .device-container {
-    max-width: 290px;
+    max-width: 325px;
     margin: 0 auto;
     border: 10px solid #1e293b;
     border-radius: 35px;
@@ -413,7 +499,7 @@
     position: relative;
     transition: all 0.2s ease;
 }
-.dark-theme .media-sort-item {
+html[data-admin-theme="dark"] .media-sort-item {
     background: rgba(255,255,255,0.02);
     border-color: rgba(255,255,255,0.06);
 }
@@ -471,7 +557,7 @@
     transition: all 0.2s ease;
     padding: 0;
 }
-.dark-theme .media-btn-circle {
+html[data-admin-theme="dark"] .media-btn-circle {
     background: rgba(255,255,255,0.04);
     border-color: rgba(255,255,255,0.08);
     color: #cbd5e1;
@@ -481,15 +567,128 @@
     color: #fff;
     border-color: #6c5ce7;
 }
-.media-btn-circle.btn-star-active {
-    background: #eab308;
-    color: #fff;
-    border-color: #eab308;
+.media-btn-circle.btn-star-active,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-active,
+button.media-btn-circle.btn-star-active,
+html[data-admin-theme="dark"] button.media-btn-circle.btn-star-active {
+    background: rgba(234, 179, 8, 0.15) !important;
+    border-color: rgba(234, 179, 8, 0.6) !important;
+    color: #f59e0b !important;
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.3) !important;
+}
+.media-btn-circle.btn-star-active i,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-active i,
+button.media-btn-circle.btn-star-active i,
+html[data-admin-theme="dark"] button.media-btn-circle.btn-star-active i {
+    color: #f59e0b !important;
+}
+.media-btn-circle.btn-star-active:hover,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-active:hover {
+    background: rgba(234, 179, 8, 0.25) !important;
+    border-color: #f59e0b !important;
+}
+.media-btn-circle.btn-star-inactive:hover,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-inactive:hover {
+    background: rgba(234, 179, 8, 0.12) !important;
+    border-color: rgba(234, 179, 8, 0.5) !important;
+    color: #f59e0b !important;
+}
+.media-btn-circle.btn-star-inactive:hover i,
+html[data-admin-theme="dark"] .media-btn-circle.btn-star-inactive:hover i {
+    color: #f59e0b !important;
 }
 .media-btn-circle.btn-delete:hover {
     background: #ef4444;
     color: #fff;
     border-color: #ef4444;
+}
+
+/* ─── Premium UX Upgrades ─── */
+.input-group-text {
+    border-top-left-radius: 12px !important;
+    border-bottom-left-radius: 12px !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+html[data-admin-theme="dark"] .input-group-text {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+}
+.input-group .form-control {
+    border-top-right-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+html[data-admin-theme="dark"] .input-group .form-control {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.input-group:focus-within .input-group-text {
+    border-color: #6c5ce7 !important;
+    background: rgba(108, 92, 231, 0.03) !important;
+}
+.floating-save-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: calc(100% - 32px);
+    max-width: 780px;
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-admin-theme="dark"] .floating-save-bar {
+    background: rgba(10, 15, 28, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.form-check {
+    border-color: rgba(0,0,0,0.08) !important;
+    background: rgba(0,0,0,0.02) !important;
+    transition: all 0.2s ease !important;
+}
+html[data-admin-theme="dark"] .form-check {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255,255,255,0.03) !important;
+}
+.form-check-label {
+    color: #475569 !important;
+    transition: all 0.2s ease !important;
+}
+html[data-admin-theme="dark"] .form-check-label {
+    color: #cbd5e1 !important;
+}
+.position-sticky-sidebar {
+    position: sticky !important;
+    top: 24px !important;
+    height: fit-content !important;
+    align-self: start !important;
+    z-index: 5 !important;
+}
+@media (max-width: 991px) {
+    .position-sticky-sidebar {
+        position: static !important;
+    }
+}
+@media (max-width: 575px) {
+    .floating-save-bar {
+        border-radius: 18px !important;
+        padding: 10px 16px !important;
+        bottom: 12px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch !important;
+        text-align: center;
+    }
+    .floating-save-bar .d-flex {
+        justify-content: center;
+    }
 }
 </style>
 
@@ -528,6 +727,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const dt = e.dataTransfer;
         const files = dt.files;
         handleFilesUpload(files);
+    });
+
+    dropzone.addEventListener('click', (e) => {
+        if (!e.target.closest('input')) {
+            fileInput.click();
+        }
     });
 
     fileInput.addEventListener('change', function() {
@@ -644,7 +849,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </span>
                     </div>
                     <div class="media-sort-actions">
-                        <button type="button" class="media-btn-circle ${isMain ? 'btn-star-active' : ''}" title="${isMain ? 'Main Image' : 'Set as Main'}" onclick="setImageAsMain(${i})">
+                        <button type="button" class="media-btn-circle ${isMain ? 'btn-star-active' : 'btn-star-inactive'}" title="${isMain ? 'Primary Storefront Image (Priority #1)' : 'Set as Primary Storefront Image'}" onclick="setImageAsMain(${i})">
                             <i class="bi bi-star-fill" style="font-size: 0.75rem;"></i>
                         </button>
                         <div class="d-flex gap-1">
@@ -746,15 +951,85 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Sync floating title
+    const floatTitle = document.getElementById('floating-product-title');
+    function syncFloatingTitle() {
+        floatTitle.innerText = inputName.value.trim() || 'Product Name';
+    }
+
+    // Live Calculations
+    const inputWholesale = document.getElementsByName('wholesale_price')[0];
+    const inputDiscount = document.getElementsByName('offer_discount_percent')[0];
+    const inputMinQty = document.getElementsByName('offer_min_qty')[0];
+    const inputOfferActive = document.getElementsByName('offer_active')[0];
+
+    const stockValBadge = document.getElementById('stock-val-badge');
+    const offerCalcBadge = document.getElementById('offer-calc-badge');
+
+    function updateLiveCalculations() {
+        // 1. Stock Valuation
+        const price = parseFloat(inputPrice.value || 0);
+        const stock = parseInt(inputStock.value || 0);
+        if (price > 0 && stock > 0) {
+            const valuation = price * stock;
+            stockValBadge.innerHTML = `<span class="badge bg-soft-success text-success px-2.5 py-1 rounded"><i class="bi bi-wallet2 me-1"></i> Inventory Value: £${valuation.toFixed(2)}</span>`;
+        } else {
+            stockValBadge.innerHTML = '';
+        }
+
+        // 2. Offer Calculation
+        const discount = parseFloat(inputDiscount.value || 0);
+        const minQty = parseInt(inputMinQty.value || 0);
+        const isOfferActive = inputOfferActive ? inputOfferActive.checked : false;
+
+        if (price > 0 && discount > 0 && isOfferActive) {
+            const savings = price * (discount / 100);
+            const promoPrice = price - savings;
+            offerCalcBadge.innerHTML = `
+                <span class="badge bg-soft-warning text-warning px-2.5 py-1 rounded d-inline-block mt-1">
+                    <i class="bi bi-tag-fill me-1"></i> Promo Price: £${promoPrice.toFixed(2)} each 
+                    <small class="d-block text-muted mt-1" style="font-size:0.65rem;">(Saves £${savings.toFixed(2)} per unit on min purchase of ${minQty || 1})</small>
+                </span>
+            `;
+        } else {
+            offerCalcBadge.innerHTML = '';
+        }
+    }
+
     // Setup input trigger listeners
     [inputName, inputPrice, inputStock, textDesc].forEach(el => {
-        el.addEventListener('input', syncLivePreview);
-        el.addEventListener('change', syncLivePreview);
+        el.addEventListener('input', () => {
+            syncLivePreview();
+            syncFloatingTitle();
+        });
+        el.addEventListener('change', () => {
+            syncLivePreview();
+            syncFloatingTitle();
+        });
     });
     selectCategory.addEventListener('change', syncLivePreview);
 
+    [inputPrice, inputStock, inputDiscount, inputMinQty].forEach(el => {
+        if (el) {
+            el.addEventListener('input', updateLiveCalculations);
+            el.addEventListener('change', updateLiveCalculations);
+        }
+    });
+    if (inputOfferActive) {
+        inputOfferActive.addEventListener('change', updateLiveCalculations);
+    }
+
+    // Collapse preview on mobile viewports dynamically
+    const previewCollapseEl = document.getElementById('live-preview-collapse');
+    if (window.innerWidth < 992 && previewCollapseEl) {
+        const bsCollapse = new bootstrap.Collapse(previewCollapseEl, { toggle: false });
+        bsCollapse.hide();
+    }
+
     // Initial render
     updateImagesState();
+    syncFloatingTitle();
+    updateLiveCalculations();
 });
 </script>
 @endsection
