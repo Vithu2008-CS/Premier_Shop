@@ -106,8 +106,8 @@
                                         @if($msg->is_trash)
                                             <form action="{{ route('admin.mail.restore', $msg->id) }}" method="POST" class="d-inline mr-1">
                                                 @csrf
-                                                <button type="submit" class="btn btn-xs btn-outline-success" title="Restore">
-                                                    <i data-feather="rotate-ccw" style="width:14px;height:14px;"></i>
+                                                <button type="submit" class="btn btn-xs btn-outline-success d-inline-flex align-items-center justify-content-center" title="Restore" style="border-radius: 50%; width: 26px; height: 26px; padding: 0;">
+                                                    <i data-feather="rotate-ccw" style="width:13px;height:13px;"></i>
                                                 </button>
                                             </form>
                                         @endif
@@ -115,8 +115,8 @@
                                               onsubmit="return confirm('Delete this message?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-xs btn-outline-danger" title="{{ $msg->is_trash ? 'Delete permanently' : 'Move to trash' }}">
-                                                <i data-feather="trash-2" style="width:14px;height:14px;"></i>
+                                            <button type="submit" class="btn btn-xs btn-outline-danger d-inline-flex align-items-center justify-content-center" title="{{ $msg->is_trash ? 'Delete permanently' : 'Move to trash' }}" style="border-radius: 50%; width: 26px; height: 26px; padding: 0;">
+                                                <i data-feather="trash-2" style="width:13px;height:13px;"></i>
                                             </button>
                                         </form>
                                     </div>

@@ -24,7 +24,7 @@
             <div class="card-body">
                 <h6 class="card-title text-center">Scan Product QR Code</h6>
                 <div class="text-center mb-3">
-                    <button id="startCamBtn" class="btn btn-primary" onclick="startScanner()">
+                    <button id="startCamBtn" class="btn btn-primary rounded-pill px-4" onclick="startScanner()">
                         <i data-feather="camera" class="icon-sm mr-1"></i> Start Camera
                     </button>
                 </div>

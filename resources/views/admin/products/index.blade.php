@@ -130,7 +130,7 @@
                     <div class="d-flex flex-column align-items-center">
                         <i data-feather="package" class="icon-xxl text-muted mb-3"></i>
                         <p class="text-muted">No products found in the database.</p>
-                        <a href="{{ route('admin.products.create') }}" class="btn btn-primary mt-3">Add First Product</a>
+                        <a href="{{ route('admin.products.create') }}" class="btn btn-primary rounded-pill px-4 mt-3">Add First Product</a>
                     </div>
                   </td>
                 </tr>

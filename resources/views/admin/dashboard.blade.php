@@ -22,9 +22,9 @@
     <h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4>
   </div>
   <div class="d-flex align-items-center flex-wrap text-nowrap">
-    <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
-      <i class="btn-icon-prepend" data-feather="plus-circle"></i>
-      Add Product
+    <a href="{{ route('admin.products.create') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center rounded-pill mb-2 mb-md-0" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
+      <i data-feather="plus-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+      <span>Add Product</span>
     </a>
   </div>
 </div>
@@ -150,9 +150,9 @@
   <div class="col-lg-8 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-baseline mb-2">
+        <div class="d-flex justify-content-between align-items-center mb-2">
             <h6 class="card-title mb-0">Recent Orders</h6>
-            <a href="{{ route('admin.orders.index') }}" class="btn btn-link">View All</a>
+            <a href="{{ route('admin.orders.index') }}" class="btn btn-xs btn-outline-primary rounded-pill px-3 py-1.5 font-weight-bold" style="transition: all 0.2s ease;">View All</a>
         </div>
         <div class="table-responsive">
           <table class="table table-hover">
@@ -209,16 +209,16 @@
       <div class="card-body">
         <h6 class="card-title">Quick Actions</h6>
         <div class="d-flex flex-column">
-            <a href="{{ route('admin.products.create') }}" class="btn btn-outline-primary btn-block mb-2 text-left">
+            <a href="{{ route('admin.products.create') }}" class="btn btn-outline-primary btn-block d-flex align-items-center mb-2 px-3" style="height: 38px; border-radius: 20px; font-size: 0.875rem;">
                 <i data-feather="plus" class="icon-sm mr-2"></i> Add Product
             </a>
-            <a href="{{ route('admin.scanner') }}" class="btn btn-outline-primary btn-block mb-2 text-left">
+            <a href="{{ route('admin.scanner') }}" class="btn btn-outline-primary btn-block d-flex align-items-center mb-2 px-3" style="height: 38px; border-radius: 20px; font-size: 0.875rem; margin-top: 0;">
                 <i data-feather="maximize" class="icon-sm mr-2"></i> Scan QR Code
             </a>
-            <a href="{{ route('admin.coupons.create') }}" class="btn btn-outline-primary btn-block mb-2 text-left">
+            <a href="{{ route('admin.coupons.create') }}" class="btn btn-outline-primary btn-block d-flex align-items-center mb-2 px-3" style="height: 38px; border-radius: 20px; font-size: 0.875rem; margin-top: 0;">
                 <i data-feather="tag" class="icon-sm mr-2"></i> Create Coupon
             </a>
-            <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-primary btn-block text-left">
+            <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-primary btn-block d-flex align-items-center px-3" style="height: 38px; border-radius: 20px; font-size: 0.875rem; margin-top: 0;">
                 <i data-feather="shopping-cart" class="icon-sm mr-2"></i> Manage Orders
             </a>
         </div>
@@ -241,6 +241,32 @@
   </div>
 </div>
 
+<style>
+/* Scoped curves and animations for dashboard */
+.card {
+    border-radius: 18px !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden;
+}
+html[data-admin-theme="dark"] .card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+/* Hover effect for summary cards */
+.col-md-3 a:hover .card {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(114, 124, 245, 0.08) !important;
+    border-color: rgba(114, 124, 245, 0.3) !important;
+}
+html[data-admin-theme="dark"] .col-md-3 a:hover .card {
+    box-shadow: 0 10px 25px rgba(167, 139, 250, 0.12) !important;
+}
+/* Curves for alert boxes */
+.alert {
+    border-radius: 14px !important;
+}
+</style>
 @endsection
 
 @push('plugin-scripts')

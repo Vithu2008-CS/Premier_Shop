@@ -157,6 +157,7 @@
                             <label class="form-label fw-semibold">Or External Image URL</label>
                             <input id="fImageLink" type="url" name="image_link" class="form-control @error('image_link') is-invalid @enderror"
                                    placeholder="https://example.com/banner.jpg" value="{{ old('image_link') }}">
+                            <div class="form-text">Recommended: 1920 × 800 px, URL format.</div>
                             @error('image_link')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>

@@ -103,14 +103,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row align-items-center mb-3">
-                                <div class="col-12 text-start">
-                                    <div class="bg-light p-2 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
-                                        <i class="bi bi-qr-code text-muted"></i>
-                                        <span class="small text-muted" style="font-size: 0.72rem;">QR Code will be auto-generated on save.</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         {{-- Tab 2: Pricing & Stock --}}
                         <div class="tab-pane fade {{ $activeTab === 'pricing' ? 'show active' : '' }}" id="pricing-pane" role="tabpanel" tabindex="0">
@@ -297,6 +289,25 @@
                 </div>
             </div>
 
+            {{-- Product QR Code Panel --}}
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h6 class="card-title fw-bold text-primary mb-3 d-flex align-items-center" style="font-family: 'Outfit', sans-serif;">
+                        <i class="bi bi-qr-code mr-2"></i> Product QR Code
+                    </h6>
+                    <div class="d-flex align-items-center">
+                        <div class="qr-placeholder-container flex-shrink-0 mr-3" style="width: 48px; height: 48px; border-radius: 8px !important; border: 1px dashed rgba(0,0,0,0.15); background: rgba(0,0,0,0.01); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-qr-code text-muted" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-0" style="font-size: 0.76rem; line-height: 1.4;">
+                                A unique QR Code will be automatically generated upon saving this product.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     
@@ -362,6 +373,52 @@ html[data-admin-theme="dark"] .custom-premium-checkbox:checked {
     position: absolute;
     top: 1.5px;
     left: 5px;
+}
+
+/* Dynamic QR Code Theme Adaptation */
+.qr-outer-container {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px !important;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.qr-placeholder-container {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px !important;
+    border: 1px dashed rgba(0,0,0,0.15);
+    background: rgba(0,0,0,0.01);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+/* Dark Mode Styles for QR Code and Panel */
+html[data-admin-theme="dark"] .qr-outer-container {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+html[data-admin-theme="dark"] .qr-placeholder-container {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.01) !important;
+}
+
+/* Curved Form Inputs & Input Groups */
+.form-control, .form-select {
+    border-radius: 10px !important;
+}
+.input-group > .input-group-text {
+    border-radius: 10px !important;
+}
+.input-group > .input-group-text:first-child {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+.input-group > .form-control:not(:first-child), 
+.input-group > .form-select:not(:first-child) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 /* Scoped custom premium styles for mobile preview & priority manager */
