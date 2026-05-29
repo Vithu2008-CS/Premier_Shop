@@ -135,5 +135,29 @@ class ProductControllerTest extends TestCase
         $response->assertSee('Orange Juice');
         $response->assertDontSee('Whole Milk');
     }
+
+    public function test_admin_can_get_product_suggestions()
+    {
+        $product1 = Product::factory()->create(['name' => 'Apple Juice', 'barcode' => '12345']);
+        $product2 = Product::factory()->create(['name' => 'Orange Juice', 'barcode' => '67890']);
+        $product3 = Product::factory()->create(['name' => 'Whole Milk', 'barcode' => '11111']);
+
+        // Authenticated admin request
+        $response = $this->actingAs($this->admin)->json('GET', route('admin.products.suggest', ['q' => 'Juice']));
+        $response->assertStatus(200);
+        $response->assertJsonCount(2);
+
+        $data = $response->json();
+        $this->assertEquals('Apple Juice', $data[0]['name']);
+        $this->assertEquals('Orange Juice', $data[1]['name']);
+        $this->assertEquals(route('admin.products.edit', $product1), $data[0]['url']);
+    }
+
+    public function test_unauthenticated_user_cannot_get_product_suggestions()
+    {
+        // Unauthenticated request should redirect to login
+        $response = $this->get(route('admin.products.suggest', ['q' => 'Juice']));
+        $response->assertRedirect(route('login'));
+    }
 }
 
