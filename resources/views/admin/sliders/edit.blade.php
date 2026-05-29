@@ -119,7 +119,8 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Or External Image URL</label>
                             <input id="fImageLink" type="url" name="image_link" class="form-control @error('image_link') is-invalid @enderror"
-                                   value="{{ str_contains($slider->image_path, 'http') ? $slider->image_path : '' }}">
+                                   placeholder="https://example.com/banner.jpg" value="{{ str_contains($slider->image_path, 'http') ? $slider->image_path : '' }}">
+                            <div class="form-text">Leave blank to keep current image.</div>
                             @error('image_link')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                     </div>

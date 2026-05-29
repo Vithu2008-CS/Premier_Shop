@@ -67,6 +67,39 @@
         .sidebar .sidebar-header .sidebar-brand span {
             color: #727cf5;
         }
+
+        /* Custom styled Choose File buttons with theme support */
+        .form-control[type="file"] {
+            padding: 0 !important;
+            height: calc(1.5em + 0.75rem + 2px) !important;
+            line-height: calc(1.5em + 0.75rem) !important;
+        }
+        .form-control[type="file"]::file-selector-button {
+            border: none !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
+            background: rgba(0, 0, 0, 0.05) !important;
+            color: #495057 !important;
+            padding: 0 1.25rem !important;
+            margin: 0 !important;
+            margin-right: 0.75rem !important;
+            height: 100% !important;
+            border-radius: 9px 0 0 9px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            font-size: 0.8rem !important;
+            transition: all 0.2s ease !important;
+        }
+        .form-control[type="file"]::file-selector-button:hover {
+            background: rgba(0, 0, 0, 0.08) !important;
+        }
+        html[data-admin-theme="dark"] .form-control[type="file"]::file-selector-button {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: #c9d2e1 !important;
+        }
+        html[data-admin-theme="dark"] .form-control[type="file"]::file-selector-button:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+        }
     </style>
 
     @stack('styles')
