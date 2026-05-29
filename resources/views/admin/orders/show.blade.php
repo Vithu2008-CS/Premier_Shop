@@ -401,13 +401,13 @@
           <div class="d-flex flex-column gap-2 mt-2">
             @if($order->user->phone)
             <div class="d-flex align-items-center justify-content-between p-2 rounded-3 text-muted small" style="background: rgba(0,0,0,0.01);">
-              <span class="d-flex align-items-center gap-2"><i class="bi bi-telephone-fill text-muted"></i> Phone</span>
+              <span class="d-flex align-items-center"><i class="bi bi-telephone-fill text-muted mr-2"></i> Phone</span>
               <span class="font-weight-bold text-theme-dark-bold">{{ $order->user->phone }}</span>
             </div>
             @endif
 
             <div class="d-flex align-items-center justify-content-between p-2 rounded-3 text-muted small" style="background: rgba(0,0,0,0.01);">
-              <span class="d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill text-success"></i> Customer Registered</span>
+              <span class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success mr-2"></i> Customer Registered</span>
               <span class="font-weight-bold text-theme-dark-bold">{{ $order->user->created_at ? $order->user->created_at->format('M d, Y') : 'N/A' }}</span>
             </div>
           </div>
@@ -433,7 +433,7 @@
 
             @if(isset($order->shipping_address['phone']))
             <div class="d-flex align-items-center justify-content-between p-2 rounded-3 text-muted small mb-2" style="background: rgba(0,0,0,0.01);">
-              <span class="d-flex align-items-center gap-2"><i class="bi bi-telephone text-muted"></i> Shipping Phone</span>
+              <span class="d-flex align-items-center"><i class="bi bi-telephone text-muted mr-2"></i> Shipping Phone</span>
               <span class="font-weight-bold text-theme-dark-bold">{{ $order->shipping_address['phone'] }}</span>
             </div>
             @endif
@@ -441,7 +441,7 @@
             <hr class="my-3 border-dashed">
 
             <div class="d-flex align-items-center justify-content-between p-2 rounded-3 text-muted small" style="background: rgba(0,0,0,0.01);">
-              <span class="d-flex align-items-center gap-2"><i class="bi bi-credit-card-2-front text-muted"></i> Payment Method</span>
+              <span class="d-flex align-items-center"><i class="bi bi-credit-card-2-front text-muted mr-2"></i> Payment Method</span>
               <span class="font-weight-bold text-theme-dark-bold">{{ $order->payment_method ?? 'Debit/Credit Card' }}</span>
             </div>
           @else
