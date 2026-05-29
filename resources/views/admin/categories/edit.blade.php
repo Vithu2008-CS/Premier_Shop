@@ -62,6 +62,7 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Or Update Image URL</label>
                     <input type="url" name="image_link" class="form-control @error('image_link') is-invalid @enderror" placeholder="https://example.com/category-image.jpg" value="{{ old('image_link', Str::startsWith($category->image, 'http') ? $category->image : '') }}">
+                    <small class="text-muted d-block mt-2">Leave blank to keep existing. Recommended: 400x400px.</small>
                     @error('image_link') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
             </div>
@@ -101,6 +102,20 @@
 </form>
 
 <style>
+/* Card and form input curved borders */
+.card {
+    border-radius: 18px !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    overflow: hidden;
+}
+html[data-admin-theme="dark"] .card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+.form-control {
+    border-radius: 10px !important;
+}
+
 /* Scoped custom premium styles for floating actions and indicator */
 .live-indicator {
     width: 8px;
