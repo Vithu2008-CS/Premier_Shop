@@ -57,32 +57,19 @@
                                 <small class="text-muted d-block mt-0.5">{{ Str::limit($category->description, 80) }}</small>
                             @endif
                         </div>
-                        <span class="btn btn-xs btn-outline-primary rounded-pill opacity-0 hover-show-btn px-2.5 py-1" style="pointer-events: none; transition: all 0.2s ease; margin-left: 15px;">
-                            <i data-feather="edit-2" class="wd-10 h-10 mr-1" style="width: 11px; height: 11px;"></i> Edit
-                        </span>
                     </div>
                   </td>
                   <td>
                     <span class="badge badge-light-info">{{ $category->products_count }} Products</span>
                   </td>
                   <td class="text-right" onclick="event.stopPropagation();">
-                    <div class="dropdown">
-                        <button class="btn btn-link p-0" type="button" id="drop-{{ $category->id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
+                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?');" class="d-inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1.5 font-weight-bold" style="transition: all 0.2s ease;">
+                            <i data-feather="trash-2" class="wd-10 h-10 mr-1" style="width: 12px; height: 12px; vertical-align: -1px;"></i> Delete
                         </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="drop-{{ $category->id }}">
-                          <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.categories.edit', $category) }}">
-                              <i data-feather="edit-2" class="icon-sm mr-2"></i> Edit
-                          </a>
-                          <div class="dropdown-divider"></div>
-                          <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?');">
-                              @csrf @method('DELETE')
-                              <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
-                                  <i data-feather="trash-2" class="icon-sm mr-2"></i> Delete
-                              </button>
-                          </form>
-                        </div>
-                    </div>
+                    </form>
                   </td>
                 </tr>
               @empty
@@ -124,12 +111,6 @@ html[data-admin-theme="dark"] .category-row-btn:hover {
 html[data-admin-theme="dark"] .category-row-btn:hover .text-primary-hover {
     color: #a78bfa !important;
 }
-.category-row-btn:hover .hover-show-btn {
-    opacity: 1 !important;
-}
-.hover-show-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
+
 </style>
 @endsection
