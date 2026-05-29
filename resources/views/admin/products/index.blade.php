@@ -69,9 +69,9 @@
                     <div class="d-flex align-items-center">
                         <div class="mr-3">
                             @if($product->images && count($product->images) > 0)
-                                <img src="{{ $product->images[0] }}" class="wd-40 h-40 rounded" style="object-fit: cover;" alt="product">
+                                <img src="{{ $product->images[0] }}" class="wd-40 ht-40 rounded" style="object-fit: cover;" alt="product">
                             @else
-                                <div class="wd-40 h-40 rounded bg-light d-flex align-items-center justify-content-center">
+                                <div class="wd-40 ht-40 rounded bg-light d-flex align-items-center justify-content-center">
                                     <i data-feather="image" class="text-muted icon-sm"></i>
                                 </div>
                             @endif
