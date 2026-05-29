@@ -352,10 +352,13 @@
 @endonce
 
 <div class="col-6 col-md-4 col-xl-3 fade-up delay-{{ $delay ?? 1 }}">
-    <div class="pcard">
-
-        {{-- ── Badges ── --}}
+    <div class="pcard">        {{-- ── Badges ── --}}
         <div class="pcard-badges">
+            @if($product->retail_offer)
+                <span class="pcard-badge pcard-badge-sale">
+                    {{ $product->retail_offer_percentage > 0 ? '-' . round($product->retail_offer_percentage) . '%' : 'OFFER' }}
+                </span>
+            @endif
             @if($product->on_sale)
                 @php
                     $discountPct = ($product->original_price > 0 && $product->original_price > $product->price)
@@ -439,9 +442,14 @@
             </h3>
 
             <div class="pcard-price-row">
-                <span class="pcard-price">£{{ number_format($product->price, 2) }}</span>
-                @if($product->original_price > $product->price)
-                    <span class="pcard-old-price">£{{ number_format($product->original_price, 2) }}</span>
+                @if($product->retail_offer && $product->retail_offer_percentage > 0)
+                    <span class="pcard-price">£{{ number_format($product->active_price, 2) }}</span>
+                    <span class="pcard-old-price">£{{ number_format($product->price, 2) }}</span>
+                @else
+                    <span class="pcard-price">£{{ number_format($product->price, 2) }}</span>
+                    @if($product->original_price > $product->price)
+                        <span class="pcard-old-price">£{{ number_format($product->original_price, 2) }}</span>
+                    @endif
                 @endif
             </div>
 

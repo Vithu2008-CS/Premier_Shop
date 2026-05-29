@@ -73,6 +73,6 @@ class UserItem extends Model
             return $this->product->offer_price * $this->quantity;
         }
 
-        return $this->product->price * $this->quantity;
+        return $this->product->active_price * $this->quantity;
     }
 }
