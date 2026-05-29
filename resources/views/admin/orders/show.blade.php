@@ -536,6 +536,57 @@
     border-radius: 18px !important;
 }
 
+/* Mobile Friendly Responsive Utility Layouts purely via CSS (keeps desktop view pristine!) */
+@media (max-width: 576px) {
+    .card-body {
+        padding: 1.25rem !important; /* Premium tighter padding to save space on mobile */
+    }
+    .p-md-5, .p-4 {
+        padding: 1.25rem !important;
+    }
+    
+    /* Stack top title actions container cleanly on phone */
+    .page-breadcrumb + div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .page-breadcrumb + div > div:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-top: 12px !important;
+    }
+    .page-breadcrumb + div > div:last-child a {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 8px !important;
+    }
+    
+    /* Make Update Order Status button full-width on mobile */
+    form[action*="updateStatus"] button[type="submit"] {
+        width: 100% !important;
+        margin-top: 12px !important;
+    }
+    form[action*="updateStatus"] .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    /* Stack driver assignment elements vertically on mobile */
+    form[action*="assign-driver"] .d-flex.align-items-center {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    form[action*="assign-driver"] .custom-form-dropdown {
+        width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+    form[action*="assign-driver"] button[type="submit"] {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+}
+
 /* Typography override */
 .container-fluid {
     font-family: 'Inter', sans-serif;
