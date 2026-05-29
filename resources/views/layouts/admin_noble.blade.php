@@ -26,6 +26,7 @@
     
     <!-- core:css -->
     <link rel="stylesheet" href="{{ asset('admin_assets/vendors/core/core.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- endinject -->
     
     <!-- plugin css for this page -->

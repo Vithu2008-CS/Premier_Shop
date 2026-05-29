@@ -132,8 +132,15 @@
                     </div>
 
                     {{-- Sorted Image List --}}
-                    <div class="media-list-grid" id="media-list-manager">
+                    <div class="media-list-grid mb-4" id="media-list-manager">
                         {{-- Rendered via Javascript --}}
+                    </div>
+
+                    {{-- Quick Action Save Button --}}
+                    <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill font-weight-bold shadow-sm d-flex align-items-center">
+                            <i class="bi bi-plus-circle me-2"></i> Create Product & Media
+                        </button>
                     </div>
                 </div>
             </div>
