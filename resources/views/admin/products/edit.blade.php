@@ -11,23 +11,13 @@
 @section('title', 'Edit Product')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-  <nav class="page-breadcrumb mb-0">
-    <ol class="breadcrumb mb-0">
-      <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-      <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($product->name, 30) }}</li>
-    </ol>
-  </nav>
-  <div class="d-flex gap-2">
-    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary rounded-pill px-4 font-weight-bold">
-      Cancel
-    </a>
-    <button type="submit" form="edit-product-form" class="btn btn-primary rounded-pill px-4 font-weight-bold shadow-sm">
-      <i class="bi bi-check-circle-fill me-1"></i> Save Changes
-    </button>
-  </div>
-</div>
+<nav class="page-breadcrumb mb-4">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($product->name, 30) }}</li>
+  </ol>
+</nav>
 
 <form id="edit-product-form" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
     @csrf @method('PUT')
@@ -235,27 +225,33 @@
 
             {{-- QR Code Section --}}
             <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body text-center">
-                    <h6 class="card-title fw-bold text-primary mb-3 text-left d-flex align-items-center">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold text-primary mb-3 d-flex align-items-center">
                         <i data-feather="qr-code" class="icon-md mr-2 text-primary"></i> Product QR Code
                     </h6>
                     @if($product->qr_code)
-                        <div class="bg-light p-3 rounded-3 mb-3 border">
-                            <img src="{{ $product->qr_code }}" alt="QR Code" class="img-fluid wd-130 mx-auto d-block" style="mix-blend-mode: multiply;">
-                        </div>
-                        <div class="d-flex flex-column gap-2">
-                            <a href="{{ $product->qr_code }}" download class="btn btn-outline-primary btn-sm rounded-pill font-weight-bold">
-                                <i data-feather="download" class="icon-xs mr-1"></i> Download QR
-                            </a>
-                            <button type="submit" form="regenerate-qr-form" class="btn btn-link btn-sm text-muted">
-                                <i data-feather="refresh-cw" class="icon-xs mr-1"></i> Regenerate QR Code
-                            </button>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light p-1.5 rounded-3 border flex-shrink-0" style="width: 70px; height: 70px;">
+                                <img src="{{ $product->qr_code }}" alt="QR Code" class="w-100 h-100" style="object-fit: contain; mix-blend-mode: multiply;">
+                            </div>
+                            <div class="d-flex flex-column gap-2 text-start w-100">
+                                <a href="{{ $product->qr_code }}" download class="btn btn-outline-primary btn-xs rounded-pill font-weight-bold py-1.5 text-center text-nowrap d-flex align-items-center justify-content-center" style="font-size: 0.72rem; height: 28px;">
+                                    <i data-feather="download" class="icon-xs mr-1" style="width: 12px; height: 12px;"></i> Download QR
+                                </a>
+                                <button type="submit" form="regenerate-qr-form" class="btn btn-link btn-xs text-muted p-0 text-start text-nowrap d-flex align-items-center" style="font-size: 0.7rem; text-decoration: none; height: 20px;">
+                                    <i data-feather="refresh-cw" class="icon-xs mr-1" style="width: 11px; height: 11px;"></i> Regenerate QR
+                                </button>
+                            </div>
                         </div>
                     @else
-                        <div class="py-4 text-muted">
-                            <i data-feather="slash" class="icon-xxl mb-2 text-muted"></i>
-                            <p class="small font-weight-bold">No QR Code Generated</p>
-                            <button type="submit" form="regenerate-qr-form" class="btn btn-primary btn-sm rounded-pill px-4 mt-3">Generate Now</button>
+                        <div class="d-flex align-items-center gap-3 py-1">
+                            <div class="bg-light rounded-3 border d-flex align-items-center justify-content-center text-muted flex-shrink-0" style="width: 70px; height: 70px; background: rgba(0,0,0,0.02);">
+                                <i data-feather="slash" class="icon-md" style="width: 20px; height: 20px; opacity: 0.5;"></i>
+                            </div>
+                            <div class="text-start">
+                                <span class="small fw-bold d-block text-muted" style="font-size: 0.75rem;">No QR Code</span>
+                                <button type="submit" form="regenerate-qr-form" class="btn btn-primary btn-xs rounded-pill px-3 py-1 mt-1 font-weight-bold" style="font-size: 0.7rem; height: 26px;">Generate Now</button>
+                            </div>
                         </div>
                     @endif
                 </div>

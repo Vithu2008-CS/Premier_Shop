@@ -12,23 +12,13 @@
 @section('title', 'Add Product')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-  <nav class="page-breadcrumb mb-0">
-    <ol class="breadcrumb mb-0">
-      <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-      <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Add New</li>
-    </ol>
-  </nav>
-  <div class="d-flex gap-2">
-    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary rounded-pill px-4 font-weight-bold">
-      Cancel
-    </a>
-    <button type="submit" form="create-product-form" class="btn btn-primary rounded-pill px-4 font-weight-bold shadow-sm">
-      <i class="bi bi-plus-circle-fill me-1"></i> Create Product
-    </button>
-  </div>
-</div>
+<nav class="page-breadcrumb mb-4">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Add New</li>
+  </ol>
+</nav>
 
 <form id="create-product-form" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
