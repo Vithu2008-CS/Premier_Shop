@@ -173,6 +173,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::post('orders/{order}/assign-driver', [AdminOrderController::class, 'assignDriver'])->name('orders.assignDriver');
     Route::get('orders/{order}/print', [AdminOrderController::class, 'print'])->name('orders.print');
+    Route::delete('orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
 
     // Customers — view profiles, update roles, delete accounts
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
