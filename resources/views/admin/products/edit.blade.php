@@ -148,8 +148,8 @@
                                 </div>
                                 <div class="col-6 col-md-3 mb-3">
                                     <label class="form-label fw-600">Weight Type</label>
-                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
-                                        <input type="checkbox" name="weight_matters" id="weight_matters" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('weight_matters', $product->weight > 0) ? 'checked' : '' }}>
+                                    <div class="form-control d-flex align-items-center" style="display: flex !important; border-radius: 12px !important; height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="weight_matters" id="weight_matters" class="custom-premium-checkbox cursor-pointer" style="margin-right: 12px !important;" value="1" {{ old('weight_matters', $product->weight > 0) ? 'checked' : '' }}>
                                         <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="weight_matters" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
                                             Weight Matters
                                         </label>
@@ -167,8 +167,8 @@
                             <div class="row mt-2 border-top pt-3 align-items-end">
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label fw-600">Retail Offer Options</label>
-                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
-                                        <input type="checkbox" name="retail_offer" id="retail_offer" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('retail_offer', $product->retail_offer) ? 'checked' : '' }}>
+                                    <div class="form-control d-flex align-items-center" style="display: flex !important; border-radius: 12px !important; height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="retail_offer" id="retail_offer" class="custom-premium-checkbox cursor-pointer" style="margin-right: 12px !important;" value="1" {{ old('retail_offer', $product->retail_offer) ? 'checked' : '' }}>
                                         <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="retail_offer" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
                                             Enable Retail Offer
                                         </label>
@@ -184,8 +184,8 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label fw-600">Restrictions</label>
-                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
-                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
+                                    <div class="form-control d-flex align-items-center" style="display: flex !important; border-radius: 12px !important; height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="custom-premium-checkbox cursor-pointer" style="margin-right: 12px !important;" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
                                         <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
                                             Age Restricted (16+)
                                         </label>
@@ -215,8 +215,8 @@
                                 </div>
                                 <div class="col-12 col-md-3 mb-3">
                                     <label class="form-label fw-600">Offer Status</label>
-                                    <div class="form-control rounded-3 d-flex align-items-center gap-2" style="height: 38px; padding: 0.375rem 0.75rem;">
-                                        <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input cursor-pointer" style="position: static !important; margin: 0 !important; float: none !important; width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-radius: 4px !important;" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
+                                    <div class="form-control d-flex align-items-center" style="display: flex !important; border-radius: 12px !important; height: 38px; padding: 0.375rem 0.75rem;">
+                                        <input type="checkbox" name="offer_active" id="offer_active" class="custom-premium-checkbox cursor-pointer" style="margin-right: 12px !important;" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
                                         <label class="fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; margin: 0 !important; line-height: 1.2;">
                                             Activate Offer
                                         </label>
