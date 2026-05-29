@@ -131,15 +131,31 @@ class Order extends Model
             }
         }
 
+        // Auto-advance status when dates imply a later stage than the selected status.
+        // This prevents the status badge and tracking timeline from getting out of sync
+        // (e.g. admin fills in shipped_date but forgets to change the status dropdown).
+        $statusOrder = ['pending' => 0, 'processing' => 1, 'shipped' => 2, 'delivered' => 3, 'cancelled' => -1];
+        $currentLevel = $statusOrder[$updates['status']] ?? 0;
+
+        if ($updates['status'] !== 'cancelled') {
+            if ($updates['delivered_date'] && $currentLevel < $statusOrder['delivered']) {
+                $updates['status'] = 'delivered';
+            } elseif ($updates['shipped_date'] && $currentLevel < $statusOrder['shipped']) {
+                $updates['status'] = 'shipped';
+            } elseif ($updates['processing_date'] && $currentLevel < $statusOrder['processing']) {
+                $updates['status'] = 'processing';
+            }
+        }
+
         // Auto-set dates that weren't supplied but are implied by the new status
-        if ($status === 'processing' && ! $updates['processing_date']) {
+        if ($updates['status'] === 'processing' && ! $updates['processing_date']) {
             $updates['processing_date'] = now();
         }
-        if ($status === 'shipped') {
+        if ($updates['status'] === 'shipped') {
             $updates['processing_date'] = $updates['processing_date'] ?? now();
             $updates['shipped_date']    = $updates['shipped_date']    ?? now();
         }
-        if ($status === 'delivered') {
+        if ($updates['status'] === 'delivered') {
             $updates['processing_date'] = $updates['processing_date'] ?? now();
             $updates['shipped_date']    = $updates['shipped_date']    ?? now();
             $updates['delivered_date']  = $updates['delivered_date']  ?? now();
@@ -148,11 +164,11 @@ class Order extends Model
         $this->update($updates);
 
         // Cancellation: restore stock and claw back loyalty points
-        if ($status === 'cancelled' && $oldStatus !== 'cancelled') {
+        if ($updates['status'] === 'cancelled' && $oldStatus !== 'cancelled') {
             $this->restoreStock();
         }
 
-        return $oldStatus !== $status;
+        return $oldStatus !== $updates['status'];
     }
 
     /**

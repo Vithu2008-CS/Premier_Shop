@@ -49,7 +49,7 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load('items.product');
+        $order->load('items.product', 'driver');
 
         return view('orders.show', compact('order'));
     }
