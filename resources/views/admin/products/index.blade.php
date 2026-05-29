@@ -38,13 +38,13 @@
                     <div id="adminSearchSuggestions" class="dropdown-menu shadow-lg w-100 p-0" style="position: absolute; top: 100%; left: 0; display: none; max-height: 350px; overflow-y: auto; z-index: 1050; border-radius: 10px; margin-top: 5px;"></div>
                 </form>
                 @if(request()->filled('search'))
-                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary mr-2 mb-2 mb-md-0" style="height: 38px; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.875rem; padding: 0 16px;">
-                        Clear
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center rounded-pill mr-2 mb-2 mb-md-0" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
+                        <span>Clear</span>
                     </a>
                 @endif
-                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-icon-text mb-2 mb-md-0" style="height: 38px; border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.875rem; padding: 0 16px;">
-                    <i class="btn-icon-prepend mr-1" data-feather="plus-square" style="width: 16px; height: 16px;"></i>
-                    Add Product
+                <a href="{{ route('admin.products.create') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center rounded-pill mb-2 mb-md-0" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
+                    <i data-feather="plus-square" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                    <span>Add Product</span>
                 </a>
             </div>
         </div>
