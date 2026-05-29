@@ -105,7 +105,7 @@
                             </div>
                             <div class="row align-items-center mb-3">
                                 <div class="col-md-6 mb-2">
-                                    <div class="form-check mb-0 bg-light p-2.5 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
+                                    <div class="form-check mb-0 p-2.5 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px;">
                                         <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input ms-0 mt-0" value="1" {{ old('is_age_restricted') ? 'checked' : '' }}>
                                         <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted">
                                             Age Restricted (16+)
@@ -179,7 +179,7 @@
                                     <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
                                 </div>
                                 <div class="col-md-3 mb-3 d-flex align-items-end">
-                                    <div class="form-check mb-2 bg-light p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
+                                    <div class="form-check mb-2 p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px;">
                                         <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input ms-0 mt-0" value="1" {{ old('offer_active') ? 'checked' : '' }}>
                                         <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active">
                                             Activate Offer
@@ -650,9 +650,19 @@ html[data-admin-theme="dark"] .floating-save-bar {
 }
 .form-check {
     border-color: rgba(0,0,0,0.08) !important;
+    background: rgba(0,0,0,0.02) !important;
+    transition: all 0.2s ease !important;
 }
 html[data-admin-theme="dark"] .form-check {
     border-color: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255,255,255,0.03) !important;
+}
+.form-check-label {
+    color: #475569 !important;
+    transition: all 0.2s ease !important;
+}
+html[data-admin-theme="dark"] .form-check-label {
+    color: #cbd5e1 !important;
 }
 .position-sticky-sidebar {
     position: sticky !important;
