@@ -41,17 +41,17 @@
                 <div class="card-header bg-transparent border-0 pb-0 pt-3" style="background: rgba(108,92,231,0.02) !important;">
                     <ul class="nav nav-tabs card-header-tabs border-0 gap-2" id="product-workspace-tabs" role="tablist">
                         <li class="nav-item">
-                            <button class="nav-link {{ $activeTab === 'info' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-pane" type="button" role="tab">
+                            <button class="nav-link {{ $activeTab === 'info' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="info-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#info-pane" data-bs-target="#info-pane" type="button" role="tab">
                                 <i class="bi bi-info-circle-fill text-primary"></i> Information
                             </button>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link {{ $activeTab === 'pricing' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="pricing-tab" data-bs-toggle="tab" data-bs-target="#pricing-pane" type="button" role="tab">
+                            <button class="nav-link {{ $activeTab === 'pricing' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="pricing-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#pricing-pane" data-bs-target="#pricing-pane" type="button" role="tab">
                                 <i class="bi bi-currency-pound text-success"></i> Pricing & Stock
                             </button>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link {{ $activeTab === 'offers' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="offers-tab" data-bs-toggle="tab" data-bs-target="#offers-pane" type="button" role="tab">
+                            <button class="nav-link {{ $activeTab === 'offers' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="offers-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#offers-pane" data-bs-target="#offers-pane" type="button" role="tab">
                                 <i class="bi bi-percent text-danger"></i> Bulk Offers
                             </button>
                         </li>
@@ -62,7 +62,7 @@
                         {{-- Tab 1: Information --}}
                         <div class="tab-pane fade {{ $activeTab === 'info' ? 'show active' : '' }}" id="info-pane" role="tabpanel" tabindex="0">
                             <div class="row">
-                                <div class="col-md-9 mb-3">
+                                <div class="col-12 mb-3">
                                     <label class="form-label fw-600">Product Name <span class="text-danger">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-tag-fill text-primary"></i></span>
@@ -70,17 +70,69 @@
                                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label fw-600">Barcode <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="EAN, UPC, or custom scannable product code"></i></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-upc-scan text-info"></i></span>
-                                        <input type="text" name="barcode" class="form-control border-start-0" value="{{ old('barcode', $product->barcode) }}" placeholder="Optional">
-                                    </div>
-                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-600">Description</label>
                                 <textarea name="description" id="product_description" class="form-control" rows="4" placeholder="Write a compelling product description...">{{ old('description', $product->description) }}</textarea>
+                            </div>
+                            
+                            {{-- Classification & QR Code (Moved inside Information Tab) --}}
+                            <div class="row mt-3 border-top pt-3">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-600">Category <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-grid-fill text-primary"></i></span>
+                                        <select name="category_id" id="product_category" class="form-control border-start-0 @error('category_id') is-invalid @enderror">
+                                            <option value="">Select Category</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('category_id') <span class="text-danger small mt-1 d-block">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-600">Product Type</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-tags-fill text-info"></i></span>
+                                        <select name="product_type" class="form-control border-start-0">
+                                            <option value="normal" {{ old('product_type', $product->product_type) == 'normal' ? 'selected' : '' }}>Normal / Retail</option>
+                                            <option value="wholesale" {{ old('product_type', $product->product_type) == 'wholesale' ? 'selected' : '' }}>Wholesale Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-items-center mb-3">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check mb-0 bg-light p-2.5 rounded-3 border d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
+                                        <input type="checkbox" name="is_age_restricted" id="is_age_restricted" class="form-check-input ms-0 mt-0" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
+                                        <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="is_age_restricted">
+                                            Age Restricted (16+)
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                {{-- QR Code display (Only for Edit View) --}}
+                                @if(isset($product) && $product->qr_code)
+                                <div class="col-md-6">
+                                    <div class="bg-light p-2 rounded-3 border d-flex align-items-center gap-3" style="background: rgba(0,0,0,0.01);">
+                                        <div class="bg-white p-1 rounded border flex-shrink-0" style="width: 50px; height: 50px;">
+                                            <img src="{{ $product->qr_code }}" alt="QR Code" class="w-100 h-100" style="object-fit: contain; mix-blend-mode: multiply;">
+                                        </div>
+                                        <div class="d-flex flex-column gap-1">
+                                            <span class="small fw-bold d-block text-muted" style="font-size: 0.7rem; line-height:1.1;">Product QR Code</span>
+                                            <div class="d-flex gap-2">
+                                                <a href="{{ $product->qr_code }}" download class="text-primary small fw-600 text-decoration-none d-flex align-items-center gap-1" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-download"></i> Download
+                                                </a>
+                                                <button type="submit" form="regenerate-qr-form" class="btn btn-link p-0 text-muted small border-0 d-flex align-items-center gap-1" style="font-size: 0.72rem; text-decoration: none;">
+                                                    <i class="bi bi-arrow-clockwise"></i> Regenerate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                         </div>
 
@@ -245,83 +297,6 @@
                 </div>
             </div>
 
-            {{-- QR Code Section --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold text-primary mb-3 d-flex align-items-center">
-                        <i data-feather="qr-code" class="icon-md mr-2 text-primary"></i> Product QR Code
-                    </h6>
-                    @if($product->qr_code)
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light p-1.5 rounded-3 border flex-shrink-0" style="width: 70px; height: 70px;">
-                                <img src="{{ $product->qr_code }}" alt="QR Code" class="w-100 h-100" style="object-fit: contain; mix-blend-mode: multiply;">
-                            </div>
-                            <div class="d-flex flex-column gap-2 text-start w-100">
-                                <a href="{{ $product->qr_code }}" download class="btn btn-outline-primary btn-xs rounded-pill font-weight-bold py-1.5 text-center text-nowrap d-flex align-items-center justify-content-center" style="font-size: 0.72rem; height: 28px;">
-                                    <i data-feather="download" class="icon-xs mr-1" style="width: 12px; height: 12px;"></i> Download QR
-                                </a>
-                                <button type="submit" form="regenerate-qr-form" class="btn btn-link btn-xs text-muted p-0 text-start text-nowrap d-flex align-items-center" style="font-size: 0.7rem; text-decoration: none; height: 20px;">
-                                    <i data-feather="refresh-cw" class="icon-xs mr-1" style="width: 11px; height: 11px;"></i> Regenerate QR
-                                </button>
-                            </div>
-                        </div>
-                    @else
-                        <div class="d-flex align-items-center gap-3 py-1">
-                            <div class="bg-light rounded-3 border d-flex align-items-center justify-content-center text-muted flex-shrink-0" style="width: 70px; height: 70px; background: rgba(0,0,0,0.02);">
-                                <i data-feather="slash" class="icon-md" style="width: 20px; height: 20px; opacity: 0.5;"></i>
-                            </div>
-                            <div class="text-start">
-                                <span class="small fw-bold d-block text-muted" style="font-size: 0.75rem;">No QR Code</span>
-                                <button type="submit" form="regenerate-qr-form" class="btn btn-primary btn-xs rounded-pill px-3 py-1 mt-1 font-weight-bold" style="font-size: 0.7rem; height: 26px;">Generate Now</button>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Classification Section --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <h6 class="card-title fw-bold text-primary mb-4 d-flex align-items-center">
-                        <i data-feather="grid" class="icon-md mr-2 text-primary"></i> Classification
-                    </h6>
-                    <div class="mb-3">
-                        <label class="form-label fw-600">Category</label>
-                        <select name="category_id" id="product_category" class="form-control @error('category_id') is-invalid @enderror">
-                            <option value="">Select Category</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('category_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-600">Product Type</label>
-                        <select name="product_type" class="form-control">
-                            <option value="normal" {{ old('product_type', $product->product_type) == 'normal' ? 'selected' : '' }}>Normal / Retail</option>
-                            <option value="wholesale" {{ old('product_type', $product->product_type) == 'wholesale' ? 'selected' : '' }}>Wholesale Only</option>
-                        </select>
-                    </div>
-                    <div class="form-check mb-2">
-                        <label class="form-check-label font-weight-bold">
-                            <input type="checkbox" name="is_age_restricted" class="form-check-input" value="1" {{ old('is_age_restricted', $product->is_age_restricted) ? 'checked' : '' }}>
-                            Age Restricted (16+)
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Actions Card --}}
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body d-flex flex-column gap-2">
-                    <button type="submit" class="btn btn-primary btn-block rounded-pill py-2.5 font-weight-bold" style="background: var(--ps-gradient); border: none;">
-                        <i data-feather="check-square" class="icon-sm mr-2"></i> Update Product
-                    </button>
-                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary btn-block rounded-pill py-2.5">
-                        Cancel
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
     
@@ -367,9 +342,37 @@
     50% { opacity: 1; transform: scale(1.15); }
 }
 
+/* Premium Tab Navigation Styling */
+.nav-tabs {
+    border-bottom: none !important;
+}
+.nav-tabs .nav-link {
+    background: transparent !important;
+    color: #475569 !important;
+    border: none !important;
+    transition: all 0.25s ease !important;
+}
+html[data-admin-theme="dark"] .nav-tabs .nav-link {
+    color: #94a3b8 !important;
+}
+.nav-tabs .nav-link.active {
+    background: rgba(108, 92, 231, 0.1) !important;
+    color: #6c5ce7 !important;
+}
+html[data-admin-theme="dark"] .nav-tabs .nav-link.active {
+    background: rgba(167, 139, 250, 0.15) !important;
+    color: #a78bfa !important;
+}
+.nav-tabs .nav-link:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
 /* Device Mockup Display */
 .device-container {
-    max-width: 290px;
+    max-width: 325px;
     margin: 0 auto;
     border: 10px solid #1e293b;
     border-radius: 35px;
