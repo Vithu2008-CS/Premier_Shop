@@ -46,12 +46,18 @@
                     <div class="row">
                         <div class="col-md-9 mb-3">
                             <label class="form-label fw-600">Product Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" id="product_name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $product->name) }}" required placeholder="Enter product name">
-                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-tag-fill text-primary"></i></span>
+                                <input type="text" name="name" id="product_name" class="form-control border-start-0 @error('name') is-invalid @enderror" value="{{ old('name', $product->name) }}" required placeholder="Enter product name">
+                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Barcode</label>
-                            <input type="text" name="barcode" class="form-control" value="{{ old('barcode', $product->barcode) }}" placeholder="Optional">
+                            <label class="form-label fw-600">Barcode <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="EAN, UPC, or custom scannable product code"></i></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-upc-scan text-info"></i></span>
+                                <input type="text" name="barcode" class="form-control border-start-0" value="{{ old('barcode', $product->barcode) }}" placeholder="Optional">
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -67,22 +73,35 @@
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="form-label fw-600">Retail Price (£) <span class="text-danger">*</span></label>
-                            <input type="number" name="price" id="product_price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
-                            @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-currency-pound text-success"></i></span>
+                                <input type="number" name="price" id="product_price" class="form-control border-start-0 @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
+                                @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Wholesale Price (£)</label>
-                            <input type="number" name="wholesale_price" class="form-control" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
+                            <label class="form-label fw-600">Wholesale Price (£) <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Optional cost value or discounted wholesale unit price"></i></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-currency-pound" style="color: #0d9488 !important;"></i></span>
+                                <input type="number" name="wholesale_price" class="form-control border-start-0" value="{{ old('wholesale_price', $product->wholesale_price) }}" step="0.01" min="0">
+                            </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label fw-600">Stock Quantity <span class="text-danger">*</span></label>
-                            <input type="number" name="stock" id="product_stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
-                            @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-archive-fill text-warning"></i></span>
+                                <input type="number" name="stock" id="product_stock" class="form-control border-start-0 @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
+                                @error('stock') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div id="stock-val-badge" class="mt-1" style="min-height: 20px;"></div>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span></label>
-                            <input type="number" name="weight" class="form-control @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight) }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
-                            @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <label class="form-label fw-600">Weight (kg) <span class="text-danger">*</span> <i class="bi bi-info-circle text-muted ms-1" style="cursor: help;" title="Used to calculate shipping rates at checkout"></i></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-speedometer2" style="color: #ea580c !important;"></i></span>
+                                <input type="number" name="weight" class="form-control border-start-0 @error('weight') is-invalid @enderror" value="{{ old('weight', $product->weight) }}" step="0.01" min="0.01" required placeholder="e.g. 0.50">
+                                @error('weight') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
                     </div>
                     
@@ -94,17 +113,24 @@
                     <div class="row">
                         <div class="col-md-5 mb-3">
                             <label class="form-label fw-600">Min Quantity for Offer</label>
-                            <input type="number" name="offer_min_qty" class="form-control" value="{{ old('offer_min_qty', $product->offer_min_qty) }}" min="1">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calculator" style="color: #db2777 !important;"></i></span>
+                                <input type="number" name="offer_min_qty" class="form-control border-start-0" value="{{ old('offer_min_qty', $product->offer_min_qty) }}" min="1">
+                            </div>
                             <small class="text-muted d-block mt-1">Quantity required to trigger discount.</small>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-600">Discount Percentage (%)</label>
-                            <input type="number" name="offer_discount_percent" class="form-control" value="{{ old('offer_discount_percent', $product->offer_discount_percent) }}" min="0" max="100" step="0.01">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-percent text-danger"></i></span>
+                                <input type="number" name="offer_discount_percent" class="form-control border-start-0" value="{{ old('offer_discount_percent', $product->offer_discount_percent) }}" min="0" max="100" step="0.01">
+                            </div>
+                            <div id="offer-calc-badge" class="mt-1" style="min-height: 20px;"></div>
                         </div>
                         <div class="col-md-3 mb-3 d-flex align-items-end">
-                            <div class="form-check mb-2">
-                                <label class="form-check-label">
-                                    <input type="checkbox" name="offer_active" class="form-check-input" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
+                            <div class="form-check mb-2 bg-light p-2.5 rounded-3 border w-100 d-flex align-items-center gap-2" style="min-height: 38px; background: rgba(0,0,0,0.01);">
+                                <input type="checkbox" name="offer_active" id="offer_active" class="form-check-input ms-0 mt-0" value="1" {{ old('offer_active', $product->offer_active) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-600 mb-0 cursor-pointer text-nowrap" for="offer_active">
                                     Activate Offer
                                 </label>
                             </div>
@@ -161,7 +187,7 @@
         </div>
 
         {{-- Right Column: Mockup Preview, Classification & Actions --}}
-        <div class="col-lg-4 grid-margin d-flex flex-column gap-4">
+        <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
             {{-- Sleek Live Mobile Page Preview Mockup --}}
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
                 <div class="card-body p-0">
@@ -278,6 +304,25 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    {{-- Modern Floating Action Bar --}}
+    <div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3 border shadow-lg rounded-pill">
+        <div class="d-flex align-items-center gap-3 text-white">
+            <span class="live-indicator me-1"></span>
+            <div style="font-family: 'Outfit', sans-serif;">
+                <small class="text-muted text-uppercase d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">Currently Editing</small>
+                <span class="fw-bold small" style="font-size: 0.85rem;" id="floating-product-title">Product Name</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-light rounded-pill px-4 btn-sm font-weight-bold" style="border-color: rgba(255,255,255,0.25); color: #fff;">
+                Cancel
+            </a>
+            <button type="submit" form="edit-product-form" class="btn btn-primary rounded-pill px-4 btn-sm font-weight-bold shadow-sm" style="background: var(--ps-gradient); border: none;">
+                <i class="bi bi-check-circle-fill me-1"></i> Save Changes
+            </button>
         </div>
     </div>
 </form>
@@ -563,6 +608,84 @@ html[data-admin-theme="dark"] .media-btn-circle.btn-star-inactive:hover i {
     color: #fff;
     border-color: #ef4444;
 }
+
+/* ─── Premium UX Upgrades ─── */
+.input-group-text {
+    border-top-left-radius: 12px !important;
+    border-bottom-left-radius: 12px !important;
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+html[data-admin-theme="dark"] .input-group-text {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+}
+.input-group .form-control {
+    border-top-right-radius: 12px !important;
+    border-bottom-right-radius: 12px !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+}
+html[data-admin-theme="dark"] .input-group .form-control {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.input-group:focus-within .input-group-text {
+    border-color: #6c5ce7 !important;
+    background: rgba(108, 92, 231, 0.03) !important;
+}
+.floating-save-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: calc(100% - 32px);
+    max-width: 780px;
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-admin-theme="dark"] .floating-save-bar {
+    background: rgba(10, 15, 28, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.form-check {
+    border-color: rgba(0,0,0,0.08) !important;
+}
+html[data-admin-theme="dark"] .form-check {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.position-sticky-sidebar {
+    position: sticky !important;
+    top: 24px !important;
+    height: fit-content !important;
+    align-self: start !important;
+    z-index: 5 !important;
+}
+@media (max-width: 991px) {
+    .position-sticky-sidebar {
+        position: static !important;
+    }
+}
+@media (max-width: 575px) {
+    .floating-save-bar {
+        border-radius: 18px !important;
+        padding: 10px 16px !important;
+        bottom: 12px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch !important;
+        text-align: center;
+    }
+    .floating-save-bar .d-flex {
+        justify-content: center;
+    }
+}
 </style>
 
 <script>
@@ -818,15 +941,78 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Sync floating title
+    const floatTitle = document.getElementById('floating-product-title');
+    function syncFloatingTitle() {
+        floatTitle.innerText = inputName.value.trim() || 'Product Name';
+    }
+
+    // Live Calculations
+    const inputWholesale = document.getElementsByName('wholesale_price')[0];
+    const inputDiscount = document.getElementsByName('offer_discount_percent')[0];
+    const inputMinQty = document.getElementsByName('offer_min_qty')[0];
+    const inputOfferActive = document.getElementsByName('offer_active')[0];
+
+    const stockValBadge = document.getElementById('stock-val-badge');
+    const offerCalcBadge = document.getElementById('offer-calc-badge');
+
+    function updateLiveCalculations() {
+        // 1. Stock Valuation
+        const price = parseFloat(inputPrice.value || 0);
+        const stock = parseInt(inputStock.value || 0);
+        if (price > 0 && stock > 0) {
+            const valuation = price * stock;
+            stockValBadge.innerHTML = `<span class="badge bg-soft-success text-success px-2.5 py-1 rounded"><i class="bi bi-wallet2 me-1"></i> Inventory Value: £${valuation.toFixed(2)}</span>`;
+        } else {
+            stockValBadge.innerHTML = '';
+        }
+
+        // 2. Offer Calculation
+        const discount = parseFloat(inputDiscount.value || 0);
+        const minQty = parseInt(inputMinQty.value || 0);
+        const isOfferActive = inputOfferActive ? inputOfferActive.checked : false;
+
+        if (price > 0 && discount > 0 && isOfferActive) {
+            const savings = price * (discount / 100);
+            const promoPrice = price - savings;
+            offerCalcBadge.innerHTML = `
+                <span class="badge bg-soft-warning text-warning px-2.5 py-1 rounded d-inline-block mt-1">
+                    <i class="bi bi-tag-fill me-1"></i> Promo Price: £${promoPrice.toFixed(2)} each 
+                    <small class="d-block text-muted mt-1" style="font-size:0.65rem;">(Saves £${savings.toFixed(2)} per unit on min purchase of ${minQty || 1})</small>
+                </span>
+            `;
+        } else {
+            offerCalcBadge.innerHTML = '';
+        }
+    }
+
     // Setup input trigger listeners
     [inputName, inputPrice, inputStock, textDesc].forEach(el => {
-        el.addEventListener('input', syncLivePreview);
-        el.addEventListener('change', syncLivePreview);
+        el.addEventListener('input', () => {
+            syncLivePreview();
+            syncFloatingTitle();
+        });
+        el.addEventListener('change', () => {
+            syncLivePreview();
+            syncFloatingTitle();
+        });
     });
     selectCategory.addEventListener('change', syncLivePreview);
 
+    [inputPrice, inputStock, inputDiscount, inputMinQty].forEach(el => {
+        if (el) {
+            el.addEventListener('input', updateLiveCalculations);
+            el.addEventListener('change', updateLiveCalculations);
+        }
+    });
+    if (inputOfferActive) {
+        inputOfferActive.addEventListener('change', updateLiveCalculations);
+    }
+
     // Initial render
     updateImagesState();
+    syncFloatingTitle();
+    updateLiveCalculations();
 });
 </script>
 
