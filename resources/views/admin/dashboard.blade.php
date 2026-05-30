@@ -19,9 +19,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
   <div>
-    <h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4>
+    <h4 class="mb-0">Welcome to Dashboard</h4>
   </div>
-  <div class="d-flex align-items-center flex-wrap text-nowrap">
+  <div class="d-none d-md-flex align-items-center flex-wrap text-nowrap">
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center rounded-pill mb-2 mb-md-0" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
       <i data-feather="plus-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i>
       <span>Add Product</span>
