@@ -33,7 +33,7 @@
     <div>
       <span class="text-muted small text-uppercase fw-800 tracking-wider">Order Management</span>
       <h3 class="mb-0 mt-1" style="font-family: 'Outfit', sans-serif; font-weight: 800; letter-spacing: -0.5px;">
-          Order Details <span class="text-primary font-weight-bold">#{{ $order->order_number }}</span>
+          Order Details <span class="d-sm-inline d-block text-primary font-weight-bold">#{{ $order->order_number }}</span>
       </h3>
     </div>
     <div class="d-flex align-items-center flex-wrap gap-2">
@@ -68,7 +68,7 @@
               <h5 class="mb-0 fw-700 mt-2" style="font-family: 'Outfit', sans-serif; line-height: 1.5;">{{ $order->created_at->format('M d, Y') }} <span class="d-block text-white-50 font-weight-normal" style="font-size: 0.75rem;">at {{ $order->created_at->format('H:i') }}</span></h5>
           </div>
       </div>
-      <div class="col-sm-6 col-md-3 mb-3 mb-md-0">
+      <div class="col-sm-6 col-md-3 mb-3 mb-md-0 d-none d-sm-block">
           <div class="card border-0 shadow-sm p-4 h-100 flex-column justify-content-between theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(108,92,231,0.06) !important;">
               <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.8px; font-size: 0.72rem;">Order Status</span>
               <div class="mt-2">
@@ -89,7 +89,7 @@
               </div>
           </div>
       </div>
-      <div class="col-sm-6 col-md-3">
+      <div class="col-sm-6 col-md-3 d-none d-sm-block">
           <div class="card border-0 shadow-sm p-4 h-100 flex-column justify-content-between theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(108,92,231,0.06) !important;">
               <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.8px; font-size: 0.72rem;">Payment Details</span>
               <div class="mt-2">
@@ -104,6 +104,34 @@
                       {{ $order->payment_status === 'completed' ? 'Paid' : 'Unpaid' }}
                   </span>
                   <span class="d-block text-muted small mt-1 font-weight-medium" style="font-size: 0.7rem;"><i class="bi bi-credit-card mr-1"></i> {{ $order->payment_method ?? 'Debit/Credit Card' }}</span>
+              </div>
+          </div>
+      </div>
+
+      {{-- Combined Order Status & Payment Card for Mobile View Only --}}
+      <div class="col-12 d-block d-sm-none mb-3">
+          <div class="card border-0 shadow-sm p-3 theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(108,92,231,0.06) !important;">
+              <div class="row align-items-center">
+                  {{-- Left half: Order Status --}}
+                  <div class="col-6 border-right-subtle">
+                      <span class="text-muted small text-uppercase font-weight-bold d-block mb-2" style="letter-spacing: 0.8px; font-size: 0.72rem;">Order Status</span>
+                      <div>
+                          <span class="badge rounded-pill {{ $colorClass }} px-3 py-2 fw-700 font-weight-bold" style="font-size: 0.82rem; letter-spacing: 0.3px;">
+                              <span class="status-pulse-dot bg-current" style="background-color: currentColor;"></span>
+                              {{ ucfirst($order->status) }}
+                          </span>
+                      </div>
+                  </div>
+                  {{-- Right half: Payment Details --}}
+                  <div class="col-6 pl-3">
+                      <span class="text-muted small text-uppercase font-weight-bold d-block mb-2" style="letter-spacing: 0.8px; font-size: 0.72rem;">Payment Details</span>
+                      <div>
+                          <span class="badge rounded-pill {{ $payColorClass }} px-3 py-2 fw-700 font-weight-bold" style="font-size: 0.82rem; letter-spacing: 0.3px;">
+                              {{ $order->payment_status === 'completed' ? 'Paid' : 'Unpaid' }}
+                          </span>
+                          <span class="d-block text-muted small mt-2 font-weight-medium" style="font-size: 0.7rem; line-height: 1.3; margin-top: 8px !important;"><i class="bi bi-credit-card mr-1"></i> {{ $order->payment_method ?? 'Debit/Credit Card' }}</span>
+                      </div>
+                  </div>
               </div>
           </div>
       </div>
@@ -194,7 +222,7 @@
             </h5>
           </div>
 
-          <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST">
+          <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" class="update-status-form">
             @csrf 
             @method('PATCH')
             
@@ -275,7 +303,7 @@
             </div>
 
             {{-- Action & Notification Toggle --}}
-            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top-subtle flex-wrap gap-3">
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top-subtle flex-wrap gap-3 update-status-actions">
               <div class="d-flex align-items-center">
                 <div class="custom-control custom-switch custom-switch-premium">
                   <input type="checkbox" class="custom-control-input cursor-pointer" id="sendEmailSwitch" name="send_email" value="1" checked>
@@ -336,14 +364,14 @@
 
             {{-- Assign Driver form --}}
             <div class="col-md-6">
-              <form action="{{ route('admin.orders.assignDriver', $order) }}" method="POST">
+              <form action="{{ route('admin.orders.assignDriver', $order) }}" method="POST" class="assign-driver-form">
                 @csrf
                 <label class="small text-muted font-weight-bold mb-2 d-flex align-items-center">
                   <i class="bi bi-person-fill-add text-warning mr-2"></i> Select Driver & Assign
                 </label>
                 
-                <div class="d-flex align-items-center gap-2">
-                  <div class="dropdown custom-form-dropdown flex-grow-1" style="min-width: 0;">
+                <div class="d-flex align-items-center gap-2 driver-controls-wrapper">
+                  <div class="dropdown custom-form-dropdown flex-grow-1 mr-3" style="min-width: 0;">
                     <input type="hidden" id="driverAssignmentInput" name="driver_id" value="{{ $order->driver_id }}">
                     <button class="btn btn-outline-light custom-select-btn d-flex align-items-center justify-content-between w-100 px-3 rounded-3 text-left" type="button" id="driverAssignmentDropdownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 42px;">
                       @php
@@ -552,36 +580,46 @@
     }
     .page-breadcrumb + div > div:last-child {
         display: flex !important;
-        flex-direction: column !important;
+        flex-direction: row !important; /* Keep side-by-side on mobile row */
         width: 100% !important;
         margin-top: 12px !important;
+        gap: 8px !important;
     }
     .page-breadcrumb + div > div:last-child a {
-        width: 100% !important;
+        flex: 1 1 0% !important; /* 50%/50% width distribution */
+        width: auto !important;
         margin-right: 0 !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 0 !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        font-size: 0.74rem !important;
+        height: 38px !important;
     }
     
-    /* Make Update Order Status button full-width on mobile */
-    form[action*="updateStatus"] button[type="submit"] {
+    /* Make Update Order Status button full-width on mobile with clear spacing */
+    form.update-status-form button[type="submit"] {
         width: 100% !important;
-        margin-top: 12px !important;
+        margin-top: 24px !important; /* Increased space below email notification switch */
     }
-    form[action*="updateStatus"] .d-flex.justify-content-between {
+    form.update-status-form .update-status-actions {
         flex-direction: column !important;
         align-items: stretch !important;
+    }
+    form.update-status-form .update-status-actions > div {
+        margin-bottom: 8px !important;
     }
     
     /* Stack driver assignment elements vertically on mobile */
-    form[action*="assign-driver"] .d-flex.align-items-center {
+    form.assign-driver-form .driver-controls-wrapper {
         flex-direction: column !important;
         align-items: stretch !important;
     }
-    form[action*="assign-driver"] .custom-form-dropdown {
+    form.assign-driver-form .custom-form-dropdown {
         width: 100% !important;
-        margin-bottom: 8px !important;
+        margin-right: 0 !important;
+        margin-bottom: 16px !important;
     }
-    form[action*="assign-driver"] button[type="submit"] {
+    form.assign-driver-form button[type="submit"] {
         width: 100% !important;
         min-width: 0 !important;
     }
@@ -785,6 +823,13 @@ html[data-admin-theme="dark"] .btn-outline-primary:hover {
 }
 html[data-admin-theme="dark"] .border-bottom-subtle {
     border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.border-right-subtle {
+    border-right: 1.5px solid rgba(108, 92, 231, 0.06) !important;
+}
+html[data-admin-theme="dark"] .border-right-subtle {
+    border-right: 1.5px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .border-dashed {
