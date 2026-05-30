@@ -136,6 +136,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/omni-search', [DashboardController::class, 'omniSearch'])->name('omniSearch');
 
     // Products — full CRUD + QR management + stock update + image uploads
     Route::post('products/upload-image', [AdminProductController::class, 'uploadImage'])->name('products.uploadImage');
