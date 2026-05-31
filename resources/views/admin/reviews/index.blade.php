@@ -1,138 +1,81 @@
-{{--
-    admin/reviews/index.blade.php — Customer reviews moderation
-    =============================================================
-    Table of all reviews: product, customer, rating (stars), body, status, date.
-    Approve/unapprove toggle. Admin reply form inline per review.
-    Variables: $reviews (paginated, with product, user)
---}}
 @extends('layouts.admin_noble')
 @section('title', 'Customer Reviews Management')
 
 @section('content')
 <div class="row mb-4 align-items-center">
     <div class="col-md-6">
-        <h2 class="h3 mb-0 text-gray-800 fw-bold">Customer Reviews</h2>
+        <h2 class="h3 mb-0 text-gray-800 fw-bold" style="font-family: 'Outfit', sans-serif;">Customer Reviews</h2>
         <p class="text-muted mb-0">Monitor, moderate, and reply to product reviews</p>
+    </div>
+    <div class="col-md-6 text-right d-none d-md-block">
+        <span class="badge bg-soft-primary px-3 py-2 rounded-pill font-weight-bold" style="font-size: 0.8rem;">Total: {{ $reviews->total() }} Reviews</span>
     </div>
 </div>
 
-<div class="card shadow rounded-4 border-0 mb-4">
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4" style="border-radius: 18px !important;">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Product</th>
-                        <th>Customer</th>
-                        <th>Rating & Review</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th class="text-end pe-4">Actions</th>
+                <thead>
+                    <tr class="text-muted" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1.5px solid rgba(0, 0, 0, 0.04);">
+                        <th class="ps-4 py-3 pl-4 align-middle">Review ID</th>
+                        <th class="py-3 align-middle">Product</th>
+                        <th class="py-3 align-middle">Customer</th>
+                        <th class="py-3 align-middle">Rating</th>
+                        <th class="py-3 align-middle">Status</th>
+                        <th class="py-3 align-middle text-right pr-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($reviews as $review)
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="{{ $review->product->images[0] ?? '' }}" class="rounded shadow-sm" style="width:40px;height:40px;object-fit:cover;">
-                                <div>
-                                    <h6 class="mb-0 fw-bold truncate-1" style="max-width: 200px;" title="{{ $review->product->name }}">
-                                        <a href="{{ route('products.show', $review->product->slug) }}" target="_blank" class="text-dark text-decoration-none">
-                                            {{ $review->product->name }}
-                                        </a>
-                                    </h6>
-                                    <small class="text-muted">ID: #{{ $review->product_id }}</small>
-                                </div>
-                            </div>
+                    <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.02); transition: all 0.2s ease;">
+                        <td class="ps-4 pl-4 align-middle font-weight-bold">
+                            <a href="{{ route('admin.reviews.show', $review) }}" class="font-weight-bold text-primary" style="font-size: 0.85rem;" title="Moderate Review">
+                                REV-{{ str_pad($review->id, 5, '0', STR_PAD_LEFT) }}
+                            </a>
                         </td>
-                        <td>
-                            <div class="fw-bold">{{ $review->user->name }}</div>
-                            <small class="text-muted">{{ $review->user->email }}</small>
+                        <td class="align-middle">
+                            <h6 class="mb-0 fw-bold truncate-1" style="max-width: 220px;" title="{{ $review->product->name }}">
+                                <a href="{{ route('products.show', $review->product->slug) }}" target="_blank" class="text-dark-theme-aware text-hover-primary text-decoration-none font-weight-bold" style="font-size: 0.88rem;">
+                                    {{ $review->product->name }}
+                                </a>
+                            </h6>
                         </td>
-                        <td style="max-width:300px;">
-                            <div class="text-warning mb-1" style="font-size: 0.8rem;">
+                        <td class="align-middle fw-bold text-theme-dark-bold" style="font-size: 0.85rem;">
+                            {{ $review->user->name }}
+                        </td>
+                        <td class="align-middle">
+                            <div class="text-warning d-flex gap-0.5" style="font-size: 0.85rem;">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                    <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }} mr-0.5"></i>
                                 @endfor
                             </div>
-                            <h6 class="fw-bold mb-1 truncate-1 fs-6">{{ $review->title ?? 'No Title' }}</h6>
-                            <p class="mb-1 text-muted small truncate-2">{{ $review->comment }}</p>
-                            @if($review->photos)
-                                <span class="badge bg-secondary rounded-pill"><i class="bi bi-images me-1"></i> {{ count($review->photos) }} img</span>
+                        </td>
+                        <td class="align-middle">
+                            @if($review->is_approved)
+                                <span class="badge px-3 py-1.5 bg-soft-success font-weight-bold" style="font-size: 0.72rem; border-radius: 20px;">Approved</span>
+                            @else
+                                <span class="badge px-3 py-1.5 bg-soft-secondary font-weight-bold" style="font-size: 0.72rem; border-radius: 20px;">Hidden</span>
                             @endif
-                            @if($review->admin_reply)
-                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill mt-1 d-ib"><i class="bi bi-reply-fill"></i> Replied</span>
-                            @endif
                         </td>
-                        <td>
-                            <form action="{{ route('admin.reviews.toggleApproval', $review) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-sm btn-{{ $review->is_approved ? 'success text-white' : 'secondary text-white' }} rounded-pill border-0 shadow-sm" style="width:100px;">
-                                    {{ $review->is_approved ? 'Approved' : 'Hidden' }}
-                                </button>
-                            </form>
-                        </td>
-                        <td>
-                            <span class="text-muted small">{{ $review->created_at->format('M d, Y') }}</span>
-                            <div class="text-muted" style="font-size:0.75rem;">{{ $review->created_at->format('h:i A') }}</div>
-                        </td>
-                        <td class="text-end pe-4">
-                            <button class="btn btn-light btn-sm rounded-circle me-1" data-bs-toggle="modal" data-bs-target="#replyModal{{ $review->id }}" title="Reply">
-                                <i class="bi bi-reply text-primary"></i>
-                            </button>
-                            <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this review permanently?');">
+                        <td class="text-right pr-4 align-middle">
+                            <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to permanently delete this customer review?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-light btn-sm rounded-circle" title="Delete">
-                                    <i class="bi bi-trash text-danger"></i>
+                                <button type="submit" class="btn-premium-delete">
+                                    <i class="bi bi-trash"></i>
+                                    <span>Delete</span>
                                 </button>
                             </form>
-
-                            {{-- Reply Modal --}}
-                            <div class="modal fade text-start" id="replyModal{{ $review->id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content border-0 shadow rounded-4">
-                                        <div class="modal-header border-bottom-0 pb-0">
-                                            <h5 class="modal-title fw-bold">Reply Profile</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form action="{{ route('admin.reviews.reply', $review) }}" method="POST">
-                                            @csrf
-                                            <div class="modal-body">
-                                                <div class="p-3 bg-light rounded-3 mb-3">
-                                                    <div class="d-flex justify-content-between mb-2">
-                                                        <strong>{{ $review->user->name }}</strong>
-                                                        <div class="text-warning small">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>
-                                                            @endfor
-                                                        </div>
-                                                    </div>
-                                                    <p class="mb-0 text-muted small fst-italic">"{{ $review->comment ?? 'No comment provided.' }}"</p>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold">Your Official Reply (Public)</label>
-                                                    <textarea name="admin_reply" class="form-control" rows="4" placeholder="Write a response visible to all customers...">{{ $review->admin_reply }}</textarea>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer border-top-0 pt-0">
-                                                <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="btn btn-primary rounded-pill fw-bold px-4">Save Reply</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
-                            <i class="bi bi-chat-square-text fs-1 mb-3 d-block opacity-50"></i>
-                            <p class="mb-0">No reviews found.</p>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="d-flex flex-column align-items-center justify-content-center py-4">
+                                <i class="bi bi-chat-square-text text-muted mb-3" style="font-size: 2.5rem;"></i>
+                                <p class="text-muted font-weight-bold" style="font-size: 0.9rem;">No reviews found.</p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -140,10 +83,97 @@
             </table>
         </div>
         @if($reviews->hasPages())
-        <div class="card-footer bg-white border-top-0 pt-3 pb-3 px-4">
-            {{ $reviews->links('pagination::bootstrap-5') }}
+        <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2 px-4 pb-4">
+            <div class="text-muted small" style="font-size: 0.8rem;">
+                Showing {{ $reviews->firstItem() ?? 0 }} to {{ $reviews->lastItem() ?? 0 }} of {{ $reviews->total() }} entries
+            </div>
+            <div>
+                {{ $reviews->links('pagination::bootstrap-4') }}
+            </div>
         </div>
         @endif
     </div>
 </div>
+
+<style>
+/* Soft-colored badges for light mode */
+.bg-soft-primary { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-success { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
+.bg-soft-warning { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
+.bg-soft-danger { background: rgba(239,68,68,0.1) !important; color: #ef4444 !important; }
+.bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
+
+/* Soft-colored badges for dark mode */
+html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(167, 139, 250, 0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-success { background: rgba(52, 211, 153, 0.15) !important; color: #34d399 !important; }
+html[data-admin-theme="dark"] .bg-soft-warning { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
+html[data-admin-theme="dark"] .bg-soft-danger { background: rgba(248, 113, 113, 0.15) !important; color: #f87171 !important; }
+html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148, 163, 184, 0.15) !important; color: #94a3b8 !important; }
+
+/* Hover links */
+.text-hover-primary:hover {
+    color: #6c5ce7 !important;
+    text-decoration: none !important;
+}
+html[data-admin-theme="dark"] .text-hover-primary:hover {
+    color: #a78bfa !important;
+    text-decoration: none !important;
+}
+
+html[data-admin-theme="light"] .text-dark-theme-aware {
+    color: #1e293b !important;
+}
+html[data-admin-theme="dark"] .text-dark-theme-aware {
+    color: #cbd5e1 !important;
+}
+
+tbody tr:hover {
+    background-color: rgba(108, 92, 231, 0.015) !important;
+}
+html[data-admin-theme="dark"] tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.01) !important;
+}
+html[data-admin-theme="dark"] td {
+    color: #cbd5e1 !important;
+}
+
+/* Premium Pill Delete Action Button styles (Mirroring Reference Screenshot!) */
+.btn-premium-delete {
+    background-color: transparent !important;
+    border: 1.5px solid #ff3366 !important;
+    color: #ff3366 !important;
+    border-radius: 50px !important;
+    padding: 5px 16px !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    font-family: 'Outfit', sans-serif !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+    outline: none !important;
+    box-shadow: none !important;
+    line-height: 1 !important;
+}
+.btn-premium-delete i {
+    font-size: 0.88rem !important;
+    line-height: 1 !important;
+}
+.btn-premium-delete span {
+    line-height: 1 !important;
+    font-weight: 700 !important;
+}
+.btn-premium-delete:hover {
+    background-color: rgba(255, 51, 102, 0.05) !important;
+    box-shadow: 0 4px 10px rgba(255, 51, 102, 0.12) !important;
+    transform: translateY(-0.5px) !important;
+}
+.btn-premium-delete:active {
+    transform: scale(0.97) !important;
+}
+
+.mr-0.5 { margin-right: 0.12rem; }
+</style>
 @endsection

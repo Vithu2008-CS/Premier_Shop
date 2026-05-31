@@ -67,4 +67,15 @@ class ReturnRequestController extends Controller
         return redirect()->route('admin.returns.show', $return)
             ->with('success', 'Return request updated successfully.');
     }
+
+    /**
+     * Delete a return request and redirect back with success.
+     */
+    public function destroy(ReturnRequest $return)
+    {
+        $return->delete();
+
+        return redirect()->route('admin.returns.index')
+            ->with('success', 'Return request deleted successfully.');
+    }
 }

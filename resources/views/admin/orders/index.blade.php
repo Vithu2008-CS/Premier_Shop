@@ -50,6 +50,11 @@
                       <a href="{{ route('admin.orders.show', $order) }}" class="font-weight-bold text-primary d-inline-flex align-items-center gap-1" style="font-size: 0.85rem;">
                           <i class="bi bi-hash"></i>{{ $order->order_number }}
                       </a>
+                      @if($order->returnRequest)
+                      <a href="{{ route('admin.returns.show', $order->returnRequest) }}" class="badge bg-soft-danger font-weight-bold ml-1" style="font-size: 0.62rem; border-radius: 8px; padding: 2px 6px; text-decoration: none;" title="View Return Request for this order">
+                          Return
+                      </a>
+                      @endif
                   </td>
                   <td class="align-middle">
                     <div class="d-flex align-items-center" style="gap: 8px;">

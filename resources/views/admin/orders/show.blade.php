@@ -28,6 +28,22 @@
     </ol>
   </nav>
 
+  @if($order->returnRequest)
+  {{-- Active Return Request Premium Alert Banner --}}
+  <div class="alert alert-danger border-0 shadow-sm mb-4 d-flex align-items-center justify-content-between p-3" role="alert" style="border-radius: 14px; background-color: rgba(239, 68, 68, 0.08); color: #ef4444;">
+      <div class="d-flex align-items-center">
+          <i class="bi bi-exclamation-octagon-fill mr-3" style="font-size: 1.25rem;"></i>
+          <div>
+              <span class="font-weight-bold d-block" style="font-size: 0.88rem;">Active Return Request Found</span>
+              <span class="small" style="opacity: 0.85;">This order has an active return request <strong>REQ-{{ str_pad($order->returnRequest->id, 5, '0', STR_PAD_LEFT) }}</strong> in <strong>{{ ucfirst($order->returnRequest->status) }}</strong> status.</span>
+          </div>
+      </div>
+      <a href="{{ route('admin.returns.show', $order->returnRequest) }}" class="btn btn-danger rounded-pill btn-sm px-4 fw-bold text-white d-inline-flex align-items-center" style="font-size: 0.78rem; height: 32px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;">
+          View Return Request <i class="bi bi-arrow-right-short ml-1" style="font-size: 1.15rem; line-height: 1;"></i>
+      </a>
+  </div>
+  @endif
+
   {{-- Top Title & Actions Bar --}}
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <div>
