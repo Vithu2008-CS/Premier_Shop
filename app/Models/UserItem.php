@@ -68,11 +68,28 @@ class UserItem extends Model
             return 0;
         }
 
+        $unitPrice = $this->product->active_price;
+
         // Apply bulk-buy discount when quantity qualifies
         if ($this->type === 'cart' && $this->product->has_offer && $this->quantity >= $this->product->offer_min_qty) {
-            return $this->product->offer_price * $this->quantity;
+            $unitPrice = $this->product->offer_price;
         }
 
-        return $this->product->active_price * $this->quantity;
+        // Apply personalized customer offer if active
+        $user = $this->user;
+        if ($user && $user->offer_discount_percentage > 0) {
+            $applies = false;
+            if ($user->offer_scope === 'all') {
+                $applies = true;
+            } elseif ($user->offer_scope === 'selected' && is_array($user->offer_product_ids) && in_array($this->product_id, $user->offer_product_ids)) {
+                $applies = true;
+            }
+
+            if ($applies) {
+                $unitPrice = round($unitPrice * (1 - $user->offer_discount_percentage / 100), 2);
+            }
+        }
+
+        return $unitPrice * $this->quantity;
     }
 }
