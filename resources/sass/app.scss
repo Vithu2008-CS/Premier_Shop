@@ -582,6 +582,10 @@ h3 { font-size: var(--fs-h3); }
     pointer-events: auto;
   }
 
+  @media (max-width: 991.98px) {
+    display: none !important;
+  }
+
   &::-webkit-scrollbar {
     width: 6px;
   }

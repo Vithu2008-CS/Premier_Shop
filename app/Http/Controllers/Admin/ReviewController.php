@@ -21,6 +21,35 @@ class ReviewController extends Controller
     }
 
     /**
+     * Show a single review's detail page.
+     */
+    public function show(Review $review)
+    {
+        $review->load(['user', 'product']);
+
+        return view('admin.reviews.show', compact('review'));
+    }
+
+    /**
+     * Update a review's status and admin reply.
+     */
+    public function update(Request $request, Review $review)
+    {
+        $request->validate([
+            'is_approved' => 'required|boolean',
+            'admin_reply' => 'nullable|string',
+        ]);
+
+        $review->update([
+            'is_approved' => $request->is_approved,
+            'admin_reply' => $request->admin_reply,
+        ]);
+
+        return redirect()->route('admin.reviews.show', $review)
+            ->with('success', 'Review updated successfully.');
+    }
+
+    /**
      * Toggle a review's approved status.
      * Unapproved reviews are hidden from the storefront product page.
      */
@@ -46,6 +75,7 @@ class ReviewController extends Controller
     {
         $review->delete();
 
-        return back()->with('success', 'Review deleted successfully.');
+        return redirect()->route('admin.reviews.index')
+            ->with('success', 'Review deleted successfully.');
     }
 }

@@ -159,14 +159,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Reviews — moderation (approve/reject) + admin reply
     Route::get('/reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{review}', [\App\Http\Controllers\Admin\ReviewController::class, 'show'])->name('reviews.show');
+    Route::put('/reviews/{review}', [\App\Http\Controllers\Admin\ReviewController::class, 'update'])->name('reviews.update');
     Route::patch('/reviews/{review}/toggle-approval', [\App\Http\Controllers\Admin\ReviewController::class, 'toggleApproval'])->name('reviews.toggleApproval');
     Route::post('/reviews/{review}/reply', [\App\Http\Controllers\Admin\ReviewController::class, 'reply'])->name('reviews.reply');
     Route::delete('/reviews/{review}', [\App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
-    // Return Requests — view, approve/reject/refund
+    // Return Requests — view, approve/reject/refund, delete
     Route::get('/returns', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'index'])->name('returns.index');
     Route::get('/returns/{return}', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'show'])->name('returns.show');
     Route::put('/returns/{return}', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'update'])->name('returns.update');
+    Route::delete('/returns/{return}', [\App\Http\Controllers\Admin\ReturnRequestController::class, 'destroy'])->name('returns.destroy');
 
     // Orders — view, status update, driver assignment, print
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');

@@ -29,7 +29,7 @@ class OrderController extends Controller
     /** List all orders (newest first), paginated with their customer. */
     public function index()
     {
-        $orders = Order::with('user')->latest()->paginate(15);
+        $orders = Order::with(['user', 'returnRequest'])->latest()->paginate(15);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -40,7 +40,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load('items.product', 'user', 'driver');
+        $order->load('items.product', 'user', 'driver', 'returnRequest');
 
         // Only on-duty drivers are eligible for assignment
         $drivers = User::whereHas('role', fn ($q) => $q->where('name', 'driver'))
