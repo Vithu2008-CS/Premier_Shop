@@ -10,10 +10,8 @@
 @section('title', 'Driver Monitoring')
 
 @push('plugin-styles')
-<link rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin="">
+{{-- jsDelivr is already in CSP whitelist and more reliable than unpkg for SRI --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 @endpush
 
 @section('content')
@@ -212,28 +210,33 @@
                 <div class="track-stat-chip" id="track-stat-age">
                     <i class="bi bi-clock"></i> <span id="track-location-age">No location yet</span>
                 </div>
+                <div class="track-stat-chip" id="track-stat-motion">
+                    <i class="bi bi-arrow-up-right-circle" id="track-motion-icon"></i>
+                    <span id="track-motion-text">Waiting…</span>
+                </div>
                 <div class="track-stat-chip" id="track-stat-coords">
                     <i class="bi bi-pin-map"></i> <span id="track-coords-text">—</span>
                 </div>
             </div>
 
-            {{-- Map --}}
+            {{-- Map — overlay + map wrapped together so overlay positions correctly --}}
             <div class="modal-body px-4 pt-3 pb-0">
-                {{-- Loading overlay --}}
-                <div id="track-map-overlay" class="track-map-overlay">
-                    <div class="track-map-overlay-inner" id="track-map-overlay-content">
-                        <div class="track-spinner"></div>
-                        <span id="track-map-overlay-text">Loading location…</span>
+                <div style="position:relative;">
+                    <div id="track-map-overlay" class="track-map-overlay">
+                        <div class="track-map-overlay-inner" id="track-map-overlay-content">
+                            <div class="track-spinner"></div>
+                            <span id="track-map-overlay-text">Loading location…</span>
+                        </div>
                     </div>
+                    <div id="driver-tracking-map" class="track-map rounded-3"></div>
                 </div>
-                <div id="driver-tracking-map" class="track-map rounded-3"></div>
             </div>
 
             {{-- Footer --}}
             <div class="modal-footer border-0 px-4 py-3 d-flex justify-content-between align-items-center flex-wrap" style="gap:8px;">
                 <span class="text-muted" style="font-size:0.75rem;">
                     <i class="bi bi-info-circle mr-1"></i>
-                    Refreshes every 15 s while this panel is open. Closes tracking automatically when dismissed.
+                    Live — refreshes every 10 s. Tracking stops automatically when dismissed.
                 </span>
                 <button type="button" class="btn-close-track" data-dismiss="modal">
                     <i class="bi bi-x-circle mr-1"></i> Stop Tracking
@@ -465,6 +468,12 @@ html[data-admin-theme="light"] .btn-close-track {
 .leaflet-tile { filter: brightness(0.92) contrast(1.05); }
 html[data-admin-theme="light"] .leaflet-tile { filter: none; }
 
+/* Motion chip states */
+.track-stat-chip.moving  { border-color:rgba(0,184,148,0.35); color:#34d399; background:rgba(0,184,148,0.08); }
+.track-stat-chip.stopped { border-color:rgba(148,163,184,0.2); color:#94a3b8; }
+
+/* Position trail line handled via Leaflet polyline, no extra CSS needed */
+
 /* Duty badge in modal */
 .modal-duty-on  { display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:700; color:#34d399; }
 .modal-duty-off { display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:700; color:#94a3b8; }
@@ -485,286 +494,372 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLGk="
-        crossorigin=""></script>
+{{-- Use jsDelivr — already in CSP whitelist, no SRI that can silently fail --}}
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js" crossorigin=""></script>
 <script>
 (function () {
     'use strict';
 
-    // ── Config ────────────────────────────────────────────────────────────────
-    const POLL_INTERVAL_MS  = 15000;   // 15 s while modal is open
-    const STALE_WARN_S      = 120;     // yellow after 2 min
-    const STALE_OLD_S       = 300;     // red after 5 min
+    const POLL_MS    = 10000;
+    const STALE_WARN = 120;
+    const STALE_OLD  = 300;
+    const MAX_TRAIL  = 20;
 
-    // ── State ─────────────────────────────────────────────────────────────────
-    let pollTimer    = null;
-    let trackMap     = null;
-    let trackMarker  = null;
-    let trackCircle  = null;
-    let currentDriverId   = null;
-    let lastRefreshTime   = null;
-    let mapInitialised    = false;
-    let pollsUntilNext    = POLL_INTERVAL_MS / 1000;
-    let countdownTimer    = null;
+    let pollTimer   = null;
+    let countTimer  = null;
+    let trackMap    = null;
+    let trackMarker = null;
+    let trackCircle = null;
+    let trailLine   = null;
+    let posTrail    = [];
+    let lastLat     = null;
+    let lastLng     = null;
+    let animTimer   = null;
+    let currentId   = null;
+    let mapReady    = false;
+    let pendingData = null;
 
     // ── DOM refs ──────────────────────────────────────────────────────────────
-    const modal        = document.getElementById('trackDriverModal');
-    const mapEl        = document.getElementById('driver-tracking-map');
-    const overlay      = document.getElementById('track-map-overlay');
-    const overlayText  = document.getElementById('track-map-overlay-text');
-    const spinner      = overlay?.querySelector('.track-spinner');
-    const driverNameEl = document.getElementById('track-modal-driver-name');
-    const avatarEl     = document.getElementById('track-modal-avatar');
-    const dutyBadgeEl  = document.getElementById('track-modal-duty-badge');
-    const ordersEl     = document.getElementById('track-orders-count');
-    const ageEl        = document.getElementById('track-location-age');
-    const ageChipEl    = document.getElementById('track-stat-age');
-    const coordsEl     = document.getElementById('track-coords-text');
-    const refreshLabel = document.getElementById('track-refresh-label');
-    const refreshBtn   = document.getElementById('track-manual-refresh');
+    const modal       = document.getElementById('trackDriverModal');
+    const mapEl       = document.getElementById('driver-tracking-map');
+    const overlay     = document.getElementById('track-map-overlay');
+    const overlayTxt  = document.getElementById('track-map-overlay-text');
+    const spinner     = overlay ? overlay.querySelector('.track-spinner') : null;
+    const nameEl      = document.getElementById('track-modal-driver-name');
+    const avatarEl    = document.getElementById('track-modal-avatar');
+    const dutyEl      = document.getElementById('track-modal-duty-badge');
+    const ordersEl    = document.getElementById('track-orders-count');
+    const ageEl       = document.getElementById('track-location-age');
+    const ageChipEl   = document.getElementById('track-stat-age');
+    const motionEl    = document.getElementById('track-motion-text');
+    const motionChip  = document.getElementById('track-stat-motion');
+    const coordsEl    = document.getElementById('track-coords-text');
+    const countEl     = document.getElementById('track-refresh-label');
+    const refreshBtn  = document.getElementById('track-manual-refresh');
+    const CSRF        = (document.querySelector('meta[name="csrf-token"]') || {}).getAttribute('content') || '';
 
-    const CSRF = (document.querySelector('meta[name="csrf-token"]') || {}).getAttribute?.('content') ?? '';
-
-    // ── Custom map marker (pulsing truck icon) ────────────────────────────────
-    function makeDriverIcon(fresh) {
-        const colour = fresh ? '#6c5ce7' : '#94a3b8';
-        const glow   = fresh ? 'rgba(108,92,231,0.35)' : 'rgba(148,163,184,0.2)';
+    // ── Truck marker icon ─────────────────────────────────────────────────────
+    function truckIcon(moving) {
+        const c = moving ? '#6c5ce7' : '#94a3b8';
+        const g = moving ? 'rgba(108,92,231,0.3)' : 'rgba(148,163,184,0.15)';
         return L.divIcon({
-            html: `<div style="
-                width:42px;height:42px;
-                background:${colour};
-                border-radius:50%;
-                border:3px solid #fff;
-                box-shadow:0 0 0 6px ${glow}, 0 4px 14px rgba(0,0,0,0.35);
-                display:flex;align-items:center;justify-content:center;
-                font-size:18px;
-            ">🚚</div>`,
-            className: '',
-            iconSize: [42, 42],
-            iconAnchor: [21, 21],
-            popupAnchor: [0, -24],
+            html: `<div style="width:42px;height:42px;background:${c};border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 6px ${g},0 4px 14px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;">🚚</div>`,
+            className: '', iconSize: [42,42], iconAnchor: [21,21], popupAnchor: [0,-24],
         });
     }
 
-    // ── Map init (deferred until first show so dimensions are known) ──────────
+    // ── Map init (deferred — needs visible dimensions) ────────────────────────
     function initMap() {
-        if (mapInitialised || !mapEl) return;
+        if (mapReady || !mapEl) return;
+
+        // Guard: Leaflet must be loaded
+        if (typeof L === 'undefined') {
+            setOverlay('⚠ Map library failed to load. Location data is shown above.', false);
+            return;
+        }
+
         try {
-            trackMap = L.map('driver-tracking-map', { zoomControl: true, attributionControl: true });
+            // Guard: Leaflet throws if container already has a map instance
+            // (can happen on second modal open if previous init was partial)
+            if (mapEl._leaflet_id) {
+                // Map was previously initialized but mapReady was false — recover it
+                mapReady = true;
+                return;
+            }
+
+            trackMap = L.map('driver-tracking-map', {
+                zoomControl: true,
+                attributionControl: true,
+            }).setView([51.505, -0.09], 13);
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                 maxZoom: 19,
             }).addTo(trackMap);
-            mapInitialised = true;
+
+            mapReady = true;
         } catch (e) {
-            showOverlay('❌ Map failed to load. Check internet connection.', false);
+            console.error('Map init error:', e);
+            // Don't change overlay here — render() will handle it
         }
     }
 
-    // ── Overlay helpers ───────────────────────────────────────────────────────
-    function showOverlay(text, showSpinner) {
+    // ── Overlay ───────────────────────────────────────────────────────────────
+    function setOverlay(text, spin) {
         if (!overlay) return;
         overlay.classList.remove('hidden');
-        if (overlayText) overlayText.textContent = text;
-        if (spinner)     spinner.style.display = showSpinner ? 'block' : 'none';
+        if (overlayTxt) overlayTxt.textContent = text;
+        if (spinner)    spinner.style.display  = spin ? 'block' : 'none';
     }
-    function hideOverlay() {
-        if (overlay) overlay.classList.add('hidden');
-    }
+    function hideOverlay() { overlay && overlay.classList.add('hidden'); }
 
-    // ── Staleness helpers ─────────────────────────────────────────────────────
-    function ageText(seconds) {
-        if (seconds === null) return 'No location yet';
-        if (seconds < 60)     return 'Just now';
-        if (seconds < 3600)   return `${Math.floor(seconds / 60)} min ago`;
-        return `${Math.floor(seconds / 3600)} hr ago`;
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function fmtAge(s) {
+        if (s === null) return 'No location yet';
+        if (s < 60)     return 'Just now';
+        if (s < 3600)   return Math.floor(s / 60) + ' min ago';
+        return Math.floor(s / 3600) + ' hr ago';
     }
-    function ageClass(seconds) {
-        if (seconds === null || seconds > STALE_OLD_S)  return 'old';
-        if (seconds > STALE_WARN_S)                     return 'stale';
+    function ageClass(s) {
+        if (s === null || s > STALE_OLD)  return 'old';
+        if (s > STALE_WARN)               return 'stale';
         return 'fresh';
     }
+    function haversineM(lat1, lng1, lat2, lng2) {
+        const R = 6371000;
+        const d1 = (lat2-lat1)*Math.PI/180, d2 = (lng2-lng1)*Math.PI/180;
+        const a  = Math.sin(d1/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(d2/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
 
-    // ── Countdown label ───────────────────────────────────────────────────────
+    // ── Countdown ─────────────────────────────────────────────────────────────
     function startCountdown() {
-        clearInterval(countdownTimer);
-        pollsUntilNext = POLL_INTERVAL_MS / 1000;
-        countdownTimer = setInterval(function () {
-            pollsUntilNext--;
-            if (refreshLabel) refreshLabel.textContent = `Refreshes in ${pollsUntilNext} s`;
-            if (pollsUntilNext <= 0) clearInterval(countdownTimer);
+        clearInterval(countTimer);
+        let secs = POLL_MS / 1000;
+        if (countEl) countEl.textContent = 'Refreshes in ' + secs + ' s';
+        countTimer = setInterval(function () {
+            secs--;
+            if (countEl) countEl.textContent = 'Refreshes in ' + secs + ' s';
+            if (secs <= 0) clearInterval(countTimer);
         }, 1000);
     }
 
-    // ── Fetch + render location ───────────────────────────────────────────────
-    function fetchLocation(manual) {
-        if (!currentDriverId) return;
-
-        if (manual) {
-            refreshBtn?.classList.add('spinning');
-        }
-
-        fetch(`{{ url('admin/drivers') }}/${currentDriverId}/location`, {
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
-        })
-        .then(function (res) {
-            if (res.status === 403) throw Object.assign(new Error('Forbidden'), { code: 403 });
-            if (res.status === 404) throw Object.assign(new Error('Driver not found'), { code: 404 });
-            if (!res.ok)            throw Object.assign(new Error('Server error ' + res.status), { code: res.status });
-            return res.json();
-        })
-        .then(function (data) {
-            renderLocation(data);
-            lastRefreshTime = Date.now();
-            startCountdown();
-        })
-        .catch(function (err) {
-            const msg = err.code === 404 ? 'Driver not found.'
-                      : err.code === 403 ? 'Access denied.'
-                      : 'Failed to fetch location. Check connection.';
-            showOverlay('⚠ ' + msg, false);
-        })
-        .finally(function () {
-            refreshBtn?.classList.remove('spinning');
-        });
+    // ── Smooth marker animation (between old and new position) ────────────────
+    function animateMarker(fromLat, fromLng, toLat, toLng) {
+        if (animTimer) clearInterval(animTimer);
+        var steps = 40, step = 0;
+        animTimer = setInterval(function () {
+            step++;
+            var f   = step / steps;
+            var lat = fromLat + (toLat - fromLat) * f;
+            var lng = fromLng + (toLng - fromLng) * f;
+            if (trackMarker) trackMarker.setLatLng([lat, lng]);
+            if (step >= steps) clearInterval(animTimer);
+        }, 25);
     }
 
-    function renderLocation(data) {
-        const { latitude: lat, longitude: lng, is_on_duty, location_age_seconds, active_orders_count } = data;
+    // ── Trail breadcrumb ──────────────────────────────────────────────────────
+    function updateTrail(lat, lng) {
+        posTrail.push([lat, lng]);
+        if (posTrail.length > MAX_TRAIL) posTrail.shift();
+        if (posTrail.length < 2) return;
+        if (!trailLine) {
+            trailLine = L.polyline(posTrail, { color: '#6c5ce7', weight: 2.5, opacity: 0.4, dashArray: '5 4' }).addTo(trackMap);
+        } else {
+            trailLine.setLatLngs(posTrail);
+        }
+    }
 
-        // Duty badge
-        if (dutyBadgeEl) {
-            dutyBadgeEl.innerHTML = is_on_duty
+    // ── Render location data from API ─────────────────────────────────────────
+    // Stats section never throws. Map section is isolated in its own try/catch.
+    function render(data) {
+        var lat  = data.latitude  != null ? parseFloat(data.latitude)  : null;
+        var lng  = data.longitude != null ? parseFloat(data.longitude) : null;
+        var ageS = data.location_age_seconds;
+        var duty = data.is_on_duty;
+
+        // ── Stats (never throws) ──────────────────────────────────────────────
+        try {
+            if (dutyEl) dutyEl.innerHTML = duty
                 ? '<span class="modal-duty-on"><span class="pulse-green"></span>On Duty</span>'
                 : '<span class="modal-duty-off"><i class="bi bi-moon-stars-fill"></i>Off Duty</span>';
-        }
+            if (ordersEl) ordersEl.textContent = (data.active_orders_count != null ? data.active_orders_count : '—');
+            if (ageEl)     ageEl.textContent   = fmtAge(ageS);
+            if (ageChipEl) ageChipEl.className = 'track-stat-chip ' + ageClass(ageS);
+        } catch(e) { console.warn('Stats render error:', e); }
 
-        // Orders chip
-        if (ordersEl) ordersEl.textContent = active_orders_count ?? '—';
-
-        // Age chip
-        const ageS   = location_age_seconds;
-        const ageTxt = ageText(ageS);
-        const ageCls = ageClass(ageS);
-        if (ageEl)    ageEl.textContent = ageTxt;
-        if (ageChipEl) {
-            ageChipEl.className = 'track-stat-chip ' + ageCls;
-        }
-
-        // No location data yet
+        // ── No position ───────────────────────────────────────────────────────
         if (!lat || !lng) {
-            showOverlay(is_on_duty ? '📍 Waiting for driver to share location…' : '⚫ Driver is off duty — no location available.', false);
-            if (coordsEl) coordsEl.textContent = '—';
+            setOverlay(duty ? '📍 Waiting for driver GPS…' : '⚫ Driver is off duty.', false);
+            if (coordsEl)   coordsEl.textContent  = '—';
+            if (motionEl)   motionEl.textContent   = 'No data';
+            if (motionChip) motionChip.className   = 'track-stat-chip';
             return;
         }
 
-        // Coords chip
-        if (coordsEl) coordsEl.textContent = `${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}`;
+        // ── Coords + motion (never throws) ────────────────────────────────────
+        try {
+            if (coordsEl) coordsEl.textContent = lat.toFixed(5) + ', ' + lng.toFixed(5);
+            var moved = lastLat !== null && haversineM(lastLat, lastLng, lat, lng) > 8;
+            if (motionEl)   motionEl.textContent  = moved ? 'Moving' : 'Stationary';
+            if (motionChip) motionChip.className  = 'track-stat-chip ' + (moved ? 'moving' : 'stopped');
+        } catch(e) { console.warn('Coords render error:', e); }
 
-        // Map marker
-        const fresh = ageS !== null && ageS < STALE_OLD_S;
-        const latlng = [parseFloat(lat), parseFloat(lng)];
+        // ── Map operations (isolated — failure shows coords-only message) ─────
+        try {
+            // Retry map init if it failed on shown.bs.modal (e.g. Leaflet loaded late)
+            if (!mapReady) initMap();
 
-        if (!trackMarker) {
-            trackMarker = L.marker(latlng, { icon: makeDriverIcon(fresh) })
-                .bindPopup(`<b>${driverNameEl?.textContent ?? 'Driver'}</b><br>Updated: ${ageTxt}`)
-                .addTo(trackMap);
-        } else {
-            trackMarker.setLatLng(latlng)
-                .setIcon(makeDriverIcon(fresh))
-                .setPopupContent(`<b>${driverNameEl?.textContent ?? 'Driver'}</b><br>Updated: ${ageTxt}`);
+            if (!trackMap || !mapReady) {
+                // Map init failed — show coordinates in overlay, stats still visible above
+                setOverlay('📍 ' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '\nMap unavailable', false);
+                lastLat = lat; lastLng = lng;
+                return;
+            }
+
+            var fresh  = ageS !== null && ageS < STALE_OLD;
+            var latlng = [lat, lng];
+            var driverName = nameEl ? nameEl.textContent : 'Driver';
+
+            if (!trackMarker) {
+                trackMarker = L.marker(latlng, { icon: truckIcon(moved) })
+                    .bindPopup('<b>' + driverName + '</b><br>' + fmtAge(ageS))
+                    .addTo(trackMap);
+            } else {
+                if (lastLat !== null && moved) {
+                    animateMarker(lastLat, lastLng, lat, lng);
+                } else {
+                    trackMarker.setLatLng(latlng);
+                }
+                trackMarker.setIcon(truckIcon(moved));
+                trackMarker.setPopupContent('<b>' + driverName + '</b><br>' + fmtAge(ageS));
+            }
+
+            if (!trackCircle) {
+                trackCircle = L.circle(latlng, {
+                    radius: 60, weight: 1,
+                    color: fresh ? '#6c5ce7' : '#94a3b8',
+                    fillColor: fresh ? '#6c5ce7' : '#94a3b8',
+                    fillOpacity: 0.07,
+                }).addTo(trackMap);
+            } else {
+                trackCircle.setLatLng(latlng).setStyle({
+                    color: fresh ? '#6c5ce7' : '#94a3b8',
+                    fillColor: fresh ? '#6c5ce7' : '#94a3b8',
+                });
+            }
+
+            if (lastLat === null || moved) updateTrail(lat, lng);
+
+            if (lastLat === null) {
+                trackMap.setView(latlng, 15);
+            } else if (moved) {
+                trackMap.panTo(latlng, { animate: true, duration: 1 });
+            }
+
+            hideOverlay();
+        } catch (mapErr) {
+            console.error('Map render error:', mapErr);
+            // Show coordinates even if map fails
+            setOverlay('📍 ' + lat.toFixed(5) + ', ' + lng.toFixed(5) + ' — map error, retrying…', false);
         }
 
-        // Accuracy circle (500 m placeholder when accuracy is unknown from server)
-        if (!trackCircle) {
-            trackCircle = L.circle(latlng, {
-                radius: 80, weight: 1,
-                color: fresh ? '#6c5ce7' : '#94a3b8',
-                fillColor: fresh ? '#6c5ce7' : '#94a3b8',
-                fillOpacity: 0.07,
-            }).addTo(trackMap);
-        } else {
-            trackCircle.setLatLng(latlng).setStyle({
-                color: fresh ? '#6c5ce7' : '#94a3b8',
-                fillColor: fresh ? '#6c5ce7' : '#94a3b8',
-            });
-        }
-
-        trackMap.setView(latlng, trackMap.getZoom() < 14 ? 15 : trackMap.getZoom());
-        hideOverlay();
+        lastLat = lat;
+        lastLng = lng;
     }
 
-    // ── Polling lifecycle ─────────────────────────────────────────────────────
-    function startPolling() {
-        stopPolling();
+    // ── Fetch ─────────────────────────────────────────────────────────────────
+    function fetchLocation(manual) {
+        if (!currentId) return;
+        if (manual && refreshBtn) refreshBtn.classList.add('spinning');
+
+        fetch('/admin/drivers/' + currentId + '/location', {
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
+        })
+        .then(function (r) {
+            if (r.status === 403) throw { isHttp: true, code: 403 };
+            if (r.status === 404) throw { isHttp: true, code: 404 };
+            if (!r.ok)            throw { isHttp: true, code: r.status };
+            return r.json();
+        })
+        .then(function (d) {
+            // render() has its own try/catch — map errors must NOT propagate here
+            try { render(d); } catch (e) { console.error('render() error:', e); }
+            startCountdown();
+        })
+        .catch(function (e) {
+            // Only genuine HTTP / network errors reach here (not map errors)
+            if (!e || !e.isHttp) return; // map/render error — already handled inside render()
+            var msg = e.code === 404 ? 'Driver not found.'
+                    : e.code === 403 ? 'Access denied.'
+                    : 'Connection error (HTTP ' + e.code + '). Retrying…';
+            setOverlay('⚠ ' + msg, false);
+        })
+        .finally(function () {
+            if (refreshBtn) refreshBtn.classList.remove('spinning');
+        });
+    }
+
+    // ── Poll lifecycle ────────────────────────────────────────────────────────
+    function startPoll() {
+        stopPoll();
         fetchLocation(false);
-        pollTimer = setInterval(function () { fetchLocation(false); }, POLL_INTERVAL_MS);
+        pollTimer = setInterval(function () { fetchLocation(false); }, POLL_MS);
     }
-    function stopPolling() {
+    function stopPoll() {
         clearInterval(pollTimer);
-        clearInterval(countdownTimer);
+        clearInterval(countTimer);
+        clearInterval(animTimer);
         pollTimer = null;
     }
 
-    // ── Modal events ──────────────────────────────────────────────────────────
-    // Bootstrap fires shown.bs.modal after the modal is fully visible
-    $(modal).on('show.bs.modal', function (e) {
-        const btn       = e.relatedTarget;
-        currentDriverId = btn?.dataset?.driverId;
-        const name      = btn?.dataset?.driverName ?? 'Driver';
-        const onDuty    = btn?.dataset?.onDuty === '1';
+    // ── Store driver data on button click (more reliable than relatedTarget) ──
+    // Bootstrap's e.relatedTarget can be null in some browsers/versions.
+    document.querySelectorAll('.btn-track-driver').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            pendingData = {
+                id:     this.getAttribute('data-driver-id'),
+                name:   this.getAttribute('data-driver-name') || 'Driver',
+                onDuty: this.getAttribute('data-on-duty') === '1',
+            };
+        });
+    });
 
-        // Update header
-        if (driverNameEl) driverNameEl.textContent = name;
-        if (avatarEl)     avatarEl.textContent     = name.charAt(0).toUpperCase();
-        if (dutyBadgeEl)  dutyBadgeEl.innerHTML    = onDuty
+    // ── Modal events ──────────────────────────────────────────────────────────
+    $(modal).on('show.bs.modal', function () {
+        if (!pendingData) return;
+
+        currentId = pendingData.id;
+        var name  = pendingData.name;
+        var duty  = pendingData.onDuty;
+
+        if (nameEl)   nameEl.textContent  = name;
+        if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+        if (dutyEl)   dutyEl.innerHTML     = duty
             ? '<span class="modal-duty-on"><span class="pulse-green"></span>On Duty</span>'
             : '<span class="modal-duty-off"><i class="bi bi-moon-stars-fill"></i>Off Duty</span>';
 
-        // Reset stat chips
-        if (ordersEl)    ordersEl.textContent  = '—';
-        if (ageEl)       ageEl.textContent     = 'Loading…';
-        if (coordsEl)    coordsEl.textContent  = '—';
-        if (ageChipEl)   ageChipEl.className   = 'track-stat-chip';
-        if (refreshLabel) refreshLabel.textContent = '';
-
-        // Reset marker state so a new one is created for the new driver
-        trackMarker = null;
-        trackCircle = null;
-
-        showOverlay('Loading location…', true);
+        // Reset
+        if (ordersEl)   ordersEl.textContent  = '—';
+        if (ageEl)      ageEl.textContent      = 'Loading…';
+        if (coordsEl)   coordsEl.textContent   = '—';
+        if (motionEl)   motionEl.textContent   = 'Waiting…';
+        if (ageChipEl)  ageChipEl.className    = 'track-stat-chip';
+        if (motionChip) motionChip.className   = 'track-stat-chip';
+        if (countEl)    countEl.textContent    = '';
+        trackMarker = null; trackCircle = null; trailLine = null;
+        posTrail = []; lastLat = null; lastLng = null;
+        setOverlay('Loading location…', true);
     });
 
     $(modal).on('shown.bs.modal', function () {
-        // Map must be initialised after modal is visible (needs layout dimensions)
         initMap();
-        if (trackMap) trackMap.invalidateSize();
-        startPolling();
+        // invalidateSize at multiple intervals — Bootstrap modal CSS transitions
+        // can leave the container at 0px briefly; repeated calls ensure tiles load
+        if (trackMap) {
+            trackMap.invalidateSize();
+            setTimeout(function () { if (trackMap) trackMap.invalidateSize(); }, 150);
+            setTimeout(function () { if (trackMap) trackMap.invalidateSize(); }, 400);
+        }
+        startPoll();
     });
 
     $(modal).on('hidden.bs.modal', function () {
-        stopPolling();
-        currentDriverId = null;
-        // Clean up old marker/circle from the map so next driver starts fresh
+        stopPoll();
+        currentId = null;
         if (trackMarker && trackMap) { trackMap.removeLayer(trackMarker); trackMarker = null; }
         if (trackCircle && trackMap) { trackMap.removeLayer(trackCircle); trackCircle = null; }
-        if (refreshLabel) refreshLabel.textContent = '';
+        if (trailLine   && trackMap) { trackMap.removeLayer(trailLine);   trailLine   = null; }
+        posTrail = []; lastLat = null; lastLng = null;
+        if (countEl) countEl.textContent = '';
     });
 
-    // ── Manual refresh ────────────────────────────────────────────────────────
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function () { fetchLocation(true); });
-    }
+    if (refreshBtn) refreshBtn.addEventListener('click', function () { fetchLocation(true); });
 
-    // ── Pause polling when tab is hidden, resume on focus ────────────────────
     document.addEventListener('visibilitychange', function () {
-        if (!currentDriverId) return;
-        if (document.hidden) {
-            stopPolling();
-        } else {
-            startPolling();
-        }
+        if (!currentId) return;
+        document.hidden ? stopPoll() : startPoll();
     });
 
 })();
