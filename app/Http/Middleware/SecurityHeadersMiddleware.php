@@ -41,7 +41,7 @@ class SecurityHeadersMiddleware
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
         $response->headers->set(
             'Permissions-Policy',
-            'geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(self), magnetometer=(), gyroscope=(), fullscreen=(self), payment=(), usb=(), bluetooth=()'
+            'geolocation=(self), midi=(), sync-xhr=(), microphone=(), camera=(self), magnetometer=(), gyroscope=(), fullscreen=(self), payment=(), usb=(), bluetooth=()'
         );
 
         if ($request->isSecure()) {
@@ -52,12 +52,12 @@ class SecurityHeadersMiddleware
             'Content-Security-Policy',
             implode(' ', [
                 "default-src 'self';",
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com http://127.0.0.1:5173;",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://maps.googleapis.com https://maps.gstatic.com http://127.0.0.1:5173;",
                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com http://127.0.0.1:5173;",
                 "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;",
                 "img-src 'self' data: https: http://127.0.0.1:5173;",
                 "frame-src 'self' https://maps.google.com https://www.google.com;",
-                "connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173;",
+                "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com http://127.0.0.1:5173 ws://127.0.0.1:5173;",
                 "frame-ancestors 'self';",
                 "base-uri 'self';",
                 "form-action 'self';",

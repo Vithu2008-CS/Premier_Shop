@@ -418,18 +418,33 @@
 
     {{-- GPS Tracking Status Banner (shown only on duty) --}}
     @if($driver->is_on_duty)
-    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d" style="display:flex;">
-        <div class="gps-banner-icon" id="gps-icon">
-            <i class="bi bi-geo-alt-fill" style="color:#00cec9;"></i>
+    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d" style="display:flex;flex-direction:column;">
+        <div class="d-flex align-items-center" style="gap:16px;">
+            <div class="gps-banner-icon" id="gps-icon">
+                <i class="bi bi-geo-alt-fill" style="color:#00cec9;"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center mb-1" style="flex-wrap:wrap;gap:8px;">
+                    <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;" id="gps-title">Location Tracking</span>
+                    <span id="gps-accuracy-badge" class="badge font-weight-bold px-2"
+                          style="border-radius:10px;font-size:0.68rem;background:rgba(0,184,148,0.15);color:#55efc4;">INITIALISING</span>
+                </div>
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="gps-coordinates-text">
+                    Checking location permission…
+                </div>
+            </div>
         </div>
-        <div class="flex-grow-1">
-            <div class="d-flex align-items-center gap-2 mb-1" style="flex-wrap:wrap;">
-                <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;" id="gps-title">Location Tracking</span>
-                <span id="gps-accuracy-badge" class="badge font-weight-bold px-2" style="border-radius:10px;font-size:0.68rem;background:rgba(0,184,148,0.15);color:#55efc4;">INITIALISING</span>
-            </div>
-            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="gps-coordinates-text">
-                Requesting GPS permission…
-            </div>
+        {{-- Shown only when GPS is in "prompt" state or after denial (needs user gesture) --}}
+        <div id="gps-enable-wrap" style="display:none;margin-top:14px;">
+            <button id="gps-enable-btn" type="button" onclick="window._requestGpsPermission()"
+                    style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:100px;
+                           background:linear-gradient(135deg,#00b894,#00cec9);color:#fff;border:none;
+                           font-weight:700;font-size:0.88rem;font-family:'Outfit',sans-serif;cursor:pointer;
+                           box-shadow:0 4px 16px rgba(0,184,148,0.35);transition:all 0.25s ease;width:100%;
+                           justify-content:center;">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span id="gps-enable-btn-text">Enable GPS Tracking</span>
+            </button>
         </div>
     </div>
     @endif
@@ -702,8 +717,7 @@
 
     function onGpsError(err) {
         if (err.code === err.PERMISSION_DENIED) {
-            setUI('Location permission denied. Enable GPS in browser settings.', 'DENIED', STYLE_ERROR, BANNER_ERROR);
-            stopTracking(true);
+            showDeniedState();
             return;
         }
         if (err.code === err.POSITION_UNAVAILABLE) {
@@ -713,6 +727,40 @@
         }
         retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY);
         scheduleRetry();
+    }
+
+    // ── Permission UI helpers ─────────────────────────────────────────────────
+    function showEnableButton(label) {
+        const wrap = document.getElementById('gps-enable-wrap');
+        const txt  = document.getElementById('gps-enable-btn-text');
+        if (txt)  txt.textContent = label || 'Enable GPS Tracking';
+        if (wrap) wrap.style.display = 'block';
+    }
+
+    function hideEnableButton() {
+        const wrap = document.getElementById('gps-enable-wrap');
+        if (wrap) wrap.style.display = 'none';
+    }
+
+    function showDeniedState() {
+        stopTracking(true);
+        // Platform-specific instructions (mirrors QR scanner showScannerError pattern)
+        const ios     = /iPhone|iPad|iPod/.test(navigator.userAgent);
+        const android = /Android/.test(navigator.userAgent);
+        let hint;
+        if (ios)      hint = 'On iPhone: Settings → Safari → Location → Allow';
+        else if (android) hint = 'Tap the 🔒 icon in the address bar → Location → Allow';
+        else          hint = 'Click 🔒 in the address bar → Site settings → Location → Allow';
+
+        setUI(hint, 'DENIED', STYLE_ERROR, BANNER_ERROR);
+        // Show a Retry button so user can try again after re-enabling in settings
+        showEnableButton('↻  Retry after enabling location');
+        // Expose global so the inline onclick can call it
+        window._requestGpsPermission = function () {
+            hideEnableButton();
+            stopped = false;
+            checkAndStartTracking();
+        };
     }
 
     // ── Watch lifecycle ───────────────────────────────────────────────────────
@@ -776,8 +824,73 @@
     // ── Cleanup on unload ─────────────────────────────────────────────────────
     window.addEventListener('pagehide', function () { stopTracking(false); });
 
+    // ── Permissions API check → then start or show button ────────────────────
+    // Mirrors QR scanner: "Start Camera" button triggers getUserMedia only on click.
+    // For GPS: if state is "prompt" we show a button so the permission dialog fires
+    // from a real user gesture — required on mobile Chrome & Safari.
+    function checkAndStartTracking() {
+        // 1. HTTPS check (geolocation blocked on plain HTTP in mobile browsers)
+        const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+        if (location.protocol !== 'https:' && !isLocal) {
+            setUI('GPS requires HTTPS. Open this page over HTTPS.', 'NO HTTPS', STYLE_ERROR, BANNER_ERROR);
+            return;
+        }
+
+        // 2. API availability
+        if (!navigator.geolocation) {
+            setUI('Geolocation is not supported by this browser.', 'UNSUPPORTED', STYLE_ERROR, BANNER_ERROR);
+            return;
+        }
+
+        // 3. Permissions API (supported on Chrome/Firefox/Safari 16+)
+        if ('permissions' in navigator) {
+            navigator.permissions.query({ name: 'geolocation' })
+                .then(function (status) {
+                    if (status.state === 'denied') {
+                        showDeniedState();
+                    } else if (status.state === 'prompt') {
+                        // Must be triggered by user gesture on mobile — show button
+                        setUI('Tap the button below to allow location access.', 'TAP TO ALLOW', STYLE_WARN, BANNER_WARN);
+                        showEnableButton('Enable GPS Tracking');
+                        // Wire up global callback for the button's inline onclick
+                        window._requestGpsPermission = function () {
+                            hideEnableButton();
+                            startTracking();
+                        };
+                    } else {
+                        // 'granted' — auto-start, no gesture needed
+                        startTracking();
+                    }
+
+                    // React to future permission changes without a page reload
+                    status.addEventListener('change', function () {
+                        if (this.state === 'granted') {
+                            stopped = false;
+                            hideEnableButton();
+                            startTracking();
+                        } else if (this.state === 'denied') {
+                            showDeniedState();
+                        }
+                    });
+                })
+                .catch(function () {
+                    // Permissions API query failed — fall back to direct call
+                    startTracking();
+                });
+        } else {
+            // No Permissions API (older browser/WebView) — call directly, onGpsError handles denial
+            startTracking();
+        }
+    }
+
+    // Expose globally so the banner button's inline onclick works
+    window._requestGpsPermission = function () {
+        hideEnableButton();
+        startTracking();
+    };
+
     // ── Boot ──────────────────────────────────────────────────────────────────
-    startTracking();
+    checkAndStartTracking();
 
 })();
 </script>
