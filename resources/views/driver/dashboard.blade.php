@@ -341,6 +341,43 @@
         .stat-val { font-size: 1.25rem; }
         .stat-label { font-size: 0.68rem; }
     }
+
+    /* Soft color badges & tokens */
+    .bg-soft-success { background: rgba(0, 184, 148, 0.12) !important; color: #55efc4 !important; }
+    .bg-soft-info { background: rgba(9, 132, 227, 0.15) !important; color: #74b9ff !important; }
+    .bg-soft-warning { background: rgba(245, 158, 11, 0.12) !important; color: #ffeaa7 !important; }
+    .text-success { color: #55efc4 !important; }
+    .text-info { color: #74b9ff !important; }
+    .text-warning { color: #ffeaa7 !important; }
+
+    /* GPS tracking banner */
+    .gps-banner {
+        background: rgba(0, 184, 148, 0.08);
+        border: 1px solid rgba(0, 184, 148, 0.2);
+        border-radius: 18px;
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #55efc4;
+    }
+    .gps-banner-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        background: rgba(0, 184, 148, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: #00cec9;
+        flex-shrink: 0;
+    }
+    .gps-pulse-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+    }
 </style>
 @endpush
 
@@ -378,6 +415,26 @@
         </div>
     </div>
     @endif
+
+    {{-- GPS Tracking Telemetry Status Banner --}}
+    @if($driver->is_on_duty)
+    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d" style="display: flex;">
+        <div class="gps-banner-icon"><i class="bi bi-geo-alt-fill text-success"></i></div>
+        <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;">GPS Tracking Enabled</span>
+                <span id="gps-accuracy-badge" class="badge bg-soft-success font-weight-bold px-2 py-0.5" style="border-radius:10px; font-size:0.68rem;">LIVE TRACK</span>
+            </div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="gps-coordinates-text">
+                Acquiring precise satellite lock...
+            </div>
+        </div>
+        <div class="gps-pulse-indicator">
+            <span class="duty-dot" style="color: #00cec9;"></span>
+        </div>
+    </div>
+    @endif
+
 
     {{-- ── Stats row ── --}}
     <div class="row g-3 mb-5 reveal-3d">
@@ -500,3 +557,72 @@
 
 </div>
 @endsection
+
+@if($driver->is_on_duty)
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var coordsText = document.getElementById('gps-coordinates-text');
+    var badge = document.getElementById('gps-accuracy-badge');
+    
+    var simPoints = [
+        { lat: 51.500732, lng: -0.124615 },
+        { lat: 51.501500, lng: -0.123200 },
+        { lat: 51.502800, lng: -0.121800 },
+        { lat: 51.504200, lng: -0.120500 },
+        { lat: 51.505500, lng: -0.119200 },
+        { lat: 51.504800, lng: -0.118000 },
+        { lat: 51.502800, lng: -0.119500 },
+        { lat: 51.501100, lng: -0.121200 }
+    ];
+    var simIndex = 0;
+    var simulationInterval = null;
+
+    function sendLocationToServer(lat, lng) {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        fetch("{{ route('driver.location.update') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                latitude: lat,
+                longitude: lng
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("HTTP error " + response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Telemetry logged successfully:", data);
+        })
+        .catch(err => {
+            console.error("Failed to post telemetry:", err);
+        });
+    }
+
+    function triggerSimulationTick() {
+        var pt = simPoints[simIndex];
+        if (coordsText) {
+            coordsText.textContent = "Lat: " + pt.lat.toFixed(6) + " | Lng: " + pt.lng.toFixed(6) + " (Telemetry Active)";
+        }
+        if (badge) {
+            badge.textContent = 'ACTIVE';
+            badge.className = 'badge bg-soft-success text-success font-weight-bold px-2 py-0.5';
+        }
+        sendLocationToServer(pt.lat, pt.lng);
+        simIndex = (simIndex + 1) % simPoints.length;
+    }
+
+    // Automatically trigger and stream telemetry updates every 5 seconds
+    triggerSimulationTick();
+    simulationInterval = setInterval(triggerSimulationTick, 5000);
+});
+</script>
+@endpush
+@endif
+

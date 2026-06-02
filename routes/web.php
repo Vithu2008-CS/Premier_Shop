@@ -207,6 +207,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class)->except(['show']);
 
     // Drivers — admin management of driver accounts
+    Route::get('drivers/{driver}/location', [AdminDriverController::class, 'getLocation'])->name('drivers.location');
     Route::resource('drivers', AdminDriverController::class)->except(['show']);
 
     // Mail Centre — full inbox/sent/drafts/trash email client
@@ -236,6 +237,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(function () {
     Route::get('/', [DriverController::class, 'dashboard'])->name('dashboard');
     Route::post('/toggle-duty', [DriverController::class, 'toggleDuty'])->name('toggleDuty');           // on/off duty toggle
+    Route::post('/location', [DriverController::class, 'updateLocation'])->name('location.update');
     Route::get('/orders/{order}', [DriverController::class, 'showOrder'])->name('orders.show');
     Route::post('/orders/{order}/complete', [DriverController::class, 'completeDelivery'])->name('orders.complete'); // upload proof photo
 });
