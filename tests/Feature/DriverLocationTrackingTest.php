@@ -63,16 +63,12 @@ class DriverLocationTrackingTest extends TestCase
                 'longitude' => -0.1278,
             ]);
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'success' => true,
-                'latitude' => 51.5074,
-                'longitude' => -0.1278,
-            ]);
+        $response->assertStatus(200)->assertJson(['success' => true]);
 
         $this->driver->refresh();
         $this->assertEquals(51.5074, $this->driver->latitude);
         $this->assertEquals(-0.1278, $this->driver->longitude);
+        $this->assertNotNull($this->driver->location_updated_at);
     }
 
     /** @test */

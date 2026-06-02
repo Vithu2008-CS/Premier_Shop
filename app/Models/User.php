@@ -33,7 +33,7 @@ class User extends Authenticatable
         'dob', 'phone', 'address', 'city',
         'role_id', 'is_on_duty', 'loyalty_points', 'profile_photo',
         'offer_discount_percentage', 'offer_scope', 'offer_product_ids',
-        'latitude', 'longitude',
+        'latitude', 'longitude', 'location_updated_at',
     ];
 
     protected $hidden = [
@@ -50,8 +50,9 @@ class User extends Authenticatable
             'loyalty_points'    => 'integer',
             'is_on_duty'        => 'boolean',  // driver duty status
             'offer_product_ids' => 'array',
-            'latitude'          => 'float',
-            'longitude'         => 'float',
+            'latitude'             => 'float',
+            'longitude'            => 'float',
+            'location_updated_at'  => 'datetime',
         ];
     }
 

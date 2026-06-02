@@ -416,21 +416,20 @@
     </div>
     @endif
 
-    {{-- GPS Tracking Telemetry Status Banner --}}
+    {{-- GPS Tracking Status Banner (shown only on duty) --}}
     @if($driver->is_on_duty)
-    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d" style="display: flex;">
-        <div class="gps-banner-icon"><i class="bi bi-geo-alt-fill text-success"></i></div>
+    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d" style="display:flex;">
+        <div class="gps-banner-icon" id="gps-icon">
+            <i class="bi bi-geo-alt-fill" style="color:#00cec9;"></i>
+        </div>
         <div class="flex-grow-1">
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;">GPS Tracking Enabled</span>
-                <span id="gps-accuracy-badge" class="badge bg-soft-success font-weight-bold px-2 py-0.5" style="border-radius:10px; font-size:0.68rem;">LIVE TRACK</span>
+            <div class="d-flex align-items-center gap-2 mb-1" style="flex-wrap:wrap;">
+                <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;" id="gps-title">Location Tracking</span>
+                <span id="gps-accuracy-badge" class="badge font-weight-bold px-2" style="border-radius:10px;font-size:0.68rem;background:rgba(0,184,148,0.15);color:#55efc4;">INITIALISING</span>
             </div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="gps-coordinates-text">
-                Acquiring precise satellite lock...
+                Requesting GPS permission…
             </div>
-        </div>
-        <div class="gps-pulse-indicator">
-            <span class="duty-dot" style="color: #00cec9;"></span>
         </div>
     </div>
     @endif
@@ -561,67 +560,226 @@
 @if($driver->is_on_duty)
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var coordsText = document.getElementById('gps-coordinates-text');
-    var badge = document.getElementById('gps-accuracy-badge');
-    
-    var simPoints = [
-        { lat: 51.500732, lng: -0.124615 },
-        { lat: 51.501500, lng: -0.123200 },
-        { lat: 51.502800, lng: -0.121800 },
-        { lat: 51.504200, lng: -0.120500 },
-        { lat: 51.505500, lng: -0.119200 },
-        { lat: 51.504800, lng: -0.118000 },
-        { lat: 51.502800, lng: -0.119500 },
-        { lat: 51.501100, lng: -0.121200 }
-    ];
-    var simIndex = 0;
-    var simulationInterval = null;
+(function () {
+    'use strict';
 
-    function sendLocationToServer(lat, lng) {
-        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
+    // ── Config (use let so battery-saver can relax thresholds) ────────────────
+    let MIN_DISTANCE_METERS = 30;      // skip send if moved less than this
+    let FORCE_SEND_INTERVAL = 30000;   // always send at least every 30 s
+    const GPS_TIMEOUT_MS    = 15000;   // max time to wait for a GPS fix
+    const GPS_MAX_AGE       = 10000;   // accept a cached position up to 10 s old
+    const MAX_ACCURACY_M    = 200;     // skip if accuracy is worse than 200 m
+    const MAX_RETRY_DELAY   = 60000;   // cap exponential back-off at 1 min
+    const MAX_ERRORS        = 8;       // give up after this many consecutive errors
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let watchId          = null;
+    let lastSent         = { lat: null, lng: null, ts: 0 };
+    let retryDelay       = 3000;
+    let retryTimer       = null;
+    let isSending        = false;
+    let consecutiveErrors = 0;
+    let stopped          = false;
+
+    // ── DOM refs ──────────────────────────────────────────────────────────────
+    const coordsEl = document.getElementById('gps-coordinates-text');
+    const badgeEl  = document.getElementById('gps-accuracy-badge');
+    const titleEl  = document.getElementById('gps-title');
+    const bannerEl = document.getElementById('gps-tracking-banner');
+    const iconEl   = document.getElementById('gps-icon');
+    const CSRF     = (document.querySelector('meta[name="csrf-token"]') || {}).getAttribute?.('content') ?? '';
+
+    // ── UI helpers ────────────────────────────────────────────────────────────
+    function setUI(coords, badgeText, badgeStyle, bannerStyle) {
+        if (coordsEl)  coordsEl.textContent = coords;
+        if (badgeEl) {
+            badgeEl.textContent = badgeText;
+            Object.assign(badgeEl.style, { background: badgeStyle.bg, color: badgeStyle.color });
+        }
+        if (bannerEl && bannerStyle) {
+            bannerEl.style.background   = bannerStyle.bg;
+            bannerEl.style.borderColor  = bannerStyle.border;
+        }
+    }
+
+    const STYLE_LIVE    = { bg: 'rgba(0,184,148,0.15)',   color: '#55efc4' };
+    const STYLE_WARN    = { bg: 'rgba(245,158,11,0.15)',  color: '#fdcb6e' };
+    const STYLE_ERROR   = { bg: 'rgba(239,68,68,0.15)',   color: '#ff7675' };
+    const STYLE_MUTED   = { bg: 'rgba(100,116,139,0.15)', color: '#94a3b8' };
+
+    const BANNER_LIVE   = { bg: 'rgba(0,184,148,0.08)',  border: 'rgba(0,184,148,0.2)'  };
+    const BANNER_WARN   = { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)' };
+    const BANNER_ERROR  = { bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.2)'  };
+
+    // ── Haversine distance (meters) ───────────────────────────────────────────
+    function haversine(lat1, lng1, lat2, lng2) {
+        const R  = 6371000;
+        const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lng2 - lng1) * Math.PI / 180;
+        const a  = Math.sin(Δφ/2)**2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function shouldSend(lat, lng) {
+        if (lastSent.lat === null) return true;
+        const dist    = haversine(lastSent.lat, lastSent.lng, lat, lng);
+        const elapsed = Date.now() - lastSent.ts;
+        return dist >= MIN_DISTANCE_METERS || elapsed >= FORCE_SEND_INTERVAL;
+    }
+
+    // ── Server send ───────────────────────────────────────────────────────────
+    function sendLocation(lat, lng) {
+        if (isSending || stopped) return;
+        isSending = true;
+
         fetch("{{ route('driver.location.update') }}", {
-            method: "POST",
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken,
-                "Accept": "application/json"
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF,
+                'Accept': 'application/json',
             },
-            body: JSON.stringify({
-                latitude: lat,
-                longitude: lng
-            })
+            body: JSON.stringify({ latitude: lat, longitude: lng }),
         })
-        .then(response => {
-            if (!response.ok) throw new Error("HTTP error " + response.status);
-            return response.json();
+        .then(res => {
+            if (res.status === 429) {
+                const wait = parseInt(res.headers.get('Retry-After') || '30') * 1000;
+                setUI(`Rate-limited — next attempt in ${Math.round(wait/1000)} s`, 'LIMITED', STYLE_WARN, BANNER_WARN);
+                setTimeout(() => { isSending = false; }, wait);
+                return null;
+            }
+            if (!res.ok) throw Object.assign(new Error(), { status: res.status });
+            return res.json();
         })
         .then(data => {
-            console.log("Telemetry logged successfully:", data);
+            if (!data) return;
+            lastSent = { lat, lng, ts: Date.now() };
+            consecutiveErrors = 0;
+            retryDelay = 3000;
+            setUI(
+                `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+                'LIVE',
+                STYLE_LIVE,
+                BANNER_LIVE
+            );
         })
         .catch(err => {
-            console.error("Failed to post telemetry:", err);
+            consecutiveErrors++;
+            retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY);
+            const waitSec = Math.round(retryDelay / 1000);
+            setUI(`Network error — retry in ${waitSec} s`, 'RETRY', STYLE_WARN, BANNER_WARN);
+
+            if (consecutiveErrors >= MAX_ERRORS) {
+                setUI('Tracking paused — too many errors. Reload to restart.', 'PAUSED', STYLE_ERROR, BANNER_ERROR);
+                stopTracking(true);
+            }
+        })
+        .finally(() => { isSending = false; });
+    }
+
+    // ── Geolocation callbacks ─────────────────────────────────────────────────
+    function onPosition(pos) {
+        const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+
+        if (accuracy > MAX_ACCURACY_M) {
+            setUI(`Improving fix… (±${Math.round(accuracy)} m)`, 'ACQUIRING', STYLE_WARN, BANNER_WARN);
+            return;
+        }
+
+        // Always update display
+        setUI(
+            `${lat.toFixed(5)}, ${lng.toFixed(5)} · ±${Math.round(accuracy)} m`,
+            'LIVE',
+            STYLE_LIVE,
+            BANNER_LIVE
+        );
+
+        if (shouldSend(lat, lng)) {
+            sendLocation(lat, lng);
+        }
+    }
+
+    function onGpsError(err) {
+        if (err.code === err.PERMISSION_DENIED) {
+            setUI('Location permission denied. Enable GPS in browser settings.', 'DENIED', STYLE_ERROR, BANNER_ERROR);
+            stopTracking(true);
+            return;
+        }
+        if (err.code === err.POSITION_UNAVAILABLE) {
+            setUI('GPS signal unavailable — retrying…', 'NO SIGNAL', STYLE_WARN, BANNER_WARN);
+        } else {
+            setUI(`GPS timeout — retrying in ${Math.round(retryDelay/1000)} s…`, 'TIMEOUT', STYLE_WARN, BANNER_WARN);
+        }
+        retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY);
+        scheduleRetry();
+    }
+
+    // ── Watch lifecycle ───────────────────────────────────────────────────────
+    function startTracking() {
+        if (stopped || watchId !== null) return;
+
+        if (!navigator.geolocation) {
+            setUI('Geolocation not supported by this browser.', 'UNSUPPORTED', STYLE_ERROR, BANNER_ERROR);
+            return;
+        }
+
+        setUI('Acquiring satellite lock…', 'ACQUIRING', STYLE_WARN, BANNER_WARN);
+
+        watchId = navigator.geolocation.watchPosition(onPosition, onGpsError, {
+            enableHighAccuracy: true,
+            timeout: GPS_TIMEOUT_MS,
+            maximumAge: GPS_MAX_AGE,
         });
     }
 
-    function triggerSimulationTick() {
-        var pt = simPoints[simIndex];
-        if (coordsText) {
-            coordsText.textContent = "Lat: " + pt.lat.toFixed(6) + " | Lng: " + pt.lng.toFixed(6) + " (Telemetry Active)";
+    function stopTracking(permanent) {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
         }
-        if (badge) {
-            badge.textContent = 'ACTIVE';
-            badge.className = 'badge bg-soft-success text-success font-weight-bold px-2 py-0.5';
-        }
-        sendLocationToServer(pt.lat, pt.lng);
-        simIndex = (simIndex + 1) % simPoints.length;
+        clearTimeout(retryTimer);
+        retryTimer = null;
+        if (permanent) stopped = true;
     }
 
-    // Automatically trigger and stream telemetry updates every 5 seconds
-    triggerSimulationTick();
-    simulationInterval = setInterval(triggerSimulationTick, 5000);
-});
+    function scheduleRetry() {
+        stopTracking(false);
+        retryTimer = setTimeout(startTracking, retryDelay);
+    }
+
+    // ── Page Visibility — pause when tab is in background ────────────────────
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+            stopTracking(false);
+            setUI('Tracking paused (background tab)', 'PAUSED', STYLE_MUTED, null);
+        } else if (!stopped) {
+            startTracking();
+        }
+    });
+
+    // ── Battery API — loosen thresholds on very low battery (non-blocking) ────
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(function (battery) {
+            function check() {
+                if (battery.level <= 0.10 && !battery.charging) {
+                    MIN_DISTANCE_METERS = 150;
+                    FORCE_SEND_INTERVAL = 120000;
+                    setUI('Low battery — reduced GPS frequency', 'LOW BATT', STYLE_WARN, BANNER_WARN);
+                }
+            }
+            battery.addEventListener('levelchange', check);
+            check();
+        }).catch(() => {});
+    }
+
+    // ── Cleanup on unload ─────────────────────────────────────────────────────
+    window.addEventListener('pagehide', function () { stopTracking(false); });
+
+    // ── Boot ──────────────────────────────────────────────────────────────────
+    startTracking();
+
+})();
 </script>
 @endpush
 @endif

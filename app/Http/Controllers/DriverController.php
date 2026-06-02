@@ -118,15 +118,11 @@ class DriverController extends Controller
 
         $driver = auth()->user();
         $driver->update([
-            'latitude'  => $request->latitude,
-            'longitude' => $request->longitude,
+            'latitude'            => $request->latitude,
+            'longitude'           => $request->longitude,
+            'location_updated_at' => now(),
         ]);
 
-        return response()->json([
-            'success'   => true,
-            'message'   => 'Location updated successfully.',
-            'latitude'  => $driver->latitude,
-            'longitude' => $driver->longitude,
-        ]);
+        return response()->json(['success' => true]);
     }
 }
