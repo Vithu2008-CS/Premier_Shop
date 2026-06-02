@@ -66,7 +66,9 @@
             </h5>
             <a href="{{ route('admin.drivers.create') }}" class="btn btn-primary btn-curved d-inline-flex align-items-center justify-content-center">
                 <i class="bi bi-person-plus-fill mr-2" style="font-size:0.95rem;"></i>
-                Add New Driver
+                <span class="d-none d-md-inline">Add New Driver</span>
+                <span class="d-none d-sm-inline d-md-none">Add Driver</span>
+                <span class="d-inline d-sm-none">Add</span>
             </a>
         </div>
 
@@ -479,7 +481,14 @@ html[data-admin-theme="light"] .btn-close-track {
 }
 @media (max-width: 575px) {
     .track-map { height: 220px; }
-    .card-header { flex-direction: column; align-items: flex-start !important; }
+    .card-header {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+    .card-header .btn-curved {
+        margin-left: auto !important;
+    }
 }
 </style>
 @endsection
