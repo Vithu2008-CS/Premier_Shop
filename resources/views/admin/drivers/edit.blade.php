@@ -8,13 +8,7 @@
 @extends('layouts.admin_noble')
 @section('title', 'Edit Driver - ' . $driver->name)
 
-{{-- Leaflet CSS must go into plugin-styles stack (rendered in <head> before @stack('styles')) --}}
-@push('plugin-styles')
-<link rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin="">
-@endpush
+
 
 @push('styles')
 <style>
@@ -395,27 +389,20 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
 @endsection
 
 @push('scripts')
-{{-- Correct Leaflet 1.9.4 JS integrity --}}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLGk="
-        crossorigin=""></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}"></script>
 <script>
 $(function () {
     'use strict';
 
     // ── Backend data ──────────────────────────────────────────────────────────
-    var MAPS_API_KEY  = "{{ config('services.google.maps_key') }}";
-    var USE_GOOGLE    = MAPS_API_KEY && MAPS_API_KEY !== '' && MAPS_API_KEY !== 'your_key_here';
     var DRIVER_ID     = {{ $driver->id }};
     var IS_ON_DUTY    = {{ $driver->is_on_duty ? 'true' : 'false' }};
     var INIT_LAT      = {{ $driver->latitude  ?? 51.505 }};
     var INIT_LNG      = {{ $driver->longitude ?? -0.09  }};
 
     // ── State ─────────────────────────────────────────────────────────────────
-    var mapEngine      = 'leaflet';   // 'leaflet' | 'google'
     var map            = null;
     var marker         = null;
-    var tileLayer      = null;        // Leaflet tile layer — kept for hot-swapping
     var mapReady       = false;
     var curLat         = INIT_LAT;
     var curLng         = INIT_LNG;
@@ -426,10 +413,6 @@ $(function () {
     function isDark() {
         return document.documentElement.getAttribute('data-admin-theme') === 'dark';
     }
-
-    var TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-    var TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-    var TILE_ATTR  = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
     // Full Google Maps Night style array
     var GOOGLE_NIGHT = [
@@ -453,12 +436,8 @@ $(function () {
 
     // ── Apply theme to existing map ───────────────────────────────────────────
     function applyTheme() {
-        var dark = isDark();
-        if (mapEngine === 'leaflet' && map) {
-            if (tileLayer) map.removeLayer(tileLayer);
-            tileLayer = L.tileLayer(dark ? TILE_DARK : TILE_LIGHT, { maxZoom: 19, attribution: TILE_ATTR }).addTo(map);
-        } else if (mapEngine === 'google' && map) {
-            map.setOptions({ styles: dark ? GOOGLE_NIGHT : [] });
+        if (map) {
+            map.setOptions({ styles: isDark() ? GOOGLE_NIGHT : [] });
         }
     }
 
@@ -469,58 +448,17 @@ $(function () {
         });
     }).observe(document.documentElement, { attributes: true });
 
-    // ── Map size: force Leaflet to recalc tile grid after layout settles ──────
-    function fixSize() {
-        if (mapEngine === 'leaflet' && map) map.invalidateSize(true);
-    }
-    [100, 300, 600, 1200, 2000].forEach(function (d) { setTimeout(fixSize, d); });
-    $(window).on('resize', fixSize);
+    // ── Google Maps init ──────────────────────────────────────────────────────
+    function initMap() {
+        if (mapReady) return;
 
-    // ── Driver marker icon (Leaflet) ──────────────────────────────────────────
-    function driverIcon() {
-        return L.divIcon({
-            html: '<div style="width:36px;height:36px;background:#6c5ce7;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 5px rgba(108,92,231,0.2),0 4px 14px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;font-size:16px;">🚚</div>',
-            className: '',
-            iconSize: [36, 36],
-            iconAnchor: [18, 18],
-            popupAnchor: [0, -20],
-        });
-    }
-
-    // ── Leaflet init ──────────────────────────────────────────────────────────
-    function initLeaflet() {
-        try {
-            map = L.map('driver-map', { zoomControl: true, attributionControl: true })
-                   .setView([curLat, curLng], 15);
-
-            tileLayer = L.tileLayer(isDark() ? TILE_DARK : TILE_LIGHT, { maxZoom: 19, attribution: TILE_ATTR }).addTo(map);
-
-            marker = L.marker([curLat, curLng], { icon: driverIcon() })
-                      .bindPopup('<b>{{ addslashes($driver->name) }}</b>')
-                      .addTo(map);
-
-            mapEngine = 'leaflet';
-            mapReady  = true;
-
-            // Multiple invalidateSize passes — critical for correct tile loading
-            [50, 150, 350, 700, 1500].forEach(function (d) {
-                setTimeout(function () { map && map.invalidateSize(true); }, d);
-            });
-
-            return true;
-        } catch (e) {
-            console.error('Leaflet init failed:', e);
+        if (typeof google === 'undefined' || !google.maps) {
             document.getElementById('driver-map').innerHTML =
                 '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.85rem;gap:6px;"><i class="bi bi-exclamation-triangle"></i> Map unavailable</div>';
-            return false;
+            return;
         }
-    }
 
-    // ── Google Maps init ──────────────────────────────────────────────────────
-    function initGoogle() {
         try {
-            if (typeof google === 'undefined' || !google.maps) return false;
-
             map = new google.maps.Map(document.getElementById('driver-map'), {
                 zoom: 15,
                 center: { lat: curLat, lng: curLng },
@@ -546,27 +484,14 @@ $(function () {
                 },
             });
 
-            mapEngine = 'google';
-            mapReady  = true;
-            return true;
+            mapReady = true;
         } catch (e) {
             console.warn('Google Maps init failed:', e);
-            return false;
         }
     }
 
-    // ── Load map engine ───────────────────────────────────────────────────────
-    if (USE_GOOGLE) {
-        window._gmCb = function () { if (!initGoogle()) initLeaflet(); };
-        var s   = document.createElement('script');
-        s.src   = 'https://maps.googleapis.com/maps/api/js?key=' + MAPS_API_KEY + '&callback=_gmCb';
-        s.async = true;
-        s.defer = true;
-        s.onerror = function () { initLeaflet(); };
-        document.head.appendChild(s);
-    } else {
-        initLeaflet();
-    }
+    // Load Google Map immediately
+    initMap();
 
     // ── Telemetry UI helpers ──────────────────────────────────────────────────
     function setCoords(lat, lng) {
@@ -607,13 +532,8 @@ $(function () {
             var f   = step / steps;
             var lat = sLat + (eLat - sLat) * f;
             var lng = sLng + (eLng - sLng) * f;
-            if (mapEngine === 'google') {
-                marker.setPosition({ lat: lat, lng: lng });
-                if (step % 20 === 0) map.panTo({ lat: lat, lng: lng });
-            } else {
-                marker.setLatLng([lat, lng]);
-                if (step % 20 === 0) map.panTo([lat, lng]);
-            }
+            marker.setPosition({ lat: lat, lng: lng });
+            if (step % 20 === 0) map.panTo({ lat: lat, lng: lng });
             if (step >= steps) clearInterval(animTimer);
         }, 25);
     }
@@ -631,7 +551,6 @@ $(function () {
 
         if (dist > 0.00005) {
             var heading = cardinalHeading(curLat, curLng, lat, lng);
-            // Speed: dist / (15s / 3600s/hr)  — capped to 80 mph
             var mph = Math.min(Math.round(dist * 240), 80);
             setStats(heading, mph + ' mph');
             setCoords(lat, lng);
@@ -640,9 +559,7 @@ $(function () {
         } else {
             setStats('Stationary', '0 mph');
             if (mapReady && marker) {
-                mapEngine === 'google'
-                    ? marker.setPosition({ lat: curLat, lng: curLng })
-                    : marker.setLatLng([curLat, curLng]);
+                marker.setPosition({ lat: curLat, lng: curLng });
             }
         }
     }

@@ -9,10 +9,7 @@
 @extends('layouts.admin_noble')
 @section('title', 'Driver Monitoring')
 
-@push('plugin-styles')
-{{-- jsDelivr is already in CSP whitelist and more reliable than unpkg for SRI --}}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-@endpush
+
 
 @section('content')
 <div class="container-fluid px-0" style="padding-bottom: 40px;">
@@ -464,15 +461,9 @@ html[data-admin-theme="light"] .btn-close-track {
     background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #475569;
 }
 
-/* Leaflet dark tile contrast fix */
-.leaflet-tile { filter: brightness(0.92) contrast(1.05); }
-html[data-admin-theme="light"] .leaflet-tile { filter: none; }
-
 /* Motion chip states */
 .track-stat-chip.moving  { border-color:rgba(0,184,148,0.35); color:#34d399; background:rgba(0,184,148,0.08); }
 .track-stat-chip.stopped { border-color:rgba(148,163,184,0.2); color:#94a3b8; }
-
-/* Position trail line handled via Leaflet polyline, no extra CSS needed */
 
 /* Duty badge in modal */
 .modal-duty-on  { display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:700; color:#34d399; }
@@ -494,8 +485,7 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
 @endsection
 
 @push('scripts')
-{{-- Use jsDelivr — already in CSP whitelist, no SRI that can silently fail --}}
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js" crossorigin=""></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}"></script>
 <script>
 (function () {
     'use strict';
@@ -511,6 +501,7 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
     let trackMarker = null;
     let trackCircle = null;
     let trailLine   = null;
+    let infoWindow  = null;
     let posTrail    = [];
     let lastLat     = null;
     let lastLng     = null;
@@ -538,51 +529,64 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
     const refreshBtn  = document.getElementById('track-manual-refresh');
     const CSRF        = (document.querySelector('meta[name="csrf-token"]') || {}).getAttribute('content') || '';
 
-    // ── Truck marker icon ─────────────────────────────────────────────────────
-    function truckIcon(moving) {
-        const c = moving ? '#6c5ce7' : '#94a3b8';
-        const g = moving ? 'rgba(108,92,231,0.3)' : 'rgba(148,163,184,0.15)';
-        return L.divIcon({
-            html: `<div style="width:42px;height:42px;background:${c};border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 6px ${g},0 4px 14px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;">🚚</div>`,
-            className: '', iconSize: [42,42], iconAnchor: [21,21], popupAnchor: [0,-24],
-        });
-    }
+    // Full Google Maps Night style array
+    const GOOGLE_NIGHT = [
+        { elementType:"geometry",                                                stylers:[{color:"#0c1427"}] },
+        { elementType:"labels.text.fill",                                        stylers:[{color:"#8ec3b9"}] },
+        { elementType:"labels.text.stroke",                                      stylers:[{color:"#1a3646"}] },
+        { featureType:"administrative.country", elementType:"geometry.stroke",   stylers:[{color:"#4b6878"}] },
+        { featureType:"landscape.natural",      elementType:"geometry",          stylers:[{color:"#023e58"}] },
+        { featureType:"poi",                    elementType:"geometry",          stylers:[{color:"#283d6a"}] },
+        { featureType:"poi.park",               elementType:"geometry.fill",     stylers:[{color:"#023e58"}] },
+        { featureType:"road",                   elementType:"geometry",          stylers:[{color:"#304a7d"}] },
+        { featureType:"road",                   elementType:"geometry.stroke",   stylers:[{color:"#255763"}] },
+        { featureType:"road",                   elementType:"labels.text.fill",  stylers:[{color:"#98a5be"}] },
+        { featureType:"road.highway",           elementType:"geometry",          stylers:[{color:"#2c6675"}] },
+        { featureType:"road.highway",           elementType:"labels.text.fill",  stylers:[{color:"#b0d5ce"}] },
+        { featureType:"transit.line",           elementType:"geometry.fill",     stylers:[{color:"#283d6a"}] },
+        { featureType:"transit.station",        elementType:"geometry",          stylers:[{color:"#3a4762"}] },
+        { featureType:"water",                  elementType:"geometry.fill",     stylers:[{color:"#17263c"}] },
+        { featureType:"water",                  elementType:"labels.text.fill",  stylers:[{color:"#515c6d"}] },
+    ];
 
-    // ── Map init (deferred — needs visible dimensions) ────────────────────────
+    // ── Map init ──────────────────────────────────────────────────────────────
     function initMap() {
         if (mapReady || !mapEl) return;
 
-        // Guard: Leaflet must be loaded
-        if (typeof L === 'undefined') {
-            setOverlay('⚠ Map library failed to load. Location data is shown above.', false);
+        if (typeof google === 'undefined' || !google.maps) {
+            setOverlay('⚠ Google Maps failed to load.', false);
             return;
         }
 
         try {
-            // Guard: Leaflet throws if container already has a map instance
-            // (can happen on second modal open if previous init was partial)
-            if (mapEl._leaflet_id) {
-                // Map was previously initialized but mapReady was false — recover it
-                mapReady = true;
-                return;
-            }
-
-            trackMap = L.map('driver-tracking-map', {
+            const dark = document.documentElement.getAttribute('data-admin-theme') === 'dark';
+            trackMap = new google.maps.Map(mapEl, {
+                zoom: 15,
+                center: { lat: 51.505, lng: -0.09 },
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
                 zoomControl: true,
-                attributionControl: true,
-            }).setView([51.505, -0.09], 13);
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: false,
+                styles: dark ? GOOGLE_NIGHT : [],
+            });
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                maxZoom: 19,
-            }).addTo(trackMap);
-
+            infoWindow = new google.maps.InfoWindow();
             mapReady = true;
         } catch (e) {
-            console.error('Map init error:', e);
-            // Don't change overlay here — render() will handle it
+            console.error('Google Map init error:', e);
         }
     }
+
+    // Watch data-admin-theme attribute for changes
+    new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            if (m.attributeName === 'data-admin-theme' && trackMap) {
+                const dark = document.documentElement.getAttribute('data-admin-theme') === 'dark';
+                trackMap.setOptions({ styles: dark ? GOOGLE_NIGHT : [] });
+            }
+        });
+    }).observe(document.documentElement, { attributes: true });
 
     // ── Overlay ───────────────────────────────────────────────────────────────
     function setOverlay(text, spin) {
@@ -624,7 +628,7 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
         }, 1000);
     }
 
-    // ── Smooth marker animation (between old and new position) ────────────────
+    // ── Smooth marker animation ───────────────────────────────────────────────
     function animateMarker(fromLat, fromLng, toLat, toLng) {
         if (animTimer) clearInterval(animTimer);
         var steps = 40, step = 0;
@@ -633,32 +637,38 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
             var f   = step / steps;
             var lat = fromLat + (toLat - fromLat) * f;
             var lng = fromLng + (toLng - fromLng) * f;
-            if (trackMarker) trackMarker.setLatLng([lat, lng]);
+            if (trackMarker) trackMarker.setPosition({ lat: lat, lng: lng });
             if (step >= steps) clearInterval(animTimer);
         }, 25);
     }
 
     // ── Trail breadcrumb ──────────────────────────────────────────────────────
     function updateTrail(lat, lng) {
-        posTrail.push([lat, lng]);
+        posTrail.push({ lat: lat, lng: lng });
         if (posTrail.length > MAX_TRAIL) posTrail.shift();
         if (posTrail.length < 2) return;
         if (!trailLine) {
-            trailLine = L.polyline(posTrail, { color: '#6c5ce7', weight: 2.5, opacity: 0.4, dashArray: '5 4' }).addTo(trackMap);
+            trailLine = new google.maps.Polyline({
+                path: posTrail,
+                geodesic: true,
+                strokeColor: '#6c5ce7',
+                strokeOpacity: 0.4,
+                strokeWeight: 2.5,
+                map: trackMap,
+            });
         } else {
-            trailLine.setLatLngs(posTrail);
+            trailLine.setPath(posTrail);
         }
     }
 
     // ── Render location data from API ─────────────────────────────────────────
-    // Stats section never throws. Map section is isolated in its own try/catch.
     function render(data) {
         var lat  = data.latitude  != null ? parseFloat(data.latitude)  : null;
         var lng  = data.longitude != null ? parseFloat(data.longitude) : null;
         var ageS = data.location_age_seconds;
         var duty = data.is_on_duty;
 
-        // ── Stats (never throws) ──────────────────────────────────────────────
+        // ── Stats ─────────────────────────────────────────────────────────────
         try {
             if (dutyEl) dutyEl.innerHTML = duty
                 ? '<span class="modal-duty-on"><span class="pulse-green"></span>On Duty</span>'
@@ -677,7 +687,7 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
             return;
         }
 
-        // ── Coords + motion (never throws) ────────────────────────────────────
+        // ── Coords + motion ───────────────────────────────────────────────────
         try {
             if (coordsEl) coordsEl.textContent = lat.toFixed(5) + ', ' + lng.toFixed(5);
             var moved = lastLat !== null && haversineM(lastLat, lastLng, lat, lng) > 8;
@@ -685,46 +695,69 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
             if (motionChip) motionChip.className  = 'track-stat-chip ' + (moved ? 'moving' : 'stopped');
         } catch(e) { console.warn('Coords render error:', e); }
 
-        // ── Map operations (isolated — failure shows coords-only message) ─────
+        // ── Map operations ────────────────────────────────────────────────────
         try {
-            // Retry map init if it failed on shown.bs.modal (e.g. Leaflet loaded late)
             if (!mapReady) initMap();
 
             if (!trackMap || !mapReady) {
-                // Map init failed — show coordinates in overlay, stats still visible above
                 setOverlay('📍 ' + lat.toFixed(5) + ', ' + lng.toFixed(5) + '\nMap unavailable', false);
                 lastLat = lat; lastLng = lng;
                 return;
             }
 
             var fresh  = ageS !== null && ageS < STALE_OLD;
-            var latlng = [lat, lng];
             var driverName = nameEl ? nameEl.textContent : 'Driver';
 
             if (!trackMarker) {
-                trackMarker = L.marker(latlng, { icon: truckIcon(moved) })
-                    .bindPopup('<b>' + driverName + '</b><br>' + fmtAge(ageS))
-                    .addTo(trackMap);
+                trackMarker = new google.maps.Marker({
+                    position: { lat: lat, lng: lng },
+                    map: trackMap,
+                    title: driverName,
+                    icon: {
+                        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                        scale: 7,
+                        fillColor: moved ? '#6c5ce7' : '#94a3b8',
+                        fillOpacity: 0.95,
+                        strokeColor: '#ffffff',
+                        strokeWeight: 2.5,
+                    },
+                });
+
+                trackMarker.addListener('click', function() {
+                    infoWindow.setContent('<b>' + driverName + '</b><br>' + fmtAge(ageS));
+                    infoWindow.open(trackMap, trackMarker);
+                });
             } else {
                 if (lastLat !== null && moved) {
                     animateMarker(lastLat, lastLng, lat, lng);
                 } else {
-                    trackMarker.setLatLng(latlng);
+                    trackMarker.setPosition({ lat: lat, lng: lng });
                 }
-                trackMarker.setIcon(truckIcon(moved));
-                trackMarker.setPopupContent('<b>' + driverName + '</b><br>' + fmtAge(ageS));
+                trackMarker.setIcon({
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                    scale: 7,
+                    fillColor: moved ? '#6c5ce7' : '#94a3b8',
+                    fillOpacity: 0.95,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2.5,
+                });
             }
 
             if (!trackCircle) {
-                trackCircle = L.circle(latlng, {
-                    radius: 60, weight: 1,
-                    color: fresh ? '#6c5ce7' : '#94a3b8',
+                trackCircle = new google.maps.Circle({
+                    strokeColor: fresh ? '#6c5ce7' : '#94a3b8',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 1,
                     fillColor: fresh ? '#6c5ce7' : '#94a3b8',
                     fillOpacity: 0.07,
-                }).addTo(trackMap);
+                    map: trackMap,
+                    center: { lat: lat, lng: lng },
+                    radius: 60,
+                });
             } else {
-                trackCircle.setLatLng(latlng).setStyle({
-                    color: fresh ? '#6c5ce7' : '#94a3b8',
+                trackCircle.setCenter({ lat: lat, lng: lng });
+                trackCircle.setOptions({
+                    strokeColor: fresh ? '#6c5ce7' : '#94a3b8',
                     fillColor: fresh ? '#6c5ce7' : '#94a3b8',
                 });
             }
@@ -732,15 +765,15 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
             if (lastLat === null || moved) updateTrail(lat, lng);
 
             if (lastLat === null) {
-                trackMap.setView(latlng, 15);
+                trackMap.setCenter({ lat: lat, lng: lng });
+                trackMap.setZoom(15);
             } else if (moved) {
-                trackMap.panTo(latlng, { animate: true, duration: 1 });
+                trackMap.panTo({ lat: lat, lng: lng });
             }
 
             hideOverlay();
         } catch (mapErr) {
             console.error('Map render error:', mapErr);
-            // Show coordinates even if map fails
             setOverlay('📍 ' + lat.toFixed(5) + ', ' + lng.toFixed(5) + ' — map error, retrying…', false);
         }
 
@@ -764,13 +797,11 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
             return r.json();
         })
         .then(function (d) {
-            // render() has its own try/catch — map errors must NOT propagate here
             try { render(d); } catch (e) { console.error('render() error:', e); }
             startCountdown();
         })
         .catch(function (e) {
-            // Only genuine HTTP / network errors reach here (not map errors)
-            if (!e || !e.isHttp) return; // map/render error — already handled inside render()
+            if (!e || !e.isHttp) return;
             var msg = e.code === 404 ? 'Driver not found.'
                     : e.code === 403 ? 'Access denied.'
                     : 'Connection error (HTTP ' + e.code + '). Retrying…';
@@ -794,8 +825,7 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
         pollTimer = null;
     }
 
-    // ── Store driver data on button click (more reliable than relatedTarget) ──
-    // Bootstrap's e.relatedTarget can be null in some browsers/versions.
+    // ── Store driver data on button click ─────────────────────────────────────
     document.querySelectorAll('.btn-track-driver').forEach(function (btn) {
         btn.addEventListener('click', function () {
             pendingData = {
@@ -835,12 +865,8 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
 
     $(modal).on('shown.bs.modal', function () {
         initMap();
-        // invalidateSize at multiple intervals — Bootstrap modal CSS transitions
-        // can leave the container at 0px briefly; repeated calls ensure tiles load
         if (trackMap) {
-            trackMap.invalidateSize();
-            setTimeout(function () { if (trackMap) trackMap.invalidateSize(); }, 150);
-            setTimeout(function () { if (trackMap) trackMap.invalidateSize(); }, 400);
+            google.maps.event.trigger(trackMap, 'resize');
         }
         startPoll();
     });
@@ -848,9 +874,10 @@ html[data-admin-theme="light"] .leaflet-tile { filter: none; }
     $(modal).on('hidden.bs.modal', function () {
         stopPoll();
         currentId = null;
-        if (trackMarker && trackMap) { trackMap.removeLayer(trackMarker); trackMarker = null; }
-        if (trackCircle && trackMap) { trackMap.removeLayer(trackCircle); trackCircle = null; }
-        if (trailLine   && trackMap) { trackMap.removeLayer(trailLine);   trailLine   = null; }
+        if (trackMarker) { trackMarker.setMap(null); trackMarker = null; }
+        if (trackCircle) { trackCircle.setMap(null); trackCircle = null; }
+        if (trailLine)   { trailLine.setMap(null);   trailLine   = null; }
+        if (infoWindow)  { infoWindow.close();       infoWindow  = null; }
         posTrail = []; lastLat = null; lastLng = null;
         if (countEl) countEl.textContent = '';
     });
