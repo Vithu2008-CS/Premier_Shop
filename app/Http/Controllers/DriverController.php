@@ -108,4 +108,21 @@ class DriverController extends Controller
 
         return redirect()->route('driver.dashboard')->with('success', 'Order marked as delivered!');
     }
+
+    public function updateLocation(Request $request)
+    {
+        $request->validate([
+            'latitude'  => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        $driver = auth()->user();
+        $driver->update([
+            'latitude'            => $request->latitude,
+            'longitude'           => $request->longitude,
+            'location_updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }

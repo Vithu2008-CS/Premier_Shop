@@ -133,4 +133,28 @@ class DriverController extends Controller
 
         return redirect()->route('admin.drivers.index')->with('success', 'Driver deleted successfully.');
     }
+
+    public function getLocation(User $driver)
+    {
+        if (! $driver->isDriver()) {
+            return response()->json(['error' => 'Not a driver'], 404);
+        }
+
+        $locationAgeSeconds = $driver->location_updated_at
+            ? (int) now()->diffInSeconds($driver->location_updated_at)
+            : null;
+
+        return response()->json([
+            'driver_id'            => $driver->id,
+            'driver_name'          => $driver->name,
+            'latitude'             => $driver->latitude,
+            'longitude'            => $driver->longitude,
+            'is_on_duty'           => (bool) $driver->is_on_duty,
+            'location_updated_at'  => $driver->location_updated_at?->toIso8601String(),
+            'location_age_seconds' => $locationAgeSeconds,
+            'active_orders_count'  => $driver->assignedOrders()
+                ->whereIn('status', ['pending', 'processing', 'shipped'])
+                ->count(),
+        ]);
+    }
 }

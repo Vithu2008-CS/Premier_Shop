@@ -45,8 +45,11 @@ class RolePermissionSeeder extends Seeder
         $driver = Role::firstOrCreate(['name' => 'driver'], [
             'display_name' => 'Driver',
             'description' => 'Can manage assigned deliveries and update status.',
-            'is_staff' => true,
+            'is_staff' => false,
         ]);
+        if ($driver->is_staff) {
+            $driver->update(['is_staff' => false]);
+        }
 
         // Create Permissions grouped by module
         $permissionGroups = [
