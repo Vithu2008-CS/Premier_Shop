@@ -167,9 +167,8 @@
         </div>
 
             @if($order->status === 'shipped' || $order->status === 'delivered')
-                <!-- Leaflet CSS & JS CDNs -->
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+                <!-- Google Maps API -->
+                <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}" crossorigin=""></script>
                 
                 <!-- Live Tracking Panel -->
                 <div class="card border-0 shadow-sm mb-4" style="border-radius:20px; overflow:hidden;">
@@ -301,137 +300,115 @@
                     }
                 </style>
                 
-                <!-- Live Tracking Simulation and Map Rendering Script -->
+                <!-- Google Maps delivery route and courier animation -->
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // 1. Define Warehouses (Origin) and Dest Coordinates based on active city
-                        const warehouse = [51.5074, -0.1278]; // London Depot
-                        let destination = [51.5300, -0.0800];  // Default Offset London
-                        
-                        const customerCity = "{{ strtolower($order->shipping_address['city'] ?? '') }}";
-                        
-                        // Map coordinates index for UK cities
+                    document.addEventListener('DOMContentLoaded', function () {
+                        if (typeof google === 'undefined' || !google.maps) return;
+
+                        // City coordinates lookup
                         const cityCoords = {
-                            'leeds': [53.8008, -1.5491],
-                            'manchester': [53.4808, -2.2426],
-                            'birmingham': [52.4862, -1.8904],
-                            'liverpool': [53.4084, -2.9916],
-                            'bristol': [51.4545, -2.5879],
-                            'london': [51.5200, -0.0900]
+                            'leeds': { lat: 53.8008, lng: -1.5491 },
+                            'manchester': { lat: 53.4808, lng: -2.2426 },
+                            'birmingham': { lat: 52.4862, lng: -1.8904 },
+                            'liverpool': { lat: 53.4084, lng: -2.9916 },
+                            'bristol': { lat: 51.4545, lng: -2.5879 },
+                            'london': { lat: 51.5200, lng: -0.0900 },
                         };
-                        
-                        if (cityCoords[customerCity]) {
-                            destination = cityCoords[customerCity];
-                        } else {
-                            // If arbitrary city, generate custom route near central depot based on order ID hash
-                            const hash = parseInt("{{ $order->id }}") || 10;
-                            const offsetLat = 0.025 + (hash % 10) * 0.005;
-                            const offsetLng = 0.025 + (hash % 7) * 0.005;
-                            destination = [warehouse[0] + offsetLat, warehouse[1] + offsetLng];
+
+                        const warehouse  = { lat: 51.5074, lng: -0.1278 };
+                        const city       = "{{ strtolower($order->shipping_address['city'] ?? '') }}";
+                        const hash       = parseInt("{{ $order->id }}") || 10;
+                        const destination = cityCoords[city] || {
+                            lat: warehouse.lat + 0.025 + (hash % 10) * 0.005,
+                            lng: warehouse.lng + 0.025 + (hash % 7) * 0.005,
+                        };
+
+                        // SVG pin factory
+                        function makePin(color, emoji) {
+                            const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">'
+                                + '<circle cx="18" cy="18" r="15" fill="' + color + '" stroke="#fff" stroke-width="2"/>'
+                                + '<text x="18" y="23" text-anchor="middle" font-size="13">' + emoji + '</text>'
+                                + '</svg>';
+                            return { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg), scaledSize: new google.maps.Size(36, 36), anchor: new google.maps.Point(18, 18) };
                         }
-                        
-                        // 2. Initialize Leaflet Map
-                        const map = L.map('live-delivery-map', {
+
+                        const map = new google.maps.Map(document.getElementById('live-delivery-map'), {
+                            center: warehouse,
+                            zoom: 11,
                             zoomControl: false,
-                            attributionControl: false
-                        }).setView(warehouse, 11);
-                        
-                        // Use a beautiful, clean CartoDB Voyager map tile to match premium aesthetics
-                        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                            maxZoom: 19
-                        }).addTo(map);
-                        
-                        // 3. Create Custom Markers
-                        const warehouseIcon = L.divIcon({
-                            html: '<div style="background-color: #6C5CE7; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.15);"><i class="bi bi-building"></i></div>',
-                            className: '',
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 16]
+                            mapTypeControl: false,
+                            streetViewControl: false,
+                            fullscreenControl: false,
                         });
-                        
-                        const destinationIcon = L.divIcon({
-                            html: '<div style="background-color: #E17055; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.15);"><i class="bi bi-house-door-fill"></i></div>',
-                            className: '',
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 16]
+
+                        // Warehouse + destination markers
+                        new google.maps.Marker({ position: warehouse,   map: map, icon: makePin('#6C5CE7', '🏢'), title: 'Premier Shop Central Depot' });
+                        new google.maps.Marker({ position: destination, map: map, icon: makePin('#E17055', '🏠'), title: 'Delivery Address' });
+
+                        // Dashed route line
+                        new google.maps.Polyline({
+                            path: [warehouse, destination],
+                            map: map,
+                            geodesic: true,
+                            strokeColor: '#3498DB',
+                            strokeOpacity: 0,
+                            icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.8, scale: 4, strokeColor: '#3498DB' }, offset: '0', repeat: '16px' }],
                         });
-                        
-                        const truckIcon = L.divIcon({
-                            html: '<div style="background-color: #3498DB; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.25);"><i class="bi bi-truck"></i></div>',
-                            className: '',
-                            iconSize: [36, 36],
-                            iconAnchor: [18, 18]
-                        });
-                        
-                        L.marker(warehouse, { icon: warehouseIcon }).addTo(map).bindPopup("Premier Shop Central Depot");
-                        L.marker(destination, { icon: destinationIcon }).addTo(map).bindPopup("Delivery Address");
-                        
-                        // 4. Plot Delivery Route Line
-                        const routeLine = L.polyline([warehouse, destination], {
-                            color: '#3498DB',
-                            weight: 4,
-                            opacity: 0.8,
-                            dashArray: '8, 8'
-                        }).addTo(map);
-                        
-                        // Fit map bounds to show route clearly
-                        map.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
-                        
-                        // 5. Courier Animation Logic (Shipped Status only)
+
+                        // Fit bounds
+                        var bounds = new google.maps.LatLngBounds();
+                        bounds.extend(warehouse);
+                        bounds.extend(destination);
+                        map.fitBounds(bounds, 40);
+
+                        // Courier animation
                         const status = "{{ $order->status }}";
                         if (status === 'shipped') {
-                            const truckMarker = L.marker(warehouse, { icon: truckIcon }).addTo(map);
-                            
-                            const statusTimeline = [
-                                { pct: 0, msg: "Courier has picked up your package and is departing from the central depot." },
+                            const truckMarker = new google.maps.Marker({
+                                position: warehouse,
+                                map: map,
+                                icon: makePin('#3498DB', '🚚'),
+                                title: 'Courier',
+                                zIndex: 10,
+                            });
+
+                            const timeline = [
+                                { pct: 0,  msg: "Courier has picked up your package and is departing from the central depot." },
                                 { pct: 15, msg: "Courier is checking delivery route constraints." },
                                 { pct: 30, msg: "Courier is traveling along the transit highway." },
                                 { pct: 50, msg: "Courier is making excellent time; proceeding through main highway corridor." },
                                 { pct: 70, msg: "Courier has exited the main route and is entering your local district." },
                                 { pct: 85, msg: "Courier is navigating residential streets. Almost there!" },
-                                { pct: 95, msg: "Courier is arriving at your address. Please be ready to receive your parcel!" }
+                                { pct: 95, msg: "Courier is arriving at your address. Please be ready to receive your parcel!" },
                             ];
-                            
-                            let progress = 0;
-                            const duration = 24000; // 24 seconds loop
+
+                            const duration  = 24000;
                             const startTime = performance.now();
-                            
-                            function animateCourier(timestamp) {
-                                const elapsed = (timestamp - startTime) % duration;
-                                progress = elapsed / duration;
-                                
-                                // Calculate position coordinate along linear path
-                                const currentLat = warehouse[0] + (destination[0] - warehouse[0]) * progress;
-                                const currentLng = warehouse[1] + (destination[1] - warehouse[1]) * progress;
-                                const currentPos = [currentLat, currentLng];
-                                
-                                truckMarker.setLatLng(currentPos);
-                                
-                                // Dynamic map centering to follow truck
-                                map.panTo(currentPos, { animate: true, duration: 0.2 });
-                                
-                                // Update progress bar and text logs
-                                const pctVal = Math.round(progress * 100);
-                                const progressBar = document.getElementById('tracking-progress-bar');
-                                if (progressBar) progressBar.style.width = pctVal + '%';
-                                
-                                // Find correct message matching progress
-                                let activeMsg = statusTimeline[0].msg;
-                                for (let i = 0; i < statusTimeline.length; i++) {
-                                    if (pctVal >= statusTimeline[i].pct) {
-                                        activeMsg = statusTimeline[i].msg;
+
+                            function animateCourier(ts) {
+                                const pct = ((ts - startTime) % duration) / duration;
+                                const lat = warehouse.lat + (destination.lat - warehouse.lat) * pct;
+                                const lng = warehouse.lng + (destination.lng - warehouse.lng) * pct;
+                                truckMarker.setPosition({ lat: lat, lng: lng });
+                                map.panTo({ lat: lat, lng: lng });
+
+                                const pctVal = Math.round(pct * 100);
+                                const pb     = document.getElementById('tracking-progress-bar');
+                                const st     = document.getElementById('tracking-status-text');
+                                if (pb) pb.style.width = pctVal + '%';
+                                if (st) {
+                                    let msg = timeline[0].msg;
+                                    for (var i = 0; i < timeline.length; i++) {
+                                        if (pctVal >= timeline[i].pct) msg = timeline[i].msg;
                                     }
+                                    st.innerText = msg;
                                 }
-                                const statusText = document.getElementById('tracking-status-text');
-                                if (statusText) statusText.innerText = activeMsg;
-                                
                                 requestAnimationFrame(animateCourier);
                             }
-                            
                             requestAnimationFrame(animateCourier);
+
                         } else if (status === 'delivered') {
-                            // If delivered, position the truck stationary at the destination
-                            L.marker(destination, { icon: truckIcon }).addTo(map);
+                            new google.maps.Marker({ position: destination, map: map, icon: makePin('#3498DB', '🚚'), title: 'Delivered' });
                         }
                     });
                 </script>

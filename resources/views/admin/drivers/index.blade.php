@@ -877,6 +877,10 @@ html[data-admin-theme="light"] .btn-close-track {
         if (trackMap) {
             google.maps.event.trigger(trackMap, 'resize');
         }
+        // Ensure infoWindow exists (initMap only runs once; modal can open many times)
+        if (!infoWindow && typeof google !== 'undefined' && google.maps) {
+            infoWindow = new google.maps.InfoWindow();
+        }
         startPoll();
     });
 
@@ -886,7 +890,7 @@ html[data-admin-theme="light"] .btn-close-track {
         if (trackMarker) { trackMarker.setMap(null); trackMarker = null; }
         if (trackCircle) { trackCircle.setMap(null); trackCircle = null; }
         if (trailLine)   { trailLine.setMap(null);   trailLine   = null; }
-        if (infoWindow)  { infoWindow.close();       infoWindow  = null; }
+        if (infoWindow)  { infoWindow.close(); /* do NOT null — initMap won't recreate it */ }
         posTrail = []; lastLat = null; lastLng = null;
         if (countEl) countEl.textContent = '';
     });

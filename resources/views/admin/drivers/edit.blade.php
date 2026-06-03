@@ -88,9 +88,7 @@ html[data-admin-theme="dark"] .border-bottom-subtle { border-bottom: 1.5px solid
 #driver-map { width: 100%; height: 100%; }
 html[data-admin-theme="dark"] #live-map-container { border-color: rgba(255,255,255,0.06); background: #0f172a; }
 
-/* Darken Leaflet tiles in dark mode */
-html[data-admin-theme="dark"] .leaflet-tile { filter: brightness(0.88) contrast(1.05); }
-html[data-admin-theme="light"] .leaflet-tile { filter: none; }
+/* Google Maps dark/light styling handled via map.setOptions({styles:...}) in JS */
 
 /* ── Floating save bar ────────────────────────────────────────────────────── */
 .floating-save-bar {
