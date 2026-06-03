@@ -2,7 +2,7 @@
     admin/drivers/index.blade.php — Driver monitoring dashboard
     ============================================================
     Table of all driver accounts: name, email, assigned active orders count, status.
-    "Track" button per row opens a Leaflet live-location modal (polls every 15 s,
+    "Track" button per row opens a Google Maps live-location modal (polls every 10 s,
     stops when the modal is closed — never hammers the server when not in use).
     Variable: $drivers (with processing_orders_count)
 --}}
@@ -877,6 +877,10 @@ html[data-admin-theme="light"] .btn-close-track {
         if (trackMap) {
             google.maps.event.trigger(trackMap, 'resize');
         }
+        // Ensure infoWindow exists (initMap only runs once; modal can open many times)
+        if (!infoWindow && typeof google !== 'undefined' && google.maps) {
+            infoWindow = new google.maps.InfoWindow();
+        }
         startPoll();
     });
 
@@ -886,7 +890,7 @@ html[data-admin-theme="light"] .btn-close-track {
         if (trackMarker) { trackMarker.setMap(null); trackMarker = null; }
         if (trackCircle) { trackCircle.setMap(null); trackCircle = null; }
         if (trailLine)   { trailLine.setMap(null);   trailLine   = null; }
-        if (infoWindow)  { infoWindow.close();       infoWindow  = null; }
+        if (infoWindow)  { infoWindow.close(); /* do NOT null — initMap won't recreate it */ }
         posTrail = []; lastLat = null; lastLng = null;
         if (countEl) countEl.textContent = '';
     });

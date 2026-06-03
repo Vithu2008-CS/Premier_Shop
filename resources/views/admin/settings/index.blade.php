@@ -205,140 +205,132 @@
 @endpush
 
 @push('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <style>
-    /* Premium style details for Leaflet Map in Settings */
-    #settingsMap {
-        transition: all 0.3s ease;
-        z-index: 5;
-    }
-    #settingsMap:hover {
-        box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important;
-    }
-    /* Style for leaflet popup in admin settings */
-    .leaflet-popup-content-wrapper {
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        font-family: inherit;
-    }
-    .leaflet-popup-content {
-        font-weight: 500;
-        color: #0f172a;
-    }
+    #settingsMap { transition: all 0.3s ease; z-index: 5; }
+    #settingsMap:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.08) !important; }
+    /* Remove Google Maps default UI clutter */
+    #settingsMap .gm-style-cc, #settingsMap a[href*="maps.google"] { display: none !important; }
 </style>
 @endpush
 
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}&libraries=geocoding" crossorigin=""></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Elements
-    const latInput = document.getElementById('origin_latitude');
-    const lngInput = document.getElementById('origin_longitude');
+document.addEventListener('DOMContentLoaded', function () {
+    const latInput     = document.getElementById('origin_latitude');
+    const lngInput     = document.getElementById('origin_longitude');
     const addressInput = document.getElementById('origin_address');
-    
-    // 2. Initial coordinates
-    let initialLat = parseFloat(latInput.value);
-    let initialLng = parseFloat(lngInput.value);
-    
-    // Default to London (SW1A 1AA) if coordinates are not configured
+    const geocoder     = new google.maps.Geocoder();
+
     const defaultLat = 51.5074;
     const defaultLng = -0.1278;
-    const isUsingDefault = isNaN(initialLat) || isNaN(initialLng);
-    
-    const startLat = isUsingDefault ? defaultLat : initialLat;
-    const startLng = isUsingDefault ? defaultLng : initialLng;
-    
-    // 3. Initialize Map
-    const map = L.map('settingsMap').setView([startLat, startLng], isUsingDefault ? 12 : 16);
-    
-    // Modern tile layer (OpenStreetMap / CartoDB Voyager feels very clean and premium)
-    const activeTheme = localStorage.getItem('admin_theme') || 'light';
-    const tileUrl = activeTheme === 'dark' 
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' 
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-        
-    const attribution = activeTheme === 'dark'
-        ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+    let initialLat   = parseFloat(latInput.value);
+    let initialLng   = parseFloat(lngInput.value);
+    const isDefault  = isNaN(initialLat) || isNaN(initialLng);
+    const startLat   = isDefault ? defaultLat : initialLat;
+    const startLng   = isDefault ? defaultLng : initialLng;
 
-    L.tileLayer(tileUrl, {
-        attribution: attribution,
-        maxZoom: 20
-    }).addTo(map);
-    
-    // 4. Create Draggable Marker
-    const marker = L.marker([startLat, startLng], {
+    const isDark = document.documentElement.getAttribute('data-admin-theme') === 'dark';
+    const NIGHT_STYLES = [
+        { elementType: 'geometry',                stylers: [{ color: '#0c1427' }] },
+        { elementType: 'labels.text.fill',        stylers: [{ color: '#8ec3b9' }] },
+        { elementType: 'labels.text.stroke',      stylers: [{ color: '#1a3646' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#304a7d' }] },
+        { featureType: 'water', elementType: 'geometry.fill', stylers: [{ color: '#17263c' }] },
+    ];
+
+    const map = new google.maps.Map(document.getElementById('settingsMap'), {
+        zoom:             isDefault ? 12 : 16,
+        center:           { lat: startLat, lng: startLng },
+        styles:           isDark ? NIGHT_STYLES : [],
+        mapTypeControl:   false,
+        streetViewControl: false,
+        fullscreenControl: false,
+    });
+
+    const infoWindow = new google.maps.InfoWindow();
+    const marker = new google.maps.Marker({
+        position:  { lat: startLat, lng: startLng },
+        map:       map,
         draggable: true,
-        autoPan: true
-    }).addTo(map);
-    
-    if (!isUsingDefault) {
-        marker.bindPopup("<b>Shop Location</b><br>Currently configured origin.").openPopup();
-    } else {
-        marker.bindPopup("<b>Default Location</b><br>Drag me to set your shop!").openPopup();
+        title:     'Shop Location',
+        icon: {
+            path:        google.maps.SymbolPath.CIRCLE,
+            scale:       10,
+            fillColor:   '#6c5ce7',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2.5,
+        },
+    });
+
+    // Theme observer
+    new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            if (m.attributeName === 'data-admin-theme') {
+                const dark = document.documentElement.getAttribute('data-admin-theme') === 'dark';
+                map.setOptions({ styles: dark ? NIGHT_STYLES : [] });
+            }
+        });
+    }).observe(document.documentElement, { attributes: true });
+
+    function showInfo(title, body) {
+        infoWindow.setContent('<div style="font-family:\'Inter\',sans-serif;font-size:0.83rem;"><b>' + title + '</b><br>' + body + '</div>');
+        infoWindow.open(map, marker);
     }
-    
-    // 5. If using default, but an address exists, geocode it!
-    if (isUsingDefault && addressInput.value.trim().length > 0) {
-        const address = addressInput.value.trim();
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`)
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    const lat = parseFloat(data[0].lat);
-                    const lon = parseFloat(data[0].lon);
-                    map.setView([lat, lon], 16);
-                    marker.setLatLng([lat, lon]);
-                    latInput.value = lat;
-                    lngInput.value = lon;
-                    marker.bindPopup("<b>Geocoded Address</b><br>Centered based on address text.").openPopup();
-                }
-            })
-            .catch(err => console.error("Error geocoding initial address:", err));
-    }
-    
-    // 6. Geolocation Callback (Reverse Geocoding)
-    let geocodeTimeout = null;
+
+    // Show initial popup
+    showInfo(isDefault ? 'Default Location' : 'Shop Location',
+             isDefault ? 'Drag or click map to set your shop.' : 'Currently configured origin.');
+
+    // Reverse geocode using Google API
+    let geocodeTimer = null;
     function reverseGeocode(lat, lng) {
-        if (geocodeTimeout) clearTimeout(geocodeTimeout);
-        
-        geocodeTimeout = setTimeout(() => {
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.display_name) {
-                        addressInput.value = data.display_name;
-                        marker.bindPopup(`<b>Location Set!</b><br>${data.name || 'Shop Origin'}`).openPopup();
-                    }
-                })
-                .catch(err => {
-                    console.error("Error reverse geocoding coordinates:", err);
-                    marker.bindPopup("<b>Location Set!</b><br>Address lookup limit reached.").openPopup();
-                });
-        }, 800); // 800ms debounce
+        clearTimeout(geocodeTimer);
+        geocodeTimer = setTimeout(function () {
+            geocoder.geocode({ location: { lat: lat, lng: lng } }, function (results, status) {
+                if (status === 'OK' && results[0]) {
+                    addressInput.value = results[0].formatted_address;
+                    showInfo('Location Set', results[0].formatted_address.substring(0, 50) + '…');
+                } else {
+                    showInfo('Location Set', lat.toFixed(5) + ', ' + lng.toFixed(5));
+                }
+            });
+        }, 700);
     }
-    
-    // 7. Event Handlers
-    function updateCoordinates(lat, lng, doGeocode = true) {
+
+    function updatePosition(lat, lng, doGeocode) {
         latInput.value = lat.toFixed(6);
         lngInput.value = lng.toFixed(6);
-        if (doGeocode) {
-            reverseGeocode(lat, lng);
-        }
+        if (doGeocode) reverseGeocode(lat, lng);
     }
-    
-    marker.on('dragend', function(e) {
-        const position = marker.getLatLng();
-        updateCoordinates(position.lat, position.lng, true);
+
+    marker.addListener('dragend', function () {
+        const pos = marker.getPosition();
+        updatePosition(pos.lat(), pos.lng(), true);
     });
-    
-    map.on('click', function(e) {
-        const lat = e.latlng.lat;
-        const lng = e.latlng.lng;
-        marker.setLatLng([lat, lng]);
-        updateCoordinates(lat, lng, true);
+
+    map.addListener('click', function (e) {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        marker.setPosition({ lat: lat, lng: lng });
+        updatePosition(lat, lng, true);
     });
+
+    // Forward geocode address on page load if coordinates are missing
+    if (isDefault && addressInput.value.trim().length > 0) {
+        geocoder.geocode({ address: addressInput.value.trim() }, function (results, status) {
+            if (status === 'OK') {
+                const loc = results[0].geometry.location;
+                map.setCenter(loc);
+                map.setZoom(16);
+                marker.setPosition(loc);
+                latInput.value = loc.lat().toFixed(6);
+                lngInput.value = loc.lng().toFixed(6);
+                showInfo('Address Found', results[0].formatted_address.substring(0, 50) + '…');
+            }
+        });
+    }
 });
 </script>
 @endpush
