@@ -2,7 +2,7 @@
     admin/drivers/index.blade.php — Driver monitoring dashboard
     ============================================================
     Table of all driver accounts: name, email, assigned active orders count, status.
-    "Track" button per row opens a Leaflet live-location modal (polls every 15 s,
+    "Track" button per row opens a Google Maps live-location modal (polls every 10 s,
     stops when the modal is closed — never hammers the server when not in use).
     Variable: $drivers (with processing_orders_count)
 --}}

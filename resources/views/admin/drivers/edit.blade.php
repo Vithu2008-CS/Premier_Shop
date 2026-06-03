@@ -326,7 +326,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
                         </div>
                     </div>
 
-                    {{-- Map container — fluid width, fixed height so Leaflet tiles load correctly --}}
+                    {{-- Map container — fluid width, fixed height --}}
                     <div id="live-map-container" class="mb-3">
                         <div id="driver-map"></div>
                     </div>
