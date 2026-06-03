@@ -301,6 +301,11 @@
     .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 12px; opacity: 0.4; }
     .empty-state p { font-size: 0.88rem; margin: 0; }
 
+    /* Combined duty+GPS button loading state */
+    @keyframes duty-spin { to { transform: rotate(360deg); } }
+    .duty-toggle-btn.loading { opacity: 0.65; pointer-events: none; }
+    .duty-toggle-btn.loading .duty-toggle-icon { animation: duty-spin 0.75s linear infinite; }
+
     /* ── Mobile fixes ──────────────────────────────────────── */
     @media (max-width: 767px) {
         .dash-hero {
@@ -387,67 +392,68 @@
     {{-- ── Hero header ── --}}
     <div class="dash-hero d-flex flex-wrap justify-content-between align-items-center gap-4">
         <div>
-            <div class="dash-greeting">
+            <div class="dash-greeting" id="dash-greeting">
                 {{ $driver->is_on_duty ? '🟢' : '⚫' }} Hey, {{ explode(' ', $driver->name)[0] }}
             </div>
-            <div class="dash-sub">
-                {{ $driver->is_on_duty ? 'You are active and ready for deliveries.' : 'Toggle duty to start receiving orders.' }}
+            <div class="dash-sub" id="dash-sub">
+                {{ $driver->is_on_duty ? 'You are active. GPS tracking is running.' : 'Tap Start Shift to begin your delivery session.' }}
             </div>
         </div>
-        <form action="{{ route('driver.toggleDuty') }}" method="POST">
+
+        {{-- Single combined Duty + GPS button. Form kept as no-JS fallback only. --}}
+        <button type="button" id="duty-gps-btn"
+                class="duty-toggle-btn {{ $driver->is_on_duty ? 'on-duty' : 'off-duty' }}">
+            <span class="duty-toggle-icon">
+                <i class="bi bi-power" id="duty-btn-icon"></i>
+            </span>
+            <span id="duty-btn-label">{{ $driver->is_on_duty ? 'End Shift' : 'Start Shift' }}</span>
+        </button>
+
+        <form id="duty-form-fallback" action="{{ route('driver.toggleDuty') }}" method="POST" style="display:none;">
             @csrf
-            <button type="submit" class="duty-toggle-btn {{ $driver->is_on_duty ? 'on-duty' : 'off-duty' }}">
-                <span class="duty-toggle-icon">
-                    <i class="bi bi-power"></i>
-                </span>
-                {{ $driver->is_on_duty ? 'Go Off Duty' : 'Go On Duty' }}
-            </button>
         </form>
     </div>
 
-    {{-- off-duty banner --}}
-    @if(!$driver->is_on_duty)
-    <div class="off-duty-banner reveal-3d">
+    {{-- Off-duty banner — always rendered, shown/hidden by JS --}}
+    <div id="off-duty-banner" class="off-duty-banner reveal-3d"
+         style="display:{{ $driver->is_on_duty ? 'none' : 'flex' }};">
         <div class="off-duty-banner-icon"><i class="bi bi-moon-stars-fill"></i></div>
         <div>
             <div style="font-weight:700;font-size:0.92rem;margin-bottom:3px;">You are off duty</div>
-            <div style="font-size:0.82rem;opacity:0.7;">No new orders will be assigned until you go on duty.</div>
+            <div style="font-size:0.82rem;opacity:0.7;">No new orders will be assigned until you start your shift.</div>
         </div>
     </div>
-    @endif
 
-    {{-- GPS Tracking Status Banner (shown only on duty) --}}
-    @if($driver->is_on_duty)
-    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d" style="display:flex;flex-direction:column;">
+    {{-- GPS banner — always rendered, visible only when on duty --}}
+    <div id="gps-tracking-banner" class="gps-banner mb-4 reveal-3d"
+         style="display:{{ $driver->is_on_duty ? 'flex' : 'none' }};flex-direction:column;">
         <div class="d-flex align-items-center" style="gap:16px;">
             <div class="gps-banner-icon" id="gps-icon">
                 <i class="bi bi-geo-alt-fill" style="color:#00cec9;"></i>
             </div>
             <div class="flex-grow-1">
                 <div class="d-flex align-items-center mb-1" style="flex-wrap:wrap;gap:8px;">
-                    <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;" id="gps-title">Location Tracking</span>
+                    <span style="font-weight:700;font-size:0.92rem;font-family:'Outfit';color:#ffffff;" id="gps-title">GPS Tracking</span>
                     <span id="gps-accuracy-badge" class="badge font-weight-bold px-2"
                           style="border-radius:10px;font-size:0.68rem;background:rgba(0,184,148,0.15);color:#55efc4;">INITIALISING</span>
                 </div>
                 <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);" id="gps-coordinates-text">
-                    Checking location permission…
+                    Initialising…
                 </div>
             </div>
         </div>
-        {{-- Shown only when GPS is in "prompt" state or after denial (needs user gesture) --}}
+        {{-- Shown only when on duty but GPS still needs manual permission (prompt state on page load) --}}
         <div id="gps-enable-wrap" style="display:none;margin-top:14px;">
             <button id="gps-enable-btn" type="button" onclick="window._requestGpsPermission()"
                     style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:100px;
                            background:linear-gradient(135deg,#00b894,#00cec9);color:#fff;border:none;
                            font-weight:700;font-size:0.88rem;font-family:'Outfit',sans-serif;cursor:pointer;
-                           box-shadow:0 4px 16px rgba(0,184,148,0.35);transition:all 0.25s ease;width:100%;
-                           justify-content:center;">
+                           box-shadow:0 4px 16px rgba(0,184,148,0.35);width:100%;justify-content:center;">
                 <i class="bi bi-geo-alt-fill"></i>
                 <span id="gps-enable-btn-text">Enable GPS Tracking</span>
             </button>
         </div>
     </div>
-    @endif
 
 
     {{-- ── Stats row ── --}}
@@ -572,20 +578,22 @@
 </div>
 @endsection
 
-@if($driver->is_on_duty)
 @push('scripts')
 <script>
 (function () {
     'use strict';
 
-    // ── Config (use let so battery-saver can relax thresholds) ────────────────
-    let MIN_DISTANCE_METERS = 30;      // skip send if moved less than this
-    let FORCE_SEND_INTERVAL = 30000;   // always send at least every 30 s
-    const GPS_TIMEOUT_MS    = 15000;   // max time to wait for a GPS fix
-    const GPS_MAX_AGE       = 10000;   // accept a cached position up to 10 s old
-    const MAX_ACCURACY_M    = 200;     // skip if accuracy is worse than 200 m
-    const MAX_RETRY_DELAY   = 60000;   // cap exponential back-off at 1 min
-    const MAX_ERRORS        = 8;       // give up after this many consecutive errors
+    // ── Config ────────────────────────────────────────────────────────────────
+    let MIN_DISTANCE_METERS = 30;
+    let FORCE_SEND_INTERVAL = 30000;
+    const GPS_TIMEOUT_MS    = 15000;
+    const GPS_MAX_AGE       = 10000;
+    const MAX_ACCURACY_M    = 200;
+    const MAX_RETRY_DELAY   = 60000;
+    const MAX_ERRORS        = 8;
+
+    // Current duty state (mutable via AJAX)
+    let dutyState = {{ $driver->is_on_duty ? 'true' : 'false' }};
 
     // ── State ─────────────────────────────────────────────────────────────────
     let watchId          = null;
@@ -824,76 +832,124 @@
     // ── Cleanup on unload ─────────────────────────────────────────────────────
     window.addEventListener('pagehide', function () { stopTracking(false); });
 
-    // ── Permissions API check → then start or show button ────────────────────
-    // Mirrors QR scanner: "Start Camera" button triggers getUserMedia only on click.
-    // For GPS: if state is "prompt" we show a button so the permission dialog fires
-    // from a real user gesture — required on mobile Chrome & Safari.
-    function checkAndStartTracking() {
-        // 1. HTTPS check (geolocation blocked on plain HTTP in mobile browsers)
+    // ── Permissions API check (fromGesture=true skips "show button" for prompt state) ──
+    function checkAndStartTracking(fromGesture) {
         const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname);
         if (location.protocol !== 'https:' && !isLocal) {
-            setUI('GPS requires HTTPS. Open this page over HTTPS.', 'NO HTTPS', STYLE_ERROR, BANNER_ERROR);
+            setUI('GPS requires HTTPS. Contact your admin.', 'NO HTTPS', STYLE_ERROR, BANNER_ERROR);
             return;
         }
-
-        // 2. API availability
         if (!navigator.geolocation) {
-            setUI('Geolocation is not supported by this browser.', 'UNSUPPORTED', STYLE_ERROR, BANNER_ERROR);
+            setUI('Geolocation not supported by this browser.', 'UNSUPPORTED', STYLE_ERROR, BANNER_ERROR);
             return;
         }
-
-        // 3. Permissions API (supported on Chrome/Firefox/Safari 16+)
         if ('permissions' in navigator) {
             navigator.permissions.query({ name: 'geolocation' })
                 .then(function (status) {
                     if (status.state === 'denied') {
                         showDeniedState();
                     } else if (status.state === 'prompt') {
-                        // Must be triggered by user gesture on mobile — show button
-                        setUI('Tap the button below to allow location access.', 'TAP TO ALLOW', STYLE_WARN, BANNER_WARN);
-                        showEnableButton('Enable GPS Tracking');
-                        // Wire up global callback for the button's inline onclick
-                        window._requestGpsPermission = function () {
-                            hideEnableButton();
+                        if (fromGesture) {
+                            // User clicked the button — call directly (still in user-gesture context)
                             startTracking();
-                        };
+                        } else {
+                            setUI('Tap "Enable GPS" to allow location access.', 'TAP TO ALLOW', STYLE_WARN, BANNER_WARN);
+                            showEnableButton('Enable GPS Tracking');
+                            window._requestGpsPermission = function () { hideEnableButton(); startTracking(); };
+                        }
                     } else {
-                        // 'granted' — auto-start, no gesture needed
                         startTracking();
                     }
-
-                    // React to future permission changes without a page reload
                     status.addEventListener('change', function () {
-                        if (this.state === 'granted') {
-                            stopped = false;
-                            hideEnableButton();
-                            startTracking();
-                        } else if (this.state === 'denied') {
-                            showDeniedState();
-                        }
+                        if (this.state === 'granted') { stopped = false; hideEnableButton(); startTracking(); }
+                        else if (this.state === 'denied') { showDeniedState(); }
                     });
                 })
-                .catch(function () {
-                    // Permissions API query failed — fall back to direct call
-                    startTracking();
-                });
+                .catch(function () { startTracking(); });
         } else {
-            // No Permissions API (older browser/WebView) — call directly, onGpsError handles denial
             startTracking();
         }
     }
 
-    // Expose globally so the banner button's inline onclick works
-    window._requestGpsPermission = function () {
-        hideEnableButton();
-        startTracking();
-    };
+    window._requestGpsPermission = function () { hideEnableButton(); startTracking(); };
 
-    // ── Boot ──────────────────────────────────────────────────────────────────
-    checkAndStartTracking();
+    // ── Combined duty + GPS button ────────────────────────────────────────────
+    const dutyBtn  = document.getElementById('duty-gps-btn');
+    const dutyLbl  = document.getElementById('duty-btn-label');
+    const dutyIcon = document.getElementById('duty-btn-icon');
+
+    function setDutyLoading(text) {
+        dutyBtn.classList.add('loading');
+        dutyLbl.textContent = text;
+    }
+    function setDutyOn() {
+        dutyBtn.classList.remove('loading', 'off-duty');
+        dutyBtn.classList.add('on-duty');
+        dutyIcon.className = 'bi bi-power';
+        dutyLbl.textContent = 'End Shift';
+        document.getElementById('dash-greeting').textContent = '🟢 Hey, {{ explode(" ", $driver->name)[0] }}';
+        document.getElementById('dash-sub').textContent = 'You are active. GPS tracking is running.';
+        document.getElementById('off-duty-banner').style.display  = 'none';
+        document.getElementById('gps-tracking-banner').style.display = 'flex';
+    }
+    function setDutyOff() {
+        dutyBtn.classList.remove('loading', 'on-duty');
+        dutyBtn.classList.add('off-duty');
+        dutyIcon.className = 'bi bi-power';
+        dutyLbl.textContent = 'Start Shift';
+        document.getElementById('dash-greeting').textContent = '⚫ Hey, {{ explode(" ", $driver->name)[0] }}';
+        document.getElementById('dash-sub').textContent = 'Tap Start Shift to begin your delivery session.';
+        document.getElementById('off-duty-banner').style.display  = 'flex';
+        document.getElementById('gps-tracking-banner').style.display = 'none';
+    }
+
+    if (dutyBtn) {
+        dutyBtn.addEventListener('click', function () {
+            if (dutyState) {
+                // ── End shift ────────────────────────────────────────────────
+                stopTracking(false);
+                setDutyLoading('Ending shift…');
+                fetch("{{ route('driver.toggleDuty') }}", {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                })
+                .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+                .then(function () { dutyState = false; setDutyOff(); })
+                .catch(function () {
+                    dutyBtn.classList.remove('loading');
+                    dutyLbl.textContent = 'End Shift';
+                    alert('Failed to update duty status. Try again.');
+                });
+            } else {
+                // ── Start shift ───────────────────────────────────────────────
+                // CRITICAL: call GPS here (user-gesture context) BEFORE any await
+                stopped = false;
+                checkAndStartTracking(true);
+
+                setDutyLoading('Starting shift…');
+                fetch("{{ route('driver.toggleDuty') }}", {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                })
+                .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+                .then(function () { dutyState = true; setDutyOn(); })
+                .catch(function () {
+                    // Revert: stop GPS and restore button
+                    stopTracking(false);
+                    dutyBtn.classList.remove('loading');
+                    dutyLbl.textContent = 'Start Shift';
+                    alert('Failed to update duty status. Try again.');
+                });
+            }
+        });
+    }
+
+    // ── Boot: start GPS only if already on duty ───────────────────────────────
+    if (dutyState) {
+        checkAndStartTracking(false);
+    }
 
 })();
 </script>
 @endpush
-@endif
 

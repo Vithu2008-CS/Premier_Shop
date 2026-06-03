@@ -41,11 +41,13 @@ class DriverController extends Controller
     public function toggleDuty(Request $request)
     {
         $driver = auth()->user();
-        $driver->update([
-            'is_on_duty' => ! $driver->is_on_duty,
-        ]);
+        $driver->update(['is_on_duty' => ! $driver->is_on_duty]);
 
-        return back()->with('success', 'Your duty status has been updated.');
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'is_on_duty' => (bool) $driver->is_on_duty]);
+        }
+
+        return back()->with('success', 'Duty status updated.');
     }
 
     public function showOrder(Order $order)
