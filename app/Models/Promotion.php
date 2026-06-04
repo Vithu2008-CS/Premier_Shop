@@ -65,7 +65,7 @@ class Promotion extends Model
     /** Filter to hero slider promotions. */
     public function scopeSliders($query)
     {
-        return $query->where('type', 'slider');
+        return $query->whereIn('type', ['slider', 'slider_top', 'slider_mid']);
     }
 
     /** Filter to banner promotions. */

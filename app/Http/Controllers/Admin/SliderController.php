@@ -38,7 +38,8 @@ class SliderController extends Controller
             'image_link'     => 'nullable|url:http,https',
             'link_url'       => 'nullable|url:http,https',
             'button_text'    => 'nullable|string|max:50',
-            'text_align'     => 'nullable|in:left,center,right',
+            'text_align'     => 'nullable|string|max:50',
+            'type'           => 'nullable|in:slider,slider_top,slider_mid',
             'order_priority' => 'integer',
         ]);
 
@@ -56,12 +57,12 @@ class SliderController extends Controller
 
         Promotion::create([
             'title'          => $request->title ?? 'New Slider',
-            'subtitle'       => $request->subtitle,
+            'subtitle'       => $request->subtitle ?? 'full-width',
             'image_path'     => $imagePath,
             'link_url'       => $request->link_url,
             'button_text'    => $request->button_text,
             'text_align'     => $request->text_align ?? 'center',
-            'type'           => 'slider',   // differentiates from banner-type promotions
+            'type'           => $request->type ?? 'slider',   // slider (top) or slider_mid (after new arrivals)
             'order_priority' => $request->order_priority ?? 0,
             'is_active'      => $request->boolean('is_active', true),
         ]);
@@ -72,7 +73,7 @@ class SliderController extends Controller
     /** Show the edit form for a slider. 404s if the promotion is not a slider type. */
     public function edit(Promotion $slider)
     {
-        if ($slider->type !== 'slider') {
+        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
             abort(404);
         }
 
@@ -85,7 +86,7 @@ class SliderController extends Controller
      */
     public function update(Request $request, Promotion $slider)
     {
-        if ($slider->type !== 'slider') {
+        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
             abort(404);
         }
 
@@ -96,11 +97,12 @@ class SliderController extends Controller
             'image_link'     => 'nullable|url:http,https',
             'link_url'       => 'nullable|url:http,https',
             'button_text'    => 'nullable|string|max:50',
-            'text_align'     => 'nullable|in:left,center,right',
+            'text_align'     => 'nullable|string|max:50',
+            'type'           => 'nullable|in:slider,slider_top,slider_mid',
             'order_priority' => 'integer',
         ]);
 
-        $data              = $request->only(['title', 'subtitle', 'link_url', 'button_text', 'text_align', 'order_priority']);
+        $data              = $request->only(['title', 'subtitle', 'link_url', 'button_text', 'text_align', 'order_priority', 'type']);
         $data['is_active'] = $request->boolean('is_active');
 
         // Replace image and clean up the old local file if applicable
@@ -124,7 +126,7 @@ class SliderController extends Controller
     /** Toggle the active/inactive visibility status of a slider. */
     public function toggleActive(Promotion $slider)
     {
-        if ($slider->type !== 'slider') {
+        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
             abort(404);
         }
 
@@ -138,7 +140,7 @@ class SliderController extends Controller
     /** Delete a slider and its locally stored image file. */
     public function destroy(Promotion $slider)
     {
-        if ($slider->type !== 'slider') {
+        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
             abort(404);
         }
 
