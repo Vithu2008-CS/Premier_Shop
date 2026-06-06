@@ -23,6 +23,79 @@
 @extends('layouts.app')
 @section('title', 'Premier Shop — Your One-Stop Shop for Quality Products')
 
+@push('styles')
+<style>
+/* ── Slider button layer (main hero + sub banners) ──────── */
+.slider-btn-layer {
+    position: absolute; inset: 0;
+    display: flex !important; flex-direction: column !important;
+    padding: clamp(1.25rem, 4vw, 3.5rem) !important;
+    pointer-events: none; z-index: 5;
+}
+.slider-btn-layer > * { pointer-events: auto; }
+
+.slider-btn-layer.pos-top-left     { justify-content:flex-start !important; align-items:flex-start !important; }
+.slider-btn-layer.pos-top-center   { justify-content:flex-start !important; align-items:center !important; }
+.slider-btn-layer.pos-top-right    { justify-content:flex-start !important; align-items:flex-end !important; }
+.slider-btn-layer.pos-middle-left  { justify-content:center !important;     align-items:flex-start !important; }
+.slider-btn-layer.pos-middle-center{ justify-content:center !important;     align-items:center !important; }
+.slider-btn-layer.pos-middle-right { justify-content:center !important;     align-items:flex-end !important; }
+.slider-btn-layer.pos-bottom-left  { justify-content:flex-end !important;   align-items:flex-start !important; }
+.slider-btn-layer.pos-bottom-center{ justify-content:flex-end !important;   align-items:center !important; }
+.slider-btn-layer.pos-bottom-right { justify-content:flex-end !important;   align-items:flex-end !important; }
+
+.slider-cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: clamp(0.6rem,1.5vw,0.85rem) clamp(1.2rem,3vw,2rem);
+    border-radius: 50px;
+    background: #ffffff; color: #1a1a2e;
+    font-weight: 700; font-size: clamp(0.82rem,1.8vw,1rem);
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+    transition: all 0.25s ease; white-space: nowrap;
+}
+.slider-cta-btn:hover {
+    background: linear-gradient(135deg,#6c5ce7,#a78bfa);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(108,92,231,0.35);
+    text-decoration: none;
+}
+
+/* ── Sub-slider banner sections ─────────────────────────── */
+.sub-slider-section { padding: 0; margin: 0; }
+.sub-slider-wrap { position: relative; overflow: hidden; }
+/* desktop 3:1 (1920x600) */
+.sub-slider-banner {
+    position: relative; width: 100%; aspect-ratio: 32/10;
+    overflow: hidden; display: block;
+}
+.sub-slider-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.5s ease;
+}
+.sub-slider-wrap:hover .sub-slider-bg { transform: scale(1.02); }
+
+@media (max-width: 767px) {
+    /* mobile 1:1 (800x800) */
+    .sub-slider-banner { aspect-ratio: 1/1; }
+}
+
+/* carousel controls for sub-sliders */
+.sub-slider-carousel .carousel-control-prev,
+.sub-slider-carousel .carousel-control-next {
+    width: 48px; height: 48px; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(6px);
+    border-radius: 50%; margin: 0 12px; opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.sub-slider-carousel:hover .carousel-control-prev,
+.sub-slider-carousel:hover .carousel-control-next { opacity: 1; }
+</style>
+@endpush
+
 @push('seo')
 {{-- JSON-LD Structured Data --}}
 <script type="application/ld+json">
@@ -46,74 +119,32 @@
     {{-- ═══════════════════════════════════════════════════════════
          PARALLAX HERO SECTION
     ═══════════════════════════════════════════════════════════ --}}
-    @if(isset($sliders) && $sliders->count() > 0)
-        @php $sliderCount = $sliders->count(); @endphp
+    @if(isset($mainSliders) && $mainSliders->count() > 0)
+        @php $sliderCount = $mainSliders->count(); @endphp
         <section class="parallax-hero" id="heroSection">
 
             {{-- Background Carousel --}}
             <div id="heroCarousel" class="carousel slide carousel-fade">
                 <div class="carousel-inner">
-                    @foreach($sliders as $i => $slider)
+                    @foreach($mainSliders as $i => $slider)
                         @php
                             $imgSrc = str_starts_with($slider->image_path, 'http')
                                 ? $slider->image_path
                                 : asset('storage/' . $slider->image_path);
-                            $align  = $slider->text_align ?? 'center';
-                            $title  = $slider->title ?? 'New Arrival';
-                            $words  = explode(' ', $title);
-                            if (count($words) > 1) {
-                                $accent = array_pop($words);
-                                $lead   = implode(' ', $words);
-                            } else {
-                                $lead   = '';
-                                $accent = $title;
-                            }
+                            $btnPos = $slider->button_position ?? 'bottom-center';
                         @endphp
                         <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
                             <div class="parallax-bg" style="background-image: url('{{ $imgSrc }}');" aria-label="{{ $slider->title ?? 'Promotional slide' }}"></div>
 
-                            {{-- Directional gradient: darkens on the content side for readability --}}
-                            <div class="hero-overlay hero-overlay-{{ $align }}"></div>
-
-                            {{-- Slide content --}}
-                            <div class="hero-content align-{{ $align }}">
-                                <div class="container">
-
-                                    {{-- Badge --}}
-                                    <div class="hero-badge" data-delay="0">
-                                        <span class="badge-pill">
-                                            <span class="badge-dot"></span>
-                                            <span class="text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.18em;">Curated Selection</span>
-                                        </span>
-                                    </div>
-
-                                    {{-- Title --}}
-                                    <h1 class="hero-title" data-delay="100">
-                                        @if($lead)
-                                            <span class="hero-title-lead">{{ $lead }}</span>
-                                        @endif
-                                        <span class="hero-title-accent">{{ $accent }}</span>
-                                    </h1>
-
-                                    {{-- Subtitle --}}
-                                    @if($slider->subtitle)
-                                        <p class="hero-subtitle" data-delay="200">{{ $slider->subtitle }}</p>
-                                    @endif
-
-                                    {{-- CTA Buttons --}}
-                                    <div class="hero-actions" data-delay="300">
-                                        <a href="{{ $slider->link_url ?? route('products.index') }}" class="btn-hero-primary">
-                                            <span>{{ $slider->button_text ?: 'Shop Now' }}</span>
-                                            <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                        <a href="{{ route('offers') }}" class="btn-hero-glass">
-                                            <i class="bi bi-lightning-charge-fill text-warning"></i>
-                                            <span>View Offers</span>
-                                        </a>
-                                    </div>
-
-                                </div>
+                            {{-- Button only — no text overlay, no gradient blur --}}
+                            @if($slider->button_text && $slider->link_url)
+                            <div class="hero-content slider-btn-layer pos-{{ $btnPos }}">
+                                <a href="{{ $slider->link_url }}" class="slider-cta-btn">
+                                    {{ $slider->button_text }}
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
                             </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -138,7 +169,7 @@
             {{-- Dot indicators --}}
             @if($sliderCount > 1)
                 <div class="hero-carousel-dots">
-                    @foreach($sliders as $i => $slider)
+                    @foreach($mainSliders as $i => $slider)
                         <button data-bs-target="#heroCarousel" data-bs-slide-to="{{ $i }}" class="{{ $i == 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}"></button>
                     @endforeach
                 </div>
@@ -361,6 +392,48 @@
 
 
     {{-- ═══════════════════════════════════════════════════════════
+         SUB-SLIDER 1 — After New Arrivals
+    ═══════════════════════════════════════════════════════════ --}}
+    @if(isset($subSliders1) && $subSliders1->count() > 0)
+    <section class="sub-slider-section" aria-label="Promotional Banner">
+        <div class="sub-slider-wrap">
+            @if($subSliders1->count() === 1)
+                @php $ss = $subSliders1->first(); $ssSrc = str_starts_with($ss->image_path,'http') ? $ss->image_path : asset('storage/'.$ss->image_path); @endphp
+                <div class="sub-slider-banner">
+                    <div class="sub-slider-bg" style="background-image:url('{{ $ssSrc }}');"></div>
+                    @if($ss->button_text && $ss->link_url)
+                    <div class="slider-btn-layer pos-{{ $ss->button_position ?? 'bottom-center' }}">
+                        <a href="{{ $ss->link_url }}" class="slider-cta-btn">{{ $ss->button_text }} <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                    @endif
+                </div>
+            @else
+                <div id="subSlider1" class="carousel slide sub-slider-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-inner">
+                        @foreach($subSliders1 as $si => $ss)
+                            @php $ssSrc = str_starts_with($ss->image_path,'http') ? $ss->image_path : asset('storage/'.$ss->image_path); @endphp
+                            <div class="carousel-item {{ $si === 0 ? 'active' : '' }}">
+                                <div class="sub-slider-banner">
+                                    <div class="sub-slider-bg" style="background-image:url('{{ $ssSrc }}');"></div>
+                                    @if($ss->button_text && $ss->link_url)
+                                    <div class="slider-btn-layer pos-{{ $ss->button_position ?? 'bottom-center' }}">
+                                        <a href="{{ $ss->link_url }}" class="slider-cta-btn">{{ $ss->button_text }} <i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#subSlider1" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#subSlider1" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                </div>
+            @endif
+        </div>
+    </section>
+    @endif
+
+
+    {{-- ═══════════════════════════════════════════════════════════
          DISCOVER MORE
     ═══════════════════════════════════════════════════════════ --}}
     @if(isset($randomProducts) && $randomProducts->count() > 0)
@@ -410,6 +483,48 @@
                     </div>
                 @endforeach
             </div>
+        </div>
+    </section>
+    @endif
+
+
+    {{-- ═══════════════════════════════════════════════════════════
+         SUB-SLIDER 2 — After Recently Viewed
+    ═══════════════════════════════════════════════════════════ --}}
+    @if(isset($subSliders2) && $subSliders2->count() > 0)
+    <section class="sub-slider-section" aria-label="Promotional Banner">
+        <div class="sub-slider-wrap">
+            @if($subSliders2->count() === 1)
+                @php $ss = $subSliders2->first(); $ssSrc = str_starts_with($ss->image_path,'http') ? $ss->image_path : asset('storage/'.$ss->image_path); @endphp
+                <div class="sub-slider-banner">
+                    <div class="sub-slider-bg" style="background-image:url('{{ $ssSrc }}');"></div>
+                    @if($ss->button_text && $ss->link_url)
+                    <div class="slider-btn-layer pos-{{ $ss->button_position ?? 'bottom-center' }}">
+                        <a href="{{ $ss->link_url }}" class="slider-cta-btn">{{ $ss->button_text }} <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                    @endif
+                </div>
+            @else
+                <div id="subSlider2" class="carousel slide sub-slider-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-inner">
+                        @foreach($subSliders2 as $si => $ss)
+                            @php $ssSrc = str_starts_with($ss->image_path,'http') ? $ss->image_path : asset('storage/'.$ss->image_path); @endphp
+                            <div class="carousel-item {{ $si === 0 ? 'active' : '' }}">
+                                <div class="sub-slider-banner">
+                                    <div class="sub-slider-bg" style="background-image:url('{{ $ssSrc }}');"></div>
+                                    @if($ss->button_text && $ss->link_url)
+                                    <div class="slider-btn-layer pos-{{ $ss->button_position ?? 'bottom-center' }}">
+                                        <a href="{{ $ss->link_url }}" class="slider-cta-btn">{{ $ss->button_text }} <i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#subSlider2" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#subSlider2" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                </div>
+            @endif
         </div>
     </section>
     @endif

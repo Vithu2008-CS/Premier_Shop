@@ -32,7 +32,8 @@ class Promotion extends Model
         'link_url',
         'button_text',
         'text_align',
-        'type',           // 'slider' or 'banner'
+        'button_position',
+        'type',           // 'slider' / 'slider_mid' / 'slider_top' / 'banner'
         'start_date',
         'end_date',
         'is_active',

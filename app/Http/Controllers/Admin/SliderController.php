@@ -5,21 +5,31 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Promotion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 /**
  * Manages homepage carousel sliders.
- * Sliders are stored as Promotion records with type = 'slider'.
+ * Types: slider (main hero) | slider_mid (after New Arrivals) | slider_top (after Recently Viewed)
  * Images can be uploaded as files or supplied as external URLs.
  */
 class SliderController extends Controller
 {
-    /** List all slider-type promotions ordered by display priority. */
+    private function clearSliderCaches(): void
+    {
+        Cache::forget('home_sliders_main');
+        Cache::forget('home_sliders_mid');
+        Cache::forget('home_sliders_top');
+    }
+
+    /** List all slider-type promotions grouped by type. */
     public function index()
     {
-        $sliders = Promotion::sliders()->orderBy('order_priority')->get();
+        $mainSliders = Promotion::where('type', 'slider')->orderBy('order_priority')->get();
+        $subSliders1 = Promotion::where('type', 'slider_mid')->orderBy('order_priority')->get();
+        $subSliders2 = Promotion::where('type', 'slider_top')->orderBy('order_priority')->get();
 
-        return view('admin.sliders.index', compact('sliders'));
+        return view('admin.sliders.index', compact('mainSliders', 'subSliders1', 'subSliders2'));
     }
 
     /** Show the create-slider form. */
@@ -32,18 +42,16 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'          => 'nullable|string|max:255',
-            'subtitle'       => 'nullable|string|max:255',
-            'image_file'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'image_link'     => 'nullable|url:http,https',
-            'link_url'       => 'nullable|url:http,https',
-            'button_text'    => 'nullable|string|max:50',
-            'text_align'     => 'nullable|string|max:50',
-            'type'           => 'nullable|in:slider,slider_top,slider_mid',
-            'order_priority' => 'integer',
+            'title'           => 'nullable|string|max:255',
+            'image_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image_link'      => 'nullable|url:http,https',
+            'link_url'        => 'nullable|url:http,https',
+            'button_text'     => 'nullable|string|max:50',
+            'button_position' => 'nullable|string|max:30',
+            'type'            => 'nullable|in:slider,slider_mid,slider_top',
+            'order_priority'  => 'integer',
         ]);
 
-        // Resolve image: uploaded file takes priority over external link
         $imagePath = null;
         if ($request->hasFile('image_file')) {
             $imagePath = \App\Helpers\ImageHelper::storeAsWebp($request->file('image_file'), 'sliders');
@@ -56,16 +64,18 @@ class SliderController extends Controller
         }
 
         Promotion::create([
-            'title'          => $request->title ?? 'New Slider',
-            'subtitle'       => $request->subtitle ?? 'full-width',
-            'image_path'     => $imagePath,
-            'link_url'       => $request->link_url,
-            'button_text'    => $request->button_text,
-            'text_align'     => $request->text_align ?? 'center',
-            'type'           => $request->type ?? 'slider',   // slider (top) or slider_mid (after new arrivals)
-            'order_priority' => $request->order_priority ?? 0,
-            'is_active'      => $request->boolean('is_active', true),
+            'title'           => $request->title ?: 'Slider',
+            'image_path'      => $imagePath,
+            'link_url'        => $request->link_url,
+            'button_text'     => $request->button_text,
+            'button_position' => $request->button_position ?? 'bottom-center',
+            'text_align'      => 'center',
+            'type'            => $request->type ?? 'slider',
+            'order_priority'  => $request->order_priority ?? 0,
+            'is_active'       => $request->boolean('is_active', true),
         ]);
+
+        $this->clearSliderCaches();
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider created successfully.');
     }
@@ -73,7 +83,7 @@ class SliderController extends Controller
     /** Show the edit form for a slider. 404s if the promotion is not a slider type. */
     public function edit(Promotion $slider)
     {
-        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
+        if (! in_array($slider->type, ['slider', 'slider_mid', 'slider_top'])) {
             abort(404);
         }
 
@@ -86,26 +96,24 @@ class SliderController extends Controller
      */
     public function update(Request $request, Promotion $slider)
     {
-        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
+        if (! in_array($slider->type, ['slider', 'slider_mid', 'slider_top'])) {
             abort(404);
         }
 
         $request->validate([
-            'title'          => 'nullable|string|max:255',
-            'subtitle'       => 'nullable|string|max:255',
-            'image_file'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'image_link'     => 'nullable|url:http,https',
-            'link_url'       => 'nullable|url:http,https',
-            'button_text'    => 'nullable|string|max:50',
-            'text_align'     => 'nullable|string|max:50',
-            'type'           => 'nullable|in:slider,slider_top,slider_mid',
-            'order_priority' => 'integer',
+            'title'           => 'nullable|string|max:255',
+            'image_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
+            'image_link'      => 'nullable|url:http,https',
+            'link_url'        => 'nullable|url:http,https',
+            'button_text'     => 'nullable|string|max:50',
+            'button_position' => 'nullable|string|max:30',
+            'type'            => 'nullable|in:slider,slider_mid,slider_top',
+            'order_priority'  => 'integer',
         ]);
 
-        $data              = $request->only(['title', 'subtitle', 'link_url', 'button_text', 'text_align', 'order_priority', 'type']);
+        $data = $request->only(['title', 'link_url', 'button_text', 'button_position', 'order_priority', 'type']);
         $data['is_active'] = $request->boolean('is_active');
 
-        // Replace image and clean up the old local file if applicable
         if ($request->hasFile('image_file')) {
             if ($slider->image_path && ! str_contains($slider->image_path, 'http')) {
                 Storage::disk('public')->delete($slider->image_path);
@@ -119,6 +127,7 @@ class SliderController extends Controller
         }
 
         $slider->update($data);
+        $this->clearSliderCaches();
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider updated successfully.');
     }
@@ -126,31 +135,30 @@ class SliderController extends Controller
     /** Toggle the active/inactive visibility status of a slider. */
     public function toggleActive(Promotion $slider)
     {
-        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
+        if (! in_array($slider->type, ['slider', 'slider_mid', 'slider_top'])) {
             abort(404);
         }
 
-        $slider->update([
-            'is_active' => !$slider->is_active
-        ]);
+        $slider->update(['is_active' => ! $slider->is_active]);
+        $this->clearSliderCaches();
 
-        return redirect()->back()->with('success', 'Slider status updated successfully.');
+        return redirect()->back()->with('success', 'Slider status updated.');
     }
 
     /** Delete a slider and its locally stored image file. */
     public function destroy(Promotion $slider)
     {
-        if ($slider->type !== 'slider' && $slider->type !== 'slider_top' && $slider->type !== 'slider_mid') {
+        if (! in_array($slider->type, ['slider', 'slider_mid', 'slider_top'])) {
             abort(404);
         }
 
-        // Only delete from disk if it's a locally stored path (not an external URL)
         if ($slider->image_path && ! str_contains($slider->image_path, 'http')) {
             Storage::disk('public')->delete($slider->image_path);
         }
 
         $slider->delete();
+        $this->clearSliderCaches();
 
-        return redirect()->route('admin.sliders.index')->with('success', 'Slider deleted successfully.');
+        return redirect()->route('admin.sliders.index')->with('success', 'Slider deleted.');
     }
 }
