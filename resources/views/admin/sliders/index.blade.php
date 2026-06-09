@@ -1,324 +1,319 @@
 {{--
-    admin/sliders/index.blade.php — Slider management card grid
-    Variable: $sliders (Promotion records, type='slider', ordered by order_priority)
+    admin/sliders/index.blade.php — Slider management: 3 typed sections
+    Variables: $mainSliders, $subSliders1, $subSliders2 (Promotion records)
 --}}
 @extends('layouts.admin_noble')
-@section('title', 'Sliders')
+@section('title', 'Home Sliders Management')
 
 @push('styles')
 <style>
-/* ── Slider Card Grid ──────────────────────────────────────────── */
-.slider-stats-bar {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-.slider-stat-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color, #e8e8f7);
-    background: var(--card-bg, #fff);
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-.slider-stat-pill .stat-num {
-    font-size: 1.35rem;
-    font-weight: 800;
-    line-height: 1;
-}
-.slider-stat-pill.stat-total  { color: #6c5ce7; }
-.slider-stat-pill.stat-active { color: #00b894; }
-.slider-stat-pill.stat-off    { color: #b2bec3; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
+.container-fluid { font-family: 'Inter', sans-serif; }
+html[data-admin-theme="light"] .theme-card-bg { background-color: #ffffff !important; }
+html[data-admin-theme="dark"]  .theme-card-bg { background-color: #0c1427 !important; border: 1px solid rgba(255,255,255,0.05) !important; }
+html[data-admin-theme="light"] .text-theme-dark-bold { color: #1e293b !important; }
+html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important; }
+
+.bg-soft-primary   { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-success   { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
+.bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
+.bg-soft-warning   { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
+.bg-soft-info      { background: rgba(6,182,212,0.1) !important;  color: #06b6d4 !important; }
+html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(167,139,250,0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-success   { background: rgba(52,211,153,0.15) !important;  color: #34d399 !important; }
+html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148,163,184,0.15) !important; color: #94a3b8 !important; }
+html[data-admin-theme="dark"] .bg-soft-warning   { background: rgba(251,191,36,0.15) !important;  color: #fbbf24 !important; }
+html[data-admin-theme="dark"] .bg-soft-info      { background: rgba(103,232,249,0.15) !important; color: #67e8f9 !important; }
+
+/* Add button */
+.btn-curved {
+    border-radius: 30px !important; padding: 8px 22px !important;
+    font-size: 0.82rem !important; font-weight: 700 !important;
+    font-family: 'Outfit', sans-serif !important;
+    background: linear-gradient(135deg,#6c5ce7,#a78bfa) !important;
+    border: none !important; box-shadow: 0 4px 12px rgba(108,92,231,0.2) !important;
+    color: #fff !important; transition: all 0.25s ease !important;
+}
+.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(108,92,231,0.3) !important; color:#fff !important; }
+
+/* Section header */
+.slider-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+    margin-bottom: 1.25rem; padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(108,92,231,0.07);
+}
+html[data-admin-theme="dark"] .slider-section-header {
+    border-bottom-color: rgba(255,255,255,0.05);
+}
+.slider-section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.05rem;
+}
+.slider-type-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 12px; border-radius: 20px;
+    font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px;
+}
+.type-pill-main { background: rgba(108,92,231,0.12); color: #6c5ce7; }
+.type-pill-sub1 { background: rgba(16,185,129,0.12);  color: #10b981; }
+.type-pill-sub2 { background: rgba(245,158,11,0.12);  color: #f59e0b; }
+html[data-admin-theme="dark"] .type-pill-main { background: rgba(167,139,250,0.18); color: #a78bfa; }
+html[data-admin-theme="dark"] .type-pill-sub1 { background: rgba(52,211,153,0.18);  color: #34d399; }
+html[data-admin-theme="dark"] .type-pill-sub2 { background: rgba(251,191,36,0.18);  color: #fbbf24; }
+
+.size-hint {
+    font-size: 0.72rem; color: #94a3b8; font-family: monospace;
+    background: rgba(0,0,0,0.03); padding: 3px 8px; border-radius: 6px;
+}
+html[data-admin-theme="dark"] .size-hint { background: rgba(255,255,255,0.04); color: #64748b; }
+
+/* Card grid */
 .slider-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
-
 .slider-card {
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border-color, #e8e8f7);
-    background: var(--card-bg, #fff);
+    border-radius: 18px !important; overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    position: relative;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
 }
-.slider-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(108,92,231,0.12);
-}
+.slider-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(108,92,231,0.1) !important; }
+html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(167,139,250,0.12) !important; }
 
-/* 16:9 thumbnail */
 .slider-card-thumb {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%;
-    background: #1a1a2e center/cover no-repeat;
-    overflow: hidden;
+    position: relative; width: 100%; padding-top: 52%;
+    background: #1e293b center/cover no-repeat; overflow: hidden;
 }
 .slider-card-thumb-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; transition: transform 0.4s ease;
 }
-.slider-card:hover .slider-card-thumb-img {
-    transform: scale(1.04);
-}
+.slider-card:hover .slider-card-thumb-img { transform: scale(1.05); }
 .slider-card-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%);
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(15,23,42,0.65) 0%, rgba(15,23,42,0) 55%);
     pointer-events: none;
 }
-
 .slider-card-badges {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    display: flex;
-    gap: 6px;
-    z-index: 2;
+    position: absolute; top: 12px; left: 12px;
+    display: flex; gap: 6px; z-index: 2;
 }
 .slider-badge {
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    backdrop-filter: blur(8px);
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
-.slider-badge.active   { background: rgba(0,184,148,0.85); color: #fff; }
-.slider-badge.inactive { background: rgba(100,100,120,0.75); color: #fff; }
-.slider-badge.priority { background: rgba(253,203,110,0.85); color: #2d3436; }
+.slider-badge.active   { background: rgba(16,185,129,0.85); color: #fff; }
+.slider-badge.inactive { background: rgba(100,116,139,0.8);  color: #fff; }
+.slider-badge.priority { background: rgba(245,158,11,0.85);  color: #fff; }
 
-.slider-align-tag {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 2;
-    width: 28px; height: 28px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
+/* Button position indicator top-right */
+.slider-pos-tag {
+    position: absolute; top: 12px; right: 12px; z-index: 2;
+    width: 26px; height: 26px; border-radius: 7px;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
     display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    font-size: 0.8rem;
+    color: #fff; font-size: 0.75rem;
+    border: 1px solid rgba(255,255,255,0.12);
 }
 
-.slider-card-body {
-    padding: 1rem 1.1rem 0.75rem;
+/* CTA button preview chip */
+.slider-cta-chip {
+    position: absolute; bottom: 12px; left: 12px; right: 12px; z-index: 3;
+    display: flex; justify-content: center;
 }
-.slider-card-title {
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.slider-cta-chip span {
+    display: inline-block; padding: 4px 14px; border-radius: 20px;
+    background: rgba(255,255,255,0.9); color: #1a1a2e;
+    font-size: 0.72rem; font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
-.slider-card-subtitle {
-    font-size: 0.78rem;
-    opacity: 0.55;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 10px;
-    min-height: 1.1rem;
+
+.slider-card-body { padding: 1rem 1.25rem; }
+.slider-card-label {
+    font-weight: 600; font-size: 0.82rem; margin-bottom: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.slider-link-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; color: #6c5ce7;
+    background: rgba(108,92,231,0.06); padding: 3px 9px; border-radius: 20px;
+    text-decoration: none !important; max-width: 100%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-weight: 600; transition: all 0.2s ease;
+}
+.slider-link-chip:hover { background: rgba(108,92,231,0.12); color: #6c5ce7; }
+html[data-admin-theme="dark"] .slider-link-chip { color: #a78bfa; background: rgba(167,139,250,0.1); }
+html[data-admin-theme="dark"] .slider-link-chip:hover { background: rgba(167,139,250,0.18); }
 
 .slider-card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 1.1rem 0.8rem;
-    border-top: 1px solid var(--border-color, #e8e8f7);
-    gap: 6px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 1.25rem 0.85rem;
+    border-top: 1.5px solid rgba(108,92,231,0.05) !important; gap: 8px;
 }
+html[data-admin-theme="dark"] .slider-card-footer { border-top-color: rgba(255,255,255,0.04) !important; }
+
 .slider-action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 5px; padding: 6px 13px; border-radius: 30px;
+    font-size: 0.73rem; font-weight: 700; border: none;
+    cursor: pointer; text-decoration: none !important; transition: all 0.2s ease;
 }
-.slider-action-btn.btn-edit    { background: rgba(108,92,231,0.1); color: #6c5ce7; }
+.slider-action-btn.btn-edit  { background: rgba(108,92,231,0.08); color: #6c5ce7; }
 .slider-action-btn.btn-edit:hover { background: #6c5ce7; color: #fff; }
-.slider-action-btn.btn-toggle-on  { background: rgba(0,184,148,0.1); color: #00b894; }
-.slider-action-btn.btn-toggle-on:hover { background: #00b894; color: #fff; }
-.slider-action-btn.btn-toggle-off { background: rgba(100,100,120,0.1); color: #636e72; }
-.slider-action-btn.btn-toggle-off:hover { background: #636e72; color: #fff; }
-.slider-action-btn.btn-delete  { background: rgba(214,48,49,0.08); color: #d63031; margin-left: auto; }
-.slider-action-btn.btn-delete:hover { background: #d63031; color: #fff; }
-
-.slider-link-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    color: #6c5ce7;
-    opacity: 0.7;
-    text-decoration: none;
-    padding: 2px 0;
-    max-width: 160px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+html[data-admin-theme="dark"] .slider-action-btn.btn-edit { background: rgba(167,139,250,0.12); color: #a78bfa; }
+html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #a78bfa; color: #1e293b; }
+.slider-action-btn.btn-toggle-on  { background: rgba(16,185,129,0.08); color: #10b981; }
+.slider-action-btn.btn-toggle-on:hover  { background: #10b981; color: #fff; }
+.slider-action-btn.btn-toggle-off { background: rgba(100,116,139,0.08); color: #64748b; }
+.slider-action-btn.btn-toggle-off:hover { background: #64748b; color: #fff; }
+.slider-action-btn.btn-delete {
+    background: rgba(239,68,68,0.08); color: #ef4444;
+    width: 30px; height: 30px; padding: 0; border-radius: 50%;
 }
-.slider-link-chip:hover { opacity: 1; }
+.slider-action-btn.btn-delete:hover { background: #ef4444; color: #fff; }
 
-.slider-empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 4rem 2rem;
-    opacity: 0.5;
+/* Empty state */
+.slider-empty { text-align: center; padding: 3rem 2rem; grid-column: 1 / -1; }
+
+/* Section wrap spacing */
+.slider-type-section { margin-bottom: 3rem; }
+
+@media (max-width: 767px) {
+    .btn-curved { padding: 6px 16px !important; font-size: 0.78rem !important; }
+    .slider-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .slider-section-title { font-size: 0.9rem; }
 }
 </style>
 @endpush
 
 @section('content')
-<nav class="page-breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Home Sliders</li>
-    </ol>
-</nav>
+<div class="container-fluid px-0" style="padding-bottom: 40px;">
 
-@php
-    $total    = $sliders->count();
-    $active   = $sliders->where('is_active', true)->count();
-    $inactive = $total - $active;
-@endphp
+    {{-- Breadcrumb + Add Button --}}
+    <nav class="page-breadcrumb d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Home Sliders</li>
+        </ol>
+        <a href="{{ route('admin.sliders.create') }}" class="btn btn-primary btn-curved d-inline-flex align-items-center">
+            <i class="bi bi-plus-circle-fill" style="font-size:0.9rem; margin-right:6px;"></i> Add New Slider
+        </a>
+    </nav>
 
-{{-- Page Header --}}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="fw-bold mb-1" style="font-family:'Outfit',sans-serif;">Home Sliders</h4>
-        <p class="text-muted small mb-0">Manage the full-width hero carousel on your storefront.</p>
+    <div class="mb-4">
+        <h2 class="h3 mb-1 text-theme-dark-bold fw-bold" style="font-family:'Outfit',sans-serif;">Home Sliders Directory</h2>
+        <p class="text-muted mb-0 small">Manage storefront banners — 3 independent zones on the homepage.</p>
     </div>
-    <a href="{{ route('admin.sliders.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
-        <i data-feather="plus" style="width:16px;height:16px;"></i> New Slider
-    </a>
-</div>
 
-{{-- Stats bar --}}
-<div class="slider-stats-bar">
-    <div class="slider-stat-pill stat-total">
-        <span class="stat-num">{{ $total }}</span>
-        <span>Total Slides</span>
-    </div>
-    <div class="slider-stat-pill stat-active">
-        <span class="stat-num">{{ $active }}</span>
-        <span>Active</span>
-    </div>
-    <div class="slider-stat-pill stat-off">
-        <span class="stat-num">{{ $inactive }}</span>
-        <span>Inactive</span>
-    </div>
-</div>
-
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
-        <i data-feather="check-circle" class="me-2" style="width:16px;height:16px;"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-@endif
-
-{{-- Card Grid --}}
-<div class="slider-grid">
-    @forelse($sliders as $slider)
-        @php
-            $imgSrc = str_starts_with($slider->image_path, 'http')
-                ? $slider->image_path
-                : asset('storage/' . $slider->image_path);
-            $alignIcon = match($slider->text_align ?? 'center') {
-                'left'  => 'align-left',
-                'right' => 'align-right',
-                default => 'align-center',
-            };
-        @endphp
-        <div class="slider-card">
-            {{-- Thumbnail --}}
-            <div class="slider-card-thumb">
-                <img src="{{ $imgSrc }}" alt="{{ $slider->title }}" class="slider-card-thumb-img" loading="lazy">
-                <div class="slider-card-overlay"></div>
-
-                {{-- Badges --}}
-                <div class="slider-card-badges">
-                    <span class="slider-badge {{ $slider->is_active ? 'active' : 'inactive' }}">
-                        {{ $slider->is_active ? 'Live' : 'Off' }}
-                    </span>
-                    <span class="slider-badge priority">
-                        #{{ $slider->order_priority }}
-                    </span>
-                </div>
-
-                {{-- Align icon --}}
-                <div class="slider-align-tag" title="Text align: {{ $slider->text_align ?? 'center' }}">
-                    <i data-feather="{{ $alignIcon }}" style="width:13px;height:13px;"></i>
-                </div>
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4"
+         style="border-radius:12px;background:rgba(16,185,129,0.12);color:#10b981;padding:0.75rem 1rem;">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill"></i>
+                <span class="fw-bold" style="font-size:0.82rem;">{{ session('success') }}</span>
             </div>
+            <button type="button" class="close p-0" data-dismiss="alert" style="color:#10b981;opacity:0.8;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+    @endif
 
-            {{-- Body --}}
-            <div class="slider-card-body">
-                <div class="slider-card-title">{{ $slider->title ?? 'Untitled Slide' }}</div>
-                <div class="slider-card-subtitle">{{ $slider->subtitle ?: '—' }}</div>
-                @if($slider->link_url)
-                    <a href="{{ $slider->link_url }}" target="_blank" rel="noopener" class="slider-link-chip">
-                        <i data-feather="link" style="width:11px;height:11px;flex-shrink:0;"></i>
-                        {{ $slider->link_url }}
-                    </a>
-                @endif
+    @php
+        function sliderCards($sliders) { return view('admin.sliders._card_loop', compact('sliders'))->render(); }
+    @endphp
+
+    {{-- ── SECTION 1: Main Hero Sliders ─────────────────────────────── --}}
+    <div class="slider-type-section">
+        <div class="slider-section-header">
+            <div class="slider-section-title text-theme-dark-bold">
+                <span class="type-pill-main slider-type-pill"><i class="bi bi-display me-1"></i> Main Hero</span>
+                Full-width carousel at the very top of the homepage
             </div>
-
-            {{-- Footer actions --}}
-            <div class="slider-card-footer">
-                <a href="{{ route('admin.sliders.edit', $slider) }}" class="slider-action-btn btn-edit">
-                    <i data-feather="edit-2" style="width:12px;height:12px;"></i> Edit
+            <div class="d-flex align-items-center gap-3">
+                <span class="size-hint">Desktop: 1920×1080 · Mobile: 800×1200</span>
+                <a href="{{ route('admin.sliders.create') }}?type=slider" class="btn-curved btn btn-sm">
+                    <i class="bi bi-plus" style="margin-right:4px;"></i> Add
                 </a>
-
-                <form action="{{ route('admin.sliders.toggle-active', $slider) }}" method="POST" class="d-inline">
-                    @csrf @method('PATCH')
-                    <button type="submit" class="slider-action-btn {{ $slider->is_active ? 'btn-toggle-on' : 'btn-toggle-off' }}">
-                        <i data-feather="{{ $slider->is_active ? 'eye' : 'eye-off' }}" style="width:12px;height:12px;"></i>
-                        {{ $slider->is_active ? 'Active' : 'Inactive' }}
-                    </button>
-                </form>
-
-                <form action="{{ route('admin.sliders.destroy', $slider) }}" method="POST"
-                      onsubmit="return confirm('Delete this slider? This cannot be undone.');" class="d-inline">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="slider-action-btn btn-delete">
-                        <i data-feather="trash-2" style="width:12px;height:12px;"></i>
-                    </button>
-                </form>
             </div>
         </div>
-    @empty
-        <div class="slider-empty-state">
-            <i data-feather="image" style="width:48px;height:48px;stroke-width:1;"></i>
-            <p class="mt-3 mb-1 fw-semibold">No sliders yet</p>
-            <small>Create your first homepage banner to get started.</small><br>
-            <a href="{{ route('admin.sliders.create') }}" class="btn btn-primary btn-sm mt-3">
-                <i data-feather="plus" style="width:14px;height:14px;"></i> Add Slider
-            </a>
+
+        <div class="slider-grid">
+            @forelse($mainSliders as $slider)
+                @include('admin.sliders._card', ['slider' => $slider])
+            @empty
+                <div class="slider-empty card theme-card-bg border-0" style="border-radius:18px;">
+                    <i data-feather="monitor" style="width:44px;height:44px;stroke-width:1;color:#6c5ce7;opacity:0.5;margin:0 auto 12px;" ></i>
+                    <p class="text-muted small mb-0">No main sliders yet.</p>
+                </div>
+            @endforelse
         </div>
-    @endforelse
+    </div>
+
+    {{-- ── SECTION 2: Sub-Slider 1 (After New Arrivals) ────────────── --}}
+    <div class="slider-type-section">
+        <div class="slider-section-header">
+            <div class="slider-section-title text-theme-dark-bold">
+                <span class="type-pill-sub1 slider-type-pill"><i class="bi bi-layout-text-window me-1"></i> Sub Banner 1</span>
+                Appears after the <strong>New Arrivals</strong> section
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="size-hint">Desktop: 1920×600 · Mobile: 800×800</span>
+                <a href="{{ route('admin.sliders.create') }}?type=slider_mid" class="btn-curved btn btn-sm">
+                    <i class="bi bi-plus" style="margin-right:4px;"></i> Add
+                </a>
+            </div>
+        </div>
+
+        <div class="slider-grid">
+            @forelse($subSliders1 as $slider)
+                @include('admin.sliders._card', ['slider' => $slider])
+            @empty
+                <div class="slider-empty card theme-card-bg border-0" style="border-radius:18px;">
+                    <i data-feather="image" style="width:44px;height:44px;stroke-width:1;color:#10b981;opacity:0.5;margin:0 auto 12px;"></i>
+                    <p class="text-muted small mb-0">No sub-banner 1 sliders yet.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- ── SECTION 3: Sub-Slider 2 (After Recently Viewed) ─────────── --}}
+    <div class="slider-type-section">
+        <div class="slider-section-header">
+            <div class="slider-section-title text-theme-dark-bold">
+                <span class="type-pill-sub2 slider-type-pill"><i class="bi bi-layout-text-sidebar me-1"></i> Sub Banner 2</span>
+                Appears after the <strong>Recently Viewed</strong> section
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="size-hint">Desktop: 1920×600 · Mobile: 800×800</span>
+                <a href="{{ route('admin.sliders.create') }}?type=slider_top" class="btn-curved btn btn-sm">
+                    <i class="bi bi-plus" style="margin-right:4px;"></i> Add
+                </a>
+            </div>
+        </div>
+
+        <div class="slider-grid">
+            @forelse($subSliders2 as $slider)
+                @include('admin.sliders._card', ['slider' => $slider])
+            @empty
+                <div class="slider-empty card theme-card-bg border-0" style="border-radius:18px;">
+                    <i data-feather="image" style="width:44px;height:44px;stroke-width:1;color:#f59e0b;opacity:0.5;margin:0 auto 12px;"></i>
+                    <p class="text-muted small mb-0">No sub-banner 2 sliders yet.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
 </div>
+@endsection
 
 @push('scripts')
 <script>
@@ -327,5 +322,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-
-@endsection

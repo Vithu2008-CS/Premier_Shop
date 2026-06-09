@@ -3,275 +3,534 @@
 
 @push('styles')
 <style>
-.slider-form-wrap { display: flex; gap: 1.5rem; align-items: flex-start; }
-.slider-form-col  { flex: 1 1 0; min-width: 0; }
-.slider-preview-col {
-    width: 380px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 80px;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+.container-fluid { font-family: 'Inter', sans-serif; }
+html[data-admin-theme="light"] .theme-card-bg { background-color: #ffffff !important; }
+html[data-admin-theme="dark"]  .theme-card-bg { background-color: #0c1427 !important; border: 1px solid rgba(255,255,255,0.05) !important; }
+html[data-admin-theme="light"] .text-theme-dark-bold { color: #1e293b !important; }
+html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important; }
+
+.form-control, .form-select {
+    border-radius: 12px !important; border: 1.5px solid rgba(0,0,0,0.07) !important;
+    padding: 0.5rem 0.95rem !important; font-size: 0.84rem !important;
+    transition: all 0.25s ease !important; background-color: #ffffff !important; color: #1e293b !important;
 }
-@media (max-width: 1100px) {
-    .slider-form-wrap  { flex-direction: column; }
-    .slider-preview-col { width: 100%; position: static; }
+.form-control:focus, .form-select:focus {
+    border-color: #6c5ce7 !important; box-shadow: 0 0 0 3.5px rgba(108,92,231,0.15) !important;
 }
-.preview-card {
-    border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--border-color, #e8e8f7);
-    background: var(--card-bg, #fff);
+html[data-admin-theme="dark"] .form-control, html[data-admin-theme="dark"] .form-select {
+    background-color: #080f1d !important; border-color: rgba(255,255,255,0.08) !important; color: #e2e8f0 !important;
 }
-.preview-label {
-    padding: 10px 16px 0;
-    font-size: 0.7rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45;
+html[data-admin-theme="dark"] .form-control:focus, html[data-admin-theme="dark"] .form-select:focus {
+    border-color: #a78bfa !important; box-shadow: 0 0 0 3.5px rgba(167,139,250,0.2) !important;
+}
+.form-control.is-invalid { border-color: #ff3366 !important; box-shadow: 0 0 0 3.5px rgba(255,51,102,0.15) !important; }
+
+.border-bottom-subtle { border-bottom: 1.5px solid rgba(108,92,231,0.06) !important; }
+html[data-admin-theme="dark"] .border-bottom-subtle { border-bottom: 1.5px solid rgba(255,255,255,0.05) !important; }
+
+/* Type cards */
+.type-card {
+    border: 2px solid rgba(0,0,0,0.06); border-radius: 14px;
+    padding: 14px 16px; cursor: pointer; transition: all 0.2s ease; background: transparent;
+}
+.type-card:hover { border-color: rgba(108,92,231,0.3); background: rgba(108,92,231,0.03); }
+.type-card.selected { border-color: #6c5ce7; background: rgba(108,92,231,0.06); }
+html[data-admin-theme="dark"] .type-card { border-color: rgba(255,255,255,0.07); }
+html[data-admin-theme="dark"] .type-card:hover { border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.05); }
+html[data-admin-theme="dark"] .type-card.selected { border-color: #a78bfa; background: rgba(167,139,250,0.1); }
+.type-card-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; margin-bottom:8px; }
+.type-card-label { font-size:0.82rem; font-weight:700; font-family:'Outfit',sans-serif; margin-bottom:2px; }
+.type-card-desc  { font-size:0.7rem; color:#94a3b8; line-height:1.4; }
+.type-card-size  { font-size:0.65rem; color:#a78bfa; font-family:monospace; margin-top:4px; }
+.bg-soft-primary { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-success { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
+.bg-soft-warning { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
+
+/* Position picker */
+.pos-picker-wrap { display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+.pos-picker-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:5px;
+    padding:10px; border-radius:14px;
+    background:rgba(108,92,231,0.04); border:1.5px solid rgba(108,92,231,0.1);
+    width:110px; flex-shrink:0;
+}
+html[data-admin-theme="dark"] .pos-picker-grid { background:rgba(167,139,250,0.06); border-color:rgba(167,139,250,0.15); }
+.pos-cell {
+    width:28px; height:28px; border-radius:7px;
+    border:1.5px solid rgba(108,92,231,0.12); background:transparent;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s ease; font-size:0.75rem; color:#94a3b8; line-height:1;
+}
+.pos-cell:hover { background:rgba(108,92,231,0.15); border-color:rgba(108,92,231,0.3); color:#6c5ce7; }
+.pos-cell.active { background:linear-gradient(135deg,#6c5ce7,#a78bfa); border-color:transparent; color:#fff; box-shadow:0 2px 8px rgba(108,92,231,0.3); }
+html[data-admin-theme="dark"] .pos-cell { border-color:rgba(167,139,250,0.15); color:#64748b; }
+html[data-admin-theme="dark"] .pos-cell:hover { background:rgba(167,139,250,0.15); border-color:rgba(167,139,250,0.35); color:#a78bfa; }
+.pos-label { font-size:0.72rem; color:#6c5ce7; font-weight:600; background:rgba(108,92,231,0.08); padding:3px 10px; border-radius:20px; display:inline-block; margin-top:4px; }
+html[data-admin-theme="dark"] .pos-label { color:#a78bfa; background:rgba(167,139,250,0.12); }
+
+/* Preview */
+.preview-slide-container {
+    border-radius: 18px !important; overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.04) !important;
+    border: 1.5px solid rgba(0,0,0,0.05) !important;
+}
+html[data-admin-theme="dark"] .preview-slide-container {
+    border-color: rgba(255,255,255,0.06) !important; box-shadow: 0 8px 25px rgba(0,0,0,0.25) !important;
 }
 .preview-slide {
     position: relative; width: 100%; padding-top: 56.25%;
-    background: #1a1a2e center/cover no-repeat; overflow: hidden;
-    transition: background-image 0.4s ease;
+    background-color: #1a1a2e; background-position: center;
+    background-size: cover; background-repeat: no-repeat;
 }
-.preview-slide-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 70%);
-    pointer-events: none;
+.preview-btn-layer {
+    position: absolute; inset: 0; display: flex;
+    flex-direction: column; padding: 1rem; pointer-events: none;
 }
-.preview-slide-content {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 1.5rem; gap: 6px;
+.preview-btn-layer.pos-top-left     { justify-content:flex-start; align-items:flex-start; }
+.preview-btn-layer.pos-top-center   { justify-content:flex-start; align-items:center; }
+.preview-btn-layer.pos-top-right    { justify-content:flex-start; align-items:flex-end; }
+.preview-btn-layer.pos-middle-left  { justify-content:center;     align-items:flex-start; }
+.preview-btn-layer.pos-middle-center{ justify-content:center;     align-items:center; }
+.preview-btn-layer.pos-middle-right { justify-content:center;     align-items:flex-end; }
+.preview-btn-layer.pos-bottom-left  { justify-content:flex-end;   align-items:flex-start; }
+.preview-btn-layer.pos-bottom-center{ justify-content:flex-end;   align-items:center; }
+.preview-btn-layer.pos-bottom-right { justify-content:flex-end;   align-items:flex-end; }
+.preview-cta-btn {
+    display:inline-flex; align-items:center; gap:5px; padding:5px 14px;
+    border-radius:30px; background:#ffffff; color:#1a1a2e;
+    font-size:0.72rem; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,0.18);
+    white-space:nowrap; pointer-events:none;
 }
-.preview-slide-content.align-left   { align-items: flex-start; text-align: left; }
-.preview-slide-content.align-center { align-items: center;     text-align: center; }
-.preview-slide-content.align-right  { align-items: flex-end;   text-align: right; }
-.preview-title-lead { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255,255,255,0.8); }
-.preview-title-accent { font-size: 1.15rem; font-weight: 900; color: #fff; line-height: 1.2; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-.preview-subtitle { font-size: 0.68rem; color: rgba(255,255,255,0.7); max-width: 220px; line-height: 1.4; }
-.preview-cta { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 8px; background: #6c5ce7; color: #fff; font-size: 0.68rem; font-weight: 700; margin-top: 4px; }
-.preview-meta { padding: 10px 16px 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-.preview-meta-badge { padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
+.preview-meta { padding:12px 16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.preview-meta-badge { padding:3px 10px; border-radius:20px; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+
+/* Floating Action Bar */
+.floating-save-bar {
+    position: fixed; bottom: 24px; left: calc(50% + 120px);
+    transform: translateX(-50%); z-index: 1000;
+    width: calc(100% - 32px - 240px); max-width: 920px;
+    background: rgba(255,255,255,0.9) !important;
+    backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06) !important;
+    border-radius: 50px !important; transition: all 0.3s ease;
+}
+html[data-admin-theme="dark"] .floating-save-bar {
+    background: rgba(15,23,42,0.9) !important; border-color: rgba(255,255,255,0.08) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+}
+.floating-save-bar .btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    height:38px !important; min-width:90px !important; padding:0 20px !important;
+    font-size:0.82rem !important; font-weight:700 !important;
+    border-radius:30px !important; transition:all 0.2s ease !important;
+}
+.floating-save-bar .btn-outline-secondary {
+    border:1.5px solid rgba(0,0,0,0.15) !important; background:transparent !important; color:#475569 !important;
+}
+.floating-save-bar .btn-outline-secondary:hover { background:rgba(0,0,0,0.04) !important; color:#1e293b !important; }
+html[data-admin-theme="dark"] .floating-save-bar .btn-outline-secondary {
+    border-color:rgba(255,255,255,0.25) !important; color:#cbd5e1 !important;
+}
+html[data-admin-theme="dark"] .floating-save-bar .btn-outline-secondary:hover {
+    background:rgba(255,255,255,0.08) !important; color:#fff !important;
+}
+.floating-save-bar .btn-primary {
+    background:linear-gradient(135deg,#6c5ce7,#a78bfa) !important;
+    border:none !important; color:#fff !important; box-shadow:0 4px 12px rgba(108,92,231,0.2) !important;
+}
+.floating-save-bar .btn-primary:hover { transform:translateY(-1px) !important; box-shadow:0 6px 16px rgba(108,92,231,0.3) !important; color:#fff !important; }
+.floating-save-bar .btn-danger {
+    background:transparent !important; border:1.8px solid #ff3366 !important; color:#ff3366 !important;
+}
+.floating-save-bar .btn-danger:hover { background:rgba(255,51,102,0.06) !important; box-shadow:0 4px 12px rgba(255,51,102,0.15) !important; transform:translateY(-1px) !important; }
+.floating-bar-title { color:#0f172a !important; }
+html[data-admin-theme="dark"] .floating-bar-title { color:#ffffff !important; }
+.pulse-dot {
+    width:8px; height:8px; background:#10b981; border-radius:50%;
+    display:inline-block; animation:blinkDot 1.5s infinite ease-in-out;
+}
+@keyframes blinkDot {
+    0%,100% { opacity:0.3; transform:scale(0.9); }
+    50%      { opacity:1;   transform:scale(1.15); }
+}
+@media (max-width:991px) { .floating-save-bar { left:50% !important; width:calc(100% - 32px) !important; } }
+@media (max-width:575px) {
+    .floating-save-bar { border-radius:20px !important; padding:12px 16px !important; bottom:16px !important; flex-direction:column; gap:10px; align-items:stretch !important; width:calc(100% - 24px) !important; }
+    .floating-save-bar .btn { min-width:0 !important; flex:1; }
+}
 </style>
 @endpush
 
 @section('content')
-<nav class="page-breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('admin.sliders.index') }}">Sliders</a></li>
-        <li class="breadcrumb-item active">Edit Slider</li>
-    </ol>
-</nav>
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="fw-bold mb-1" style="font-family:'Outfit',sans-serif;">Edit Slider</h4>
-        <p class="text-muted small mb-0">Update the content and appearance of this hero banner.</p>
-    </div>
-    <a href="{{ route('admin.sliders.index') }}" class="btn btn-outline-secondary btn-sm">
-        <i data-feather="arrow-left" style="width:14px;height:14px;"></i> Back
-    </a>
-</div>
-
-@if($errors->any())
-    <div class="alert alert-danger rounded-3 mb-4">
-        <ul class="mb-0 ps-3">
-            @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-        </ul>
-    </div>
-@endif
-
 @php
     $currentImg = str_starts_with($slider->image_path, 'http')
         ? $slider->image_path
         : asset('storage/' . $slider->image_path);
+    $currentPos = old('button_position', $slider->button_position ?? 'bottom-center');
+    $currentType = old('type', $slider->type ?? 'slider');
 @endphp
+<div class="container-fluid px-0" style="padding-bottom: 120px;">
 
-<div class="slider-form-wrap">
+    <nav class="page-breadcrumb d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.sliders.index') }}">Sliders</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+        <a href="{{ route('admin.sliders.index') }}"
+           class="btn btn-outline-primary btn-sm d-inline-flex align-items-center"
+           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';border:1.5px solid #6c5ce7;color:#6c5ce7;padding:6px 18px;">
+            <i class="bi bi-arrow-left" style="margin-right:6px;"></i> Back
+        </a>
+    </nav>
 
-    {{-- ── Form Column ──────────────────────────────────────────── --}}
-    <div class="slider-form-col">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <form id="sliderForm" action="{{ route('admin.sliders.update', $slider) }}" method="POST" enctype="multipart/form-data">
-                    @csrf @method('PUT')
+    @if($errors->any())
+        <div class="alert alert-danger rounded-3 mb-4">
+            <ul class="mb-0 ps-3">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+        </div>
+    @endif
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Title</label>
-                            <input id="fTitle" type="text" name="title" class="form-control @error('title') is-invalid @enderror"
-                                   value="{{ old('title', $slider->title) }}" maxlength="255">
-                            @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Subtitle</label>
-                            <input id="fSubtitle" type="text" name="subtitle" class="form-control @error('subtitle') is-invalid @enderror"
-                                   value="{{ old('subtitle', $slider->subtitle) }}" maxlength="255">
-                            @error('subtitle')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
+    <div class="row g-4">
+        {{-- Left: Form --}}
+        <div class="col-lg-7">
+            <form id="slider-edit-form" action="{{ route('admin.sliders.update', $slider) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Replace Image</label>
-                            <input id="fImageFile" type="file" name="image_file" class="form-control @error('image_file') is-invalid @enderror" accept="image/*">
-                            <div class="form-text">Leave blank to keep current image.</div>
-                            @error('image_file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                {{-- Slider Type --}}
+                <div class="card border-0 shadow-sm theme-card-bg mb-4" style="border-radius:18px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom-subtle">
+                            <h5 class="card-title mb-0 fw-bold text-theme-dark-bold d-flex align-items-center" style="font-family:'Outfit';">
+                                <i class="bi bi-collection text-primary me-2" style="font-size:1.1rem;"></i>
+                                Slider Zone
+                            </h5>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Or External Image URL</label>
-                            <input id="fImageLink" type="url" name="image_link" class="form-control @error('image_link') is-invalid @enderror"
-                                   placeholder="https://example.com/banner.jpg" value="{{ str_contains($slider->image_path, 'http') ? $slider->image_path : '' }}">
-                            <div class="form-text">Leave blank to keep current image.</div>
-                            @error('image_link')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Link URL</label>
-                            <input id="fLinkUrl" type="url" name="link_url" class="form-control @error('link_url') is-invalid @enderror"
-                                   value="{{ old('link_url', $slider->link_url) }}">
-                            @error('link_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Button Label</label>
-                            <input id="fButtonText" type="text" name="button_text" class="form-control @error('button_text') is-invalid @enderror"
-                                   value="{{ old('button_text', $slider->button_text) }}" maxlength="50">
-                            @error('button_text')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Text Alignment</label>
-                            <select id="fAlign" name="text_align" class="form-select">
-                                <option value="left"   {{ old('text_align', $slider->text_align) == 'left'   ? 'selected' : '' }}>Left</option>
-                                <option value="center" {{ old('text_align', $slider->text_align) == 'center' ? 'selected' : '' }}>Center</option>
-                                <option value="right"  {{ old('text_align', $slider->text_align) == 'right'  ? 'selected' : '' }}>Right</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Display Priority</label>
-                            <input type="number" name="order_priority" class="form-control"
-                                   value="{{ old('order_priority', $slider->order_priority) }}" min="0">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end pb-1">
-                            <div class="form-check">
-                                <input type="checkbox" name="is_active" id="fActive" class="form-check-input" value="1"
-                                       {{ $slider->is_active ? 'checked' : '' }}>
-                                <label class="form-check-label fw-semibold" for="fActive">Visible on storefront</label>
+                        <input type="hidden" name="type" id="fType" value="{{ $currentType }}">
+                        <div class="row g-2" id="typeCards">
+                            <div class="col-12 col-md-4">
+                                <div class="type-card {{ $currentType === 'slider' ? 'selected' : '' }}" data-type="slider">
+                                    <div class="type-card-icon bg-soft-primary"><i class="bi bi-display"></i></div>
+                                    <div class="type-card-label text-theme-dark-bold">Main Hero</div>
+                                    <div class="type-card-desc">Full-width carousel at the top of the homepage.</div>
+                                    <div class="type-card-size">1920×1080 / 800×1200</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="type-card {{ $currentType === 'slider_mid' ? 'selected' : '' }}" data-type="slider_mid">
+                                    <div class="type-card-icon bg-soft-success"><i class="bi bi-layout-text-window"></i></div>
+                                    <div class="type-card-label text-theme-dark-bold">Sub Banner 1</div>
+                                    <div class="type-card-desc">After the New Arrivals section.</div>
+                                    <div class="type-card-size">1920×600 / 800×800</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="type-card {{ $currentType === 'slider_top' ? 'selected' : '' }}" data-type="slider_top">
+                                    <div class="type-card-icon bg-soft-warning"><i class="bi bi-layout-text-sidebar"></i></div>
+                                    <div class="type-card-label text-theme-dark-bold">Sub Banner 2</div>
+                                    <div class="type-card-desc">After the Recently Viewed section.</div>
+                                    <div class="type-card-size">1920×600 / 800×800</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i data-feather="save" style="width:15px;height:15px;"></i> Update Slider
-                        </button>
-                        <a href="{{ route('admin.sliders.index') }}" class="btn btn-outline-secondary">Cancel</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- ── Live Preview Column ───────────────────────────────────── --}}
-    <div class="slider-preview-col">
-        <div class="preview-card">
-            <div class="preview-label">Live Preview — 16:9</div>
-            <div class="preview-slide" id="previewSlide" style="background-image: url('{{ $currentImg }}');">
-                <div class="preview-slide-overlay"></div>
-                <div class="preview-slide-content align-{{ $slider->text_align ?? 'center' }}" id="previewContent">
-                    @php
-                        $prevWords = explode(' ', $slider->title ?? 'Slide');
-                        $prevAccent = count($prevWords) > 1 ? array_pop($prevWords) : ($slider->title ?? 'Slide');
-                        $prevLead   = count($prevWords) > 0 ? implode(' ', $prevWords) : '';
-                    @endphp
-                    @if($prevLead)
-                        <div class="preview-title-lead" id="previewLead">{{ $prevLead }}</div>
-                    @else
-                        <div class="preview-title-lead" id="previewLead" style="display:none;"></div>
-                    @endif
-                    <div class="preview-title-accent" id="previewAccent">{{ $prevAccent }}</div>
-                    <div class="preview-subtitle" id="previewSub" {{ $slider->subtitle ? '' : 'style=display:none' }}>{{ $slider->subtitle }}</div>
-                    <div class="preview-cta" id="previewCta">{{ $slider->button_text ?: 'Shop Now' }} →</div>
                 </div>
-            </div>
-            <div class="preview-meta">
-                <span class="preview-meta-badge badge {{ $slider->is_active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary' }}" id="previewStatus">
-                    {{ $slider->is_active ? 'Active' : 'Inactive' }}
-                </span>
-                <span class="preview-meta-badge badge bg-secondary bg-opacity-10 text-secondary" id="previewAlign">
-                    Align: {{ $slider->text_align ?? 'center' }}
-                </span>
+
+                {{-- Image + CTA --}}
+                <div class="card border-0 shadow-sm theme-card-bg mb-4" style="border-radius:18px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom-subtle">
+                            <h5 class="card-title mb-0 fw-bold text-theme-dark-bold d-flex align-items-center" style="font-family:'Outfit';">
+                                <i class="bi bi-image text-primary me-2" style="font-size:1.1rem;"></i>
+                                Banner Image & Button
+                            </h5>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Replace Image File</label>
+                                <input id="fImageFile" type="file" name="image_file"
+                                       class="form-control @error('image_file') is-invalid @enderror" accept="image/*">
+                                <div class="form-text small text-muted" id="sizeHint">
+                                    Leave blank to keep existing image.
+                                </div>
+                                @error('image_file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Or External Image URL</label>
+                                <input id="fImageLink" type="url" name="image_link"
+                                       class="form-control @error('image_link') is-invalid @enderror"
+                                       placeholder="https://…/banner.jpg"
+                                       value="{{ str_contains($slider->image_path, 'http') ? $slider->image_path : '' }}">
+                                @error('image_link')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Button Label</label>
+                                <input id="fButtonText" type="text" name="button_text"
+                                       class="form-control @error('button_text') is-invalid @enderror"
+                                       placeholder="e.g. Shop Now"
+                                       value="{{ old('button_text', $slider->button_text) }}" maxlength="50">
+                                @error('button_text')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Button Link (Product / Page URL)</label>
+                                <input id="fLinkUrl" type="url" name="link_url"
+                                       class="form-control @error('link_url') is-invalid @enderror"
+                                       value="{{ old('link_url', $slider->link_url) }}">
+                                @error('link_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        {{-- Button Position Picker --}}
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold d-block mb-2">Button Position</label>
+                            <div class="pos-picker-wrap">
+                                <div class="pos-picker-grid" id="posPickerGrid">
+                                    <button type="button" class="pos-cell" data-pos="top-left"      title="Top Left">↖</button>
+                                    <button type="button" class="pos-cell" data-pos="top-center"    title="Top Center">↑</button>
+                                    <button type="button" class="pos-cell" data-pos="top-right"     title="Top Right">↗</button>
+                                    <button type="button" class="pos-cell" data-pos="middle-left"   title="Middle Left">←</button>
+                                    <button type="button" class="pos-cell" data-pos="middle-center" title="Center">⊕</button>
+                                    <button type="button" class="pos-cell" data-pos="middle-right"  title="Middle Right">→</button>
+                                    <button type="button" class="pos-cell" data-pos="bottom-left"   title="Bottom Left">↙</button>
+                                    <button type="button" class="pos-cell" data-pos="bottom-center" title="Bottom Center">↓</button>
+                                    <button type="button" class="pos-cell" data-pos="bottom-right"  title="Bottom Right">↘</button>
+                                </div>
+                                <div>
+                                    <div class="text-muted small mb-1">Selected:</div>
+                                    <div class="pos-label" id="posLabel">{{ ucwords(str_replace('-',' ', $currentPos)) }}</div>
+                                    <input type="hidden" name="button_position" id="fButtonPos" value="{{ $currentPos }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Settings --}}
+                <div class="card border-0 shadow-sm theme-card-bg" style="border-radius:18px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3 pb-2 border-bottom-subtle">
+                            <h5 class="card-title mb-0 fw-bold text-theme-dark-bold d-flex align-items-center" style="font-family:'Outfit';">
+                                <i class="bi bi-gear text-primary me-2" style="font-size:1.1rem;"></i>
+                                Settings
+                            </h5>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label small text-muted fw-bold">Internal Label (Admin Only)</label>
+                                <input id="fTitle" type="text" name="title"
+                                       class="form-control @error('title') is-invalid @enderror"
+                                       value="{{ old('title', $slider->title) }}" maxlength="255">
+                                <div class="form-text small text-muted">Not shown on the storefront.</div>
+                                @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted fw-bold">Display Priority</label>
+                                <input type="number" name="order_priority"
+                                       class="form-control @error('order_priority') is-invalid @enderror"
+                                       value="{{ old('order_priority', $slider->order_priority) }}" min="0">
+                                <div class="form-text small text-muted">Lower = shown first.</div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end pb-1">
+                                <div class="form-check">
+                                    <input type="checkbox" name="is_active" id="fActive" class="form-check-input" value="1"
+                                           {{ old('is_active', $slider->is_active) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-bold text-theme-dark-bold small" for="fActive">
+                                        Live on storefront
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        {{-- Right: Live Preview --}}
+        <div class="col-lg-5">
+            <div class="d-flex flex-column gap-4">
+
+                <div class="card preview-slide-container border-0 p-0 overflow-hidden shadow-sm theme-card-bg">
+                    <div class="preview-meta border-bottom-subtle">
+                        <span class="fw-bold text-theme-dark-bold small text-uppercase" style="font-family:'Outfit';letter-spacing:0.5px;font-size:0.73rem;">Live Preview</span>
+                        <span class="ms-auto preview-meta-badge badge bg-secondary bg-opacity-10 text-secondary" id="previewType">
+                            {{ $currentType === 'slider' ? 'Main Hero' : ($currentType === 'slider_mid' ? 'Sub Banner 1' : 'Sub Banner 2') }}
+                        </span>
+                    </div>
+
+                    @php
+                        $previewAspect = in_array($currentType, ['slider_mid','slider_top']) ? '31.25%' : '56.25%';
+                    @endphp
+                    <div class="preview-slide" id="previewSlide" style="padding-top:{{ $previewAspect }};background-image:url('{{ $currentImg }}');">
+                        <div class="preview-btn-layer pos-{{ $currentPos }}" id="previewBtnLayer">
+                            <span class="preview-cta-btn" id="previewCta"
+                                  @if(!$slider->button_text) style="display:none;" @endif>
+                                {{ $slider->button_text ?: 'Shop Now' }} <i class="bi bi-arrow-right" style="margin-left:5px;"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="preview-meta">
+                        <span class="preview-meta-badge badge {{ $slider->is_active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary' }}" id="previewStatus">
+                            {{ $slider->is_active ? 'Active' : 'Inactive' }}
+                        </span>
+                        <span class="preview-meta-badge badge bg-secondary bg-opacity-10 text-secondary" id="previewPos">
+                            Position: {{ ucwords(str_replace('-',' ',$currentPos)) }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm theme-card-bg p-4" style="border-radius:18px;">
+                    <h6 class="card-title fw-bold text-primary mb-3 d-flex align-items-center" style="font-family:'Outfit';font-size:0.88rem;">
+                        <i class="bi bi-info-circle me-2"></i> Design Guidelines
+                    </h6>
+                    <ul class="text-muted small mb-0" style="padding-left:18px;line-height:1.7;">
+                        <li>Upload the image at the recommended resolution for the selected zone.</li>
+                        <li>Both <strong>Button Label</strong> and <strong>Link URL</strong> must be set for the button to appear.</li>
+                        <li>Use the <strong>Position Picker</strong> to place the button where it works best.</li>
+                        <li>Keep button text short — 2–4 words (e.g. "Shop Now", "View Sale").</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
-        <p class="text-muted mt-2" style="font-size:0.72rem;">Preview updates as you type. Actual appearance depends on the background image.</p>
     </div>
 
+</div>
+
+{{-- Delete form (hidden) --}}
+<form id="delete-slider-form" action="{{ route('admin.sliders.destroy', $slider) }}" method="POST" style="display:none;">
+    @csrf @method('DELETE')
+</form>
+
+{{-- Floating Action Bar: Delete | Cancel | Save --}}
+<div class="floating-save-bar d-flex align-items-center justify-content-between px-4 py-3">
+    <div class="d-flex align-items-center gap-2" style="font-family:'Outfit',sans-serif;">
+        <span class="pulse-dot"></span>
+        <span class="text-muted text-uppercase d-none d-sm-inline" style="font-size:0.67rem;letter-spacing:0.5px;font-weight:600;">Editing:</span>
+        <span class="fw-bold text-nowrap floating-bar-title" style="font-size:0.84rem;font-family:monospace;" id="floatingLabel">{{ $slider->title ?: 'Slider' }}</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-danger"
+                onclick="if(confirm('Permanently delete this slider? This cannot be undone.')) document.getElementById('delete-slider-form').submit();">
+            <i class="bi bi-trash" style="margin-right:5px;"></i> Delete
+        </button>
+        <a href="{{ route('admin.sliders.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" form="slider-edit-form" class="btn btn-primary">
+            <i class="bi bi-check2-circle" style="margin-right:6px;"></i> Save Changes
+        </button>
+    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof feather !== 'undefined') feather.replace();
+(function () {
+    'use strict';
 
-    const previewSlide   = document.getElementById('previewSlide');
-    const previewContent = document.getElementById('previewContent');
-    const previewLead    = document.getElementById('previewLead');
-    const previewAccent  = document.getElementById('previewAccent');
-    const previewSub     = document.getElementById('previewSub');
-    const previewCta     = document.getElementById('previewCta');
-    const previewStatus  = document.getElementById('previewStatus');
-    const previewAlign   = document.getElementById('previewAlign');
+    const fTitle      = document.getElementById('fTitle');
+    const fButtonText = document.getElementById('fButtonText');
+    const fImageFile  = document.getElementById('fImageFile');
+    const fImageLink  = document.getElementById('fImageLink');
+    const fActive     = document.getElementById('fActive');
+    const fType       = document.getElementById('fType');
+    const fButtonPos  = document.getElementById('fButtonPos');
 
-    function updateTitle(val) {
-        const words = (val || 'Slider').trim().split(/\s+/);
-        if (words.length > 1) {
-            previewAccent.textContent = words.pop();
-            previewLead.textContent   = words.join(' ');
-            previewLead.style.display = '';
-        } else {
-            previewAccent.textContent = words[0] || 'Slider';
-            previewLead.style.display = 'none';
-        }
+    const previewSlide    = document.getElementById('previewSlide');
+    const previewBtnLayer = document.getElementById('previewBtnLayer');
+    const previewCta      = document.getElementById('previewCta');
+    const previewStatus   = document.getElementById('previewStatus');
+    const previewPos      = document.getElementById('previewPos');
+    const previewType     = document.getElementById('previewType');
+    const floatingLabel   = document.getElementById('floatingLabel');
+    const sizeHint        = document.getElementById('sizeHint');
+    const posLabel        = document.getElementById('posLabel');
+    const posGrid         = document.getElementById('posPickerGrid');
+
+    const TYPE_META = {
+        slider:     { label:'Main Hero',    badge:'Main Hero',    aspect:'56.25%', size:'Main: 1920×1080 (desktop) · 800×1200 (mobile)' },
+        slider_mid: { label:'Sub Banner 1', badge:'Sub Banner 1', aspect:'31.25%', size:'Sub: 1920×600 (desktop) · 800×800 (mobile)' },
+        slider_top: { label:'Sub Banner 2', badge:'Sub Banner 2', aspect:'31.25%', size:'Sub: 1920×600 (desktop) · 800×800 (mobile)' },
+    };
+
+    document.querySelectorAll('#typeCards .type-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+            document.querySelectorAll('#typeCards .type-card').forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            const t = this.getAttribute('data-type');
+            fType.value = t;
+            const meta = TYPE_META[t] || TYPE_META.slider;
+            if (previewSlide) previewSlide.style.paddingTop = meta.aspect;
+            if (sizeHint) sizeHint.textContent = meta.size;
+            if (previewType) previewType.textContent = meta.badge;
+        });
+    });
+
+    const POS_LABELS = {
+        'top-left':'Top Left','top-center':'Top Center','top-right':'Top Right',
+        'middle-left':'Middle Left','middle-center':'Center','middle-right':'Middle Right',
+        'bottom-left':'Bottom Left','bottom-center':'Bottom Center','bottom-right':'Bottom Right',
+    };
+
+    function selectPos(pos) {
+        if (!pos) return;
+        fButtonPos.value = pos;
+        posGrid.querySelectorAll('.pos-cell').forEach(c => c.classList.toggle('active', c.getAttribute('data-pos') === pos));
+        if (posLabel) posLabel.textContent = POS_LABELS[pos] || pos;
+        if (previewBtnLayer) previewBtnLayer.className = 'preview-btn-layer pos-' + pos;
+        if (previewPos) previewPos.textContent = 'Position: ' + (POS_LABELS[pos] || pos);
     }
 
-    document.getElementById('fTitle')?.addEventListener('input', e => updateTitle(e.target.value));
-
-    document.getElementById('fSubtitle')?.addEventListener('input', function () {
-        previewSub.textContent   = this.value;
-        previewSub.style.display = this.value ? '' : 'none';
+    posGrid.querySelectorAll('.pos-cell').forEach(function (cell) {
+        cell.addEventListener('click', function () { selectPos(this.getAttribute('data-pos')); });
     });
+    selectPos(fButtonPos.value || 'bottom-center');
 
-    document.getElementById('fButtonText')?.addEventListener('input', function () {
-        previewCta.textContent = (this.value || 'Shop Now') + ' →';
-    });
-
-    document.getElementById('fAlign')?.addEventListener('change', function () {
-        previewContent.className = 'preview-slide-content align-' + this.value;
-        previewAlign.textContent = 'Align: ' + this.value;
-    });
-
-    document.getElementById('fActive')?.addEventListener('change', function () {
-        if (this.checked) {
-            previewStatus.className   = 'preview-meta-badge badge bg-success bg-opacity-10 text-success';
-            previewStatus.textContent = 'Active';
-        } else {
-            previewStatus.className   = 'preview-meta-badge badge bg-secondary bg-opacity-10 text-secondary';
-            previewStatus.textContent = 'Inactive';
+    function updatePreview() {
+        const btn = fButtonText ? fButtonText.value.trim() : '';
+        if (previewCta) {
+            if (btn) {
+                previewCta.style.display = 'inline-flex';
+                previewCta.innerHTML = btn + ' <i class="bi bi-arrow-right" style="margin-left:5px;"></i>';
+            } else {
+                previewCta.style.display = 'none';
+            }
         }
-    });
-
-    document.getElementById('fImageFile')?.addEventListener('change', function () {
-        if (this.files[0]) {
-            previewSlide.style.backgroundImage = 'url(' + URL.createObjectURL(this.files[0]) + ')';
+        if (previewStatus) {
+            const active = fActive && fActive.checked;
+            previewStatus.className = 'preview-meta-badge badge ' + (active ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary');
+            previewStatus.textContent = active ? 'Active' : 'Inactive';
         }
-    });
+        const title = fTitle ? fTitle.value.trim() : '';
+        if (floatingLabel) floatingLabel.textContent = title || 'Slider';
+    }
 
-    document.getElementById('fImageLink')?.addEventListener('input', function () {
-        if (this.value) previewSlide.style.backgroundImage = 'url(' + this.value + ')';
-    });
-});
+    if (fButtonText) fButtonText.addEventListener('input', updatePreview);
+    if (fTitle)      fTitle.addEventListener('input', updatePreview);
+    if (fActive)     fActive.addEventListener('change', updatePreview);
+
+    if (fImageFile) {
+        fImageFile.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                previewSlide.style.backgroundImage = 'url(' + URL.createObjectURL(this.files[0]) + ')';
+            }
+        });
+    }
+    if (fImageLink) {
+        fImageLink.addEventListener('input', function () {
+            if (this.value.trim()) previewSlide.style.backgroundImage = 'url(' + this.value.trim() + ')';
+        });
+    }
+
+    updatePreview();
+})();
 </script>
 @endpush

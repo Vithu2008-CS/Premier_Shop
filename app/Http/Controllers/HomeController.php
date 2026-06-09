@@ -30,9 +30,19 @@ class HomeController extends Controller
         // Suffix differentiates cache entries per age group
         $suffix    = $isUnder16 ? '_restricted' : '_all';
 
-        // Active slider promotions for the hero carousel (5-min cache)
-        $sliders = cache()->remember('home_sliders', 300, fn () =>
-            Promotion::sliders()->active()->orderBy('order_priority')->get()
+        // Main hero carousel sliders (type='slider')
+        $mainSliders = cache()->remember('home_sliders_main', 300, fn () =>
+            Promotion::where('type', 'slider')->active()->orderBy('order_priority')->get()
+        );
+
+        // Sub-banner 1 — shown after New Arrivals section (type='slider_mid')
+        $subSliders1 = cache()->remember('home_sliders_mid', 300, fn () =>
+            Promotion::where('type', 'slider_mid')->active()->orderBy('order_priority')->get()
+        );
+
+        // Sub-banner 2 — shown after Recently Viewed section (type='slider_top')
+        $subSliders2 = cache()->remember('home_sliders_top', 300, fn () =>
+            Promotion::where('type', 'slider_top')->active()->orderBy('order_priority')->get()
         );
 
         $categories = cache()->remember('home_categories', 300, fn () =>
@@ -104,7 +114,8 @@ class HomeController extends Controller
         }
 
         return view('home', compact(
-            'sliders', 'categories', 'offerProducts', 'popularProducts',
+            'mainSliders', 'subSliders1', 'subSliders2',
+            'categories', 'offerProducts', 'popularProducts',
             'newProducts', 'randomProducts', 'promotions', 'recentlyViewed'
         ));
     }
