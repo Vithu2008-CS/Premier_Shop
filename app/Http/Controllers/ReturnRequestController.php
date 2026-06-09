@@ -58,7 +58,7 @@ class ReturnRequestController extends Controller
             'customer_note' => 'nullable|string',
             'items'         => 'required|array',
             'items.*'       => 'integer|min:0',
-            'photo'         => 'nullable|image|max:5120',
+            'photo'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         // Filter out items with 0 quantity (unchecked in the form)

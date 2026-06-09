@@ -40,8 +40,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/offers', [HomeController::class, 'offers'])->name('offers');
 Route::get('/categories', [HomeController::class, 'categories'])->name('categories');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
-Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')->middleware('throttle:5,1');
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe')->middleware('throttle:5,1');
 
 // Product catalogue — public browsing
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
