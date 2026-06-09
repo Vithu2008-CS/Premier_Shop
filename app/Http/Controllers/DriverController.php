@@ -68,7 +68,7 @@ class DriverController extends Controller
         }
 
         $request->validate([
-            'delivery_proof' => 'required|image|max:2048',
+            'delivery_proof' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'delivered_date' => 'nullable|date',
         ]);
 
