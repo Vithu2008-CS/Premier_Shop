@@ -170,6 +170,7 @@ class MailController extends Controller
 
         $request->validate([
             'to'      => $isDraft ? 'nullable|array' : 'required|array|min:1',
+            'to.*'    => 'string|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
         ]);
@@ -181,7 +182,11 @@ class MailController extends Controller
                 $subscriberEmails = NewsletterSubscription::pluck('email')->toArray();
                 $emails = array_merge($emails, $subscriberEmails);
             } else {
-                $emails[] = trim($recipient);
+                $email = trim($recipient);
+                if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return back()->withErrors(['to' => "Invalid email address: {$email}"])->withInput();
+                }
+                $emails[] = $email;
             }
         }
         $emails = array_unique(array_filter($emails));
