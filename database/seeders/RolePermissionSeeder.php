@@ -123,6 +123,9 @@ class RolePermissionSeeder extends Seeder
                 'mail.view' => 'View Mail Centre',
                 'mail.manage' => 'Manage Mail Messages',
             ],
+            'Audit Logs' => [
+                'audit_logs.view' => 'View Audit Logs',
+            ],
         ];
 
         $allPermissions = [];

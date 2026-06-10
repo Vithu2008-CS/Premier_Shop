@@ -133,7 +133,8 @@ Route::middleware('auth')->group(function () {
 // ── ADMIN ROUTES ─────────────────────────────────────────────────────────────
 // Requires: auth + admin middleware (is_staff=true).
 // Prefix: /admin  |  Named: admin.*
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+// audit.admin records every state-changing (non-GET) request in audit_logs.
+Route::middleware(['auth', 'admin', 'audit.admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/omni-search', [DashboardController::class, 'omniSearch'])->name('omniSearch');
@@ -205,6 +206,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Roles & Permissions — RBAC management
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class)->except(['show']);
+
+    // Audit Logs — read-only trail of admin actions (written by audit.admin middleware)
+    Route::get('audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])
+        ->name('audit-logs.index')
+        ->middleware('permission:audit_logs.view');
 
     // Drivers — admin management of driver accounts
     Route::get('drivers/{driver}/location', [AdminDriverController::class, 'getLocation'])->name('drivers.location');

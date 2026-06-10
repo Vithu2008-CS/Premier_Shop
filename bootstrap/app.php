@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
             'driver' => \App\Http\Middleware\DriverMiddleware::class,
+            'audit.admin' => \App\Http\Middleware\AuditAdminActions::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

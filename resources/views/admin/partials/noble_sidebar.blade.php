@@ -132,6 +132,14 @@
         </a>
       </li>
       @endif
+      @if(auth()->user()->hasPermission('audit_logs.view'))
+      <li class="nav-item {{ Request::is('admin/audit-logs*') ? 'active' : '' }}">
+        <a href="{{ route('admin.audit-logs.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="file-text"></i>
+          <span class="link-title">Audit Logs</span>
+        </a>
+      </li>
+      @endif
       @if(auth()->user()->hasPermission('reports.view'))
       <li class="nav-item {{ Request::is('admin/reports*') ? 'active' : '' }}">
         <a href="{{ route('admin.reports.index') }}" class="nav-link">
