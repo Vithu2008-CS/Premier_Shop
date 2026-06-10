@@ -1727,9 +1727,11 @@
                 const msgContainer = document.getElementById('premier-assist-messages');
                 const typingInd = document.getElementById('premier-assist-typing');
                 
-                // Active DB Datasets injected securely
-                const activeCouponsList = {!! json_encode($activeCoupons) !!};
-                const userOrdersList = {!! json_encode($userOrders) !!};
+                // Active DB Datasets injected securely.
+                // JSON_HEX_* flags escape <, >, &, ', " so a data value containing
+                // "</script>" (or HTML) cannot break out of this inline script block.
+                const activeCouponsList = {!! json_encode($activeCoupons, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+                const userOrdersList = {!! json_encode($userOrders, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
                 
                 // Toggle Chat Window
                 trigger.addEventListener('click', function() {
