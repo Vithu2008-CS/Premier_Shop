@@ -42,7 +42,7 @@
                                            class="icon mr-2" data-toggle="tooltip" title="Reply">
                                             <i data-feather="corner-up-left" class="text-muted"></i>
                                         </a>
-                                        <a href="javascript:window.print();" class="icon mr-2">
+                                        <a href="#" data-prevent data-call="window.print" class="icon mr-2">
                                             <i data-feather="printer" class="text-muted" data-toggle="tooltip" title="Print"></i>
                                         </a>
                                         <form action="{{ route('admin.mail.markUnread', $message->id) }}" method="POST" class="d-inline mr-2">
@@ -60,7 +60,7 @@
                                             </form>
                                         @endif
                                         <form action="{{ route('admin.mail.destroy', $message->id) }}" method="POST" class="d-inline"
-                                              onsubmit="return confirm('Delete this message?')">
+                                              data-confirm="Delete this message?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-0 border-0 bg-transparent icon">
@@ -86,7 +86,7 @@
                                         </div>
                                     </div>
                                     <div class="sender d-flex align-items-center">
-                                        <a href="javascript:;">{{ $message->name }}</a>
+                                        <a href="#" data-prevent>{{ $message->name }}</a>
                                         <span class="ml-1">&lt;{{ $message->email }}&gt;</span>
                                     </div>
                                 </div>

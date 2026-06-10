@@ -422,7 +422,7 @@ html[data-admin-theme="dark"] .floating-bar-title { color:#ffffff !important; }
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     'use strict';
 

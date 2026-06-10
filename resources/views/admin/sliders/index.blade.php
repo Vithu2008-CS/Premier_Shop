@@ -316,7 +316,7 @@ html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #a
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof feather !== 'undefined') feather.replace();
 });

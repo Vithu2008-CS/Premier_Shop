@@ -24,7 +24,7 @@
             <div class="card-body">
                 <h6 class="card-title text-center">Scan Product QR Code</h6>
                 <div class="text-center mb-3">
-                    <button id="startCamBtn" class="btn btn-primary rounded-pill px-4" onclick="startScanner()">
+                    <button id="startCamBtn" class="btn btn-primary rounded-pill px-4" data-call="startScanner">
                         <i data-feather="camera" class="icon-sm mr-1"></i> Start Camera
                     </button>
                 </div>
@@ -68,7 +68,7 @@
                         <div class="input-group mb-3">
                             <input type="number" id="newStock" class="form-control" min="0">
                             <div class="input-group-append">
-                                <button id="updateStockBtn" class="btn btn-primary" onclick="updateStock()">
+                                <button id="updateStockBtn" class="btn btn-primary" data-call="updateStock">
                                     <i data-feather="save" class="icon-sm mr-1"></i> Update
                                 </button>
                             </div>
@@ -136,7 +136,7 @@
 
 @push('scripts')
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     let currentProductId = null;
     let html5QrCode = null;
 

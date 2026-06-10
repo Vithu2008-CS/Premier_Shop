@@ -112,7 +112,7 @@
                                             </form>
                                         @endif
                                         <form action="{{ route('admin.mail.destroy', $msg->id) }}" method="POST" class="d-inline"
-                                              onsubmit="return confirm('Delete this message?')">
+                                              data-confirm="Delete this message?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-xs btn-outline-danger d-inline-flex align-items-center justify-content-center" title="{{ $msg->is_trash ? 'Delete permanently' : 'Move to trash' }}" style="border-radius: 50%; width: 26px; height: 26px; padding: 0;">
@@ -137,7 +137,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.getElementById('selectAll')?.addEventListener('change', function () {
         document.querySelectorAll('.msg-checkbox').forEach(cb => cb.checked = this.checked);
     });

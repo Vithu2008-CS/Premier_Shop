@@ -187,7 +187,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function() {
         const toggles = document.querySelectorAll('.closed-toggle');
         toggles.forEach(toggle => {
@@ -215,7 +215,7 @@
 
 @push('scripts')
 <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}&libraries=geocoding" crossorigin=""></script>
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const latInput     = document.getElementById('origin_latitude');
     const lngInput     = document.getElementById('origin_longitude');

@@ -333,7 +333,7 @@
     @method('patch')
     <input type="hidden" name="name" value="{{ $user->name }}">
     <input type="hidden" name="email" value="{{ $user->email }}">
-    <input type="file" name="profile_photo" id="direct_profile_photo" accept="image/*" onchange="document.getElementById('avatar-direct-form').submit()">
+    <input type="file" name="profile_photo" id="direct_profile_photo" accept="image/*" data-autosubmit>
 </form>
 
 <div class="container py-4" style="max-width: 600px;">
@@ -347,7 +347,7 @@
                 <div class="avatar-circle-profile">
                     <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-100 h-100 object-fit-cover">
                 </div>
-                <button type="button" class="camera-badge-profile" onclick="document.getElementById('direct_profile_photo').click()" title="Change Profile Picture">
+                <button type="button" class="camera-badge-profile" data-trigger-click="direct_profile_photo" title="Change Profile Picture">
                     <i class="bi bi-camera"></i>
                 </button>
             </div>
@@ -497,7 +497,7 @@
 
     {{-- Bottom Centered Logout --}}
     <div class="text-center">
-        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-profile-main').submit();" class="logout-btn-profile">
+        <a href="#" data-submit-form="logout-form-profile-main" class="logout-btn-profile">
             <i class="bi bi-box-arrow-right"></i> Logout
         </a>
         <form id="logout-form-profile-main" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
@@ -505,7 +505,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     // Auto-expand settings if there's a validation error or status message
     document.addEventListener('DOMContentLoaded', function() {
         @if($errors->any() || session('status'))

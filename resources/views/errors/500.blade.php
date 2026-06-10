@@ -24,7 +24,7 @@
                         <a href="{{ route('home') }}" class="btn btn-add-cart px-4 py-3">
                             <i class="bi bi-house-door me-2"></i> Back to Homepage
                         </a>
-                        <button onclick="location.reload()" class="btn btn-outline-secondary px-4 py-3">
+                        <button data-call="location.reload" class="btn btn-outline-secondary px-4 py-3">
                             <i class="bi bi-arrow-clockwise me-2"></i> Refresh Page
                         </button>
                     </div>

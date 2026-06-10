@@ -181,7 +181,7 @@
                             @method('patch')
 
                             {{-- Hidden file input --}}
-                            <input type="file" name="profile_photo" id="profile_photo_file" class="d-none" accept="image/*" onchange="previewAvatarImage(this)">
+                            <input type="file" name="profile_photo" id="profile_photo_file" class="d-none" accept="image/*" data-on="change" data-call="previewAvatarImage" data-args="[&quot;$el&quot;]">
 
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -562,7 +562,7 @@
 @endpush
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     function previewAvatarImage(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();

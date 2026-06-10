@@ -146,7 +146,7 @@
 
                                     {{-- Delete --}}
                                     <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" class="d-inline-block m-0"
-                                          onsubmit="return confirm('Permanently delete this driver account?');">
+                                          data-confirm="Permanently delete this driver account?">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-premium-delete">
@@ -495,7 +495,7 @@ html[data-admin-theme="light"] .btn-close-track {
 
 @push('scripts')
 <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}"></script>
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     'use strict';
 

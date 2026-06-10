@@ -369,7 +369,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
     </div>
     <div class="button-group">
         <button type="button" class="btn btn-danger"
-                onclick="if(confirm('Permanently delete this driver account?'))document.getElementById('delete-driver-form').submit();">
+                data-confirm="Permanently delete this driver account?" data-submit-form="delete-driver-form">
             <i class="bi bi-trash" style="margin-right:6px;"></i> Delete
         </button>
         <a href="{{ route('admin.drivers.index') }}" class="btn btn-outline-light">Cancel</a>
@@ -388,7 +388,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
 
 @push('scripts')
 <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}"></script>
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 $(function () {
     'use strict';
 

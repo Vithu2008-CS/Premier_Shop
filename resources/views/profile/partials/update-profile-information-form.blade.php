@@ -32,12 +32,12 @@
                 <label for="profile_photo" class="avatar-upload-overlay d-flex align-items-center justify-content-center" title="Upload Photo">
                     <i class="bi bi-camera-fill text-white fs-5"></i>
                 </label>
-                <input type="file" name="profile_photo" id="profile_photo" class="d-none" accept="image/*" onchange="previewImage(this)">
+                <input type="file" name="profile_photo" id="profile_photo" class="d-none" accept="image/*" data-on="change" data-call="previewImage" data-args="[&quot;$el&quot;]">
             </div>
             <div>
                 <h6 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Profile Photo</h6>
                 <p class="text-muted small mb-2">Upload a professional avatar. Allowed formats: PNG, JPG, GIF. Max 2MB.</p>
-                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="document.getElementById('profile_photo').click()">
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" data-trigger-click="profile_photo">
                     Choose Photo
                 </button>
             </div>
@@ -109,7 +109,7 @@
         </div>
     </form>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();

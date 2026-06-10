@@ -210,7 +210,7 @@
 <form id="item-remove-form" method="POST" style="display:none;">@csrf @method('DELETE')</form>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function() {
     const selectAll = document.getElementById('selectAll');
     const itemCheckboxes = document.querySelectorAll('.item-checkbox');

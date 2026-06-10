@@ -194,7 +194,7 @@ html[data-admin-theme="dark"] .coupon-table-row {
                                             <i class="bi bi-pencil mr-2 text-primary" style="margin-right: 6px;"></i> Edit
                                         </a>
                                         <div class="dropdown-divider" style="opacity: 0.08;"></div>
-                                        <form action="{{ route('admin.coupons.destroy', $coupon) }}" method="POST" onsubmit="return confirm('Truly delete this coupon?')">
+                                        <form action="{{ route('admin.coupons.destroy', $coupon) }}" method="POST" data-confirm="Truly delete this coupon?">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="dropdown-item d-flex align-items-center text-danger py-2 rounded-2">
                                                 <i class="bi bi-trash mr-2" style="margin-right: 6px;"></i> Delete
@@ -242,7 +242,7 @@ html[data-admin-theme="dark"] .coupon-table-row {
                                         <i class="bi bi-pencil mr-2 text-primary" style="margin-right: 6px;"></i> Edit
                                     </a>
                                     <div class="dropdown-divider" style="opacity: 0.08;"></div>
-                                    <form action="{{ route('admin.coupons.destroy', $coupon) }}" method="POST" onsubmit="return confirm('Truly delete this coupon?')">
+                                    <form action="{{ route('admin.coupons.destroy', $coupon) }}" method="POST" data-confirm="Truly delete this coupon?">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="dropdown-item d-flex align-items-center text-danger py-2 rounded-2">
                                             <i class="bi bi-trash mr-2" style="margin-right: 6px;"></i> Delete

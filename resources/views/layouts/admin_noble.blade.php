@@ -23,6 +23,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - Admin Dashboard</title>
+    <script src="{{ asset('js/csp-shim.js') }}" defer></script>
     
     <!-- core:css -->
     <link rel="stylesheet" href="{{ asset('admin_assets/vendors/core/core.css') }}">
@@ -39,7 +40,7 @@
     <!-- endinject -->
     
     {{-- Pre-render Theme Logic & Background to prevent Flash of Unstyled Content (FOUC) --}}
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         (function() {
             const savedTheme = localStorage.getItem('admin_theme') || 'light';
             document.documentElement.setAttribute('data-admin-theme', savedTheme);
@@ -405,7 +406,7 @@
     <!-- endinject -->
 
     <!-- custom js for this page -->
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         $(function() {
             if ($('i[data-feather]').length > 0) {
                 feather.replace();
@@ -491,7 +492,7 @@
                                 data.products.forEach(p => {
                                     searchResults.append(`
                                         <a href="${p.url}" class="omni-search-item">
-                                            <img src="${p.image}" class="omni-search-thumb" onerror="this.onerror=null; this.src='/admin_assets/images/placeholder.png'">
+                                            <img src="${p.image}" class="omni-search-thumb" data-fallback-src="/admin_assets/images/placeholder.png">
                                             <div class="flex-grow-1">
                                                 <div class="font-weight-bold" style="font-size: 0.82rem; line-height: 1.2;">${p.name}</div>
                                                 <div class="small text-muted" style="font-size: 0.72rem; margin-top: 2px;">Stock: ${p.stock} units</div>
