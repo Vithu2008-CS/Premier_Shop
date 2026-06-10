@@ -53,12 +53,12 @@
       </li>
       <li class="nav-item dropdown nav-profile">
         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <img src="{{ Auth::user()->profile_photo_url }}" onerror="this.onerror=null; this.src='{{ asset('admin_assets/images/user.png') }}'" alt="profile">
+          <img src="{{ Auth::user()->profile_photo_url }}" data-fallback-src="{{ asset('admin_assets/images/user.png') }}" alt="profile">
         </a>
         <div class="dropdown-menu" aria-labelledby="profileDropdown">
           <div class="dropdown-header d-flex flex-column align-items-center">
             <div class="figure mb-3">
-              <img src="{{ Auth::user()->profile_photo_url }}" onerror="this.onerror=null; this.src='{{ asset('admin_assets/images/user.png') }}'" alt="">
+              <img src="{{ Auth::user()->profile_photo_url }}" data-fallback-src="{{ asset('admin_assets/images/user.png') }}" alt="">
             </div>
             <div class="info text-center">
               <p class="name font-weight-bold mb-0">{{ Auth::user()->name }}</p>
@@ -80,7 +80,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="javascript:;" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <a href="#" data-prevent class="nav-link" data-submit-form="logout-form">
                   <i data-feather="log-out"></i>
                   <span>Log Out</span>
                 </a>

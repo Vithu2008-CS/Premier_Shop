@@ -54,7 +54,7 @@
                         <div class="d-flex align-items-center gap-3" style="min-width:0;flex:1;overflow:hidden;">
                             <img src="{{ $item->product->first_image }}" alt=""
                                  style="width: 60px; height: 60px; object-fit: cover; border-radius: 12px; flex-shrink:0;"
-                                 class="shadow-sm" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
+                                 class="shadow-sm" data-fallback-src="/images/placeholder-product.png">
                             <div style="min-width:0;">
                                 <h6 class="fw-bold mb-1 text-truncate">{{ $item->product->name }}</h6>
                                 <p class="text-muted small mb-0">Qty: {{ $item->quantity }} × £{{ number_format($item->price, 2) }}</p>
@@ -246,7 +246,7 @@
                             </h5>
                             
                             <div class="polaroid-wrapper p-3 bg-white border shadow-sm rounded-3 cursor-pointer transition-all duration-300 hover-up d-inline-block w-100" 
-                                 onclick="openProofLightbox('{{ Storage::url($order->delivery_proof) }}')"
+                                 data-call="openProofLightbox" data-args="[&quot;{{ Storage::url($order->delivery_proof) }}&quot;]"
                                  style="border-color: #E2E8F0 !important;">
                                 <div class="position-relative overflow-hidden rounded-2" style="aspect-ratio: 4/3; background: #F8FAFC;">
                                     <img src="{{ Storage::url($order->delivery_proof) }}" 
@@ -266,7 +266,7 @@
 
                     <!-- Lightbox Modal Container -->
                     <div id="proofLightbox" class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-95 d-none align-items-center justify-content-center" 
-                         style="z-index: 9999; backdrop-filter: blur(8px);" onclick="closeProofLightbox()">
+                         style="z-index: 9999; backdrop-filter: blur(8px);" data-call="closeProofLightbox">
                         <div class="position-absolute top-0 end-0 p-4">
                             <button type="button" class="btn-close btn-close-white fs-4" aria-label="Close"></button>
                         </div>
@@ -276,7 +276,7 @@
                         </div>
                     </div>
 
-                    <script>
+                    <script nonce="{{ Vite::cspNonce() }}">
                         function openProofLightbox(url) {
                             document.getElementById('lightboxImage').src = url;
                             document.getElementById('proofLightbox').classList.remove('d-none');
@@ -301,7 +301,7 @@
                 </style>
                 
                 <!-- Google Maps delivery route and courier animation -->
-                <script>
+                <script nonce="{{ Vite::cspNonce() }}">
                     document.addEventListener('DOMContentLoaded', function () {
                         if (typeof google === 'undefined' || !google.maps) return;
 

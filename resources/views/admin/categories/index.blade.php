@@ -39,7 +39,7 @@
             </thead>
             <tbody>
               @forelse($categories as $category)
-                <tr class="category-row-btn align-middle" onclick="window.location='{{ route('admin.categories.edit', $category) }}'">
+                <tr class="category-row-btn align-middle" data-href="{{ route('admin.categories.edit', $category) }}">
                   <td>
                     @if($category->image)
                         <img src="{{ $category->image }}" class="wd-40 ht-40 rounded" style="object-fit: cover;" alt="category">
@@ -62,8 +62,8 @@
                   <td>
                     <span class="badge badge-light-info">{{ $category->products_count }} Products</span>
                   </td>
-                  <td class="text-right" onclick="event.stopPropagation();">
-                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?');" class="d-inline-block">
+                  <td class="text-right" data-stop>
+                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" data-confirm="Delete this category?" class="d-inline-block">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1.5 font-weight-bold" style="transition: all 0.2s ease;">

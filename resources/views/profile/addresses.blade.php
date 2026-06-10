@@ -24,7 +24,7 @@
             <h2 class="mb-0 fw-bold">My Addresses</h2>
         </div>
         <div class="col-auto">
-            <button class="btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addressModal" onclick="resetForm()">
+            <button class="btn btn-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addressModal" data-call="resetForm">
                 <i class="bi bi-plus-circle me-1"></i> Add New Address
             </button>
         </div>
@@ -44,7 +44,7 @@
             </div>
             <h5>No addresses saved yet</h5>
             <p class="text-muted mb-4">Save your delivery addresses for a faster checkout experience.</p>
-            <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addressModal" onclick="resetForm()">
+            <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addressModal" data-call="resetForm">
                 Add an Address
             </button>
         </div>
@@ -80,10 +80,10 @@
                             @endif
                             
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-light rounded-circle" onclick='editAddress(@json($address))' data-bs-toggle="modal" data-bs-target="#addressModal">
+                                <button class="btn btn-sm btn-light rounded-circle" data-call="editAddress" data-args="{{ json_encode([$address]) }}" data-bs-toggle="modal" data-bs-target="#addressModal">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form action="{{ route('addresses.destroy', $address) }}" method="POST" class="m-0" onsubmit="return confirm('Delete this address?');">
+                                <form action="{{ route('addresses.destroy', $address) }}" method="POST" class="m-0" data-confirm="Delete this address?">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle">
                                         <i class="bi bi-trash"></i>
@@ -151,7 +151,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     function resetForm() {
         document.getElementById('addressForm').action = "{{ route('addresses.store') }}";
         document.getElementById('formMethod').value = "POST";

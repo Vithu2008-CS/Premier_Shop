@@ -60,8 +60,8 @@
                     <div class="mb-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 border-bottom pb-3">
                         <h6 class="card-title mb-0">Assign Privileges</h6>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2.5" onclick="toggleAllPrivileges(true)">Select All</button>
-                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5" onclick="toggleAllPrivileges(false)">Clear All</button>
+                            <button type="button" class="btn btn-xs btn-outline-primary rounded-pill px-2.5" data-call="toggleAllPrivileges" data-args="[true]">Select All</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2.5" data-call="toggleAllPrivileges" data-args="[false]">Clear All</button>
                         </div>
                     </div>
                     
@@ -73,7 +73,7 @@
                         <div class="mb-4 permission-group-block">
                             <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                                 <h6 class="mb-0 text-muted font-weight-bold text-uppercase tx-12">{{ $group }}</h6>
-                                <button type="button" class="btn btn-xs btn-outline-light text-primary" onclick="toggleGroup(this, '{{ Str::slug($group) }}')">Select Group</button>
+                                <button type="button" class="btn btn-xs btn-outline-light text-primary" data-call="toggleGroup" data-args="[&quot;$el&quot;, &quot;{{ Str::slug($group) }}&quot;]">Select Group</button>
                             </div>
                             <div class="row">
                                 @foreach($groupPerms as $perm)
@@ -97,7 +97,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 function toggleGroup(btn, groupClass) {
     const checkboxes = document.querySelectorAll('.perm-' + groupClass);
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);

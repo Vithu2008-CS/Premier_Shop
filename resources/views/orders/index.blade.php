@@ -252,7 +252,7 @@
                                         <div class="order-product-thumbnail-group">
                                             @foreach($order->items->take(5) as $item)
                                                 <a href="{{ route('products.show', $item->product->slug) }}" class="order-product-thumbnail shadow-sm" title="{{ $item->product->name }}">
-                                                    <img src="{{ $item->product->first_image }}" alt="" onerror="this.onerror=null; this.src='/images/placeholder-product.png'">
+                                                    <img src="{{ $item->product->first_image }}" alt="" data-fallback-src="/images/placeholder-product.png">
                                                 </a>
                                             @endforeach
                                             @if($order->items->count() > 5)

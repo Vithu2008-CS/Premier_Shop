@@ -64,7 +64,7 @@
 </section>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     // Auto-show modal if there's a validation error for user deletion
     document.addEventListener('DOMContentLoaded', function() {
         @if($errors->userDeletion->isNotEmpty())

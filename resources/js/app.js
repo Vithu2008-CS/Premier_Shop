@@ -145,7 +145,7 @@ function initSearch(inputId, suggestionsId) {
 
                 suggestions.innerHTML = data.map(item => `
                     <a href="${item.url}" class="suggest-item">
-                        <img src="${item.image}" alt="" class="suggest-img" loading="lazy" decoding="async" onerror="this.src='/images/placeholder-product.png'">
+                        <img src="${item.image}" alt="" class="suggest-img" loading="lazy" decoding="async" data-fallback-src="/images/placeholder-product.png">
                         <div class="suggest-info">
                             <div class="suggest-name">${item.name}</div>
                             <div class="suggest-meta">${item.category || ''} · ${item.price}</div>

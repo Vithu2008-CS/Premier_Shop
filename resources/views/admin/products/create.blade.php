@@ -964,7 +964,7 @@ html[data-admin-theme="dark"] .form-check-label {
 }
 </style>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function() {
     // Current images list loaded from backend
     const inputJson = document.getElementById('product_images_json');
@@ -1121,18 +1121,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         </span>
                     </div>
                     <div class="media-sort-actions">
-                        <button type="button" class="media-btn-circle ${isMain ? 'btn-star-active' : 'btn-star-inactive'}" title="${isMain ? 'Primary Storefront Image (Priority #1)' : 'Set as Primary Storefront Image'}" onclick="setImageAsMain(${i})">
+                        <button type="button" class="media-btn-circle ${isMain ? 'btn-star-active' : 'btn-star-inactive'}" title="${isMain ? 'Primary Storefront Image (Priority #1)' : 'Set as Primary Storefront Image'}" data-call="setImageAsMain" data-args="[${i}]">
                             <i class="bi bi-star-fill" style="font-size: 0.75rem;"></i>
                         </button>
                         <div class="d-flex gap-1">
-                            <button type="button" class="media-btn-circle" title="Move Up" ${isMain ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''} onclick="moveImageOrder(${i}, 'up')">
+                            <button type="button" class="media-btn-circle" title="Move Up" ${isMain ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''} data-call="moveImageOrder" data-args="[${i}, &quot;up&quot;]">
                                 <i class="bi bi-arrow-left-short" style="font-size: 1rem;"></i>
                             </button>
-                            <button type="button" class="media-btn-circle" title="Move Down" ${i === imagesList.length - 1 ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''} onclick="moveImageOrder(${i}, 'down')">
+                            <button type="button" class="media-btn-circle" title="Move Down" ${i === imagesList.length - 1 ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''} data-call="moveImageOrder" data-args="[${i}, &quot;down&quot;]">
                                 <i class="bi bi-arrow-right-short" style="font-size: 1rem;"></i>
                             </button>
                         </div>
-                        <button type="button" class="media-btn-circle btn-delete" title="Delete Image" onclick="deleteImageItem(${i})">
+                        <button type="button" class="media-btn-circle btn-delete" title="Delete Image" data-call="deleteImageItem" data-args="[${i}]">
                             <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
                         </button>
                     </div>
@@ -1195,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 imagesList.forEach((url, idx) => {
                     const activeClass = idx === 0 ? 'active' : '';
                     const thumbHTML = `
-                        <div class="device-thumb-dot ${activeClass}" onclick="changePreviewActiveSlide(${idx})">
+                        <div class="device-thumb-dot ${activeClass}" data-call="changePreviewActiveSlide" data-args="[${idx}]">
                             <img src="${url}">
                         </div>
                     `;

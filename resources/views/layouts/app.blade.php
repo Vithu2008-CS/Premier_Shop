@@ -34,14 +34,15 @@
     <meta name="twitter:title" content="@yield('title', 'Premier Shop — Quality Products')">
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
+    <script src="{{ asset('js/csp-shim.js') }}" defer></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" data-media-onload="all">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" data-media-onload="all">
     @stack('seo')
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
@@ -549,7 +550,7 @@
     </style>
     
     {{-- Pre-render Theme Logic --}}
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
@@ -610,7 +611,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request('category') ? 'active' : '' }}" href="javascript:void(0)"
+                        <a class="nav-link {{ request('category') ? 'active' : '' }}" href="#" data-prevent
                             id="categoryMenuTrigger">
                             <i class="bi bi-grid-3x3-gap me-1"></i>Categories
                         </a>
@@ -991,7 +992,7 @@
     </div>
 
     @push('scripts')
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('submit', function(e) {
         const form = e.target;
         
@@ -1138,7 +1139,7 @@
     }
     </script>
     @endpush
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         document.addEventListener('DOMContentLoaded', function () {
             const navbar = document.querySelector('.navbar-premium');
             const themeToggle = document.getElementById('themeToggle');
@@ -1262,7 +1263,7 @@
                 const currentPath = window.location.pathname;
                 document.querySelectorAll('.dock-item').forEach(el => {
                     const href = el.getAttribute('href');
-                    if (href && href !== 'javascript:void(0)') {
+                    if (href && href !== 'javascript:void(0)' && href !== '#') {
                         try {
                             const urlObj = new URL(href, window.location.origin);
                             if (currentPath === urlObj.pathname) {
@@ -1313,7 +1314,7 @@
                 </div>
                 <span>Home</span>
             </a>
-            <a href="javascript:void(0)" id="dockOpenCategories" class="dock-item">
+            <a href="#" data-prevent id="dockOpenCategories" class="dock-item">
                 <div class="dock-icon-wrapper">
                     <i class="bi bi-grid-3x3-gap"></i>
                 </div>
@@ -1372,7 +1373,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         document.addEventListener('DOMContentLoaded', function() {
             const notificationMenuTrigger = document.getElementById('notificationMenuTrigger');
             const notificationListContent = document.getElementById('notificationListContent');
@@ -1715,7 +1716,7 @@
         </style>
         
         <!-- Assistant Dialog System -->
-        <script>
+        <script nonce="{{ Vite::cspNonce() }}">
             document.addEventListener('DOMContentLoaded', function() {
                 const trigger = document.getElementById('premier-assist-trigger');
                 const chatWindow = document.getElementById('premier-assist-chat');
@@ -2021,8 +2022,8 @@
                                             🎟️ Storewide Discount${minStr}
                                         </div>
                                         <div class="d-flex gap-1.5 mt-2 justify-content-end">
-                                            <button onclick="copyCoupon('${escapeHTML(cp.code)}', this)" class="btn btn-outline-secondary btn-xs rounded-pill px-2.5 py-1 text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:600; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);"><i class="bi bi-copy"></i> Copy</button>
-                                            ${isCheckoutPage ? `<button onclick="applyCouponDirect('${escapeHTML(cp.code)}', this)" class="btn btn-primary btn-xs rounded-pill px-2.5 py-1 text-white text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:700; background: var(--ps-gradient); border:none;"><i class="bi bi-lightning-fill"></i> Apply</button>` : ''}
+                                            <button data-call="copyCoupon" data-args="[&quot;${escapeHTML(cp.code)}&quot;, &quot;$el&quot;]" class="btn btn-outline-secondary btn-xs rounded-pill px-2.5 py-1 text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:600; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);"><i class="bi bi-copy"></i> Copy</button>
+                                            ${isCheckoutPage ? `<button data-call="applyCouponDirect" data-args="[&quot;${escapeHTML(cp.code)}&quot;, &quot;$el&quot;]" class="btn btn-primary btn-xs rounded-pill px-2.5 py-1 text-white text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:700; background: var(--ps-gradient); border:none;"><i class="bi bi-lightning-fill"></i> Apply</button>` : ''}
                                         </div>
                                     </div>`;
                             });
@@ -2162,13 +2163,13 @@
     {{-- Glassmorphic Interactive Mini-Cart Side Drawer --}}
     @auth
         @if(!auth()->user()->isDriver())
-            <div class="minicart-backdrop" id="miniCartBackdrop" onclick="toggleMiniCart(false)"></div>
+            <div class="minicart-backdrop" id="miniCartBackdrop" data-call="toggleMiniCart" data-args="[false]"></div>
             <div class="minicart-drawer" id="miniCartDrawer">
                 <div class="minicart-header">
                     <h5 class="fw-bold mb-0 d-flex align-items-center" style="font-family: 'Outfit', sans-serif;">
                         <i class="bi bi-bag-heart-fill me-2 text-primary" style="font-size:1.25rem;"></i> Shopping Basket
                     </h5>
-                    <button class="btn-close" onclick="toggleMiniCart(false)"></button>
+                    <button class="btn-close" data-call="toggleMiniCart" data-args="[false]"></button>
                 </div>
                 <div class="minicart-body" id="miniCartBody">
                     {{-- Dynamically loaded via AJAX --}}
@@ -2178,7 +2179,7 @@
                 </div>
             </div>
 
-            <script>
+            <script nonce="{{ Vite::cspNonce() }}">
                 // Toggle Mini-Cart Drawer Visibility
                 function toggleMiniCart(show = true) {
                     const drawer = document.getElementById('miniCartDrawer');
@@ -2227,11 +2228,11 @@
                                             
                                             <div class="d-flex align-items-center mt-2 justify-content-between">
                                                 <div class="qty-stepper d-flex align-items-center border rounded-pill p-0.5" style="border-color: var(--ps-border) !important; background: var(--ps-surface-bg);">
-                                                    <button type="button" class="btn qty-minus rounded-circle p-0 d-flex align-items-center justify-content-center" style="width:22px; height:22px; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);" onclick="updateMiniCartQty(${item.id}, ${item.quantity - 1})">−</button>
+                                                    <button type="button" class="btn qty-minus rounded-circle p-0 d-flex align-items-center justify-content-center" style="width:22px; height:22px; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);" data-call="updateMiniCartQty" data-args="[${item.id}, ${item.quantity - 1}]">−</button>
                                                     <span class="px-2.5 small fw-bold" style="min-width: 22px; text-align: center;">${item.quantity}</span>
-                                                    <button type="button" class="btn qty-plus rounded-circle p-0 d-flex align-items-center justify-content-center" style="width:22px; height:22px; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);" onclick="updateMiniCartQty(${item.id}, ${item.quantity + 1})">+</button>
+                                                    <button type="button" class="btn qty-plus rounded-circle p-0 d-flex align-items-center justify-content-center" style="width:22px; height:22px; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);" data-call="updateMiniCartQty" data-args="[${item.id}, ${item.quantity + 1}]">+</button>
                                                 </div>
-                                                <button type="button" class="btn btn-link text-muted p-0 border-0" onclick="removeMiniCartItem(${item.id})" title="Remove item"><i class="bi bi-trash" style="font-size:0.95rem;"></i></button>
+                                                <button type="button" class="btn btn-link text-muted p-0 border-0" data-call="removeMiniCartItem" data-args="[${item.id}]" title="Remove item"><i class="bi bi-trash" style="font-size:0.95rem;"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -2312,7 +2313,7 @@
                             `;
                             footer.innerHTML = `
                                 <div class="d-grid gap-2">
-                                    <a href="{{ route('products.index') }}" class="btn btn-primary rounded-pill py-2.5 fw-bold" onclick="toggleMiniCart(false)">
+                                    <a href="{{ route('products.index') }}" class="btn btn-primary rounded-pill py-2.5 fw-bold" data-call="toggleMiniCart" data-args="[false]">
                                         Browse Catalogue
                                     </a>
                                 </div>

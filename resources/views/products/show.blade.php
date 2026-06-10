@@ -53,7 +53,7 @@
                         @if(count($product->images) > 1)
                             <div class="d-flex gap-2 mt-3 overflow-auto pb-2 custom-scrollbar justify-content-center">
                                 @foreach($product->images as $i => $img)
-                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" onclick="bootstrap.Carousel.getOrCreateInstance('#productCarousel').to({{ $i }})" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; opacity: 0.6; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--ps-border);">
+                                    <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" data-call="goToProductSlide" data-args="[{{ $i }}]" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; opacity: 0.6; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--ps-border);">
                                         <img src="{{ $img }}" class="w-100 h-100" style="object-fit: cover;" alt="Thumb {{ $i + 1 }}">
                                     </div>
                                 @endforeach
@@ -507,3 +507,12 @@
     @endif
 </section>
 @endsection
+
+@push('scripts')
+<script nonce="{{ Vite::cspNonce() }}">
+    // CSP shim target for the thumbnail strip — jumps the carousel to a slide.
+    function goToProductSlide(i) {
+        bootstrap.Carousel.getOrCreateInstance('#productCarousel').to(i);
+    }
+</script>
+@endpush

@@ -84,7 +84,7 @@
                                     @csrf @method('PATCH')
                                     <input type="hidden" name="status" value="{{ $s }}">
                                 </form>
-                                <a class="dropdown-item fw-bold py-2 px-3 text-capitalize {{ $order->status === $s ? 'active-status-item' : '' }}" href="#" onclick="event.preventDefault(); document.getElementById('update-status-{{ $order->id }}-{{ $s }}').submit();">
+                                <a class="dropdown-item fw-bold py-2 px-3 text-capitalize {{ $order->status === $s ? 'active-status-item' : '' }}" href="#" data-submit-form="update-status-{{ $order->id }}-{{ $s }}">
                                     {{ $s }}
                                 </a>
                             @endforeach
@@ -93,7 +93,7 @@
                   </td>
                   <td class="text-muted align-middle" style="font-size: 0.8rem;">{{ $order->created_at->format('d M Y') }}</td>
                   <td class="text-right align-middle">
-                    <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?');">
+                    <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" data-confirm="Are you sure you want to delete this order?">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger btn-icon btn-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px; padding: 0;" title="Delete Order">
                             <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>

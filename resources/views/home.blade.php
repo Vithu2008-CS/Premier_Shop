@@ -725,7 +725,7 @@
          SCRIPTS — Parallax + Scroll Reveal + Counter
     ═══════════════════════════════════════════════════════════ --}}
     @push('scripts')
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function() {
 
         // ── Parallax Hero ──────────────────────────────────────

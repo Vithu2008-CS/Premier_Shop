@@ -59,7 +59,7 @@
                             @endif
                         </td>
                         <td class="text-right pr-4 align-middle">
-                            <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to permanently delete this customer review?');">
+                            <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline-block" data-confirm="Are you sure you want to permanently delete this customer review?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-premium-delete">

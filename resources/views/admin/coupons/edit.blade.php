@@ -339,7 +339,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
     </div>
     <div class="button-group">
         <button type="button" class="btn btn-danger"
-                onclick="if(confirm('Permanently delete this coupon?'))document.getElementById('delete-coupon-form').submit();">
+                data-confirm="Permanently delete this coupon?" data-submit-form="delete-coupon-form">
             <i class="bi bi-trash" style="margin-right:6px;"></i> Delete
         </button>
         <a href="{{ route('admin.coupons.index') }}" class="btn btn-outline-light">Cancel</a>
@@ -357,7 +357,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 $(function() {
     'use strict';
 

@@ -197,7 +197,7 @@
                     
                     <div class="evidence-grid">
                         @foreach($photos as $photo)
-                        <div class="evidence-thumb-container" onclick="openLightbox('{{ asset('storage/' . $photo) }}')">
+                        <div class="evidence-thumb-container" data-call="openLightbox" data-args="[&quot;{{ asset('storage/' . $photo) }}&quot;]">
                             <img src="{{ asset('storage/' . $photo) }}" alt="Evidence Thumbnail" class="evidence-thumb">
                             <div class="evidence-thumb-overlay">
                                 <i class="bi bi-zoom-in text-white" style="font-size: 1.1rem;"></i>
@@ -222,7 +222,7 @@
         </div>
     </div>
     <div class="button-group">
-        <button type="button" class="btn btn-danger" onclick="event.preventDefault(); if(confirm('Are you sure you want to permanently delete this return request? This action cannot be undone.')) document.getElementById('delete-return-form').submit();">
+        <button type="button" class="btn btn-danger" data-confirm="Are you sure you want to permanently delete this return request? This action cannot be undone." data-submit-form="delete-return-form">
             <i class="bi bi-trash mr-1"></i> Delete
         </button>
         <a href="{{ route('admin.returns.index') }}" class="btn btn-outline-light">
@@ -241,9 +241,9 @@
 </form>
 
 {{-- Premium Lightbox Overlay Modal --}}
-<div id="premiumLightbox" class="premium-lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close-btn" onclick="closeLightbox()">&times;</button>
-    <div class="lightbox-content-wrapper" onclick="event.stopPropagation()">
+<div id="premiumLightbox" class="premium-lightbox" data-call="closeLightbox">
+    <button class="lightbox-close-btn" data-call="closeLightbox">&times;</button>
+    <div class="lightbox-content-wrapper" data-stop>
         <img id="lightboxImage" src="" alt="Expanded Evidence" class="lightbox-img">
     </div>
 </div>
@@ -629,7 +629,7 @@ html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
 </style>
 
 {{-- Premium Lightbox DOM Handler Script --}}
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 function openLightbox(src) {
     const lightbox = document.getElementById('premiumLightbox');
     const img = document.getElementById('lightboxImage');

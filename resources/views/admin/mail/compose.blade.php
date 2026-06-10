@@ -124,7 +124,7 @@
 @endpush
 
 @push('scripts')
-  <script>
+  <script nonce="{{ Vite::cspNonce() }}">
     $(function () {
       'use strict';
 

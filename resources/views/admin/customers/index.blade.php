@@ -87,12 +87,12 @@
                     </span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right shadow-sm border-0 p-1" aria-labelledby="sortDropdown" style="border-radius: 12px !important; border: 1.5px solid rgba(0,0,0,0.05) !important; font-family: 'Inter', sans-serif;">
-                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'newest' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitSort('newest');" style="border-radius: 8px !important; font-weight: 600;">Joined Date: Newest</a>
-                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'oldest' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitSort('oldest');" style="border-radius: 8px !important; font-weight: 600;">Joined Date: Oldest</a>
-                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'orders_desc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitSort('orders_desc');" style="border-radius: 8px !important; font-weight: 600;">Most Orders</a>
-                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'orders_asc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitSort('orders_asc');" style="border-radius: 8px !important; font-weight: 600;">Least Orders</a>
-                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'spent_desc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitSort('spent_desc');" style="border-radius: 8px !important; font-weight: 600;">Most Spent</a>
-                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'spent_asc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitSort('spent_asc');" style="border-radius: 8px !important; font-weight: 600;">Least Spent</a>
+                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'newest' ? 'active' : '' }}" href="#" data-prevent data-call="submitSort" data-args="[&quot;newest&quot;]" style="border-radius: 8px !important; font-weight: 600;">Joined Date: Newest</a>
+                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'oldest' ? 'active' : '' }}" href="#" data-prevent data-call="submitSort" data-args="[&quot;oldest&quot;]" style="border-radius: 8px !important; font-weight: 600;">Joined Date: Oldest</a>
+                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'orders_desc' ? 'active' : '' }}" href="#" data-prevent data-call="submitSort" data-args="[&quot;orders_desc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Most Orders</a>
+                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'orders_asc' ? 'active' : '' }}" href="#" data-prevent data-call="submitSort" data-args="[&quot;orders_asc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Least Orders</a>
+                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'spent_desc' ? 'active' : '' }}" href="#" data-prevent data-call="submitSort" data-args="[&quot;spent_desc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Most Spent</a>
+                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ $sortBy === 'spent_asc' ? 'active' : '' }}" href="#" data-prevent data-call="submitSort" data-args="[&quot;spent_asc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Least Spent</a>
                 </div>
             </div>
         </form>
@@ -167,7 +167,7 @@
                             {{ $customer->created_at->format('d M Y') }}
                         </td>
                         <td class="text-right pr-4 align-middle">
-                            <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to permanently delete this customer? This will also remove their associated profile records. This action cannot be undone.');">
+                            <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST" class="d-inline-block" data-confirm="Are you sure you want to permanently delete this customer? This will also remove their associated profile records. This action cannot be undone.">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-premium-delete">
@@ -442,7 +442,7 @@ html[data-admin-theme="dark"] .dropdown-menu .dropdown-item.active {
 </style>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     function submitSort(val) {
         document.getElementById('sort_by_input').value = val;
         document.getElementById('sort-form').submit();

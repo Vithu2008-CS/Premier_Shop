@@ -398,7 +398,7 @@
                     <div class="item-row">
                         <div class="item-thumb">
                             @if($item->product->images && count($item->product->images) > 0)
-                                <img src="{{ $item->product->images[0] }}" alt="" loading="lazy" onerror="this.style.display='none'">
+                                <img src="{{ $item->product->images[0] }}" alt="" loading="lazy" data-hide-on-error>
                             @else
                                 <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:rgba(255,255,255,0.2);">
                                     <i class="bi bi-image"></i>

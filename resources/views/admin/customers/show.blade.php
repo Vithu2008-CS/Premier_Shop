@@ -151,12 +151,12 @@
                                         </span>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right shadow-sm border-0 p-1" aria-labelledby="purchaseSortDropdown" style="border-radius: 12px !important; border: 1.5px solid rgba(0,0,0,0.05) !important; font-family: 'Inter', sans-serif;">
-                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'newest' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitPurchaseSort('newest');" style="border-radius: 8px !important; font-weight: 600;">Date: Newest</a>
-                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'oldest' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitPurchaseSort('oldest');" style="border-radius: 8px !important; font-weight: 600;">Date: Oldest</a>
-                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'qty_desc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitPurchaseSort('qty_desc');" style="border-radius: 8px !important; font-weight: 600;">Most Quantity</a>
-                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'qty_asc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitPurchaseSort('qty_asc');" style="border-radius: 8px !important; font-weight: 600;">Least Quantity</a>
-                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'total_desc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitPurchaseSort('total_desc');" style="border-radius: 8px !important; font-weight: 600;">Most Line Total</a>
-                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'total_asc' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); submitPurchaseSort('total_asc');" style="border-radius: 8px !important; font-weight: 600;">Least Line Total</a>
+                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'newest' ? 'active' : '' }}" href="#" data-prevent data-call="submitPurchaseSort" data-args="[&quot;newest&quot;]" style="border-radius: 8px !important; font-weight: 600;">Date: Newest</a>
+                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'oldest' ? 'active' : '' }}" href="#" data-prevent data-call="submitPurchaseSort" data-args="[&quot;oldest&quot;]" style="border-radius: 8px !important; font-weight: 600;">Date: Oldest</a>
+                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'qty_desc' ? 'active' : '' }}" href="#" data-prevent data-call="submitPurchaseSort" data-args="[&quot;qty_desc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Most Quantity</a>
+                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'qty_asc' ? 'active' : '' }}" href="#" data-prevent data-call="submitPurchaseSort" data-args="[&quot;qty_asc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Least Quantity</a>
+                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'total_desc' ? 'active' : '' }}" href="#" data-prevent data-call="submitPurchaseSort" data-args="[&quot;total_desc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Most Line Total</a>
+                                        <a class="dropdown-item rounded-3 py-2 px-3 small {{ $purchaseSort === 'total_asc' ? 'active' : '' }}" href="#" data-prevent data-call="submitPurchaseSort" data-args="[&quot;total_asc&quot;]" style="border-radius: 8px !important; font-weight: 600;">Least Line Total</a>
                                     </div>
                                 </div>
                             </form>
@@ -289,8 +289,8 @@
                                     </span>
                                 </button>
                                 <div class="dropdown-menu w-100 shadow-sm border-0 p-1" aria-labelledby="scopeDropdown" style="border-radius: 12px !important; border: 1.5px solid rgba(0,0,0,0.05) !important;">
-                                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ ($customer->offer_scope ?? 'all') === 'all' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); selectScope('all');" style="border-radius: 8px !important; font-weight: 600;">Entire Product Catalog</a>
-                                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ ($customer->offer_scope ?? 'all') === 'selected' ? 'active' : '' }}" href="#" onclick="event.preventDefault(); selectScope('selected');" style="border-radius: 8px !important; font-weight: 600;">Selected Products Only</a>
+                                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ ($customer->offer_scope ?? 'all') === 'all' ? 'active' : '' }}" href="#" data-prevent data-call="selectScope" data-args="[&quot;all&quot;]" style="border-radius: 8px !important; font-weight: 600;">Entire Product Catalog</a>
+                                    <a class="dropdown-item rounded-3 py-2 px-3 small {{ ($customer->offer_scope ?? 'all') === 'selected' ? 'active' : '' }}" href="#" data-prevent data-call="selectScope" data-args="[&quot;selected&quot;]" style="border-radius: 8px !important; font-weight: 600;">Selected Products Only</a>
                                 </div>
                             </div>
                         </div>
@@ -418,7 +418,7 @@
         </div>
     </div>
     <div class="button-group">
-        <button type="button" class="btn btn-danger" onclick="event.preventDefault(); if(confirm('Are you sure you want to permanently delete this customer? This action cannot be undone.')) document.getElementById('delete-customer-form').submit();">
+        <button type="button" class="btn btn-danger" data-confirm="Are you sure you want to permanently delete this customer? This action cannot be undone." data-submit-form="delete-customer-form">
             <i class="bi bi-trash mr-2"></i> Delete
         </button>
         <a href="{{ route('admin.customers.index') }}" class="btn btn-outline-light">
@@ -900,7 +900,7 @@ html[data-admin-theme="dark"] .premium-custom-checkbox input:checked ~ .checkmar
 </style>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 $(function() {
     // Toggle Selected Products checkbox container based on active hidden scope input
     function toggleProductList() {
