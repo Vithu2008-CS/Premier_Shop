@@ -64,7 +64,7 @@
             </thead>
             <tbody>
               @forelse($products as $product)
-                <tr class="product-row-btn align-middle" onclick="window.location='{{ route('admin.products.edit', $product) }}'">
+                <tr class="product-row-btn align-middle" data-href="{{ route('admin.products.edit', $product) }}">
                   <td>
                     <div class="d-flex align-items-center">
                         <div class="mr-3">
@@ -115,8 +115,8 @@
                         <span class="text-muted small">—</span>
                     @endif
                   </td>
-                  <td class="text-right" onclick="event.stopPropagation();">
-                      <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Truly delete this product?');" class="d-inline-block">
+                  <td class="text-right" data-stop>
+                      <form action="{{ route('admin.products.destroy', $product) }}" method="POST" data-confirm="Truly delete this product?" class="d-inline-block">
                           @csrf @method('DELETE')
                           <button type="submit" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1.5 font-weight-bold" style="transition: all 0.2s ease;">
                               <i data-feather="trash-2" class="wd-10 h-10 mr-1" style="width: 12px; height: 12px; vertical-align: -1px;"></i> Delete
@@ -170,7 +170,7 @@ html[data-admin-theme="dark"] .product-row-btn:hover .text-primary-hover {
 </style>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 $(document).ready(function() {
     const $searchInput = $('#adminSearchInput');
     const $suggestions = $('#adminSearchSuggestions');
@@ -207,7 +207,7 @@ $(document).ready(function() {
                         html += `
                             <a href="${item.url}" class="dropdown-item d-flex align-items-center py-2 border-bottom" style="border-color: rgba(0,0,0,0.05) !important; white-space: normal;">
                                 <div class="mr-3 flex-shrink-0">
-                                    <img src="${item.image}" class="rounded" style="width: 35px; height: 35px; object-fit: cover;" onerror="this.src='/images/placeholder-product.png'">
+                                    <img src="${item.image}" class="rounded" style="width: 35px; height: 35px; object-fit: cover;" data-fallback-src="/images/placeholder-product.png">
                                 </div>
                                 <div class="flex-grow-1 min-width-0">
                                     <div class="text-truncate font-weight-bold mb-0" style="font-size: 0.85rem; line-height: 1.2;">${item.name}</div>

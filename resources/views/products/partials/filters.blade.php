@@ -35,15 +35,17 @@
                 style="max-height: 300px; overflow-y: auto;">
                 <li>
                     <a class="dropdown-item text-wrap cursor-pointer {{ !request('category') ? 'active' : '' }}"
-                        href="javascript:void(0)"
-                        onclick="document.getElementById('categoryInput{{ $isMobile ? 'Mob' : '' }}').value=''; document.getElementById('categoryDropdownBtn{{ $isMobile ? 'Mob' : '' }}').querySelector('span').innerText='All Categories';">All
+                        href="#" data-prevent
+                        data-call="filterSelect"
+                        data-args="{{ json_encode(['categoryInput'.($isMobile ? 'Mob' : ''), 'categoryDropdownBtn'.($isMobile ? 'Mob' : ''), '', 'All Categories']) }}">All
                         Categories</a>
                 </li>
                 @foreach(\App\Models\Category::withCount('products')->get() as $cat)
                     <li>
                         <a class="dropdown-item text-wrap cursor-pointer {{ request('category') == $cat->slug ? 'active' : '' }}"
-                            href="javascript:void(0)"
-                            onclick="document.getElementById('categoryInput{{ $isMobile ? 'Mob' : '' }}').value='{{ $cat->slug }}'; document.getElementById('categoryDropdownBtn{{ $isMobile ? 'Mob' : '' }}').querySelector('span').innerText='{{ addslashes($cat->name) }}';">
+                            href="#" data-prevent
+                            data-call="filterSelect"
+                            data-args="{{ json_encode(['categoryInput'.($isMobile ? 'Mob' : ''), 'categoryDropdownBtn'.($isMobile ? 'Mob' : ''), $cat->slug, $cat->name]) }}">
                             {{ $cat->name }} ({{ $cat->products_count }})
                         </a>
                     </li>
@@ -74,20 +76,24 @@
             <input type="hidden" name="sort" id="sortInput{{ $isMobile ? 'Mob' : '' }}" value="{{ $sort }}">
             <ul class="dropdown-menu w-100 shadow-sm border-0">
                 <li><a class="dropdown-item cursor-pointer {{ $sort == 'newest' ? 'active' : '' }}"
-                        href="javascript:void(0)"
-                        onclick="document.getElementById('sortInput{{ $isMobile ? 'Mob' : '' }}').value='newest'; document.getElementById('sortDropdownBtn{{ $isMobile ? 'Mob' : '' }}').querySelector('span').innerText='Newest First';">Newest
+                        href="#" data-prevent
+                        data-call="filterSelect"
+                        data-args="{{ json_encode(['sortInput'.($isMobile ? 'Mob' : ''), 'sortDropdownBtn'.($isMobile ? 'Mob' : ''), 'newest', 'Newest First']) }}">Newest
                         First</a></li>
                 <li><a class="dropdown-item cursor-pointer {{ $sort == 'price_low' ? 'active' : '' }}"
-                        href="javascript:void(0)"
-                        onclick="document.getElementById('sortInput{{ $isMobile ? 'Mob' : '' }}').value='price_low'; document.getElementById('sortDropdownBtn{{ $isMobile ? 'Mob' : '' }}').querySelector('span').innerText='Price: Low → High';">Price:
+                        href="#" data-prevent
+                        data-call="filterSelect"
+                        data-args="{{ json_encode(['sortInput'.($isMobile ? 'Mob' : ''), 'sortDropdownBtn'.($isMobile ? 'Mob' : ''), 'price_low', 'Price: Low → High']) }}">Price:
                         Low → High</a></li>
                 <li><a class="dropdown-item cursor-pointer {{ $sort == 'price_high' ? 'active' : '' }}"
-                        href="javascript:void(0)"
-                        onclick="document.getElementById('sortInput{{ $isMobile ? 'Mob' : '' }}').value='price_high'; document.getElementById('sortDropdownBtn{{ $isMobile ? 'Mob' : '' }}').querySelector('span').innerText='Price: High → Low';">Price:
+                        href="#" data-prevent
+                        data-call="filterSelect"
+                        data-args="{{ json_encode(['sortInput'.($isMobile ? 'Mob' : ''), 'sortDropdownBtn'.($isMobile ? 'Mob' : ''), 'price_high', 'Price: High → Low']) }}">Price:
                         High → Low</a></li>
                 <li><a class="dropdown-item cursor-pointer {{ $sort == 'name' ? 'active' : '' }}"
-                        href="javascript:void(0)"
-                        onclick="document.getElementById('sortInput{{ $isMobile ? 'Mob' : '' }}').value='name'; document.getElementById('sortDropdownBtn{{ $isMobile ? 'Mob' : '' }}').querySelector('span').innerText='Name: A-Z';">Name:
+                        href="#" data-prevent
+                        data-call="filterSelect"
+                        data-args="{{ json_encode(['sortInput'.($isMobile ? 'Mob' : ''), 'sortDropdownBtn'.($isMobile ? 'Mob' : ''), 'name', 'Name: A-Z']) }}">Name:
                         A-Z</a></li>
             </ul>
         </div>
@@ -99,3 +105,11 @@
             All</a>
     </div>
 </form>
+
+<script nonce="{{ Vite::cspNonce() }}">
+    // CSP shim target for the category/sort dropdowns above.
+    window.filterSelect = window.filterSelect || function (inputId, btnId, value, label) {
+        document.getElementById(inputId).value = value;
+        document.getElementById(btnId).querySelector('span').innerText = label;
+    };
+</script>

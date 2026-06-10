@@ -402,7 +402,8 @@
                      class="pcard-img pcard-img-primary"
                      loading="lazy"
                      decoding="async"
-                     onerror="this.closest('.pcard-img-wrap').innerHTML='<div class=\'pcard-img-placeholder\'><i class=\'bi bi-image\'></i></div>'">
+                     data-error-html-target=".pcard-img-wrap"
+                     data-error-html='<div class="pcard-img-placeholder"><i class="bi bi-image"></i></div>'>
                 @if(count($product->images) > 1)
                     <img src="{{ $product->images[1] }}"
                          alt="{{ $product->name }}"

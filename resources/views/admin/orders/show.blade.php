@@ -256,7 +256,7 @@
                   </button>
                   <div class="dropdown-menu dropdown-menu-premium w-100 rounded-3 shadow border-0" aria-labelledby="orderStatusDropdownBtn" style="border-radius: 12px !important; margin-top: 4px; padding: 6px;">
                     @foreach(['pending','processing','shipped','delivered','cancelled'] as $s)
-                      <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2" data-value="{{ $s }}" onclick="updateCustomSelect('orderStatus', '{{ $s }}', '{{ ucfirst($s) }}')">
+                      <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2" data-value="{{ $s }}" data-call="updateCustomSelect" data-args="[&quot;orderStatus&quot;, &quot;{{ $s }}&quot;, &quot;{{ ucfirst($s) }}&quot;]">
                         {{ ucfirst($s) }}
                       </a>
                     @endforeach
@@ -280,8 +280,8 @@
                     <i class="bi bi-chevron-down text-muted small ml-2"></i>
                   </button>
                   <div class="dropdown-menu dropdown-menu-premium w-100 rounded-3 shadow border-0" aria-labelledby="paymentStatusDropdownBtn" style="border-radius: 12px !important; margin-top: 4px; padding: 6px;">
-                    <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2" data-value="pending" onclick="updateCustomSelect('paymentStatus', 'pending', 'Pending (Unpaid)')">Pending (Unpaid)</a>
-                    <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2" data-value="completed" onclick="updateCustomSelect('paymentStatus', 'completed', 'Completed (Paid)')">Completed (Paid)</a>
+                    <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2" data-value="pending" data-call="updateCustomSelect" data-args="[&quot;paymentStatus&quot;, &quot;pending&quot;, &quot;Pending (Unpaid)&quot;]">Pending (Unpaid)</a>
+                    <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2" data-value="completed" data-call="updateCustomSelect" data-args="[&quot;paymentStatus&quot;, &quot;completed&quot;, &quot;Completed (Paid)&quot;]">Completed (Paid)</a>
                   </div>
                 </div>
               </div>
@@ -397,11 +397,11 @@
                       <i class="bi bi-chevron-down text-muted small ml-2"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-premium w-100 rounded-3 shadow border-0" aria-labelledby="driverAssignmentDropdownBtn" style="border-radius: 12px !important; margin-top: 4px; padding: 6px; max-height: 250px; overflow-y: auto;">
-                      <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2 {{ !$order->driver_id ? 'active' : '' }}" data-value="" onclick="updateCustomSelect('driverAssignment', '', 'Choose active driver...')">
+                      <a class="dropdown-item d-flex align-items-center py-2 px-3 cursor-pointer rounded-2 {{ !$order->driver_id ? 'active' : '' }}" data-value="" data-call="updateCustomSelect" data-args="[&quot;driverAssignment&quot;, &quot;&quot;, &quot;Choose active driver...&quot;]">
                         Choose active driver...
                       </a>
                       @foreach($drivers as $driver)
-                        <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 cursor-pointer rounded-2 {{ $order->driver_id == $driver->id ? 'active' : '' }}" data-value="{{ $driver->id }}" onclick="updateCustomSelect('driverAssignment', '{{ $driver->id }}', '{{ $driver->name }}')">
+                        <a class="dropdown-item d-flex align-items-center justify-content-between py-2 px-3 cursor-pointer rounded-2 {{ $order->driver_id == $driver->id ? 'active' : '' }}" data-value="{{ $driver->id }}" data-call="updateCustomSelect" data-args="[&quot;driverAssignment&quot;, &quot;{{ $driver->id }}&quot;, &quot;{{ $driver->name }}&quot;]">
                           <span>{{ $driver->name }}</span>
                           <span class="text-muted small">({{ $driver->assigned_orders_count ?? 0 }} active)</span>
                         </a>
@@ -536,10 +536,10 @@
           
           {{-- Notes action row --}}
           <div class="d-flex align-items-center justify-content-between mt-2 mb-2">
-            <button type="button" onclick="deleteAdminNotes()" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center" style="height: 25px !important; border-radius: 6px !important; font-size: 0.7rem !important; border-color: rgba(220, 53, 69, 0.15) !important; width: calc(50% - 4px); font-weight: 600;">
+            <button type="button" data-call="deleteAdminNotes" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center" style="height: 25px !important; border-radius: 6px !important; font-size: 0.7rem !important; border-color: rgba(220, 53, 69, 0.15) !important; width: calc(50% - 4px); font-weight: 600;">
               <i class="bi bi-trash mr-1"></i> Clear Notes
             </button>
-            <button type="button" onclick="saveAdminNotes()" class="btn btn-primary p-0 d-flex align-items-center justify-content-center" style="height: 25px !important; border-radius: 6px !important; font-size: 0.7rem !important; width: calc(50% - 4px); font-weight: 600;">
+            <button type="button" data-call="saveAdminNotes" class="btn btn-primary p-0 d-flex align-items-center justify-content-center" style="height: 25px !important; border-radius: 6px !important; font-size: 0.7rem !important; width: calc(50% - 4px); font-weight: 600;">
               <i class="bi bi-bookmark-check mr-1"></i> Save Notes
             </button>
           </div>
@@ -552,7 +552,7 @@
               <i class="bi bi-printer-fill mr-1" style="font-size: 0.78rem;"></i> Download PDF
             </a>
             
-            <button type="button" onclick="confirmOrderDelete()" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center text-center" style="height: 28px !important; border-radius: 6px !important; font-size: 0.72rem !important; border-color: rgba(220, 53, 69, 0.2) !important; width: calc(50% - 3px); font-weight: 600;">
+            <button type="button" data-call="confirmOrderDelete" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center text-center" style="height: 28px !important; border-radius: 6px !important; font-size: 0.72rem !important; border-color: rgba(220, 53, 69, 0.2) !important; width: calc(50% - 3px); font-weight: 600;">
               <i class="bi bi-trash-fill mr-1" style="font-size: 0.78rem;"></i> Delete Order
             </button>
           </div>
@@ -1360,7 +1360,7 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-item.active {
 }
 </style>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 /** Updates both the hidden form input and the custom select dropdown's display label. */
 function updateCustomSelect(fieldId, value, text) {
     document.getElementById(fieldId + 'Input').value = value;

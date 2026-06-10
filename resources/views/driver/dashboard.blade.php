@@ -444,7 +444,7 @@
         </div>
         {{-- Shown only when on duty but GPS still needs manual permission (prompt state on page load) --}}
         <div id="gps-enable-wrap" style="display:none;margin-top:14px;">
-            <button id="gps-enable-btn" type="button" onclick="window._requestGpsPermission()"
+            <button id="gps-enable-btn" type="button" data-call="window._requestGpsPermission"
                     style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:100px;
                            background:linear-gradient(135deg,#00b894,#00cec9);color:#fff;border:none;
                            font-weight:700;font-size:0.88rem;font-family:'Outfit',sans-serif;cursor:pointer;
@@ -579,7 +579,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     'use strict';
 

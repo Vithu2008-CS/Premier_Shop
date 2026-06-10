@@ -76,7 +76,7 @@
                                         {{ $return->created_at->format('M d, Y') }}
                                     </td>
                                     <td class="pr-4 align-middle text-right">
-                                        <form action="{{ route('admin.returns.destroy', $return) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this return request?');">
+                                        <form action="{{ route('admin.returns.destroy', $return) }}" method="POST" class="d-inline-block" data-confirm="Are you sure you want to delete this return request?">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-premium-delete">

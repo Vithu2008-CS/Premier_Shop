@@ -420,7 +420,7 @@ html[data-admin-theme="dark"] .floating-bar-title { color:#ffffff !important; }
     </div>
     <div class="d-flex align-items-center gap-2">
         <button type="button" class="btn btn-danger"
-                onclick="if(confirm('Permanently delete this slider? This cannot be undone.')) document.getElementById('delete-slider-form').submit();">
+                data-confirm="Permanently delete this slider? This cannot be undone." data-submit-form="delete-slider-form">
             <i class="bi bi-trash" style="margin-right:5px;"></i> Delete
         </button>
         <a href="{{ route('admin.sliders.index') }}" class="btn btn-outline-secondary">Cancel</a>
@@ -432,7 +432,7 @@ html[data-admin-theme="dark"] .floating-bar-title { color:#ffffff !important; }
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     'use strict';
 

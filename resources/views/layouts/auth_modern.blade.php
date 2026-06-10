@@ -18,6 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name', 'Laravel'))</title>
+    <script src="{{ asset('js/csp-shim.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +32,7 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     {{-- Pre-render Theme Logic --}}
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', savedTheme);
@@ -271,7 +272,7 @@
 <body>
     @yield('content')
     
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         document.addEventListener('DOMContentLoaded', function() {
             // Re-apply theme checks if needed, but pre-render script handles it.
             // This is mainly to ensure all components react if we added switchers here.

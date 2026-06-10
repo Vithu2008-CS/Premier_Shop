@@ -83,7 +83,7 @@
         </div>
     </div>
     <div class="button-group">
-        <button type="button" class="btn btn-danger" onclick="event.preventDefault(); if(confirm('Delete this category?')) document.getElementById('delete-category-form').submit();">
+        <button type="button" class="btn btn-danger" data-confirm="Delete this category?" data-submit-form="delete-category-form">
             <i class="bi bi-trash-fill me-1"></i> Delete
         </button>
         <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light">
@@ -253,7 +253,7 @@ html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover {
 }
 </style>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function() {
     const inputName = document.getElementsByName('name')[0];
     const floatTitle = document.getElementById('floating-category-title');

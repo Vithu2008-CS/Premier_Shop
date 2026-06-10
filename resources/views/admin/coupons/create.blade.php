@@ -329,7 +329,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 $(function() {
     'use strict';
 

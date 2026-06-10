@@ -276,7 +276,7 @@ html[data-admin-theme="dark"] .col-md-3 a:hover .card {
 
 @push('scripts')
   <script src="{{ asset('admin_assets/js/datepicker.js') }}"></script>
-  <script>
+  <script nonce="{{ Vite::cspNonce() }}">
     $(function() {
       'use strict';
       

@@ -218,7 +218,7 @@ html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover {
 }
 </style>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function() {
     const inputName = document.getElementsByName('name')[0];
     const floatTitle = document.getElementById('floating-category-title');

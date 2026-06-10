@@ -278,7 +278,7 @@
                                     $valStr = $cp->discount_type === 'percentage' ? ((float)$cp->discount_value).'%' : '£'.((float)$cp->discount_value);
                                     $minStr = (float)$cp->min_order_amount > 0 ? 'Min spend £'.((float)$cp->min_order_amount) : 'No min spend';
                                 @endphp
-                                <div class="coupon-ticket-stub d-inline-flex flex-column align-items-start p-2.5 border rounded-3 position-relative" style="background: var(--ps-surface-secondary); cursor: pointer; min-width: 140px; border: 1px dashed var(--ps-border) !important;" onclick="applyCouponDirect('{{ $cp->code }}', this)">
+                                <div class="coupon-ticket-stub d-inline-flex flex-column align-items-start p-2.5 border rounded-3 position-relative" style="background: var(--ps-surface-secondary); cursor: pointer; min-width: 140px; border: 1px dashed var(--ps-border) !important;" data-call="applyCouponDirect" data-args="[&quot;{{ $cp->code }}&quot;, &quot;$el&quot;]">
                                     <div class="fw-bold text-primary font-monospace small mb-1">{{ $cp->code }}</div>
                                     <div class="fw-bold text-success" style="font-size:0.75rem;">{{ $valStr }} OFF</div>
                                     <div class="text-muted x-small" style="font-size: 0.65rem;">{{ $minStr }}</div>
@@ -384,7 +384,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function() {
         // ⏳ LocalStorage-backed Live Stock Reservation Countdown Widget
         const COUNTDOWN_KEY = 'checkout_reservation_timer';

@@ -59,7 +59,7 @@
         </form>
 
         <form action="{{ route('admin.sliders.destroy', $slider) }}" method="POST"
-              onsubmit="return confirm('Delete this slider permanently?');" class="d-inline m-0">
+              data-confirm="Delete this slider permanently?" class="d-inline m-0">
             @csrf @method('DELETE')
             <button type="submit" class="slider-action-btn btn-delete" title="Delete">
                 <i data-feather="trash-2" style="width:11px;height:11px;"></i>
