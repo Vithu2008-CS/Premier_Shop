@@ -60,6 +60,7 @@ class SecurityHeadersMiddleware
             'Content-Security-Policy',
             implode(' ', [
                 "default-src 'self';",
+                "object-src 'none';",
                 "script-src 'self' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://maps.googleapis.com https://maps.gstatic.com http://127.0.0.1:5173;",
                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com http://127.0.0.1:5173;",
                 "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;",
