@@ -455,6 +455,16 @@
             </div>
         </div>
 
+        {{-- Frequently Bought Together (from real co-purchase data) --}}
+        @if(isset($frequentlyBought) && $frequentlyBought->count() > 0)
+            <div class="row mt-5 pt-5 border-top">
+                <h3 class="fw-bold mb-4"><i class="bi bi-bag-heart-fill text-primary me-2"></i>Frequently Bought Together</h3>
+                @foreach($frequentlyBought as $fb)
+                    @include('partials.product_card', ['product' => $fb])
+                @endforeach
+            </div>
+        @endif
+
         {{-- Related Products --}}
         @if(isset($relatedProducts) && $relatedProducts->count() > 0)
             <div class="row mt-5 pt-5 border-top">
