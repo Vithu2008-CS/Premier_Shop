@@ -150,4 +150,19 @@ class PublicProductListingTest extends TestCase
             ->assertSee('pdp-gallery-col', false)   // sticky gallery column
             ->assertSee('pdp-zoom', false);         // hover-zoom hook
     }
+
+    public function test_product_detail_renders_controller_computed_review_aggregates(): void
+    {
+        // Exercises the with-reviews path: controller computes count/avg/distribution
+        // once and the view renders them (no per-call accessor queries).
+        $product = $this->product(['name' => 'ReviewedWidget']);
+
+        Review::create(['user_id' => $this->reviewer->id, 'product_id' => $product->id, 'rating' => 4, 'is_approved' => true, 'comment' => 'Good']);
+        Review::create(['user_id' => $this->reviewer->id, 'product_id' => $product->id, 'rating' => 5, 'is_approved' => true, 'comment' => 'Great']);
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('ReviewedWidget')
+            ->assertSee('2 reviews'); // count rendered from the aggregate
+    }
 }
