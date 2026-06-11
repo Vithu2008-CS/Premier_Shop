@@ -151,6 +151,40 @@ class PublicProductListingTest extends TestCase
             ->assertSee('pdp-zoom', false);         // hover-zoom hook
     }
 
+    public function test_product_detail_shows_frequently_bought_together(): void
+    {
+        $a = $this->product(['name' => 'AnchorWidget']);
+        $b = $this->product(['name' => 'CompanionWidget']);
+        $c = $this->product(['name' => 'OtherWidget']);
+
+        // Two orders pair A+B, one pairs A+C → B is the strongest co-purchase for A.
+        foreach ([[$a, $b], [$a, $b], [$a, $c]] as $pair) {
+            $order = \App\Models\Order::create([
+                'user_id' => $this->reviewer->id, 'order_number' => 'PS-'.uniqid(),
+                'status' => 'delivered', 'subtotal' => 10, 'total' => 10,
+                'shipping_address' => ['address_line' => 'x', 'city' => 'y', 'phone' => 'z'],
+                'payment_status' => 'completed', 'payment_method' => 'Bank Transfer',
+            ]);
+            foreach ($pair as $p) {
+                \App\Models\OrderItem::create(['order_id' => $order->id, 'product_id' => $p->id, 'quantity' => 1, 'price' => 5]);
+            }
+        }
+
+        $this->get(route('products.show', $a->slug))
+            ->assertOk()
+            ->assertSee('Frequently Bought Together')
+            ->assertSee('CompanionWidget');
+    }
+
+    public function test_product_with_no_co_purchases_hides_the_section(): void
+    {
+        $product = $this->product(['name' => 'LonelyWidget']);
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertDontSee('Frequently Bought Together');
+    }
+
     public function test_product_detail_renders_controller_computed_review_aggregates(): void
     {
         // Exercises the with-reviews path: controller computes count/avg/distribution

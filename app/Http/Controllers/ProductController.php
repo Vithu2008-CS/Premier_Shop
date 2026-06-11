@@ -167,10 +167,35 @@ class ProductController extends Controller
                 ->exists();
         }
 
+        // ── "Frequently bought together" — products that co-occur in orders with
+        // this one, ranked by how often they're purchased together. ──
+        $coPurchasedIds = \Illuminate\Support\Facades\DB::table('order_items as oi1')
+            ->join('order_items as oi2', 'oi1.order_id', '=', 'oi2.order_id')
+            ->where('oi1.product_id', $product->id)
+            ->whereColumn('oi2.product_id', '!=', 'oi1.product_id')
+            ->groupBy('oi2.product_id')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(8)
+            ->pluck('oi2.product_id');
+
+        $frequentlyBought = collect();
+        if ($coPurchasedIds->isNotEmpty()) {
+            $fbQuery = Product::with('category')
+                ->whereIn('id', $coPurchasedIds)
+                ->where('is_active', true);
+            if (auth()->check() && auth()->user()->isUnder16()) {
+                $fbQuery->where('is_age_restricted', false);
+            }
+            $frequentlyBought = $fbQuery->get()
+                ->sortBy(fn ($p) => array_search($p->id, $coPurchasedIds->all()))
+                ->take(4)
+                ->values();
+        }
+
         return view('products.show', compact(
             'product', 'relatedProducts', 'recentlyViewed',
             'reviewsCount', 'avgRating', 'ratingDistribution', 'approvedReviews',
-            'inWishlist', 'hasReviewed', 'hasPurchased'
+            'inWishlist', 'hasReviewed', 'hasPurchased', 'frequentlyBought'
         ));
     }
 
