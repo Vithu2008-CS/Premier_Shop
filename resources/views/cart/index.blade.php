@@ -45,13 +45,14 @@
 
                         <div id="cart-items-container" class="stagger-children">
                             @foreach($items as $item)
-                                <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row" 
-                                     id="cart-item-{{ $item->id }}" 
-                                     data-price="{{ $item->product->price }}" 
+                                <div class="card mb-3 fade-up delay-{{ $loop->index + 1 }} cart-item-row"
+                                     id="cart-item-{{ $item->id }}"
+                                     data-price="{{ $item->product->price }}"
                                      data-id="{{ $item->id }}"
                                      data-has-offer="{{ $item->product->has_offer ? '1' : '0' }}"
                                      data-offer-price="{{ $item->product->offer_price }}"
-                                     data-offer-min-qty="{{ $item->product->offer_min_qty }}">
+                                     data-offer-min-qty="{{ $item->product->offer_min_qty }}"
+                                     data-line-total="{{ $item->line_total }}">
                                     <div class="card-body p-3">
                                         <div class="d-flex d-md-none align-items-center mb-3">
                                             <div class="form-check me-2">
@@ -91,9 +92,17 @@
                                                 </div>
                                                 <div class="d-md-none">
                                                     <p class="text-muted small mb-1">{{ $item->product->category?->name }}</p>
-                                                    <div class="fw-bold text-primary">£{{ number_format($item->product->price, 2) }}</div>
+                                                    <div class="fw-bold text-primary">£{{ number_format($item->product->active_price, 2) }}
+                                                        @if($item->product->active_price < $item->product->price)
+                                                            <small class="text-muted text-decoration-line-through ms-1" style="font-size:.72rem;">£{{ number_format($item->product->price, 2) }}</small>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                                <div class="d-none d-md-block fw-bold text-primary mt-1">£{{ number_format($item->product->price, 2) }}</div>
+                                                <div class="d-none d-md-block fw-bold text-primary mt-1">£{{ number_format($item->product->active_price, 2) }}
+                                                    @if($item->product->active_price < $item->product->price)
+                                                        <small class="text-muted text-decoration-line-through ms-1" style="font-size:.8rem;">£{{ number_format($item->product->price, 2) }}</small>
+                                                    @endif
+                                                </div>
                                             </div>
                                             {{-- Quantity --}}
                                             <div class="col-7 col-md-3">
@@ -170,6 +179,10 @@
                                     <span class="text-muted">Subtotal (<span id="summary-total-items">0</span> items)</span>
                                     <span class="fw-bold" id="summary-subtotal">£0.00</span>
                                 </div>
+                                <div class="d-flex justify-content-between mb-2 text-success d-none" id="summary-savings-row">
+                                    <span class="small">You save</span>
+                                    <span class="fw-bold small" id="summary-savings">-£0.00</span>
+                                </div>
                                 <div class="d-flex justify-content-between mb-3">
                                     <span class="text-muted">Shipping</span>
                                     <span class="fw-bold" id="summary-shipping">£0.00</span>
@@ -237,21 +250,18 @@ document.addEventListener('DOMContentLoaded', function() {
         let subtotal = 0;
         let count = 0;
 
+        let savings = 0;
         itemCheckboxes.forEach(cb => {
             if (cb.checked) {
                 const row = cb.closest('.cart-item-row');
                 const id = row.dataset.id;
-                const price = parseFloat(row.dataset.price);
-                const hasOffer = row.dataset.hasOffer === '1';
-                const offerPrice = parseFloat(row.dataset.offerPrice);
-                const offerMinQty = parseInt(row.dataset.offerMinQty);
                 const qty = parseInt(document.getElementById('qty-' + id).value);
-                
-                if (hasOffer && qty >= offerMinQty) {
-                    subtotal += offerPrice * qty;
-                } else {
-                    subtotal += price * qty;
-                }
+                // Authoritative per-line total from the server (covers retail, bulk and
+                // personalised offers); refreshed on every quantity change.
+                const lineTotal = parseFloat(row.dataset.lineTotal) || 0;
+                const fullPrice = (parseFloat(row.dataset.price) || 0) * qty;
+                subtotal += lineTotal;
+                savings += Math.max(0, fullPrice - lineTotal);
                 count += qty;
             }
         });
@@ -265,6 +275,17 @@ document.addEventListener('DOMContentLoaded', function() {
         summaryTotal.textContent = '£' + total.toLocaleString(undefined, {minimumFractionDigits: 2});
         summaryCount.textContent = count;
         selectedCountLabel.textContent = itemCheckboxes.filter(c => c.checked).length + ' item(s) selected';
+
+        const savingsRow = document.getElementById('summary-savings-row');
+        const savingsEl = document.getElementById('summary-savings');
+        if (savingsRow && savingsEl) {
+            if (savings > 0.005) {
+                savingsEl.textContent = '-£' + savings.toFixed(2);
+                savingsRow.classList.remove('d-none');
+            } else {
+                savingsRow.classList.add('d-none');
+            }
+        }
         
         checkoutBtn.disabled = itemCheckboxes.filter(c => c.checked).length === 0;
         if(checkoutBtn.disabled) {
@@ -352,6 +373,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if(data.success) {
                     document.getElementById('line-total-' + id).textContent = '£' + data.lineTotal;
+                    const updatedRow = document.getElementById('cart-item-' + id);
+                    if (updatedRow) updatedRow.dataset.lineTotal = String(data.lineTotal).replace(/,/g, '');
                     calculateTotals();
                     // Update header badge
                     document.querySelectorAll('.cart-count-badge').forEach(b => {
