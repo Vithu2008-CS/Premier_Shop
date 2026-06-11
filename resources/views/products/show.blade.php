@@ -103,9 +103,6 @@
                         @endif
                     </div>
                     @auth
-                        @php
-                            $inWishlist = \App\Models\UserItem::where('user_id', auth()->id())->where('product_id', $product->id)->where('type', 'wishlist')->exists();
-                        @endphp
                         <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width:44px;height:44px;" title="{{ $inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}">
@@ -118,17 +115,17 @@
                 <h1 class="fw-bold mb-3" style="font-size:clamp(1.3rem,5vw,2rem);letter-spacing:-0.5px;">{{ $product->name }}</h1>
 
                 {{-- Rating Summary --}}
-                @if($product->reviews_count > 0)
+                @if($reviewsCount > 0)
                 <div class="d-flex align-items-center mb-3 text-warning">
                     @for($i = 1; $i <= 5; $i++)
-                        @if($i <= round($product->average_rating))
+                        @if($i <= round($avgRating))
                             <i class="bi bi-star-fill"></i>
                         @else
                             <i class="bi bi-star"></i>
                         @endif
                     @endfor
                     <a href="#reviewsSection" class="ms-2 text-muted text-decoration-none small">
-                        {{ number_format($product->average_rating, 1) }} ({{ $product->reviews_count }} reviews)
+                        {{ number_format($avgRating, 1) }} ({{ $reviewsCount }} reviews)
                     </a>
                 </div>
                 @else
@@ -249,27 +246,22 @@
                 {{-- Left Col: Summary & Write Review --}}
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top:100px;">
-                        @if($product->reviews_count > 0)
+                        @if($reviewsCount > 0)
                             <div class="text-center mb-4">
-                                <h1 class="display-3 fw-bold gradient-text mb-0">{{ number_format($product->average_rating, 1) }}</h1>
+                                <h1 class="display-3 fw-bold gradient-text mb-0">{{ number_format($avgRating, 1) }}</h1>
                                 <div class="text-warning fs-4 mb-2">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                        <i class="bi {{ $i <= round($avgRating) ? 'bi-star-fill' : 'bi-star' }}"></i>
                                     @endfor
                                 </div>
-                                <span class="text-muted small">Based on {{ $product->reviews_count }} {{ Str::plural('review', $product->reviews_count) }}</span>
+                                <span class="text-muted small">Based on {{ $reviewsCount }} {{ Str::plural('review', $reviewsCount) }}</span>
                             </div>
-
-                            @php
-                                $totalReviews = $product->reviews()->approved()->count();
-                                $ratings = $product->reviews()->approved()->selectRaw('rating, count(*) as count')->groupBy('rating')->get()->keyBy('rating');
-                            @endphp
 
                             <div class="rating-bars mb-4">
                                 @for($i = 5; $i >= 1; $i--)
                                     @php
-                                        $count = isset($ratings[$i]) ? $ratings[$i]->count : 0;
-                                        $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+                                        $count = $ratingDistribution[$i] ?? 0;
+                                        $percentage = $reviewsCount > 0 ? ($count / $reviewsCount) * 100 : 0;
                                     @endphp
                                     <div class="d-flex align-items-center mb-2" style="font-size:0.85rem;">
                                         <span class="text-muted me-2" style="width:12px;">{{ $i }}</span>
@@ -294,15 +286,6 @@
                         <hr class="opacity-10 mb-4">
 
                         @auth
-                            @php
-                                $hasReviewed = $product->reviews()->where('user_id', auth()->id())->exists();
-                                $hasPurchased = \App\Models\Order::where('user_id', auth()->id())
-                                    ->whereIn('status', ['delivered', 'shipped', 'processing'])
-                                    ->whereHas('items', function ($query) use ($product) {
-                                        $query->where('product_id', $product->id);
-                                    })->exists();
-                            @endphp
-                            
                             @if($hasReviewed)
                                 <div class="alert alert-success rounded-3 text-center mb-0 py-3">
                                     <i class="bi bi-check-circle-fill d-block fs-4 mb-2"></i>
@@ -334,10 +317,6 @@
 
                 {{-- Right Col: Review List --}}
                 <div class="col-lg-8">
-                    @php
-                        $approvedReviews = $product->reviews()->with('user')->where('is_approved', true)->latest()->paginate(5);
-                    @endphp
-
                     @if($approvedReviews->count() > 0)
                         <div class="d-flex flex-column gap-4">
                             @foreach($approvedReviews as $review)
