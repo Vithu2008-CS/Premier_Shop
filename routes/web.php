@@ -55,6 +55,9 @@ Route::get('/api/orders/track/{order_number}', [OrderController::class, 'trackPu
 Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/terms-of-service', 'terms')->name('terms');
 
+// XML sitemap for search engines
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+
 // Stripe webhook — public, signature-verified in the controller, CSRF-exempt
 // (see bootstrap/app.php). Confirms payment asynchronously as a backstop.
 Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handle'])->name('stripe.webhook');

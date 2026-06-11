@@ -176,6 +176,31 @@ class PublicProductListingTest extends TestCase
             ->assertSee('CompanionWidget');
     }
 
+    public function test_product_detail_includes_product_json_ld(): void
+    {
+        $product = $this->product(['name' => 'SchemaWidget', 'images' => ['/storage/products/a.webp']]);
+        Review::create(['user_id' => $this->reviewer->id, 'product_id' => $product->id, 'rating' => 5, 'is_approved' => true, 'comment' => 'Great']);
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('application/ld+json', false)
+            ->assertSee('priceCurrency', false)
+            ->assertSee('schema.org/InStock', false)
+            ->assertSee('AggregateRating', false); // rating present because there is an approved review
+    }
+
+    public function test_sitemap_lists_active_products(): void
+    {
+        $product = $this->product(['name' => 'SitemapWidget']);
+
+        $res = $this->get('/sitemap.xml');
+
+        $res->assertOk()
+            ->assertSee('<urlset', false)
+            ->assertSee($product->slug, false);
+        $this->assertStringContainsString('xml', (string) $res->headers->get('Content-Type'));
+    }
+
     public function test_product_with_no_co_purchases_hides_the_section(): void
     {
         $product = $this->product(['name' => 'LonelyWidget']);
