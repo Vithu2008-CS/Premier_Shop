@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\GeneratesUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 /**
  * Represents a product in the shop catalogue.
@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
  */
 class Product extends Model
 {
-    use HasFactory;
+    use GeneratesUniqueSlug, HasFactory;
 
     protected $fillable = [
         'name', 'slug', 'description', 'price', 'wholesale_price', 'stock',
@@ -56,7 +56,7 @@ class Product extends Model
     {
         parent::boot();
         static::creating(function ($product) {
-            $product->slug = $product->slug ?? Str::slug($product->name);
+            $product->slug = $product->slug ?: static::uniqueSlug($product->name);
         });
     }
 
