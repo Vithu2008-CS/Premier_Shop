@@ -55,6 +55,10 @@ Route::get('/api/orders/track/{order_number}', [OrderController::class, 'trackPu
 Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/terms-of-service', 'terms')->name('terms');
 
+// Stripe webhook — public, signature-verified in the controller, CSRF-exempt
+// (see bootstrap/app.php). Confirms payment asynchronously as a backstop.
+Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handle'])->name('stripe.webhook');
+
 
 // ── AUTHENTICATED CUSTOMER ROUTES ────────────────────────────────────────────
 // Requires login. Covers cart, checkout, orders, profile, reviews, wishlist,
@@ -91,6 +95,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/checkout/coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon');
     Route::post('/checkout/shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculateShipping')->middleware('throttle:checkout'); // AJAX preview
     Route::post('/checkout/calculate-shipping-dynamic', [\App\Http\Controllers\ShippingCalculationController::class, 'calculate'])->name('checkout.calculateShippingDynamic')->middleware('throttle:checkout');
+    Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.paymentIntent')->middleware('throttle:checkout'); // Stripe PaymentIntent (server-priced)
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process')->middleware('throttle:checkout'); // place order
 
     // ── Orders ───────────────────────────────────────────────────────────────

@@ -53,6 +53,51 @@
             </ul>
         </div>
     </div>
+    {{-- Price Range --}}
+    <div class="mb-3">
+        <label class="form-label fw-600">Price Range (£)</label>
+        <div class="d-flex align-items-center gap-2">
+            <input type="number" name="min_price" min="0" step="0.01" inputmode="decimal"
+                class="form-control rounded-3"
+                placeholder="{{ $priceBounds && $priceBounds->min_price !== null ? floor($priceBounds->min_price) : 'Min' }}"
+                value="{{ request('min_price') }}" aria-label="Minimum price">
+            <span class="text-muted">—</span>
+            <input type="number" name="max_price" min="0" step="0.01" inputmode="decimal"
+                class="form-control rounded-3"
+                placeholder="{{ $priceBounds && $priceBounds->max_price !== null ? ceil($priceBounds->max_price) : 'Max' }}"
+                value="{{ request('max_price') }}" aria-label="Maximum price">
+        </div>
+    </div>
+
+    {{-- Minimum Rating --}}
+    <div class="mb-3">
+        <label class="form-label fw-600">Minimum Rating</label>
+        <div class="d-flex flex-wrap gap-2">
+            @foreach([0 => 'Any', 4 => '4', 3 => '3', 2 => '2'] as $val => $lbl)
+                <label class="filter-pill {{ (string) request('rating', '0') === (string) $val ? 'active' : '' }}">
+                    <input type="radio" name="rating" value="{{ $val ?: '' }}" class="d-none"
+                        {{ (string) request('rating', '0') === (string) $val ? 'checked' : '' }}>
+                    @if($val)<i class="bi bi-star-fill"></i> {{ $lbl }}+@else{{ $lbl }}@endif
+                </label>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Availability & Offers --}}
+    <div class="mb-4">
+        <label class="form-label fw-600">Availability</label>
+        <label class="filter-check d-flex align-items-center gap-2 mb-2">
+            <input type="checkbox" name="in_stock" value="1" class="form-check-input m-0"
+                {{ request('in_stock') ? 'checked' : '' }}>
+            <span>In stock only</span>
+        </label>
+        <label class="filter-check d-flex align-items-center gap-2">
+            <input type="checkbox" name="on_offer" value="1" class="form-check-input m-0"
+                {{ request('on_offer') ? 'checked' : '' }}>
+            <span>On offer <i class="bi bi-tag-fill text-danger"></i></span>
+        </label>
+    </div>
+
     {{-- Sort --}}
     <div class="mb-4">
         <label class="form-label fw-600">Sort By</label>
@@ -70,6 +115,8 @@
                         $sortText = 'Price: High → Low';
                     if ($sort == 'name')
                         $sortText = 'Name: A-Z';
+                    if ($sort == 'rating')
+                        $sortText = 'Top Rated';
                 @endphp
                 <span>{{ $sortText }}</span>
             </button>
@@ -95,6 +142,11 @@
                         data-call="filterSelect"
                         data-args="{{ json_encode(['sortInput'.($isMobile ? 'Mob' : ''), 'sortDropdownBtn'.($isMobile ? 'Mob' : ''), 'name', 'Name: A-Z']) }}">Name:
                         A-Z</a></li>
+                <li><a class="dropdown-item cursor-pointer {{ $sort == 'rating' ? 'active' : '' }}"
+                        href="#" data-prevent
+                        data-call="filterSelect"
+                        data-args="{{ json_encode(['sortInput'.($isMobile ? 'Mob' : ''), 'sortDropdownBtn'.($isMobile ? 'Mob' : ''), 'rating', 'Top Rated']) }}">Top
+                        Rated</a></li>
             </ul>
         </div>
     </div>

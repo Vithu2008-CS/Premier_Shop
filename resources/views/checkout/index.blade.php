@@ -70,6 +70,10 @@
             $query->whereNull('valid_until')->orWhere('valid_until', '>', now());
         })
         ->get(['code', 'discount_type', 'discount_value', 'min_order_amount']);
+
+    // Stripe is "enabled" only when a real (non-placeholder) publishable key is set.
+    $stripeKey = config('services.stripe.key');
+    $stripeEnabled = $stripeKey && ! str_contains($stripeKey, 'placeholder');
 @endphp
 <section class="section-padding">
     <div class="container">
@@ -141,6 +145,8 @@
                         @foreach($items as $item)
                             <input type="hidden" name="items[]" value="{{ $item->id }}">
                         @endforeach
+                        {{-- Populated by Stripe.js after a successful card payment, then verified server-side --}}
+                        <input type="hidden" name="payment_intent_id" id="payment_intent_id">
                         @php
                             $defaultAddress = auth()->user()->defaultAddress ?? auth()->user()->addresses->first();
                         @endphp
@@ -187,33 +193,26 @@
                             </div>
                             @error('payment_method') <div class="text-danger small mt-2">{{ $message }}</div> @enderror
 
-                             <!-- Secure Card Details Drawer -->
+                             <!-- Secure Card Details Drawer (Stripe Payment Element) -->
                              <div id="cardDetailsContainer" class="mt-4 p-4 border rounded-4 shadow-sm" style="border-radius: 16px; transition: all 0.3s ease; background: var(--ps-surface-secondary);">
                                  <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
                                      <i class="bi bi-shield-lock-fill text-success fs-5"></i>
                                      Secure Card Details
                                  </h6>
-                                 <div class="mb-3">
-                                     <label class="form-label small fw-bold text-muted px-1">CARDHOLDER NAME</label>
-                                     <input type="text" name="card_name" id="card_name" class="form-control form-control-lg border-0" placeholder="John Doe" style="border-radius: 10px; background: var(--ps-surface-bg); color: var(--ps-text);" required>
-                                 </div>
-                                 <div class="mb-3">
-                                     <label class="form-label small fw-bold text-muted px-1">CARD NUMBER</label>
-                                     <div class="input-group">
-                                         <span class="input-group-text border-0 pe-0" style="border-radius: 10px 0 0 10px; background: var(--ps-surface-bg);"><i class="bi bi-credit-card text-muted"></i></span>
-                                         <input type="text" name="card_number" id="card_number" class="form-control form-control-lg border-0 ps-2" placeholder="4111 2222 3333 4444" style="border-radius: 0 10px 10px 0; background: var(--ps-surface-bg); color: var(--ps-text);" required>
+                                 @if($stripeEnabled)
+                                     {{-- Card data is entered inside Stripe's iframe and never touches this server (PCI-safe). --}}
+                                     <div id="payment-element"></div>
+                                     <div id="payment-element-errors" class="text-danger small mt-2" role="alert"></div>
+                                     <div class="d-flex align-items-center gap-2 text-muted x-small mt-3">
+                                         <i class="bi bi-lock-fill text-success"></i>
+                                         Card details are encrypted and processed securely by Stripe.
                                      </div>
-                                 </div>
-                                 <div class="row g-3">
-                                     <div class="col-6">
-                                         <label class="form-label small fw-bold text-muted px-1">EXPIRY DATE</label>
-                                         <input type="text" name="card_expiry" id="card_expiry" class="form-control form-control-lg border-0" placeholder="MM/YY" style="border-radius: 10px; background: var(--ps-surface-bg); color: var(--ps-text);" required>
+                                 @else
+                                     <div class="alert alert-warning small mb-0 d-flex align-items-center gap-2">
+                                         <i class="bi bi-exclamation-triangle-fill"></i>
+                                         <span>Card payments aren’t set up yet. Please choose <strong>Bank Transfer</strong> to place your order.</span>
                                      </div>
-                                     <div class="col-6">
-                                         <label class="form-label small fw-bold text-muted px-1">CVV</label>
-                                         <input type="password" name="card_cvv" id="card_cvv" class="form-control form-control-lg border-0" placeholder="•••" maxlength="3" style="border-radius: 10px; background: var(--ps-surface-bg); color: var(--ps-text);" required>
-                                     </div>
-                                 </div>
+                                 @endif
                              </div>
 
                              <!-- Bank Transfer Details Drawer (Collapsible) -->
@@ -320,15 +319,26 @@
             {{-- Order Summary --}}
             <div class="card border-0 shadow-sm" style="position:sticky;top:100px; border-radius: 20px;">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4">Order Summary</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Order Summary</h5>
+                        <a href="{{ route('cart.index') }}" class="small text-decoration-none text-muted d-inline-flex align-items-center gap-1">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                    </div>
                     <div class="checkout-item-list mb-4 overflow-auto" style="max-height: 250px;">
                         @foreach($items as $item)
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="d-flex align-items-center">
-                                <span class="bg-light rounded text-muted small fw-bold d-flex align-items-center justify-content-center me-2" style="width:24px;height:24px;">{{ $item->quantity }}</span>
-                                <span class="small truncate-1" style="max-width: 180px;">{{ $item->product->name }}</span>
+                            <div class="d-flex align-items-center" style="min-width:0;">
+                                <div class="position-relative me-3 flex-shrink-0">
+                                    <img src="{{ $item->product->first_image }}" alt="{{ $item->product->name }}" class="rounded-3" style="width:48px;height:48px;object-fit:cover;border:1px solid var(--ps-border);" loading="lazy" decoding="async">
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: var(--ps-gradient); font-size:0.62rem;">{{ $item->quantity }}</span>
+                                </div>
+                                <div style="min-width:0;">
+                                    <div class="small fw-600 truncate-1" style="max-width: 170px;">{{ $item->product->name }}</div>
+                                    <div class="text-muted x-small">£{{ number_format($item->product->active_price, 2) }} × {{ $item->quantity }}</div>
+                                </div>
                             </div>
-                            <span class="small fw-bold">£{{ number_format($item->line_total, 2) }}</span>
+                            <span class="small fw-bold ms-2 flex-shrink-0">£{{ number_format($item->line_total, 2) }}</span>
                         </div>
                         @endforeach
                     </div>
@@ -353,9 +363,9 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted small">Shipping</span>
-                        <span id="shippingCostDisplay" class="small fw-bold text-primary">£0.00</span>
+                        <span id="shippingCostDisplay" class="small fw-bold text-primary">—</span>
                     </div>
-                    <div id="shippingMessageDisplay" class="text-muted x-small text-end fst-italic mb-3"></div>
+                    <div id="shippingMessageDisplay" class="text-muted x-small text-end fst-italic mb-3">Enter your address to calculate delivery</div>
                     <hr class="my-3 opacity-10">
                     @php
                     $subtotal = $items->sum('line_total');
@@ -373,9 +383,14 @@
                     </div>
 
                     <div class="mt-4 pt-3 border-top text-center">
-                        <div class="d-inline-flex align-items-center gap-2 text-muted x-small">
+                        <div class="d-inline-flex align-items-center gap-2 text-muted x-small mb-2">
                             <i class="bi bi-shield-fill-check text-success"></i>
-                            Secure SSL Checkout
+                            Secure SSL Checkout · Encrypted
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center gap-3 fs-5 text-muted opacity-75">
+                            <i class="bi bi-credit-card-2-front" title="Card"></i>
+                            <i class="bi bi-bank" title="Bank transfer"></i>
+                            <i class="bi bi-lock-fill" title="Encrypted"></i>
                         </div>
                     </div>
                 </div>
@@ -384,6 +399,9 @@
     </div>
 </div>
 
+@if($stripeEnabled)
+<script src="https://js.stripe.com/v3/"></script>
+@endif
 <script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function() {
         // ⏳ LocalStorage-backed Live Stock Reservation Countdown Widget
@@ -586,21 +604,13 @@
         const cardContainer = document.getElementById('cardDetailsContainer');
         const bankContainer = document.getElementById('bankDetailsContainer');
         
-        const cardInputs = ['card_name', 'card_number', 'card_expiry', 'card_cvv'];
-        
         function togglePaymentDrawer() {
             if (payCard && payCard.checked) {
                 cardContainer.classList.remove('d-none');
                 bankContainer.classList.add('d-none');
-                cardInputs.forEach(id => document.getElementById(id).setAttribute('required', 'required'));
             } else if (payBank && payBank.checked) {
                 cardContainer.classList.add('d-none');
                 bankContainer.classList.remove('d-none');
-                cardInputs.forEach(id => {
-                    const input = document.getElementById(id);
-                    input.removeAttribute('required');
-                    input.value = '';
-                });
             }
         }
         
@@ -609,6 +619,100 @@
             payBank.addEventListener('change', togglePaymentDrawer);
             // Run initially to set correct state
             togglePaymentDrawer();
+        }
+
+        // ── Stripe Payment Element (card) ─────────────────────────────────
+        // Card data is entered in Stripe's iframe; on submit the server prices a
+        // PaymentIntent, the browser confirms it with Stripe, then the form posts
+        // the intent id for server-side verification + order creation.
+        const stripeEnabled = {{ $stripeEnabled ? 'true' : 'false' }};
+        const checkoutForm = document.getElementById('checkoutForm');
+        const piInput = document.getElementById('payment_intent_id');
+        const payErrors = document.getElementById('payment-element-errors');
+        let stripe = null, elements = null, paying = false;
+
+        const getItemIds = () =>
+            Array.from(document.querySelectorAll('#checkoutForm input[name="items[]"]')).map(i => i.value);
+        const showPayError = (msg) => { if (payErrors) payErrors.textContent = msg || ''; };
+        const setPaying = (state) => {
+            paying = state;
+            document.querySelectorAll('button[form="checkoutForm"], #checkoutForm button[type="submit"]').forEach(btn => {
+                btn.disabled = state;
+                btn.style.opacity = state ? '0.7' : '';
+            });
+        };
+
+        if (stripeEnabled && window.Stripe) {
+            stripe = Stripe('{{ $stripeKey }}');
+            const initialAmount = Math.max(100, Math.round((parseFloat(baseTotal) || 1) * 100));
+            elements = stripe.elements({
+                mode: 'payment',
+                amount: initialAmount,
+                currency: 'gbp',
+                appearance: { theme: 'stripe', variables: { colorPrimary: '#6C5CE7', borderRadius: '10px' } }
+            });
+            elements.create('payment', { layout: 'tabs' }).mount('#payment-element');
+        }
+
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', async function (e) {
+                // Bank transfer, or a card payment already confirmed → normal POST.
+                if (payBank && payBank.checked) return;
+                if (piInput && piInput.value) return;
+
+                e.preventDefault();
+
+                if (!stripeEnabled || !stripe || !elements) {
+                    showPayError('Card payments are unavailable. Please choose Bank Transfer.');
+                    return;
+                }
+                if (paying) return;
+                showPayError('');
+
+                if (!addressInput.value.trim() || !cityInput.value.trim() || !phoneInput.value.trim()) {
+                    showPayError('Please complete your delivery address first.');
+                    return;
+                }
+
+                setPaying(true);
+
+                // 1) Validate the card fields in the Element.
+                const { error: submitError } = await elements.submit();
+                if (submitError) { showPayError(submitError.message); setPaying(false); return; }
+
+                // 2) Server prices the order and returns a PaymentIntent client secret.
+                let data;
+                try {
+                    const res = await fetch("{{ route('checkout.paymentIntent') }}", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                        body: JSON.stringify({ address_line: addressInput.value, city: cityInput.value, items: getItemIds() })
+                    });
+                    data = await res.json();
+                    if (!res.ok) { showPayError(data.error || 'Could not start payment.'); setPaying(false); return; }
+                } catch (err) {
+                    showPayError('Network error starting payment. Please try again.');
+                    setPaying(false); return;
+                }
+
+                // 3) Confirm the card payment with Stripe (inline, no redirect).
+                const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+                    elements,
+                    clientSecret: data.clientSecret,
+                    confirmParams: { return_url: window.location.href },
+                    redirect: 'if_required'
+                });
+                if (confirmError) { showPayError(confirmError.message); setPaying(false); return; }
+
+                // 4) Hand the intent id to the server, which verifies and creates the order.
+                if (paymentIntent && paymentIntent.status === 'succeeded') {
+                    piInput.value = paymentIntent.id;
+                    checkoutForm.submit();
+                } else {
+                    showPayError('Payment was not completed. Please try again.');
+                    setPaying(false);
+                }
+            });
         }
     });
 </script>

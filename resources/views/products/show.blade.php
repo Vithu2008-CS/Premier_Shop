@@ -11,6 +11,23 @@
 @section('title', $product->name . ' — Premier Shop')
 
 @section('content')
+@push('styles')
+<style>
+/* ── Product detail polish ── */
+/* Keep the gallery pinned while the longer details column scrolls (desktop only) */
+@media (min-width: 992px) {
+    .pdp-gallery-col { position: sticky; top: 90px; align-self: flex-start; }
+}
+/* Hover-zoom on the main product image */
+.pdp-zoom { cursor: zoom-in; }
+.pdp-zoom-img { transition: transform .3s cubic-bezier(0.16,1,0.3,1); will-change: transform; }
+.pdp-zoom.zooming .pdp-zoom-img { transform: scale(2.1); }
+@media (hover: none) { .pdp-zoom { cursor: default; } .pdp-zoom.zooming .pdp-zoom-img { transform: none; } }
+/* Active thumbnail highlight, kept in sync with the carousel */
+.thumb-wrap.active { opacity: 1 !important; border-color: #6C5CE7 !important; box-shadow: 0 0 0 2px rgba(108,92,231,.25); }
+.thumb-wrap:hover { opacity: 1 !important; }
+</style>
+@endpush
 <section class="section-padding">
     <div class="container">
         {{-- Breadcrumb --}}
@@ -27,15 +44,15 @@
 
         <div class="row g-5">
             {{-- Product Images --}}
-            <div class="col-lg-5 reveal-slide-left">
+            <div class="col-lg-5 reveal-slide-left pdp-gallery-col">
                 <div class="product-gallery-wrapper" style="max-width: 480px; margin: 0 auto; width: 100%;">
                     @if($product->images && count($product->images) > 0)
                         <div id="productCarousel" class="carousel slide carousel-fade shadow-sm rounded-4 overflow-hidden" style="background: var(--ps-surface-bg);" data-bs-ride="false">
                             <div class="carousel-inner">
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                                        <div class="product-img-main-wrap" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: transparent; overflow: hidden; padding: 0;">
-                                            <img src="{{ $img }}" class="img-fluid w-100 h-100" alt="{{ $product->name }}" style="object-fit: contain;">
+                                        <div class="product-img-main-wrap pdp-zoom" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: transparent; overflow: hidden; padding: 0;">
+                                            <img src="{{ $img }}" class="img-fluid w-100 h-100 pdp-zoom-img" alt="{{ $product->name }}" style="object-fit: contain;">
                                         </div>
                                     </div>
                                 @endforeach
@@ -213,6 +230,12 @@
                         <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
                             <i class="bi bi-award text-primary"></i>
                             <small class="fw-600">Quality guaranteed</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
+                            <i class="bi bi-truck text-primary"></i>
+                            <small class="fw-600">Fast UK delivery</small>
                         </div>
                     </div>
                 </div>
@@ -482,7 +505,7 @@
             <div class="container d-flex align-items-center justify-content-between py-2 px-3">
                 <div class="product-info-minimal" style="min-width:0;flex:1;overflow:hidden;">
                     <div class="fw-bold text-body" style="font-size: 0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $product->name }}</div>
-                    <div class="text-primary fw-bold" style="font-size: 1rem;">£{{ number_format($product->price, 2) }}</div>
+                    <div class="text-primary fw-bold" style="font-size: 1rem;">£{{ number_format($product->active_price, 2) }}</div>
                 </div>
                 <div class="d-flex gap-2">
                     <form action="{{ route('cart.add') }}" method="POST" class="ajax-form">
@@ -513,6 +536,33 @@
     // CSP shim target for the thumbnail strip — jumps the carousel to a slide.
     function goToProductSlide(i) {
         bootstrap.Carousel.getOrCreateInstance('#productCarousel').to(i);
+    }
+
+    // Hover-zoom: track the cursor over the main image and scale toward it.
+    document.querySelectorAll('.pdp-zoom').forEach(function (box) {
+        var img = box.querySelector('.pdp-zoom-img');
+        if (!img) return;
+        box.addEventListener('mousemove', function (e) {
+            var r = box.getBoundingClientRect();
+            var x = ((e.clientX - r.left) / r.width) * 100;
+            var y = ((e.clientY - r.top) / r.height) * 100;
+            img.style.transformOrigin = x + '% ' + y + '%';
+        });
+        box.addEventListener('mouseenter', function () { box.classList.add('zooming'); });
+        box.addEventListener('mouseleave', function () {
+            box.classList.remove('zooming');
+            img.style.transformOrigin = 'center center';
+        });
+    });
+
+    // Keep the active thumbnail in sync when the carousel changes via arrows/swipe.
+    var productCarousel = document.getElementById('productCarousel');
+    if (productCarousel) {
+        productCarousel.addEventListener('slid.bs.carousel', function (e) {
+            document.querySelectorAll('.thumb-wrap').forEach(function (thumb, i) {
+                thumb.classList.toggle('active', i === e.to);
+            });
+        });
     }
 </script>
 @endpush
