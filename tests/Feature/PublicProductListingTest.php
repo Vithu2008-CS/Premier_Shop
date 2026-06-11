@@ -201,6 +201,16 @@ class PublicProductListingTest extends TestCase
         $this->assertStringContainsString('xml', (string) $res->headers->get('Content-Type'));
     }
 
+    public function test_robots_txt_points_to_sitemap_and_blocks_private_areas(): void
+    {
+        $res = $this->get('/robots.txt');
+
+        $res->assertOk()
+            ->assertSee('Disallow: /admin', false)
+            ->assertSee('sitemap.xml', false);
+        $this->assertStringContainsString('text/plain', (string) $res->headers->get('Content-Type'));
+    }
+
     public function test_product_with_no_co_purchases_hides_the_section(): void
     {
         $product = $this->product(['name' => 'LonelyWidget']);
