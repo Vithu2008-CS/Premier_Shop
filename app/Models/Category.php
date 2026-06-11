@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\GeneratesUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 /**
  * Represents a product category used to group related products.
@@ -14,16 +14,16 @@ use Illuminate\Support\Str;
  */
 class Category extends Model
 {
-    use HasFactory;
+    use GeneratesUniqueSlug, HasFactory;
 
     protected $fillable = ['name', 'slug', 'description', 'image'];
 
-    /** Auto-generate slug from name when not explicitly provided. */
+    /** Auto-generate a unique slug from the name when not explicitly provided. */
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($category) {
-            $category->slug = $category->slug ?? Str::slug($category->name);
+            $category->slug = $category->slug ?: static::uniqueSlug($category->name);
         });
     }
 
