@@ -104,8 +104,8 @@ class ProductController extends Controller
 
         $validated = $request->validate($rules);
 
-        // Derive URL-friendly slug from the product name
-        $validated['slug']               = Str::slug($validated['name']);
+        // Derive a unique URL-friendly slug from the product name
+        $validated['slug']               = Product::uniqueSlug($validated['name']);
         // Checkboxes not submitted = false; use has() instead of boolean() to handle missing key
         $validated['is_age_restricted']  = $request->has('is_age_restricted');
         $validated['is_active']          = true;

@@ -37,8 +37,8 @@ class CategoryController extends Controller
             'image_link'  => 'nullable|url:http,https',
         ]);
 
-        // Auto-generate a URL-safe slug from the category name
-        $validated['slug'] = Str::slug($validated['name']);
+        // Auto-generate a unique URL-safe slug from the category name
+        $validated['slug'] = Category::uniqueSlug($validated['name']);
 
         // File upload takes priority over a link; store in /storage/categories as WebP
         if ($request->hasFile('image_file')) {
@@ -70,7 +70,7 @@ class CategoryController extends Controller
             'image_link'  => 'nullable|url:http,https',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = Category::uniqueSlug($validated['name'], $category->id);
 
         if ($request->hasFile('image_file')) {
             $path             = \App\Helpers\ImageHelper::storeAsWebp($request->file('image_file'), 'categories');
