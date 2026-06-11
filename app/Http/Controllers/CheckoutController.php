@@ -238,6 +238,13 @@ class CheckoutController extends Controller
             return response()->json(['error' => 'Order total is below the minimum card amount.'], 422);
         }
 
+        // Pin the exact cart rows that were priced so items added afterwards can't be
+        // smuggled into the order. Omitted if it would exceed Stripe's metadata limit.
+        $itemIdsCsv = $purchasedItems->pluck('id')->implode(',');
+        if (strlen($itemIdsCsv) > 480) {
+            $itemIdsCsv = '';
+        }
+
         try {
             $intent = $this->stripe->createPaymentIntent($amountMinor, [
                 'user_id'         => (string) auth()->id(),
@@ -250,6 +257,7 @@ class CheckoutController extends Controller
                 'shipping'        => (string) round($pricing['shippingCost'], 2),
                 'distance'        => $pricing['distance'] !== null ? (string) $pricing['distance'] : '',
                 'total'           => (string) round($pricing['total'], 2),
+                'item_ids'        => $itemIdsCsv,
             ]);
         } catch (\Throwable $e) {
             \Log::error('Stripe PaymentIntent creation failed: '.$e->getMessage());
@@ -349,6 +357,16 @@ class CheckoutController extends Controller
             $total          = $intent->amount / 100;       // exactly what was charged
             $settings       = Setting::first();
             $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
+
+            // Restrict the order to exactly the cart rows that were priced into this
+            // intent — items added to the cart after pricing are not fulfilled.
+            $pinnedIds = array_filter(explode(',', (string) ($m->item_ids ?? '')));
+            if (! empty($pinnedIds)) {
+                $filtered = $purchasedItems->whereIn('id', $pinnedIds);
+                if ($filtered->isNotEmpty()) {
+                    $purchasedItems = $filtered;
+                }
+            }
 
             $paymentStatus   = 'completed';
             $paymentIntentId = $intent->id;

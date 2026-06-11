@@ -169,6 +169,40 @@ class CheckoutPaymentTest extends TestCase
         $this->assertDatabaseMissing('orders', ['user_id' => $this->user->id]);
     }
 
+    public function test_card_order_only_fulfils_pinned_items(): void
+    {
+        // Item A is priced + pinned into the intent; item B is added "after" pricing
+        // and must NOT end up in the paid order.
+        $itemA = UserItem::create([
+            'user_id' => $this->user->id, 'product_id' => $this->product->id,
+            'quantity' => 1, 'type' => 'cart',
+        ]);
+        $productB = Product::factory()->create([
+            'name' => 'SmuggledWidget', 'category_id' => Category::factory()->create()->id,
+            'is_active' => true, 'price' => 100, 'stock' => 5,
+        ]);
+        UserItem::create([
+            'user_id' => $this->user->id, 'product_id' => $productB->id,
+            'quantity' => 1, 'type' => 'cart',
+        ]);
+
+        $this->fakeStripe($this->intent(['metadata' => [
+            'user_id' => (string) $this->user->id,
+            'subtotal' => '20', 'discount' => '0', 'coupon_code' => '', 'coupon_id' => '',
+            'points_discount' => '0', 'points_used' => '0', 'shipping' => '5', 'distance' => '',
+            'total' => '25', 'item_ids' => (string) $itemA->id,
+        ]]));
+
+        $this->placeCardOrder()->assertStatus(302);
+
+        $order = Order::where('user_id', $this->user->id)->latest('id')->first();
+        $this->assertNotNull($order);
+        $this->assertSame(1, $order->items()->count());
+        $this->assertSame($this->product->id, $order->items()->first()->product_id);
+        // Smuggled item never charged → stock intact.
+        $this->assertSame(5, $productB->fresh()->stock);
+    }
+
     public function test_bank_transfer_order_is_pending_and_needs_no_stripe(): void
     {
         $this->addToCart();
