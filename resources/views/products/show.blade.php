@@ -28,6 +28,43 @@
 .thumb-wrap:hover { opacity: 1 !important; }
 </style>
 @endpush
+
+@push('scripts')
+@php
+    $ldImage = $product->first_image ? url($product->first_image) : url('/images/placeholder-product.png');
+    $jsonLd = [
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Product',
+        'name'        => $product->name,
+        'image'       => [$ldImage],
+        'description' => \Illuminate\Support\Str::limit(strip_tags($product->description ?? $product->name), 300),
+        'sku'         => $product->barcode ?: ('PS-'.$product->id),
+        'offers'      => [
+            '@type'         => 'Offer',
+            'price'         => number_format($product->active_price, 2, '.', ''),
+            'priceCurrency' => 'GBP',
+            'availability'  => $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            'url'           => route('products.show', $product->slug),
+        ],
+    ];
+    if ($product->category) {
+        $jsonLd['category'] = $product->category->name;
+    }
+    if ($reviewsCount > 0) {
+        $jsonLd['aggregateRating'] = [
+            '@type'       => 'AggregateRating',
+            'ratingValue' => $avgRating,
+            'reviewCount' => $reviewsCount,
+        ];
+    }
+@endphp
+{{-- JSON-LD for rich Google results. JSON_HEX_TAG escapes < / > so the data
+     cannot break out of this script block. --}}
+<script type="application/ld+json" nonce="{{ Vite::cspNonce() }}">
+{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 <section class="section-padding">
     <div class="container">
         {{-- Breadcrumb --}}
