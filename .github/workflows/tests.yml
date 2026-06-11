@@ -44,4 +44,4 @@ jobs:
           npm run build
 
       - name: Run test suite
-        run: php artisan test --no-interaction
+        run: php artisan test
