@@ -34,7 +34,7 @@ class CategoryController extends Controller
             'name'        => 'required|string|max:255|unique:categories',
             'description' => 'nullable|string',
             'image_file'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'image_link'  => 'nullable|url',
+            'image_link'  => 'nullable|url:http,https',
         ]);
 
         // Auto-generate a URL-safe slug from the category name
@@ -67,7 +67,7 @@ class CategoryController extends Controller
             'name'        => 'required|string|max:255|unique:categories,name,'.$category->id,
             'description' => 'nullable|string',
             'image_file'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'image_link'  => 'nullable|url',
+            'image_link'  => 'nullable|url:http,https',
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
