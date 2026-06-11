@@ -34,6 +34,7 @@ class User extends Authenticatable
         'role_id', 'is_on_duty', 'loyalty_points', 'profile_photo',
         'offer_discount_percentage', 'offer_scope', 'offer_product_ids',
         'latitude', 'longitude', 'location_updated_at',
+        'cart_reminder_sent_at',
     ];
 
     protected $hidden = [
@@ -53,6 +54,7 @@ class User extends Authenticatable
             'latitude'             => 'float',
             'longitude'            => 'float',
             'location_updated_at'  => 'datetime',
+            'cart_reminder_sent_at' => 'datetime',
         ];
     }
 
