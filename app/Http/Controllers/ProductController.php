@@ -19,19 +19,52 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'reviews'])->where('is_active', true);
+        // Average of approved reviews, exposed as reviews_avg_rating for the card + rating sort
+        $query = Product::with(['category', 'reviews'])
+            ->withAvg(['reviews' => fn ($q) => $q->approved()], 'rating')
+            ->where('is_active', true);
 
         // Filter by category slug when provided
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $category = Category::where('slug', $request->category)->first();
             if ($category) {
                 $query->where('category_id', $category->id);
             }
         }
 
-        // Keyword search on product name
+        // Keyword search across name and description
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%'.$request->search.'%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Price range (filters the base list price)
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', (float) $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', (float) $request->max_price);
+        }
+
+        // Availability — in-stock only
+        if ($request->boolean('in_stock')) {
+            $query->where('stock', '>', 0);
+        }
+
+        // On offer — retail offer or active bulk-buy offer
+        if ($request->boolean('on_offer')) {
+            $query->where(fn ($q) => $q->where('retail_offer', true)->orWhere('offer_active', true));
+        }
+
+        // Minimum average rating across approved reviews. The threshold is cast to a
+        // float and inlined (not bound) so its placeholder can't collide with the
+        // withAvg() subquery's binding above — float cast keeps it injection-safe.
+        if ($request->filled('rating')) {
+            $minRating = (float) $request->rating;
+            $query->whereRaw("(SELECT COALESCE(AVG(rating), 0) FROM reviews WHERE reviews.product_id = products.id AND reviews.is_approved = 1) >= {$minRating}");
         }
 
         // Dynamic sort column
@@ -39,6 +72,7 @@ class ProductController extends Controller
             'price_low'  => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
             'name'       => $query->orderBy('name', 'asc'),
+            'rating'     => $query->orderByDesc('reviews_avg_rating'),
             default      => $query->orderBy('created_at', 'desc'),
         };
 
@@ -47,10 +81,15 @@ class ProductController extends Controller
             $query->where('is_age_restricted', false);
         }
 
-        $products   = $query->paginate(12);
+        $products   = $query->paginate(12)->withQueryString();
         $categories = Category::all();
 
-        return view('products.index', compact('products', 'categories'));
+        // Catalogue price bounds power the price-filter placeholders
+        $priceBounds = Product::where('is_active', true)
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
+
+        return view('products.index', compact('products', 'categories', 'priceBounds'));
     }
 
     /**

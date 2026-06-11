@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Models\Setting;
 use App\Models\UserItem;
 use App\Services\ShippingService;
+use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -27,9 +28,12 @@ class CheckoutController extends Controller
 {
     protected ShippingService $shippingService;
 
-    public function __construct(ShippingService $shippingService)
+    protected StripeService $stripe;
+
+    public function __construct(ShippingService $shippingService, StripeService $stripe)
     {
         $this->shippingService = $shippingService;
+        $this->stripe = $stripe;
     }
 
     /**
@@ -121,6 +125,145 @@ class CheckoutController extends Controller
     }
 
     /**
+     * Compute the authoritative order pricing for the given cart items + request.
+     * Shared by createPaymentIntent() (to set the charge amount) and process()
+     * (bank-transfer path):  subtotal → coupon → loyalty redemption → + shipping.
+     */
+    private function computeOrderPricing($purchasedItems, Request $request): array
+    {
+        $settings = Setting::first();
+        $subtotal = $purchasedItems->sum('line_total');
+
+        // Shipping — dynamic distance/weight engine with flat-rate fallback
+        $rates = \App\Models\ShippingRate::first() ?? (object) [
+            'base_connection_fee' => 5.00,
+            'per_mile_rate'       => 0.50,
+            'per_kg_surcharge'    => 0.20,
+        ];
+        $baseFee        = (float) $rates->base_connection_fee;
+        $perMileRate    = (float) $rates->per_mile_rate;
+        $perKgSurcharge = (float) $rates->per_kg_surcharge;
+
+        $shippingCalcService = new \App\Services\ShippingCalculationService();
+        $totalWeight   = $shippingCalcService->calculateCartWeight($purchasedItems);
+        $destination   = "{$request->address_line}, {$request->city}, UK";
+        $distanceMiles = $shippingCalcService->calculateDrivingDistance($destination);
+
+        if ($distanceMiles !== null) {
+            $shippingCost = $baseFee + ($distanceMiles * $perMileRate) + ($totalWeight * $perKgSurcharge);
+            $distance = $distanceMiles;
+        } else {
+            $flatRate = $settings ? $settings->flat_rate_fee : 5.99;
+            $shippingCost = (float) $flatRate;
+            $distance = null;
+        }
+
+        // Coupon discount
+        $discount = 0;
+        $couponCode = null;
+        $couponId = null;
+        if (session('coupon')) {
+            $coupon = Coupon::find(session('coupon.id'));
+            if ($coupon && $coupon->isValid($subtotal)) {
+                $discount   = $coupon->calculateDiscount($subtotal);
+                $couponCode = $coupon->code;
+                $couponId   = $coupon->id;
+            }
+        }
+        $subtotalAfterCoupon = $subtotal - $discount;
+
+        // Loyalty points redemption
+        $pointsDiscount = 0;
+        $pointsUsed = 0;
+        $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
+        if ($request->has('use_points') && $loyaltyEnabled) {
+            $userPoints     = auth()->user()->loyalty_points;
+            $redemptionRate = $settings->other_settings['points_redemption_value'] ?? 0.01;
+            if ($userPoints > 0) {
+                $maxValueFromPoints = $userPoints * $redemptionRate;
+                if ($maxValueFromPoints >= $subtotalAfterCoupon) {
+                    $pointsDiscount = $subtotalAfterCoupon;
+                    $pointsUsed     = (int) ceil($subtotalAfterCoupon / $redemptionRate);
+                } else {
+                    $pointsDiscount = $maxValueFromPoints;
+                    $pointsUsed     = $userPoints;
+                }
+            }
+        }
+
+        $total = $subtotalAfterCoupon - $pointsDiscount + $shippingCost;
+
+        return compact(
+            'settings', 'subtotal', 'discount', 'couponCode', 'couponId',
+            'shippingCost', 'distance', 'pointsDiscount', 'pointsUsed', 'loyaltyEnabled', 'total'
+        );
+    }
+
+    /**
+     * Create a Stripe PaymentIntent for the current cart + delivery address.
+     * The server computes the amount (never the client) and stores the full price
+     * breakdown in the intent metadata so process() can finalise the order against
+     * tamper-proof values. Returns the client secret for the Payment Element.
+     */
+    public function createPaymentIntent(Request $request)
+    {
+        if (! $this->stripe->isConfigured()) {
+            return response()->json(['error' => 'Online card payment is not configured.'], 422);
+        }
+
+        $request->validate([
+            'address_line' => 'required|string|max:255',
+            'city'         => 'required|string|max:100',
+            'items'        => 'nullable|array',
+        ]);
+
+        $allCartItems = auth()->user()->cartItems()->with('product')->get();
+        if ($allCartItems->isEmpty()) {
+            return response()->json(['error' => 'Your cart is empty.'], 422);
+        }
+
+        $purchasedItems = $request->has('items')
+            ? $allCartItems->whereIn('id', $request->items)
+            : $allCartItems;
+
+        if ($purchasedItems->isEmpty()) {
+            return response()->json(['error' => 'No items selected for checkout.'], 422);
+        }
+
+        $pricing = $this->computeOrderPricing($purchasedItems, $request);
+        $amountMinor = (int) round($pricing['total'] * 100);
+
+        if ($amountMinor < 100) {
+            // Stripe enforces a minimum charge; also guards against £0 totals.
+            return response()->json(['error' => 'Order total is below the minimum card amount.'], 422);
+        }
+
+        try {
+            $intent = $this->stripe->createPaymentIntent($amountMinor, [
+                'user_id'         => (string) auth()->id(),
+                'subtotal'        => (string) round($pricing['subtotal'], 2),
+                'discount'        => (string) round($pricing['discount'], 2),
+                'coupon_code'     => (string) ($pricing['couponCode'] ?? ''),
+                'coupon_id'       => (string) ($pricing['couponId'] ?? ''),
+                'points_discount' => (string) round($pricing['pointsDiscount'], 2),
+                'points_used'     => (string) $pricing['pointsUsed'],
+                'shipping'        => (string) round($pricing['shippingCost'], 2),
+                'distance'        => $pricing['distance'] !== null ? (string) $pricing['distance'] : '',
+                'total'           => (string) round($pricing['total'], 2),
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Stripe PaymentIntent creation failed: '.$e->getMessage());
+
+            return response()->json(['error' => 'Could not start payment. Please try again.'], 502);
+        }
+
+        return response()->json([
+            'clientSecret' => $intent->client_secret,
+            'amount'       => $amountMinor,
+        ]);
+    }
+
+    /**
      * Place the order.
      *
      * Pricing resolution:
@@ -160,82 +303,77 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'No items selected for checkout.');
         }
 
-        $settings = Setting::first();
-        $subtotal  = $purchasedItems->sum('line_total');
+        // Resolve the authoritative price breakdown. For card payments it comes from
+        // the verified Stripe PaymentIntent's metadata (server-set at creation, so the
+        // client cannot tamper with prices); for bank transfer it is computed live.
+        $paymentStatus   = 'pending';
+        $paymentIntentId = null;
 
-        // ── Shipping calculation using new dynamic engine ───────────────────
-        $rates = \App\Models\ShippingRate::first() ?? (object) [
-            'base_connection_fee' => 5.00,
-            'per_mile_rate'       => 0.50,
-            'per_kg_surcharge'    => 0.20,
-        ];
+        if ($request->payment_method === 'Debit/Credit Card') {
+            if (! $this->stripe->isConfigured()) {
+                return back()->with('error', 'Card payment is currently unavailable. Please choose Bank Transfer.')->withInput();
+            }
 
-        $baseFee        = (float) $rates->base_connection_fee;
-        $perMileRate    = (float) $rates->per_mile_rate;
-        $perKgSurcharge = (float) $rates->per_kg_surcharge;
+            $request->validate(['payment_intent_id' => 'required|string']);
 
-        $shippingCalcService = new \App\Services\ShippingCalculationService();
-        $totalWeight = $shippingCalcService->calculateCartWeight($purchasedItems);
+            try {
+                $intent = $this->stripe->retrievePaymentIntent($request->payment_intent_id);
+            } catch (\Throwable $e) {
+                \Log::warning('Stripe PaymentIntent retrieve failed: '.$e->getMessage());
 
-        $destination = "{$request->address_line}, {$request->city}, UK";
-        $distanceMiles = $shippingCalcService->calculateDrivingDistance($destination);
+                return back()->with('error', 'We could not verify your payment. If you were charged, contact support — no order was created.')->withInput();
+            }
 
-        if ($distanceMiles !== null) {
-            $shippingCost = $baseFee + ($distanceMiles * $perMileRate) + ($totalWeight * $perKgSurcharge);
-            $distance = $distanceMiles;
+            // Reject anything not fully paid, in the wrong currency, or not ours.
+            if ($intent->status !== 'succeeded'
+                || strtolower((string) $intent->currency) !== $this->stripe->currency()
+                || (string) ($intent->metadata->user_id ?? '') !== (string) auth()->id()) {
+                return back()->with('error', 'Payment could not be verified. You have not been charged.')->withInput();
+            }
+
+            // A PaymentIntent may back exactly one order (idempotency).
+            if (Order::where('payment_intent_id', $intent->id)->exists()) {
+                return redirect()->route('orders.index')->with('error', 'This payment has already been used for an order.');
+            }
+
+            // Authoritative pricing = the metadata captured when the intent was created.
+            $m = $intent->metadata;
+            $subtotal       = (float) ($m->subtotal ?? 0);
+            $discount       = (float) ($m->discount ?? 0);
+            $couponCode     = ($m->coupon_code ?? '') !== '' ? $m->coupon_code : null;
+            $couponId       = ($m->coupon_id ?? '') !== '' ? (int) $m->coupon_id : null;
+            $pointsDiscount = (float) ($m->points_discount ?? 0);
+            $pointsUsed     = (int) ($m->points_used ?? 0);
+            $shippingCost   = (float) ($m->shipping ?? 0);
+            $distance       = ($m->distance ?? '') !== '' ? (float) $m->distance : null;
+            $total          = $intent->amount / 100;       // exactly what was charged
+            $settings       = Setting::first();
+            $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
+
+            $paymentStatus   = 'completed';
+            $paymentIntentId = $intent->id;
         } else {
-            // Robust fallback system: apply setting's flat rate or standard default
-            $flatRate = $settings ? $settings->flat_rate_fee : 5.99;
-            $shippingCost = (float) $flatRate;
-            $distance = null;
+            // Bank transfer — price live; order stays pending until funds clear.
+            $pricing        = $this->computeOrderPricing($purchasedItems, $request);
+            $settings       = $pricing['settings'];
+            $subtotal       = $pricing['subtotal'];
+            $discount       = $pricing['discount'];
+            $couponCode     = $pricing['couponCode'];
+            $couponId       = $pricing['couponId'];
+            $shippingCost   = $pricing['shippingCost'];
+            $distance       = $pricing['distance'];
+            $pointsDiscount = $pricing['pointsDiscount'];
+            $pointsUsed     = $pricing['pointsUsed'];
+            $loyaltyEnabled = $pricing['loyaltyEnabled'];
+            $total          = $pricing['total'];
         }
-
-        // ── Coupon discount ──────────────────────────────────────────────────
-        $discount  = 0;
-        $couponCode = null;
-
-        if (session('coupon')) {
-            $coupon = Coupon::find(session('coupon.id'));
-            if ($coupon && $coupon->isValid($subtotal)) {
-                $discount   = $coupon->calculateDiscount($subtotal);
-                $couponCode = $coupon->code;
-            }
-        }
-
-        $subtotalAfterCoupon = $subtotal - $discount;
-
-        // ── Loyalty points redemption ────────────────────────────────────────
-        $pointsDiscount = 0;
-        $pointsUsed     = 0;
-
-        $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
-
-        if ($request->has('use_points') && $loyaltyEnabled) {
-            $userPoints     = auth()->user()->loyalty_points;
-            $redemptionRate = $settings->other_settings['points_redemption_value'] ?? 0.01; // £ per point
-
-            if ($userPoints > 0) {
-                $maxValueFromPoints = $userPoints * $redemptionRate;
-
-                if ($maxValueFromPoints >= $subtotalAfterCoupon) {
-                    // Points cover the full amount — only spend what's needed
-                    $pointsDiscount = $subtotalAfterCoupon;
-                    $pointsUsed     = (int) ceil($subtotalAfterCoupon / $redemptionRate);
-                } else {
-                    // Spend all available points for a partial discount
-                    $pointsDiscount = $maxValueFromPoints;
-                    $pointsUsed     = $userPoints;
-                }
-            }
-        }
-
-        $total = $subtotalAfterCoupon - $pointsDiscount + $shippingCost;
 
         // ── DB Transaction: create order, items, stock decrement, points ─────
         try {
             $order = DB::transaction(function () use (
-                $request, $purchasedItems, $subtotal, $discount, $couponCode,
-                $shippingCost, $distance, $total, $settings, $pointsDiscount, $pointsUsed, $loyaltyEnabled
+                $request, $purchasedItems, $subtotal, $discount, $couponCode, $couponId,
+                $shippingCost, $distance, $total, $settings, $pointsDiscount, $pointsUsed,
+                $loyaltyEnabled, $paymentStatus, $paymentIntentId
             ) {
                 // Pre-flight validation inside the transaction so stock checks are atomic
                 foreach ($purchasedItems as $item) {
@@ -264,8 +402,9 @@ class CheckoutController extends Controller
                         'city'         => $request->city,
                         'phone'        => $request->phone,
                     ],
-                    'payment_method'  => $request->payment_method,
-                    'payment_status'  => $request->payment_method === 'Debit/Credit Card' ? 'completed' : 'pending',
+                    'payment_method'    => $request->payment_method,
+                    'payment_status'    => $paymentStatus,
+                    'payment_intent_id' => $paymentIntentId,
                 ]);
 
                 // Snapshot item prices at time of purchase (price can change later)
@@ -280,8 +419,8 @@ class CheckoutController extends Controller
                 }
 
                 // Increment coupon usage counter to enforce usage_limit
-                if ($couponCode) {
-                    Coupon::find(session('coupon.id'))?->increment('times_used');
+                if ($couponId) {
+                    Coupon::find($couponId)?->increment('times_used');
                 }
 
                 // Deduct redeemed points and log the transaction

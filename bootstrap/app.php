@@ -19,6 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
             $middleware->trustProxies(at: $trustedProxies);
         }
         $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
+
+        // Stripe posts webhooks without a CSRF token; it is authenticated by its
+        // signature header instead (verified in StripeWebhookController).
+        $middleware->validateCsrfTokens(except: [
+            'stripe/webhook',
+        ]);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
