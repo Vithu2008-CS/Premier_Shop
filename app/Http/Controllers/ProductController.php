@@ -99,12 +99,8 @@ class ProductController extends Controller
      */
     public function show($slug)
     {
-        $product = Product::with([
-            'category',
-            // Only load approved reviews, newest first, capped at 5 for performance
-            'reviews' => fn ($q) => $q->approved()->latest()->take(5),
-            'reviews.user',
-        ])->where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $product = Product::with('category')
+            ->where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         // Hard-block underage users from viewing age-restricted products
         if ($product->is_age_restricted && auth()->check() && auth()->user()->isUnder16()) {
@@ -141,7 +137,41 @@ class ProductController extends Controller
             }
         }
 
-        return view('products.show', compact('product', 'relatedProducts', 'recentlyViewed'));
+        // ── Review aggregates — computed once here instead of via per-call
+        // accessors repeated throughout the view (the rating distribution gives
+        // count and average without extra queries). ──
+        $ratingDistribution = $product->reviews()->approved()
+            ->selectRaw('rating, count(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating');
+
+        $reviewsCount = (int) $ratingDistribution->sum();
+        $weighted = 0;
+        foreach ($ratingDistribution as $rating => $count) {
+            $weighted += $rating * $count;
+        }
+        $avgRating = $reviewsCount > 0 ? round($weighted / $reviewsCount, 1) : 0;
+
+        $approvedReviews = $product->reviews()->with('user')->approved()->latest()->paginate(5);
+
+        // ── Per-user state, only when authenticated ──
+        $inWishlist = $hasReviewed = $hasPurchased = false;
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $inWishlist = \App\Models\UserItem::where('user_id', $userId)
+                ->where('product_id', $product->id)->where('type', 'wishlist')->exists();
+            $hasReviewed = $product->reviews()->where('user_id', $userId)->exists();
+            $hasPurchased = \App\Models\Order::where('user_id', $userId)
+                ->whereIn('status', ['delivered', 'shipped', 'processing'])
+                ->whereHas('items', fn ($q) => $q->where('product_id', $product->id))
+                ->exists();
+        }
+
+        return view('products.show', compact(
+            'product', 'relatedProducts', 'recentlyViewed',
+            'reviewsCount', 'avgRating', 'ratingDistribution', 'approvedReviews',
+            'inWishlist', 'hasReviewed', 'hasPurchased'
+        ));
     }
 
     /**
