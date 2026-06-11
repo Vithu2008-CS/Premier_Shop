@@ -43,6 +43,13 @@ class RoleController extends Controller
             'permissions.*' => 'exists:permissions,id',
         ]);
 
+        // Privilege-escalation guard: a staff role grants admin-panel access, so only
+        // an administrator may create one. Non-admin staff (even with roles.create)
+        // are limited to non-staff roles.
+        if ($request->boolean('is_staff') && ! auth()->user()->isAdmin()) {
+            abort(403, 'Only an administrator may create staff roles.');
+        }
+
         $role = Role::create([
             'name'         => $request->name,
             'display_name' => $request->display_name,
@@ -79,6 +86,12 @@ class RoleController extends Controller
             'permissions'   => 'array',
             'permissions.*' => 'exists:permissions,id',
         ]);
+
+        // Privilege-escalation guard: only an administrator may modify a staff role,
+        // grant staff access, or alter the built-in admin role's permission set.
+        if (($role->name === 'admin' || $role->is_staff || $request->boolean('is_staff')) && ! auth()->user()->isAdmin()) {
+            abort(403, 'Only an administrator may modify staff roles.');
+        }
 
         $role->update([
             'display_name' => $request->display_name,

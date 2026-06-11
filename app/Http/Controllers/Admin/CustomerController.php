@@ -144,10 +144,18 @@ class CustomerController extends Controller
             'offer_product_ids.*' => 'exists:products,id',
         ]);
 
+        $targetRole = Role::find($request->role_id);
+
+        // Privilege-escalation guard: only an administrator may grant a staff-level
+        // or admin role. Without this, any non-admin staff member holding the
+        // customers.update permission could promote themselves (or anyone) to admin.
+        if ($targetRole && ($targetRole->is_staff || $targetRole->name === 'admin') && ! auth()->user()->isAdmin()) {
+            abort(403, 'Only an administrator may assign staff or admin roles.');
+        }
+
         // Prevent the currently-logged-in admin from demoting themselves
         if ($customer->id === auth()->id() && $customer->isAdmin()) {
-            $newRole = Role::find($request->role_id);
-            if ($newRole->name !== 'admin') {
+            if (! $targetRole || $targetRole->name !== 'admin') {
                 return back()->with('error', 'You cannot remove your own admin role.');
             }
         }

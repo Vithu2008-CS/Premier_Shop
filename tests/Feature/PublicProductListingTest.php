@@ -1,0 +1,153 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Review;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+/**
+ * Covers the public product catalogue (products.index) filters that were wired up
+ * during the storefront polish: price range, availability, on-offer, broadened
+ * search (name + description), minimum approved-review rating, and rating sort.
+ *
+ * Assertions inspect the paginated `products` view-data (the controller's actual
+ * output) rather than rendered HTML, so they validate the query layer directly and
+ * aren't affected by markup/escaping. Every request also asserts a 200 so the
+ * withAvg aggregate and the correlated rating subquery are proven to execute.
+ */
+class PublicProductListingTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private Category $category;
+    private User $reviewer;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->category = Category::factory()->create();
+
+        $customerRole = Role::create(['name' => 'customer', 'display_name' => 'Customer', 'is_staff' => false]);
+        $this->reviewer = User::factory()->create(['role_id' => $customerRole->id]);
+    }
+
+    private function product(array $attrs = []): Product
+    {
+        return Product::factory()->create(array_merge([
+            'category_id' => $this->category->id,
+            'is_active'   => true,
+        ], $attrs));
+    }
+
+    /** Names present in the paginated result for the given query string. */
+    private function listedNames(array $query = [])
+    {
+        $response = $this->get(route('products.index', $query))->assertOk();
+
+        return $response->viewData('products')->getCollection()->pluck('name');
+    }
+
+    public function test_listing_renders_and_lists_active_products(): void
+    {
+        $this->product(['name' => 'AlphaWidget']);
+        $this->product(['name' => 'BetaWidget']);
+
+        $names = $this->listedNames();
+
+        $this->assertTrue($names->contains('AlphaWidget'));
+        $this->assertTrue($names->contains('BetaWidget'));
+    }
+
+    public function test_price_range_filter_narrows_results(): void
+    {
+        $this->product(['name' => 'CheapThing', 'price' => 10]);
+        $this->product(['name' => 'PriceyThing', 'price' => 90]);
+
+        $names = $this->listedNames(['min_price' => 50]);
+
+        $this->assertTrue($names->contains('PriceyThing'));
+        $this->assertFalse($names->contains('CheapThing'));
+    }
+
+    public function test_in_stock_filter_excludes_sold_out(): void
+    {
+        $this->product(['name' => 'AvailableThing', 'stock' => 5]);
+        $this->product(['name' => 'SoldOutThing', 'stock' => 0]);
+
+        $names = $this->listedNames(['in_stock' => 1]);
+
+        $this->assertTrue($names->contains('AvailableThing'));
+        $this->assertFalse($names->contains('SoldOutThing'));
+    }
+
+    public function test_on_offer_filter_shows_only_offers(): void
+    {
+        $this->product(['name' => 'OfferThing', 'retail_offer' => true, 'retail_offer_percentage' => 10]);
+        $this->product(['name' => 'RegularThing', 'retail_offer' => false]);
+
+        $names = $this->listedNames(['on_offer' => 1]);
+
+        $this->assertTrue($names->contains('OfferThing'));
+        $this->assertFalse($names->contains('RegularThing'));
+    }
+
+    public function test_search_matches_description_not_just_name(): void
+    {
+        $this->product(['name' => 'PlainJar', 'description' => 'Pure organic forest honey']);
+        $this->product(['name' => 'OtherJar', 'description' => 'Strawberry jam']);
+
+        $names = $this->listedNames(['search' => 'honey']);
+
+        $this->assertTrue($names->contains('PlainJar'));
+        $this->assertFalse($names->contains('OtherJar'));
+    }
+
+    public function test_rating_filter_uses_approved_reviews(): void
+    {
+        $highRated = $this->product(['name' => 'TopRatedThing']);
+        $lowRated  = $this->product(['name' => 'PoorlyRatedThing']);
+
+        Review::create([
+            'user_id' => $this->reviewer->id, 'product_id' => $highRated->id,
+            'rating' => 5, 'is_approved' => true, 'comment' => 'Excellent',
+        ]);
+        Review::create([
+            'user_id' => $this->reviewer->id, 'product_id' => $lowRated->id,
+            'rating' => 2, 'is_approved' => true, 'comment' => 'Meh',
+        ]);
+
+        $names = $this->listedNames(['rating' => 4]);
+
+        $this->assertTrue($names->contains('TopRatedThing'));
+        $this->assertFalse($names->contains('PoorlyRatedThing'));
+    }
+
+    public function test_sort_by_rating_does_not_error(): void
+    {
+        $this->product(['name' => 'SortMeThing']);
+
+        $names = $this->listedNames(['sort' => 'rating']);
+
+        $this->assertTrue($names->contains('SortMeThing'));
+    }
+
+    public function test_product_detail_page_renders_with_gallery_polish(): void
+    {
+        $product = $this->product([
+            'name'   => 'DetailWidget',
+            'images' => ['/storage/products/x.webp', '/storage/products/y.webp'],
+        ]);
+
+        $this->get(route('products.show', $product->slug))
+            ->assertOk()
+            ->assertSee('DetailWidget')
+            ->assertSee('pdp-gallery-col', false)   // sticky gallery column
+            ->assertSee('pdp-zoom', false);         // hover-zoom hook
+    }
+}
