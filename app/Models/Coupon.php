@@ -70,15 +70,17 @@ class Coupon extends Model
 
     /**
      * Calculate the discount amount to deduct from the given subtotal.
-     * Fixed coupons are capped at the subtotal so the total can never go negative.
+     * Both types are capped at the subtotal so the total can never go negative
+     * (admin validation caps percentages at 100, but rows that predate that
+     * rule — or are seeded directly — must not produce a negative total).
      */
     public function calculateDiscount(float $subtotal): float
     {
         if ($this->discount_type === 'percentage') {
-            return round($subtotal * ($this->discount_value / 100), 2);
+            return min(round($subtotal * ($this->discount_value / 100), 2), $subtotal);
         }
 
         // Fixed: never discount more than the order is worth
-        return min($this->discount_value, $subtotal);
+        return min((float) $this->discount_value, $subtotal);
     }
 }

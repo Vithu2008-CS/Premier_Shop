@@ -29,18 +29,13 @@ class CouponController extends Controller
     /** Validate and persist a new coupon. */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'code'             => 'required|string|max:50|unique:coupons',
-            'discount_type'    => 'required|in:percentage,fixed',
-            'discount_value'   => 'required|numeric|min:0',
-            'min_order_amount' => 'nullable|numeric|min:0',
-            'valid_from'       => 'nullable|date',
-            'valid_until'      => 'nullable|date|after:valid_from',
-            'usage_limit'      => 'nullable|integer|min:1',
-        ]);
+        // Normalise to uppercase *before* validating so the unique check runs
+        // against the stored form — "sale10" must collide with an existing "SALE10"
+        // rather than pass validation and hit the DB unique constraint (500)
+        $request->merge(['code' => strtoupper((string) $request->input('code'))]);
 
-        // Normalise to uppercase so "sale10" and "SALE10" are the same code
-        $validated['code']      = strtoupper($validated['code']);
+        $validated = $request->validate($this->rules($request));
+
         $validated['is_active'] = $request->has('is_active');
 
         Coupon::create($validated);
@@ -57,23 +52,40 @@ class CouponController extends Controller
     /** Validate and persist changes to an existing coupon. */
     public function update(Request $request, Coupon $coupon)
     {
-        $validated = $request->validate([
-            // Unique rule ignores the current coupon's own row
-            'code'             => 'required|string|max:50|unique:coupons,code,'.$coupon->id,
-            'discount_type'    => 'required|in:percentage,fixed',
-            'discount_value'   => 'required|numeric|min:0',
-            'min_order_amount' => 'nullable|numeric|min:0',
-            'valid_from'       => 'nullable|date',
-            'valid_until'      => 'nullable|date|after:valid_from',
-            'usage_limit'      => 'nullable|integer|min:1',
-        ]);
+        // Same pre-validation normalisation as store() — see comment there
+        $request->merge(['code' => strtoupper((string) $request->input('code'))]);
 
-        $validated['code']      = strtoupper($validated['code']);
+        $validated = $request->validate($this->rules($request, $coupon));
+
         $validated['is_active'] = $request->has('is_active');
 
         $coupon->update($validated);
 
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated!');
+    }
+
+    /**
+     * Shared validation rules for store/update.
+     *
+     * Discount bounds: percentage coupons are capped at 100 so a coupon can never
+     * inflate the discount past the order value; fixed coupons (and the min-order
+     * threshold) are capped at the decimal(10,2) column maximum so an oversized
+     * value fails validation instead of erroring at insert time.
+     */
+    private function rules(Request $request, ?Coupon $ignore = null): array
+    {
+        $maxDiscount = $request->input('discount_type') === 'percentage' ? 100 : 99999999.99;
+
+        return [
+            // On update, the unique rule ignores the coupon's own row
+            'code'             => 'required|string|max:50|unique:coupons,code'.($ignore ? ','.$ignore->id : ''),
+            'discount_type'    => 'required|in:percentage,fixed',
+            'discount_value'   => 'required|numeric|gt:0|max:'.$maxDiscount,
+            'min_order_amount' => 'nullable|numeric|min:0|max:99999999.99',
+            'valid_from'       => 'nullable|date',
+            'valid_until'      => 'nullable|date|after:valid_from',
+            'usage_limit'      => 'nullable|integer|min:1',
+        ];
     }
 
     /** Delete a coupon. Existing orders that used it retain their discount_amount. */
