@@ -55,6 +55,27 @@ Route::get('/api/orders/track/{order_number}', [OrderController::class, 'trackPu
 Route::view('/privacy-policy', 'privacy')->name('privacy');
 Route::view('/terms-of-service', 'terms')->name('terms');
 
+// XML sitemap for search engines
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+
+// robots.txt — dynamic so the Sitemap line tracks the current host. Blocks
+// private/account areas from crawlers.
+Route::get('/robots.txt', function () {
+    $lines = [
+        'User-agent: *',
+        'Disallow: /admin',
+        'Disallow: /driver',
+        'Disallow: /checkout',
+        'Disallow: /cart',
+        'Disallow: /profile',
+        'Disallow: /orders',
+        '',
+        'Sitemap: '.url('/sitemap.xml'),
+    ];
+
+    return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain']);
+})->name('robots');
+
 // Stripe webhook — public, signature-verified in the controller, CSRF-exempt
 // (see bootstrap/app.php). Confirms payment asynchronously as a backstop.
 Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handle'])->name('stripe.webhook');
