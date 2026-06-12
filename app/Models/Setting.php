@@ -22,6 +22,9 @@ class Setting extends Model
 {
     use HasFactory;
 
+    /** Container binding key for the per-request settings-row memo. */
+    private const MEMO_KEY = 'app.settings.row';
+
     protected $fillable = [
         'shop_name',
         'origin_address',               // used as origin for shipping distance calc
@@ -52,9 +55,31 @@ class Setting extends Model
      * Uses getAttributes() instead of magic __get to avoid throwing when
      * a column name is passed that doesn't exist in the current DB schema.
      */
+    /** Invalidate the memoised row after any write so reads stay coherent. */
+    protected static function booted(): void
+    {
+        static::saved(fn () => app()->forgetInstance(self::MEMO_KEY));
+        static::deleted(fn () => app()->forgetInstance(self::MEMO_KEY));
+    }
+
+    /**
+     * The single settings row, memoised in the container for the rest of the
+     * request. The footer alone reads several keys per page; without this each
+     * Setting::get() ran its own `SELECT * FROM settings LIMIT 1`.
+     */
+    public static function current(): ?self
+    {
+        if (! app()->bound(self::MEMO_KEY)) {
+            // Container can't store null — wrap in a closure-safe array slot
+            app()->instance(self::MEMO_KEY, ['row' => self::first()]);
+        }
+
+        return app(self::MEMO_KEY)['row'];
+    }
+
     public static function get($key, $default = null)
     {
-        $settings = self::first();
+        $settings = self::current();
         if (! $settings) {
             return $default;
         }
