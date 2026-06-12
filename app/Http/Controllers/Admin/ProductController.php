@@ -235,7 +235,13 @@ class ProductController extends Controller
     /** Force-regenerate the QR code for a product (e.g. after a URL change). */
     public function regenerateQr(Product $product)
     {
-        $this->generateQrCode($product);
+        try {
+            $this->generateQrCode($product);
+        } catch (\Exception $e) {
+            \Log::warning('QR code regeneration failed for product '.$product->id.': '.$e->getMessage());
+
+            return back()->with('error', 'QR code generation failed — the QR service may be down. Try again later.');
+        }
 
         return back()->with('success', 'QR code regenerated!');
     }
@@ -286,20 +292,21 @@ class ProductController extends Controller
         $qrData     = url('/admin/products/'.$product->id.'/qr-lookup').'?uid='.$uniqueHash;
 
         // QR Server API — free tier, no API key needed, returns PNG
-        $apiUrl = 'https://api.qrserver.com/v1/create-qr-code/?'.http_build_query([
-            'size'    => '300x300',
-            'data'    => $qrData,
-            'color'   => '6C5CE7',   // Premier Shop brand purple
-            'bgcolor' => 'FFFFFF',
-            'format'  => 'png',
-            'margin'  => 10,
-        ]);
+        $response = \Illuminate\Support\Facades\Http::timeout(10)
+            ->get('https://api.qrserver.com/v1/create-qr-code/', [
+                'size'    => '300x300',
+                'data'    => $qrData,
+                'color'   => '6C5CE7',   // Premier Shop brand purple
+                'bgcolor' => 'FFFFFF',
+                'format'  => 'png',
+                'margin'  => 10,
+            ]);
 
-        $qrImage = file_get_contents($apiUrl);
-
-        if ($qrImage === false) {
-            throw new \Exception('Failed to generate QR code from API.');
+        if ($response->failed()) {
+            throw new \Exception('Failed to generate QR code from API (HTTP '.$response->status().').');
         }
+
+        $qrImage = $response->body();
 
         // Store with a short UUID prefix so filenames stay unique across regenerations
         $filename = 'qrcodes/product_'.$product->id.'_'.substr($uniqueHash, 0, 8).'.png';

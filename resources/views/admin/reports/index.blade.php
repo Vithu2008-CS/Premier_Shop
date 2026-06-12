@@ -155,7 +155,12 @@
                         @endif
                       </div>
                       <div>
-                        <span class="font-weight-bold d-block">{{ Str::limit($product->name, 40) }}</span>
+                        <span class="font-weight-bold d-block">
+                          {{ Str::limit($product->name, 40) }}
+                          @if($product->trashed())
+                            <span class="badge badge-secondary">Deleted</span>
+                          @endif
+                        </span>
                         @if($product->barcode)
                           <small class="text-muted">{{ $product->barcode }}</small>
                         @endif

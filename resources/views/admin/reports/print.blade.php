@@ -71,7 +71,7 @@
                 @foreach($products as $product)
                 <tr>
                     <td>
-                        <div style="font-weight: bold;">{{ $product->name }}</div>
+                        <div style="font-weight: bold;">{{ $product->name }}{{ $product->trashed() ? ' (deleted)' : '' }}</div>
                         <div style="font-size: 11px; color: #777;">Barcode: {{ $product->barcode ?? 'N/A' }}</div>
                     </td>
                     <td><span class="badge">{{ $product->category->name ?? 'N/A' }}</span></td>

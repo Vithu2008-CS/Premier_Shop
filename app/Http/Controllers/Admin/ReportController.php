@@ -23,7 +23,9 @@ class ReportController extends Controller
     {
         $categories = Category::all();
 
-        $query = Product::with('category')
+        // withTrashed: soft-deleted products keep their sales history in the report
+        $query = Product::withTrashed()
+            ->with('category')
             ->withSum('orderItems as total_sold', 'quantity')
             ->withCount(['wishlistedBy as total_wishlist']);
 
@@ -48,7 +50,9 @@ class ReportController extends Controller
     {
         $categories = Category::all();
 
-        $query = Product::with('category')
+        // withTrashed: soft-deleted products keep their sales history in the report
+        $query = Product::withTrashed()
+            ->with('category')
             ->withSum('orderItems as total_sold', 'quantity')
             ->withCount(['wishlistedBy as total_wishlist']);
 

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserItem;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ProductControllerTest extends TestCase
@@ -30,6 +31,11 @@ class ProductControllerTest extends TestCase
         // Create an admin user
         $this->admin = User::factory()->create([
             'role_id' => $role->id,
+        ]);
+
+        // Stub the external QR service so tests never hit the network
+        Http::fake([
+            'api.qrserver.com/*' => Http::response('fake-png-bytes', 200),
         ]);
     }
 
@@ -222,6 +228,36 @@ class ProductControllerTest extends TestCase
 
         $response->assertRedirect(route('admin.products.index'));
         $this->assertDatabaseHas('products', ['slug' => 'apple-juice-2', 'deleted_at' => null]);
+    }
+
+    public function test_regenerate_qr_stores_code_and_redirects_back()
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $product = Product::factory()->create(['qr_code' => null]);
+
+        $response = $this->actingAs($this->admin)
+            ->from(route('admin.products.edit', $product))
+            ->post(route('admin.products.regenerateQr', $product));
+
+        $response->assertRedirect(route('admin.products.edit', $product));
+        $response->assertSessionHas('success');
+        $this->assertNotNull($product->fresh()->qr_code);
+    }
+
+    public function test_regenerate_qr_failure_flashes_error_instead_of_500()
+    {
+        Http::fake([
+            'api.qrserver.com/*' => Http::response('', 503),
+        ]);
+        $product = Product::factory()->create(['qr_code' => null]);
+
+        $response = $this->actingAs($this->admin)
+            ->from(route('admin.products.edit', $product))
+            ->post(route('admin.products.regenerateQr', $product));
+
+        $response->assertRedirect(route('admin.products.edit', $product));
+        $response->assertSessionHas('error');
+        $this->assertNull($product->fresh()->qr_code);
     }
 
     public function test_soft_deleted_product_hidden_from_admin_index_and_storefront()
