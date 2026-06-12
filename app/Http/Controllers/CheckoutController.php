@@ -215,7 +215,7 @@ class CheckoutController extends Controller
             'items'        => 'nullable|array',
         ]);
 
-        $allCartItems = auth()->user()->cartItems()->with('product')->get();
+        $allCartItems = $this->purchasableCartItems();
         if ($allCartItems->isEmpty()) {
             return response()->json(['error' => 'Your cart is empty.'], 422);
         }
@@ -295,7 +295,7 @@ class CheckoutController extends Controller
             'items'        => 'nullable|array',
         ]);
 
-        $allCartItems = auth()->user()->cartItems()->with('product')->get();
+        $allCartItems = $this->purchasableCartItems();
         if ($allCartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
