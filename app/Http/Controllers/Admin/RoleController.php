@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 /**
  * Manages user roles and their associated permission sets.
- * System roles ('admin', 'customer') are protected from deletion.
+ * System roles ('admin', 'customer', 'driver') are protected from deletion.
  */
 class RoleController extends Controller
 {
@@ -96,7 +96,9 @@ class RoleController extends Controller
         $role->update([
             'display_name' => $request->display_name,
             'description'  => $request->description,
-            'is_staff'     => $request->boolean('is_staff'),
+            // Admin role must stay staff: AdminMiddleware gates the panel on
+            // is_staff, so unchecking it here would lock every admin out.
+            'is_staff'     => $role->name === 'admin' ? true : $request->boolean('is_staff'),
         ]);
 
         // Pass empty array when no checkboxes submitted so all permissions are detached
@@ -108,12 +110,13 @@ class RoleController extends Controller
 
     /**
      * Delete a role.
-     * Blocked if: role is a system role ('admin'/'customer'), or users are still assigned to it.
+     * Blocked if: role is a system role ('admin'/'customer'/'driver'), or users are still assigned to it.
      */
     public function destroy(Role $role)
     {
-        // Protect built-in roles that core app logic depends on
-        if (in_array($role->name, ['admin', 'customer'])) {
+        // Protect built-in roles that core app logic depends on (driver is
+        // load-bearing for DriverMiddleware and driver account creation)
+        if (in_array($role->name, ['admin', 'customer', 'driver'])) {
             return back()->with('error', 'Cannot delete system roles.');
         }
 

@@ -43,10 +43,15 @@
 
                     <div class="form-group mb-4">
                         <div class="form-check form-switch card-title mb-0">
-                            <input type="checkbox" class="form-check-input" name="is_staff" id="isStaff" value="1" {{ old('is_staff', $role->is_staff) ? 'checked' : '' }}>
+                            <input type="checkbox" class="form-check-input" name="is_staff" id="isStaff" value="1" {{ old('is_staff', $role->is_staff) ? 'checked' : '' }} {{ $role->name === 'admin' ? 'disabled' : '' }}>
                             <label class="form-check-label" for="isStaff">Staff / Admin Access</label>
                         </div>
-                        <p class="text-muted small mt-2">Allows login to the administrative dashboard.</p>
+                        <p class="text-muted small mt-2">
+                            Allows login to the administrative dashboard.
+                            @if($role->name === 'admin')
+                                <span class="d-block text-warning">Locked for the admin role.</span>
+                            @endif
+                        </p>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">

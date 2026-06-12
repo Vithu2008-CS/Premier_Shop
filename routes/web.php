@@ -234,7 +234,6 @@ Route::middleware(['auth', 'admin', 'audit.admin'])->prefix('admin')->name('admi
     Route::get('customers/{customer}', [CustomerController::class, 'show'])->name('customers.show')->middleware('permission:customers.view');
     Route::put('customers/{customer}', [CustomerController::class, 'update'])->name('customers.update')->middleware('permission:customers.update');
     Route::delete('customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy')->middleware('permission:customers.delete');
-    Route::patch('customers/{customer}/role', [CustomerController::class, 'updateRole'])->name('customers.updateRole')->middleware('permission:customers.update');
 
     // Reports — analytics dashboard + printable version
     Route::get('reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index')->middleware('permission:reports.view');

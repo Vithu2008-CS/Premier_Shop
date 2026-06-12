@@ -75,7 +75,9 @@ class ReportController extends Controller
     private function applySorting($query, Request $request): void
     {
         $sortBy = $request->get('sort_by', 'sold');
-        $order  = $request->get('order', 'desc');
+
+        // Whitelist the direction — orderBy() throws a 500 on anything else
+        $order = strtolower($request->get('order', 'desc')) === 'asc' ? 'asc' : 'desc';
 
         match ($sortBy) {
             'price'    => $query->orderBy('price', $order),

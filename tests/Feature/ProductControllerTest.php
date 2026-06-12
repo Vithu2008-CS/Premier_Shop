@@ -33,11 +33,13 @@ class ProductControllerTest extends TestCase
             'role_id' => $role->id,
         ]);
 
-        // Stub the external QR service so tests never hit the network
-        Http::fake([
-            'api.qrserver.com/*' => Http::response('fake-png-bytes', 200),
-        ]);
+        // Stub the external QR service so tests never hit the network.
+        // Closure so individual tests can override via $this->qrApiResponse.
+        Http::fake(fn () => $this->qrApiResponse ?? Http::response('fake-png-bytes', 200));
     }
+
+    /** Per-test override for the faked QR API response. */
+    protected $qrApiResponse = null;
 
     public function test_admin_can_store_product()
     {
@@ -246,9 +248,7 @@ class ProductControllerTest extends TestCase
 
     public function test_regenerate_qr_failure_flashes_error_instead_of_500()
     {
-        Http::fake([
-            'api.qrserver.com/*' => Http::response('', 503),
-        ]);
+        $this->qrApiResponse = Http::response('', 503);
         $product = Product::factory()->create(['qr_code' => null]);
 
         $response = $this->actingAs($this->admin)
