@@ -13,7 +13,9 @@
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i data-feather="check-circle" class="icon-md mr-2"></i>
     {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 @endif
 
@@ -26,7 +28,9 @@
             <li>{{ $error }}</li>
         @endforeach
     </ul>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 @endif
 
@@ -125,7 +129,7 @@
                             <i class="bi bi-facebook text-primary me-2 fs-5"></i> Facebook URL
                         </label>
                         <input type="url" name="social_facebook" class="form-control" 
-                               value="{{ old('social_facebook', $settings->other_settings['social_facebook'] ?? '#') }}" 
+                               value="{{ old('social_facebook', $settings->other_settings['social_facebook'] ?? '') }}"
                                placeholder="E.g., https://facebook.com/my-shop">
                     </div>
 
@@ -135,7 +139,7 @@
                             <i class="bi bi-instagram text-danger me-2 fs-5"></i> Instagram URL
                         </label>
                         <input type="url" name="social_instagram" class="form-control" 
-                               value="{{ old('social_instagram', $settings->other_settings['social_instagram'] ?? '#') }}" 
+                               value="{{ old('social_instagram', $settings->other_settings['social_instagram'] ?? '') }}"
                                placeholder="E.g., https://instagram.com/my-shop">
                     </div>
 
@@ -145,7 +149,7 @@
                             <i class="bi bi-twitter-x text-dark me-2 fs-5"></i> Twitter/X URL
                         </label>
                         <input type="url" name="social_twitter" class="form-control" 
-                               value="{{ old('social_twitter', $settings->other_settings['social_twitter'] ?? '#') }}" 
+                               value="{{ old('social_twitter', $settings->other_settings['social_twitter'] ?? '') }}"
                                placeholder="E.g., https://x.com/my-shop">
                     </div>
 
@@ -155,7 +159,7 @@
                             <i class="bi bi-tiktok text-dark me-2 fs-5"></i> TikTok URL
                         </label>
                         <input type="url" name="social_tiktok" class="form-control" 
-                               value="{{ old('social_tiktok', $settings->other_settings['social_tiktok'] ?? '#') }}" 
+                               value="{{ old('social_tiktok', $settings->other_settings['social_tiktok'] ?? '') }}"
                                placeholder="E.g., https://tiktok.com/@my-shop">
                     </div>
 

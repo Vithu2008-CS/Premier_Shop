@@ -138,6 +138,43 @@ class AdminAuthorizationTest extends TestCase
         $this->assertSame($other->id, $customer->fresh()->role_id);
     }
 
+    // ── System-role safeguards ─────────────────────────────────────────────────
+
+    public function test_admin_role_keeps_staff_flag_even_when_unchecked(): void
+    {
+        // Unchecking is_staff on the admin role would lock every admin out of the
+        // panel (AdminMiddleware gates on is_staff) — the controller must force it.
+        $this->actingAs($this->user($this->adminRole))
+            ->put(route('admin.roles.update', $this->adminRole), [
+                'display_name' => 'Administrator',
+                // no is_staff key — checkbox unchecked
+            ])
+            ->assertRedirect(route('admin.roles.index'));
+
+        $this->assertTrue($this->adminRole->fresh()->is_staff);
+    }
+
+    public function test_driver_role_cannot_be_deleted(): void
+    {
+        // Driver role is load-bearing (DriverMiddleware, driver account creation)
+        // and must survive deletion even with zero assigned users.
+        $driver = Role::create(['name' => 'driver', 'display_name' => 'Driver', 'is_staff' => false]);
+
+        $this->actingAs($this->user($this->adminRole))
+            ->delete(route('admin.roles.destroy', $driver))
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseHas('roles', ['name' => 'driver']);
+    }
+
+    public function test_dead_customer_role_patch_route_is_removed(): void
+    {
+        // The old PATCH customers/{customer}/role route pointed to a controller
+        // method that no longer exists and produced a 500 on dispatch.
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has('admin.customers.updateRole'));
+    }
+
     public function test_non_admin_staff_cannot_create_a_staff_role(): void
     {
         $custom = Role::create(['name' => 'support', 'display_name' => 'Support', 'is_staff' => true]);

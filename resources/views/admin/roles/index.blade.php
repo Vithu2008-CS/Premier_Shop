@@ -75,7 +75,7 @@
                           </a>
                           @endif
                           
-                          @if(!in_array($role->name, ['admin', 'customer']) && auth()->user()->hasPermission('roles.delete'))
+                          @if(!in_array($role->name, ['admin', 'customer', 'driver']) && auth()->user()->hasPermission('roles.delete'))
                           <div class="dropdown-divider"></div>
                           <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" data-confirm="Truly delete this role? Standard roles cannot be deleted.">
                               @csrf @method('DELETE')
