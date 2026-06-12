@@ -114,8 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.applyCoupon')->middleware('throttle:checkout');
     Route::delete('/checkout/coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.removeCoupon');
-    Route::post('/checkout/shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculateShipping')->middleware('throttle:checkout'); // AJAX preview
-    Route::post('/checkout/calculate-shipping-dynamic', [\App\Http\Controllers\ShippingCalculationController::class, 'calculate'])->name('checkout.calculateShippingDynamic')->middleware('throttle:checkout');
+    Route::post('/checkout/calculate-shipping-dynamic', [\App\Http\Controllers\ShippingCalculationController::class, 'calculate'])->name('checkout.calculateShippingDynamic')->middleware('throttle:checkout'); // AJAX zone-based quote
     Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.paymentIntent')->middleware('throttle:checkout'); // Stripe PaymentIntent (server-priced)
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process')->middleware('throttle:checkout'); // place order
 
@@ -248,8 +247,13 @@ Route::middleware(['auth', 'admin', 'audit.admin'])->prefix('admin')->name('admi
     Route::post('contact-settings', [App\Http\Controllers\Admin\SettingController::class, 'contactStore'])->name('settings.contact.store')->middleware('permission:settings.update');
 
     // Shipping Rates — base, distance, and weight rates
-    Route::get('shipping-rates', [App\Http\Controllers\Admin\ShippingRateController::class, 'index'])->name('shipping-rates.index')->middleware('permission:shipping_rates.view');
-    Route::put('shipping-rates', [App\Http\Controllers\Admin\ShippingRateController::class, 'update'])->name('shipping-rates.update')->middleware('permission:shipping_rates.update');
+    // Delivery zones (distance-banded delivery pricing) — reuses the shipping_rates permission set
+    Route::get('delivery-zones', [App\Http\Controllers\Admin\DeliveryZoneController::class, 'index'])->name('delivery-zones.index')->middleware('permission:shipping_rates.view');
+    Route::get('delivery-zones/create', [App\Http\Controllers\Admin\DeliveryZoneController::class, 'create'])->name('delivery-zones.create')->middleware('permission:shipping_rates.update');
+    Route::post('delivery-zones', [App\Http\Controllers\Admin\DeliveryZoneController::class, 'store'])->name('delivery-zones.store')->middleware('permission:shipping_rates.update');
+    Route::get('delivery-zones/{delivery_zone}/edit', [App\Http\Controllers\Admin\DeliveryZoneController::class, 'edit'])->name('delivery-zones.edit')->middleware('permission:shipping_rates.update');
+    Route::match(['put', 'patch'], 'delivery-zones/{delivery_zone}', [App\Http\Controllers\Admin\DeliveryZoneController::class, 'update'])->name('delivery-zones.update')->middleware('permission:shipping_rates.update');
+    Route::delete('delivery-zones/{delivery_zone}', [App\Http\Controllers\Admin\DeliveryZoneController::class, 'destroy'])->name('delivery-zones.destroy')->middleware('permission:shipping_rates.update');
 
     // Admin profile (reuses ProfileController with different view)
     Route::get('profile', [ProfileController::class, 'editAdmin'])->name('profile');

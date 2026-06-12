@@ -8,7 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Setting;
 use App\Models\UserItem;
-use App\Services\ShippingService;
+use App\Services\DeliveryZoneService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,20 +19,20 @@ use Illuminate\Support\Facades\Mail;
  *  1. index()            — Show checkout form pre-populated with cart items
  *  2. applyCoupon()      — Validate and store coupon in session
  *  3. removeCoupon()     — Remove coupon from session
- *  4. calculateShipping()— AJAX shipping cost preview as user types their address
- *  5. process()          — Place the order inside a DB transaction
+ *  4. process()          — Place the order inside a DB transaction
  *
  * Pricing layers applied in order: subtotal → coupon discount → loyalty points → shipping.
+ * Shipping is resolved by DeliveryZoneService (admin-defined distance zones).
  */
 class CheckoutController extends Controller
 {
-    protected ShippingService $shippingService;
+    protected DeliveryZoneService $deliveryZones;
 
     protected StripeService $stripe;
 
-    public function __construct(ShippingService $shippingService, StripeService $stripe)
+    public function __construct(DeliveryZoneService $deliveryZones, StripeService $stripe)
     {
-        $this->shippingService = $shippingService;
+        $this->deliveryZones = $deliveryZones;
         $this->stripe = $stripe;
     }
 
@@ -134,32 +134,11 @@ class CheckoutController extends Controller
         $settings = Setting::first();
         $subtotal = $purchasedItems->sum('line_total');
 
-        // Shipping — dynamic distance/weight engine with flat-rate fallback
-        $rates = \App\Models\ShippingRate::first() ?? (object) [
-            'base_connection_fee' => 5.00,
-            'per_mile_rate'       => 0.50,
-            'per_kg_surcharge'    => 0.20,
-        ];
-        $baseFee        = (float) $rates->base_connection_fee;
-        $perMileRate    = (float) $rates->per_mile_rate;
-        $perKgSurcharge = (float) $rates->per_kg_surcharge;
-
-        $shippingCalcService = new \App\Services\ShippingCalculationService();
-        $totalWeight   = $shippingCalcService->calculateCartWeight($purchasedItems);
-        $destination   = "{$request->address_line}, {$request->city}, UK";
-        $distanceMiles = $shippingCalcService->calculateDrivingDistance($destination);
-
-        if ($distanceMiles !== null) {
-            $shippingCost = $baseFee + ($distanceMiles * $perMileRate) + ($totalWeight * $perKgSurcharge);
-            $distance = $distanceMiles;
-        } else {
-            $flatRate = $settings ? $settings->flat_rate_fee : 5.99;
-            $shippingCost = (float) $flatRate;
-            $distance = null;
-        }
-        // Admin validation rejects negative rates, but rows written outside it
-        // (seeders, direct SQL) must never let shipping subtract from the total
-        $shippingCost = max(0.0, $shippingCost);
+        // Shipping — admin-defined distance zones with flat-rate fallback
+        $destination  = "{$request->address_line}, {$request->city}, UK";
+        $quote        = $this->deliveryZones->quoteForAddress($destination, (float) $subtotal);
+        $shippingCost = max(0.0, (float) $quote['cost']);
+        $distance     = $quote['distance_miles'];
 
         // Coupon discount
         $discount = 0;
@@ -522,61 +501,4 @@ class CheckoutController extends Controller
         return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
     }
 
-    /**
-     * AJAX endpoint that calculates a real-time shipping cost preview
-     * as the user types their delivery address on the checkout page.
-     * Uses ShippingService to get the driving distance, then applies the
-     * same tier logic as process().
-     */
-    public function calculateShipping(Request $request)
-    {
-        $request->validate([
-            'address_line' => 'required|string',
-            'city'         => 'required|string',
-        ]);
-
-        $settings = Setting::first();
-        if (! $settings) {
-            return response()->json(['cost' => 5.99, 'distance' => null, 'message' => 'Flat rate shipping.']);
-        }
-
-        $items    = auth()->user()->cartItems()->with('product')->get();
-        $subtotal = $items->sum('line_total');
-
-        $other = $settings->other_settings ?? [];
-        $lat = $other['origin_latitude'] ?? null;
-        $lng = $other['origin_longitude'] ?? null;
-        if ($lat !== null && $lng !== null) {
-            $origin = "{$lat},{$lng}";
-        } else {
-            $origin = $settings->origin_address ?? 'United Kingdom';
-        }
-        $destination = "{$request->address_line}, {$request->city}, UK";
-        $distance    = $this->shippingService->calculateDrivingDistance($origin, $destination);
-
-        $shippingCost = $settings->flat_rate_fee;
-        $message      = 'Flat rate shipping.';
-
-        if ($subtotal >= $settings->free_delivery_threshold) {
-            $shippingCost = 0.00;
-            $message      = "Free shipping (Over £{$settings->free_delivery_threshold})";
-        } elseif ($distance !== null) {
-            $distanceInMiles = $distance * 0.621371;
-            if ($distanceInMiles <= $settings->free_delivery_radius_miles) {
-                $shippingCost = 0.00;
-                $message      = 'Free local delivery ('.number_format($distanceInMiles, 1).' miles)';
-            } else {
-                $extraMiles   = $distanceInMiles - $settings->free_delivery_radius_miles;
-                $shippingCost = $settings->flat_rate_fee + ($extraMiles * $settings->surcharge_per_mile);
-                $message      = 'Distance: '.number_format($distanceInMiles, 1).' miles.';
-            }
-        }
-
-        return response()->json([
-            // Clamp so a negative configured rate can never show a negative preview
-            'cost'     => round(max(0.0, (float) $shippingCost), 2),
-            'distance' => $distance ? round($distance * 0.621371, 1) : null,
-            'message'  => $message,
-        ]);
-    }
 }
