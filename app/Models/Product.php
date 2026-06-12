@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\GeneratesUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Represents a product in the shop catalogue.
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Product extends Model
 {
-    use GeneratesUniqueSlug, HasFactory;
+    use GeneratesUniqueSlug, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name', 'slug', 'description', 'price', 'wholesale_price', 'stock',

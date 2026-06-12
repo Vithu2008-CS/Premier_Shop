@@ -169,7 +169,7 @@ class AppNotification extends Model
         $statusMessages = [
             'approved' => 'Your return request has been approved!',
             'rejected' => 'Your return request has been rejected.',
-            'refunded' => 'Your refund of £'.number_format($return->refund_amount, 2).' has been processed.',
+            'refunded' => 'Your refund of £'.number_format((float) $return->refund_amount, 2).' has been processed.',
         ];
 
         $statusIcons = [

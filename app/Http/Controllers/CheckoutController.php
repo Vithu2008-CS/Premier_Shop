@@ -160,8 +160,11 @@ class CheckoutController extends Controller
         $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
         if ($request->has('use_points') && $loyaltyEnabled) {
             $userPoints     = auth()->user()->loyalty_points;
-            $redemptionRate = $settings->other_settings['points_redemption_value'] ?? 0.01;
-            if ($userPoints > 0) {
+            $redemptionRate = (float) ($settings->other_settings['points_redemption_value'] ?? 0.01);
+            // rate > 0 guards rows saved before validation enforced it — a zero
+            // rate would burn the user's whole balance for a £0 discount (and
+            // divide by zero on the full-redemption branch)
+            if ($userPoints > 0 && $redemptionRate > 0) {
                 $maxValueFromPoints = $userPoints * $redemptionRate;
                 if ($maxValueFromPoints >= $subtotalAfterCoupon) {
                     $pointsDiscount = $subtotalAfterCoupon;
