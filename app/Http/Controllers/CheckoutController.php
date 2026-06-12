@@ -157,6 +157,9 @@ class CheckoutController extends Controller
             $shippingCost = (float) $flatRate;
             $distance = null;
         }
+        // Admin validation rejects negative rates, but rows written outside it
+        // (seeders, direct SQL) must never let shipping subtract from the total
+        $shippingCost = max(0.0, $shippingCost);
 
         // Coupon discount
         $discount = 0;
@@ -570,7 +573,8 @@ class CheckoutController extends Controller
         }
 
         return response()->json([
-            'cost'     => round($shippingCost, 2),
+            // Clamp so a negative configured rate can never show a negative preview
+            'cost'     => round(max(0.0, (float) $shippingCost), 2),
             'distance' => $distance ? round($distance * 0.621371, 1) : null,
             'message'  => $message,
         ]);

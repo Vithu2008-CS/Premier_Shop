@@ -34,10 +34,12 @@ class SettingController extends Controller
             'origin_address'             => 'nullable|string|max:255',
             'origin_latitude'            => 'nullable|numeric|between:-90,90',
             'origin_longitude'           => 'nullable|numeric|between:-180,180',
-            'free_delivery_threshold'    => 'nullable|numeric|min:0',
-            'free_delivery_radius_miles' => 'nullable|numeric|min:0',
-            'surcharge_per_mile'         => 'nullable|numeric|min:0',
-            'flat_rate_fee'              => 'nullable|numeric|min:0',
+            // min:0 rejects negative rates (0 = free shipping is legitimate);
+            // max matches the decimal(10,2) column capacity
+            'free_delivery_threshold'    => 'nullable|numeric|min:0|max:99999999.99',
+            'free_delivery_radius_miles' => 'nullable|numeric|min:0|max:99999999.99',
+            'surcharge_per_mile'         => 'nullable|numeric|min:0|max:99999999.99',
+            'flat_rate_fee'              => 'nullable|numeric|min:0|max:99999999.99',
             'shop_hours'                 => 'nullable|array',
             'shop_notice'                => 'nullable|string',
             'loyalty_enabled'            => 'nullable|boolean',

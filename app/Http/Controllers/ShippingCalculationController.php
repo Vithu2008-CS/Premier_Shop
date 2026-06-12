@@ -80,7 +80,8 @@ class ShippingCalculationController extends Controller
         }
 
         return response()->json([
-            'cost'           => round($shippingTotal, 2),
+            // Clamp so negative rates written outside admin validation can't quote below zero
+            'cost'           => round(max(0.0, $shippingTotal), 2),
             'distance_miles' => $distanceMiles !== null ? round($distanceMiles, 1) : null,
             'weight_kg'      => round($totalWeight, 2),
             'message'        => $message,
