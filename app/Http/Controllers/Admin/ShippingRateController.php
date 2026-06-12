@@ -30,10 +30,13 @@ class ShippingRateController extends Controller
      */
     public function update(Request $request)
     {
+        // gt:0 rejects negative and zero rates; max matches the decimal(8,2)
+        // column capacity so an oversized rate fails validation instead of
+        // erroring at the database on save
         $validated = $request->validate([
-            'base_connection_fee' => 'required|numeric|gt:0',
-            'per_mile_rate'       => 'required|numeric|gt:0',
-            'per_kg_surcharge'    => 'required|numeric|gt:0',
+            'base_connection_fee' => 'required|numeric|gt:0|max:999999.99',
+            'per_mile_rate'       => 'required|numeric|gt:0|max:999999.99',
+            'per_kg_surcharge'    => 'required|numeric|gt:0|max:999999.99',
         ], [
             'base_connection_fee.gt' => 'The Base Connection Fee must be a positive number greater than 0.',
             'per_mile_rate.gt'       => 'The Per-Mile Rate must be a positive number greater than 0.',
