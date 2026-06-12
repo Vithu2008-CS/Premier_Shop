@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\UserItem;
 use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -158,6 +161,81 @@ class ProductControllerTest extends TestCase
         // Unauthenticated request should redirect to login
         $response = $this->get(route('admin.products.suggest', ['q' => 'Juice']));
         $response->assertRedirect(route('login'));
+    }
+
+    public function test_destroy_soft_deletes_product_and_preserves_order_history()
+    {
+        $product = Product::factory()->create();
+
+        $order = Order::create([
+            'user_id' => $this->admin->id,
+            'order_number' => 'ORD-TEST-1',
+            'status' => 'delivered',
+            'subtotal' => 9.99,
+            'shipping_cost' => 0,
+            'total' => 9.99,
+            'shipping_address' => ['line1' => '1 Test St', 'city' => 'London', 'postcode' => 'E1 1AA'],
+        ]);
+        $orderItem = OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'price' => 9.99,
+        ]);
+
+        $response = $this->actingAs($this->admin)->delete(route('admin.products.destroy', $product));
+
+        $response->assertRedirect(route('admin.products.index'));
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
+
+        // The order line must survive and still resolve its (trashed) product
+        $this->assertDatabaseHas('order_items', ['id' => $orderItem->id, 'product_id' => $product->id]);
+        $this->assertEquals($product->name, $orderItem->fresh()->product->name);
+    }
+
+    public function test_destroy_removes_cart_and_wishlist_entries()
+    {
+        $product = Product::factory()->create();
+
+        UserItem::create(['user_id' => $this->admin->id, 'product_id' => $product->id, 'quantity' => 2, 'type' => 'cart']);
+
+        $this->actingAs($this->admin)->delete(route('admin.products.destroy', $product));
+
+        $this->assertDatabaseMissing('user_items', ['product_id' => $product->id]);
+    }
+
+    public function test_soft_deleted_product_slug_is_not_reused()
+    {
+        $category = Category::factory()->create();
+        $product = Product::factory()->create(['name' => 'Apple Juice', 'slug' => 'apple-juice']);
+
+        $this->actingAs($this->admin)->delete(route('admin.products.destroy', $product));
+
+        // Same name again: trashed row still owns the unique slug, so a suffix is required
+        $response = $this->actingAs($this->admin)->post(route('admin.products.store'), [
+            'name' => 'Apple Juice',
+            'price' => 9.99,
+            'stock' => 10,
+            'category_id' => $category->id,
+            'product_type' => 'normal',
+        ]);
+
+        $response->assertRedirect(route('admin.products.index'));
+        $this->assertDatabaseHas('products', ['slug' => 'apple-juice-2', 'deleted_at' => null]);
+    }
+
+    public function test_soft_deleted_product_hidden_from_admin_index_and_storefront()
+    {
+        $product = Product::factory()->create(['name' => 'Vanished Cola']);
+
+        $this->actingAs($this->admin)->delete(route('admin.products.destroy', $product));
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.products.index'))
+            ->assertStatus(200)
+            ->assertDontSee('Vanished Cola');
+
+        $this->get(route('products.show', $product->slug))->assertStatus(404);
     }
 }
 

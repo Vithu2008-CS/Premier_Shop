@@ -127,6 +127,15 @@
                         </div>
                     @endif
 
+                    @if($errors->any())
+                        <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert" style="border-radius: 12px; background-color: rgba(239, 68, 68, 0.12); color: #ef4444; padding: 0.75rem 1rem;">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill mr-2" style="font-size: 1rem;"></i>
+                                <span class="font-weight-bold" style="font-size: 0.8rem;">{{ $errors->first() }}</span>
+                            </div>
+                        </div>
+                    @endif
+
                     <form action="{{ route('admin.returns.update', $return) }}" method="POST" id="process-return-form" class="process-return-form">
                         @csrf
                         @method('PUT')
@@ -135,12 +144,26 @@
                             <label class="small text-muted font-weight-bold mb-2 d-flex align-items-center">
                                 <i class="bi bi-flag text-primary mr-2"></i> Update Status
                             </label>
+                            @php
+                                $statusOptions = [
+                                    'pending'  => 'Pending',
+                                    'approved' => 'Approved (Restores Stock)',
+                                    'rejected' => 'Rejected',
+                                    'refunded' => 'Refund Processed',
+                                ];
+                            @endphp
                             <select name="status" class="form-control rounded-3" style="height: 42px !important;" required>
-                                <option value="pending" {{ $return->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="approved" {{ $return->status == 'approved' ? 'selected' : '' }}>Approved (Restores Stock)</option>
-                                <option value="rejected" {{ $return->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                <option value="refunded" {{ $return->status == 'refunded' ? 'selected' : '' }}>Refund Processed</option>
+                                @foreach($statusOptions as $value => $label)
+                                    <option value="{{ $value }}"
+                                        {{ $return->status == $value ? 'selected' : '' }}
+                                        {{ $return->canTransitionTo($value) ? '' : 'disabled' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
                             </select>
+                            @if($return->status === 'refunded')
+                                <small class="form-text text-muted" style="font-size: 0.72rem;">Refund processed — status is final. Notes can still be edited.</small>
+                            @endif
                         </div>
 
                         <div class="form-group mb-4">

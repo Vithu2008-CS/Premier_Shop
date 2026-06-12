@@ -40,23 +40,35 @@ class SettingController extends Controller
             'free_delivery_radius_miles' => 'nullable|numeric|min:0|max:99999999.99',
             'surcharge_per_mile'         => 'nullable|numeric|min:0|max:99999999.99',
             'flat_rate_fee'              => 'nullable|numeric|min:0|max:99999999.99',
-            'shop_hours'                 => 'nullable|array',
-            'shop_notice'                => 'nullable|string',
+            // Hours: only real weekday keys, H:i times (the footer Carbon::parse()s
+            // these on every page — a malformed value would 500 the storefront)
+            'shop_hours'                 => 'nullable|array:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'shop_hours.*'               => 'array',
+            'shop_hours.*.open'          => 'nullable|date_format:H:i',
+            'shop_hours.*.close'         => 'nullable|date_format:H:i',
+            'shop_hours.*.closed'        => 'nullable|boolean',
+            'shop_notice'                => 'nullable|string|max:1000',
             'loyalty_enabled'            => 'nullable|boolean',
-            'points_per_pound'           => 'nullable|integer|min:1',
-            'points_redemption_value'    => 'nullable|numeric|min:0',
+            'points_per_pound'           => 'nullable|integer|min:1|max:1000',
+            // gt:0 — a zero rate would let checkout burn a customer's entire
+            // points balance for a £0.00 discount
+            'points_redemption_value'    => 'nullable|numeric|gt:0|max:1000',
         ]);
 
         // Use existing row or create a fresh one (firstOrNew without save)
         $settings = Setting::first() ?? new Setting;
 
-        // Update flat columns — fall back to current value if not submitted
-        $settings->shop_name                  = $request->shop_name                  ?? $settings->shop_name;
-        $settings->origin_address             = $request->origin_address             ?? $settings->origin_address;
-        $settings->free_delivery_threshold    = $request->free_delivery_threshold    ?? $settings->free_delivery_threshold;
-        $settings->free_delivery_radius_miles = $request->free_delivery_radius_miles ?? $settings->free_delivery_radius_miles;
-        $settings->surcharge_per_mile         = $request->surcharge_per_mile         ?? $settings->surcharge_per_mile;
-        $settings->flat_rate_fee              = $request->flat_rate_fee              ?? $settings->flat_rate_fee;
+        // Update flat columns only when submitted — assigning null explicitly
+        // would override the column defaults on a fresh row (shop_name is
+        // NOT NULL, so the very first save used to fail outright)
+        foreach ([
+            'shop_name', 'origin_address', 'free_delivery_threshold',
+            'free_delivery_radius_miles', 'surcharge_per_mile', 'flat_rate_fee',
+        ] as $column) {
+            if ($request->filled($column)) {
+                $settings->{$column} = $request->input($column);
+            }
+        }
 
         // Merge into the JSON column — start from existing data so unrelated keys survive
         $other = $settings->other_settings ?? [];
@@ -69,20 +81,35 @@ class SettingController extends Controller
         }
 
         if ($request->has('shop_hours')) {
-            $other['shop_hours'] = $request->shop_hours;
+            // Normalise to exactly {open, close, closed} per day so stray input
+            // keys never land in the blob and `closed` is a real boolean
+            $hours = [];
+            foreach ((array) $request->input('shop_hours', []) as $day => $dayHours) {
+                $hours[$day] = [
+                    'open'   => $dayHours['open'] ?? null,
+                    'close'  => $dayHours['close'] ?? null,
+                    'closed' => filter_var($dayHours['closed'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                ];
+            }
+            $other['shop_hours'] = $hours;
         }
         if ($request->has('shop_notice')) {
             $other['shop_notice'] = $request->shop_notice;
         }
 
-        // Loyalty programme: presence of checkbox = enabled, absence = disabled
-        $other['loyalty_enabled'] = $request->has('loyalty_enabled');
-
-        if ($request->has('points_per_pound')) {
-            $other['points_per_pound'] = $request->points_per_pound;
+        // Loyalty programme: only the loyalty form submits this field (hidden 0 +
+        // checkbox 1). Guarding on presence stops the shop-hours form — which posts
+        // to this same route without the field — from silently disabling loyalty.
+        if ($request->has('loyalty_enabled')) {
+            $other['loyalty_enabled'] = $request->boolean('loyalty_enabled');
         }
-        if ($request->has('points_redemption_value')) {
-            $other['points_redemption_value'] = $request->points_redemption_value;
+
+        // Cast before storing so the JSON blob holds real numbers, not "5" strings
+        if ($request->filled('points_per_pound')) {
+            $other['points_per_pound'] = (int) $request->points_per_pound;
+        }
+        if ($request->filled('points_redemption_value')) {
+            $other['points_redemption_value'] = (float) $request->points_redemption_value;
         }
 
         $settings->other_settings = $other;

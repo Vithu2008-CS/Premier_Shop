@@ -50,14 +50,29 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order', 'drivers'));
     }
 
-    /** Assign a delivery driver to an order. */
+    /**
+     * Assign a delivery driver to an order, or unassign when no driver is selected.
+     * Only users with the driver role who are currently on duty are assignable —
+     * mirrors the eligibility filter used to build the dropdown in show().
+     */
     public function assignDriver(Request $request, Order $order)
     {
-        $request->validate(['driver_id' => 'required|exists:users,id']);
+        $driverRoleId = \App\Models\Role::where('name', 'driver')->value('id');
 
-        $order->update(['driver_id' => $request->driver_id]);
+        $validated = $request->validate([
+            'driver_id' => [
+                'nullable',
+                \Illuminate\Validation\Rule::exists('users', 'id')
+                    ->where('role_id', $driverRoleId)
+                    ->where('is_on_duty', true),
+            ],
+        ]);
 
-        return back()->with('success', 'Driver assigned to order.');
+        $order->update(['driver_id' => $validated['driver_id'] ?? null]);
+
+        return back()->with('success', $order->driver_id
+            ? 'Driver assigned to order.'
+            : 'Driver unassigned from order.');
     }
 
     /**

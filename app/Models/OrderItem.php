@@ -33,7 +33,7 @@ class OrderItem extends Model
     /** The product at the time of purchase (may be soft-deleted/renamed since). */
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     /** Return request line-items referencing this order line. */

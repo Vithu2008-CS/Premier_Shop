@@ -322,6 +322,8 @@
             <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top-subtle flex-wrap gap-3 update-status-actions">
               <div class="d-flex align-items-center">
                 <div class="custom-control custom-switch custom-switch-premium">
+                  {{-- Hidden fallback so unchecking the switch submits send_email=0 (absent field would fall back to the controller's default of true) --}}
+                  <input type="hidden" name="send_email" value="0">
                   <input type="checkbox" class="custom-control-input cursor-pointer" id="sendEmailSwitch" name="send_email" value="1" checked>
                   <label class="custom-control-label small text-muted font-weight-bold cursor-pointer" for="sendEmailSwitch" style="user-select: none;">
                     Email customer about this status change

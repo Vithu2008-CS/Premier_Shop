@@ -2,6 +2,7 @@
 
 namespace App\Models\Concerns;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 /**
@@ -20,8 +21,13 @@ trait GeneratesUniqueSlug
         $slug = $base;
         $suffix = 2;
 
+        // Soft-deleted rows still occupy the UNIQUE slug index, so they must
+        // count as collisions or restoring/inserting would throw at the DB layer.
+        $usesSoftDeletes = in_array(SoftDeletes::class, class_uses_recursive(static::class), true);
+
         while (
             static::query()
+                ->when($usesSoftDeletes, fn ($q) => $q->withTrashed())
                 ->where('slug', $slug)
                 ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
                 ->exists()

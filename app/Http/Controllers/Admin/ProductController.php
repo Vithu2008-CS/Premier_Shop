@@ -215,10 +215,19 @@ class ProductController extends Controller
         ]);
     }
 
-    /** Soft-delete a product. */
+    /**
+     * Soft-delete a product so past orders keep their line items.
+     * Soft deletes bypass the DB cascades, so rows that should not outlive the
+     * listing (carts, wishlists, recently-viewed, reviews) are removed explicitly.
+     */
     public function destroy(Product $product)
     {
-        $product->delete();
+        \DB::transaction(function () use ($product) {
+            \App\Models\UserItem::where('product_id', $product->id)->delete();
+            \App\Models\RecentlyViewed::where('product_id', $product->id)->delete();
+            $product->reviews()->delete();
+            $product->delete();
+        });
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted.');
     }
