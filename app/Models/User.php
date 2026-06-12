@@ -149,6 +149,20 @@ class User extends Authenticatable
         return $this->hasMany(UserItem::class)->wishlist();
     }
 
+    /** Per-request memo for wishlistedProductIds(). */
+    private ?array $wishlistIdsMemo = null;
+
+    /**
+     * IDs of every product on this user's wishlist, loaded once per request.
+     * Product cards render in grids of 12+; checking against this array costs
+     * one query total instead of one EXISTS query per card.
+     */
+    public function wishlistedProductIds(): array
+    {
+        // Cast defensively: some PDO configs return integer columns as strings
+        return $this->wishlistIdsMemo ??= $this->wishlists()->pluck('product_id')->map(fn ($id) => (int) $id)->all();
+    }
+
     /** Orders where this user is the assigned delivery driver. */
     public function assignedOrders()
     {

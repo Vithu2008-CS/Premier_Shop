@@ -946,8 +946,7 @@
                     <ul class="footer-links" style="font-size:0.8rem;">
                         @php
                             $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                            $settings = \App\Models\Setting::first();
-                            $shopHours = $settings->other_settings['shop_hours'] ?? [];
+                            $shopHours = \App\Models\Setting::get('shop_hours', []);
                         @endphp
                         @foreach($days as $day)
                             @php
@@ -1404,10 +1403,13 @@
                 ->get(['code', 'discount_type', 'discount_value', 'min_order_amount'])
                 ->toArray();
 
+            // Recent orders only — the assistant answers "where's my order",
+            // it doesn't need the user's full history on every page load
             $userOrders = auth()->check()
                 ? auth()->user()->orders()
                     ->with(['driver'])
                     ->latest()
+                    ->limit(10)
                     ->get(['id', 'order_number', 'status', 'total', 'created_at', 'shipped_date', 'delivered_date'])
                     ->map(function ($order) {
                         return [

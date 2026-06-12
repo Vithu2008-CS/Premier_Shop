@@ -376,10 +376,7 @@
         {{-- ── Wishlist ── --}}
         @auth
             @php
-                $inWishlist = \App\Models\UserItem::where('user_id', auth()->id())
-                    ->where('product_id', $product->id)
-                    ->where('type', 'wishlist')
-                    ->exists();
+                $inWishlist = in_array($product->id, auth()->user()->wishlistedProductIds(), true);
             @endphp
             <form action="{{ route('wishlists.toggle', $product->id) }}" method="POST" class="pcard-wishlist">
                 @csrf
