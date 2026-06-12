@@ -10,7 +10,7 @@
     AJAX endpoints called:
      - checkout.applyCoupon  (POST)  — validates and stores coupon in session
      - checkout.removeCoupon (DELETE) — clears coupon from session
-     - checkout.calculateShipping (POST) — previews shipping cost as address is typed
+     - checkout.calculateShippingDynamic (POST) — zone-based delivery quote as address is typed
     Final submit → checkout.process (POST) → CheckoutController::process()
 
     Variables: $items, $savedAddresses, $settings (flat_rate_fee etc.),

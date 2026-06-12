@@ -149,8 +149,8 @@
       </li>
       @endif
       @if(auth()->user()->hasPermission('shipping_rates.view'))
-      <li class="nav-item {{ Request::is('admin/shipping-rates*') ? 'active' : '' }}">
-        <a href="{{ route('admin.shipping-rates.index') }}" class="nav-link">
+      <li class="nav-item {{ Request::is('admin/delivery-zones*') ? 'active' : '' }}">
+        <a href="{{ route('admin.delivery-zones.index') }}" class="nav-link">
           <i class="link-icon" data-feather="navigation"></i>
           <span class="link-title">Shipping Rates</span>
         </a>

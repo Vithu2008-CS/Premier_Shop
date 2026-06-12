@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
-use App\Models\ShippingRate;
-use App\Services\ShippingCalculationService;
+use App\Services\DeliveryZoneService;
 use Illuminate\Http\Request;
 
 /**
- * Handles secure real-time AJAX shipping rate calculations.
+ * Handles secure real-time AJAX delivery charge quotes for the checkout page.
+ * Distance (store → customer) comes from Google, pricing from the admin's
+ * delivery zones, with a flat-rate fallback when neither resolves.
  */
 class ShippingCalculationController extends Controller
 {
-    protected ShippingCalculationService $shippingCalculationService;
+    protected DeliveryZoneService $deliveryZones;
 
-    public function __construct(ShippingCalculationService $shippingCalculationService)
+    public function __construct(DeliveryZoneService $deliveryZones)
     {
-        $this->shippingCalculationService = $shippingCalculationService;
+        $this->deliveryZones = $deliveryZones;
     }
 
     /**
-     * Calculate and return dynamic shipping fees based on cart weight and destination mileage.
+     * Quote the delivery charge for the authenticated user's cart and address.
      */
     public function calculate(Request $request)
     {
@@ -29,62 +29,26 @@ class ShippingCalculationController extends Controller
             'city'         => 'required|string',
         ]);
 
-        // Retrieve the current cart items for the authenticated user
         $cartItems = auth()->user()->cartItems()->with('product')->get();
 
         if ($cartItems->isEmpty()) {
             return response()->json([
                 'cost'           => 0.00,
                 'distance_miles' => 0,
-                'weight_kg'      => 0.00,
                 'message'        => 'Your cart is empty.',
             ]);
         }
 
-        // Aggregate total weight
-        $totalWeight = $this->shippingCalculationService->calculateCartWeight($cartItems);
-
-        // Fetch global rates with fail-safe defaults
-        $rates = ShippingRate::first() ?? (object) [
-            'base_connection_fee' => 5.00,
-            'per_mile_rate'       => 0.50,
-            'per_kg_surcharge'    => 0.20,
-        ];
-
-        $baseFee        = (float) $rates->base_connection_fee;
-        $perMileRate    = (float) $rates->per_mile_rate;
-        $perKgSurcharge = (float) $rates->per_kg_surcharge;
-
-        // Compile destination address
+        $subtotal    = (float) $cartItems->sum('line_total');
         $destination = "{$request->address_line}, {$request->city}, UK";
 
-        // Query driving distance via Google Maps Matrix API
-        $distanceMiles = $this->shippingCalculationService->calculateDrivingDistance($destination);
-
-        if ($distanceMiles !== null) {
-            // Apply standard formula
-            $shippingTotal = $baseFee + ($distanceMiles * $perMileRate) + ($totalWeight * $perKgSurcharge);
-            $message = sprintf(
-                'Distance: %s miles. Total package weight: %s kg.',
-                number_format($distanceMiles, 1),
-                number_format($totalWeight, 2)
-            );
-        } else {
-            // Robust fallback system: apply setting's flat rate or standard default
-            $flatRate = Setting::first()->flat_rate_fee ?? 5.99;
-            $shippingTotal = (float) $flatRate;
-            $message = sprintf(
-                'Flat rate applied due to distance matrix API fallback (Total package weight: %s kg).',
-                number_format($totalWeight, 2)
-            );
-        }
+        $quote = $this->deliveryZones->quoteForAddress($destination, $subtotal);
 
         return response()->json([
-            // Clamp so negative rates written outside admin validation can't quote below zero
-            'cost'           => round(max(0.0, $shippingTotal), 2),
-            'distance_miles' => $distanceMiles !== null ? round($distanceMiles, 1) : null,
-            'weight_kg'      => round($totalWeight, 2),
-            'message'        => $message,
+            // Clamp so a misconfigured zone can never quote below zero
+            'cost'           => round(max(0.0, (float) $quote['cost']), 2),
+            'distance_miles' => $quote['distance_miles'] !== null ? round($quote['distance_miles'], 1) : null,
+            'message'        => $quote['message'],
         ]);
     }
 }
