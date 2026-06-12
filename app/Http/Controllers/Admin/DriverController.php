@@ -140,8 +140,9 @@ class DriverController extends Controller
             return response()->json(['error' => 'Not a driver'], 404);
         }
 
+        // Carbon 3 diffs are signed; measure from the update forward so age is positive
         $locationAgeSeconds = $driver->location_updated_at
-            ? (int) now()->diffInSeconds($driver->location_updated_at)
+            ? (int) $driver->location_updated_at->diffInSeconds(now())
             : null;
 
         return response()->json([

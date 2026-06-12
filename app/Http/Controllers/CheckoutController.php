@@ -37,13 +37,26 @@ class CheckoutController extends Controller
     }
 
     /**
+     * The user's cart rows that can actually be purchased: product still
+     * exists (not soft-deleted) and is active. Mirrors CartController's
+     * display filter so checkout never charges for rows the cart hides.
+     */
+    private function purchasableCartItems()
+    {
+        return auth()->user()->cartItems()
+            ->with('product')
+            ->whereHas('product', fn ($q) => $q->where('is_active', true))
+            ->get();
+    }
+
+    /**
      * Show the checkout page.
      * Redirects to cart if it's empty.
      * Supports a subset checkout: if ?items[]=id is present, only those cart rows are shown.
      */
     public function index(Request $request)
     {
-        $items = auth()->user()->cartItems()->with('product')->get();
+        $items = $this->purchasableCartItems();
 
         if ($items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
@@ -73,7 +86,7 @@ class CheckoutController extends Controller
             return back()->with('error', 'Invalid coupon code.');
         }
 
-        $items    = auth()->user()->cartItems()->with('product')->get();
+        $items    = $this->purchasableCartItems();
         if ($request->has('items')) {
             $items = $items->whereIn('id', $request->items);
         }
@@ -111,7 +124,7 @@ class CheckoutController extends Controller
         session()->forget('coupon');
 
         if ($request->wantsJson()) {
-            $subtotal = auth()->user()->cartItems()->with('product')->get()->sum('line_total');
+            $subtotal = $this->purchasableCartItems()->sum('line_total');
 
             return response()->json([
                 'success'  => true,

@@ -127,6 +127,25 @@ class DriverLocationTrackingTest extends TestCase
     }
 
     /** @test */
+    public function location_age_is_reported_in_positive_seconds()
+    {
+        $this->driver->update([
+            'latitude' => 51.5074,
+            'longitude' => -0.1278,
+            'location_updated_at' => now()->subMinutes(10),
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->getJson(route('admin.drivers.location', $this->driver));
+
+        $response->assertStatus(200);
+
+        $age = $response->json('location_age_seconds');
+        $this->assertGreaterThanOrEqual(590, $age);
+        $this->assertLessThanOrEqual(620, $age);
+    }
+
+    /** @test */
     public function non_admin_cannot_retrieve_driver_location()
     {
         $response = $this->actingAs($this->customer)
