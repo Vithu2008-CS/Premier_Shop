@@ -135,7 +135,7 @@
 .bg-soft-danger { background: rgba(239,68,68,0.1); color: #ef4444; }
 .bg-soft-info { background: rgba(6,182,212,0.1); color: #06b6d4; }
 
-html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
+html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(164, 95, 191, 0.15); color: #A45FBF; }
 html[data-admin-theme="dark"] .bg-soft-success { background: rgba(52, 211, 153, 0.15); color: #34d399; }
 html[data-admin-theme="dark"] .bg-soft-warning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
 html[data-admin-theme="dark"] .bg-soft-danger { background: rgba(248, 113, 113, 0.15); color: #f87171; }
@@ -190,12 +190,12 @@ html[data-admin-theme="dark"] .dropdown-menu-status .dropdown-item {
     color: #cbd5e1 !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-status .dropdown-item:hover {
-    background: rgba(167, 139, 250, 0.12) !important;
-    color: #a78bfa !important;
+    background: rgba(164, 95, 191, 0.12) !important;
+    color: #A45FBF !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-status .active-status-item {
-    background: rgba(167, 139, 250, 0.18) !important;
-    color: #a78bfa !important;
+    background: rgba(164, 95, 191, 0.18) !important;
+    color: #A45FBF !important;
 }
 .rounded-4 {
     border-radius: 18px !important;
@@ -209,7 +209,7 @@ html[data-admin-theme="dark"] .dropdown-menu-status .active-status-item {
     font-weight: 500;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 .page-breadcrumb .breadcrumb-item.active {
     color: #64748b;

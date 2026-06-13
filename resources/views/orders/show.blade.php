@@ -350,9 +350,9 @@
                             path: [warehouse, destination],
                             map: map,
                             geodesic: true,
-                            strokeColor: '#3498DB',
+                            strokeColor: '#743089',
                             strokeOpacity: 0,
-                            icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.8, scale: 4, strokeColor: '#3498DB' }, offset: '0', repeat: '16px' }],
+                            icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.8, scale: 4, strokeColor: '#743089' }, offset: '0', repeat: '16px' }],
                         });
 
                         // Fit bounds
@@ -367,7 +367,7 @@
                             const truckMarker = new google.maps.Marker({
                                 position: warehouse,
                                 map: map,
-                                icon: makePin('#3498DB', '🚚'),
+                                icon: makePin('#743089', '🚚'),
                                 title: 'Courier',
                                 zIndex: 10,
                             });
@@ -408,7 +408,7 @@
                             requestAnimationFrame(animateCourier);
 
                         } else if (status === 'delivered') {
-                            new google.maps.Marker({ position: destination, map: map, icon: makePin('#3498DB', '🚚'), title: 'Delivered' });
+                            new google.maps.Marker({ position: destination, map: map, icon: makePin('#743089', '🚚'), title: 'Delivered' });
                         }
                     });
                 </script>

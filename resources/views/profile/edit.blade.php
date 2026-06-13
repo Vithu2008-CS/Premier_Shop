@@ -372,7 +372,7 @@
         <div class="orders-grid-profile">
             {{-- Pending --}}
             <a href="{{ route('orders.index') }}" class="order-tile-item">
-                <div class="order-tile-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+                <div class="order-tile-icon" style="background: rgba(116, 48, 137, 0.1); color: #743089;">
                     <i class="bi bi-wallet2"></i>
                 </div>
                 <span class="order-tile-label">Pending</span>

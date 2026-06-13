@@ -66,7 +66,39 @@
 
     <style>
         .sidebar .sidebar-header .sidebar-brand span {
-            color: #727cf5;
+            color: #FFDD00;
+        }
+
+        /* ── Brand accent overrides — yellow (#FFDD00) on purple (#743089) ── */
+        .sidebar .nav-item.active { position: relative; }
+        .sidebar .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 7px; bottom: 7px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: #FFDD00;
+        }
+        .sidebar .nav-item.active > .nav-link .link-title,
+        .sidebar .nav-item.active > .nav-link .link-icon {
+            color: #743089 !important;
+        }
+        html[data-admin-theme="dark"] .sidebar .nav-item.active > .nav-link .link-title,
+        html[data-admin-theme="dark"] .sidebar .nav-item.active > .nav-link .link-icon {
+            color: #C9A0DD !important;
+        }
+        /* Yellow accent CTA available in admin */
+        .btn-accent {
+            background: #FFDD00 !important;
+            border-color: #FFDD00 !important;
+            color: #2A1030 !important;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(255, 221, 0, 0.3);
+        }
+        .btn-accent:hover {
+            background: #F5C400 !important;
+            color: #2A1030 !important;
+            transform: translateY(-1px);
         }
 
         /* Custom styled Choose File buttons with theme support */
@@ -190,8 +222,8 @@
         }
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group:focus-within {
             background-color: #0c1427 !important;
-            border-color: #a78bfa !important;
-            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 4px 12px rgba(0,0,0,0.2) !important;
+            border-color: #A45FBF !important;
+            box-shadow: 0 0 0 3px rgba(164, 95, 191, 0.25), 0 4px 12px rgba(0,0,0,0.2) !important;
         }
 
         /* Transparent prepend area */
@@ -217,7 +249,7 @@
         }
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group-text i,
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group-text svg {
-            color: #a78bfa !important;
+            color: #A45FBF !important;
         }
         .navbar-content .search-form .input-group:focus-within .input-group-text i,
         .navbar-content .search-form .input-group:focus-within .input-group-text svg {
@@ -281,7 +313,7 @@
             border-bottom: 1px dashed rgba(116, 48, 137, 0.12) !important;
         }
         html[data-admin-theme="dark"] .omni-search-category-title {
-            color: #a78bfa !important;
+            color: #A45FBF !important;
             border-bottom-color: rgba(255, 255, 255, 0.08) !important;
         }
 
@@ -307,8 +339,8 @@
             outline: none !important;
         }
         html[data-admin-theme="dark"] .omni-search-item:hover, html[data-admin-theme="dark"] .omni-search-item.active {
-            background-color: rgba(167, 139, 250, 0.1) !important;
-            color: #a78bfa !important;
+            background-color: rgba(164, 95, 191, 0.1) !important;
+            color: #A45FBF !important;
             text-decoration: none !important;
         }
 
@@ -334,8 +366,8 @@
             margin-right: 10px !important;
         }
         html[data-admin-theme="dark"] .omni-search-avatar {
-            background-color: rgba(167, 139, 250, 0.12) !important;
-            color: #a78bfa !important;
+            background-color: rgba(164, 95, 191, 0.12) !important;
+            color: #A45FBF !important;
         }
     </style>
 

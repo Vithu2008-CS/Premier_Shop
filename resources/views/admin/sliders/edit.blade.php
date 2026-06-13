@@ -23,7 +23,7 @@ html[data-admin-theme="dark"] .form-control, html[data-admin-theme="dark"] .form
     background-color: #080f1d !important; border-color: rgba(255,255,255,0.08) !important; color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus, html[data-admin-theme="dark"] .form-select:focus {
-    border-color: #a78bfa !important; box-shadow: 0 0 0 3.5px rgba(167,139,250,0.2) !important;
+    border-color: #A45FBF !important; box-shadow: 0 0 0 3.5px rgba(164, 95, 191,0.2) !important;
 }
 .form-control.is-invalid { border-color: #ff3366 !important; box-shadow: 0 0 0 3.5px rgba(255,51,102,0.15) !important; }
 
@@ -38,12 +38,12 @@ html[data-admin-theme="dark"] .border-bottom-subtle { border-bottom: 1.5px solid
 .type-card:hover { border-color: rgba(116, 48, 137,0.3); background: rgba(116, 48, 137,0.03); }
 .type-card.selected { border-color: #743089; background: rgba(116, 48, 137,0.06); }
 html[data-admin-theme="dark"] .type-card { border-color: rgba(255,255,255,0.07); }
-html[data-admin-theme="dark"] .type-card:hover { border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.05); }
-html[data-admin-theme="dark"] .type-card.selected { border-color: #a78bfa; background: rgba(167,139,250,0.1); }
+html[data-admin-theme="dark"] .type-card:hover { border-color: rgba(164, 95, 191,0.35); background: rgba(164, 95, 191,0.05); }
+html[data-admin-theme="dark"] .type-card.selected { border-color: #A45FBF; background: rgba(164, 95, 191,0.1); }
 .type-card-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; margin-bottom:8px; }
 .type-card-label { font-size:0.82rem; font-weight:700; font-family:'Outfit',sans-serif; margin-bottom:2px; }
 .type-card-desc  { font-size:0.7rem; color:#94a3b8; line-height:1.4; }
-.type-card-size  { font-size:0.65rem; color:#a78bfa; font-family:monospace; margin-top:4px; }
+.type-card-size  { font-size:0.65rem; color:#A45FBF; font-family:monospace; margin-top:4px; }
 .bg-soft-primary { background: rgba(116, 48, 137,0.1) !important; color: #743089 !important; }
 .bg-soft-success { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
 .bg-soft-warning { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
@@ -56,7 +56,7 @@ html[data-admin-theme="dark"] .type-card.selected { border-color: #a78bfa; backg
     background:rgba(116, 48, 137,0.04); border:1.5px solid rgba(116, 48, 137,0.1);
     width:110px; flex-shrink:0;
 }
-html[data-admin-theme="dark"] .pos-picker-grid { background:rgba(167,139,250,0.06); border-color:rgba(167,139,250,0.15); }
+html[data-admin-theme="dark"] .pos-picker-grid { background:rgba(164, 95, 191,0.06); border-color:rgba(164, 95, 191,0.15); }
 .pos-cell {
     width:28px; height:28px; border-radius:7px;
     border:1.5px solid rgba(116, 48, 137,0.12); background:transparent;
@@ -64,11 +64,11 @@ html[data-admin-theme="dark"] .pos-picker-grid { background:rgba(167,139,250,0.0
     transition:all 0.15s ease; font-size:0.75rem; color:#94a3b8; line-height:1;
 }
 .pos-cell:hover { background:rgba(116, 48, 137,0.15); border-color:rgba(116, 48, 137,0.3); color:#743089; }
-.pos-cell.active { background:linear-gradient(135deg,#743089,#a78bfa); border-color:transparent; color:#fff; box-shadow:0 2px 8px rgba(116, 48, 137,0.3); }
-html[data-admin-theme="dark"] .pos-cell { border-color:rgba(167,139,250,0.15); color:#64748b; }
-html[data-admin-theme="dark"] .pos-cell:hover { background:rgba(167,139,250,0.15); border-color:rgba(167,139,250,0.35); color:#a78bfa; }
+.pos-cell.active { background:linear-gradient(135deg,#743089,#A45FBF); border-color:transparent; color:#fff; box-shadow:0 2px 8px rgba(116, 48, 137,0.3); }
+html[data-admin-theme="dark"] .pos-cell { border-color:rgba(164, 95, 191,0.15); color:#64748b; }
+html[data-admin-theme="dark"] .pos-cell:hover { background:rgba(164, 95, 191,0.15); border-color:rgba(164, 95, 191,0.35); color:#A45FBF; }
 .pos-label { font-size:0.72rem; color:#743089; font-weight:600; background:rgba(116, 48, 137,0.08); padding:3px 10px; border-radius:20px; display:inline-block; margin-top:4px; }
-html[data-admin-theme="dark"] .pos-label { color:#a78bfa; background:rgba(167,139,250,0.12); }
+html[data-admin-theme="dark"] .pos-label { color:#A45FBF; background:rgba(164, 95, 191,0.12); }
 
 /* Preview */
 .preview-slide-container {
@@ -138,7 +138,7 @@ html[data-admin-theme="dark"] .floating-save-bar .btn-outline-secondary:hover {
     background:rgba(255,255,255,0.08) !important; color:#fff !important;
 }
 .floating-save-bar .btn-primary {
-    background:linear-gradient(135deg,#743089,#a78bfa) !important;
+    background:linear-gradient(135deg,#743089,#A45FBF) !important;
     border:none !important; color:#fff !important; box-shadow:0 4px 12px rgba(116, 48, 137,0.2) !important;
 }
 .floating-save-bar .btn-primary:hover { transform:translateY(-1px) !important; box-shadow:0 6px 16px rgba(116, 48, 137,0.3) !important; color:#fff !important; }

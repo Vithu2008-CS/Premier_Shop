@@ -159,13 +159,13 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 html[data-admin-theme="dark"] .product-row-btn:hover {
-    background-color: rgba(167, 139, 250, 0.05) !important;
+    background-color: rgba(164, 95, 191, 0.05) !important;
 }
 .product-row-btn:hover .text-primary-hover {
     color: #743089 !important;
 }
 html[data-admin-theme="dark"] .product-row-btn:hover .text-primary-hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
 }
 </style>
 

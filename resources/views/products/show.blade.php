@@ -130,13 +130,13 @@
                             <span class="badge" style="background:rgba(116, 48, 137,0.1);color:#743089;">{{ $product->category->name }}</span>
                         @endif
                         @if($product->is_age_restricted)
-                            <span class="badge bg-danger">🔞 Age 16+ Only</span>
+                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon-fill me-1"></i>Age 16+ Only</span>
                         @endif
                         @if($product->retail_offer)
-                            <span class="badge bg-warning text-dark">🔥 Retail Offer {{ $product->retail_offer_percentage > 0 ? '(' . round($product->retail_offer_percentage) . '% OFF)' : '' }}</span>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-fire me-1"></i>Retail Offer {{ $product->retail_offer_percentage > 0 ? '(' . round($product->retail_offer_percentage) . '% OFF)' : '' }}</span>
                         @endif
                         @if($product->stock > 0 && $product->stock <= 10)
-                            <span class="badge bg-warning text-dark">Only {{ $product->stock }} left!</span>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Only {{ $product->stock }} left!</span>
                         @endif
                     </div>
                     @auth
@@ -228,12 +228,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="submit" class="btn btn-add-cart w-100 h-100 py-3 rounded-pill shadow-sm">
+                                    <button type="submit" class="btn btn-accent w-100 h-100 py-3 rounded-pill shadow-sm">
                                         <i class="bi bi-bag-plus-fill me-2"></i> Add to Cart
                                     </button>
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="submit" formaction="{{ route('cart.buyNow') }}" class="btn btn-primary w-100 h-100 py-3 rounded-pill shadow-sm" style="background: var(--ps-gradient); border: none;">
+                                    <button type="submit" formaction="{{ route('cart.buyNow') }}" class="btn btn-brand w-100 h-100 py-3 rounded-pill shadow-sm">
                                         <i class="bi bi-lightning-charge-fill me-2"></i> Buy Now
                                     </button>
                                 </div>
@@ -546,7 +546,7 @@
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
                         <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm" style="background: var(--ps-gradient); border: none; height: 44px;">
+                        <button type="submit" class="btn btn-brand btn-sm rounded-pill px-4 fw-bold shadow-sm" style="height: 44px;">
                             Buy Now
                         </button>
                     </form>

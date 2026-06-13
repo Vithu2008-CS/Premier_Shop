@@ -669,7 +669,7 @@
     background: linear-gradient(135deg, #743089 0%, #8555e3 100%) !important;
 }
 .widget-grad-blue {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    background: linear-gradient(135deg, #743089 0%, #1d4ed8 100%) !important;
 }
 
 /* Badge colors */
@@ -736,8 +736,8 @@ html[data-admin-theme="dark"] select.form-control {
 }
 html[data-admin-theme="dark"] .form-control:focus,
 html[data-admin-theme="dark"] select.form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191, 0.2) !important;
     background-color: #080f1d !important;
 }
 
@@ -796,7 +796,7 @@ html[data-admin-theme="dark"] .custom-switch-premium .custom-control-label::befo
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #743089, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     border: none !important;
     box-shadow: 0 4px 14px rgba(116, 48, 137, 0.25) !important;
     color: #ffffff !important;
@@ -816,11 +816,11 @@ html[data-admin-theme="dark"] .custom-switch-premium .custom-control-label::befo
     transform: translateY(-1px);
 }
 html[data-admin-theme="dark"] .btn-outline-primary {
-    border-color: #a78bfa !important;
-    color: #a78bfa !important;
+    border-color: #A45FBF !important;
+    color: #A45FBF !important;
 }
 html[data-admin-theme="dark"] .btn-outline-primary:hover {
-    background-color: #a78bfa !important;
+    background-color: #A45FBF !important;
     color: #0c1427 !important;
 }
 
@@ -899,7 +899,7 @@ html[data-admin-theme="dark"] .table-row-hover-effect:hover {
     font-weight: 600;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 
 /* Delivery Proof overlay */
@@ -948,9 +948,9 @@ html[data-admin-theme="dark"] .custom-select-btn {
 html[data-admin-theme="dark"] .custom-select-btn:hover,
 html[data-admin-theme="dark"] .custom-select-btn:focus,
 html[data-admin-theme="dark"] .custom-select-btn:active {
-    border-color: #a78bfa !important;
+    border-color: #A45FBF !important;
     background-color: #080f1d !important;
-    box-shadow: 0 0 0 3.5px rgba(167, 139, 250, 0.2) !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191, 0.2) !important;
 }
 
 /* Premium Dropdown Menu List Box */
@@ -982,8 +982,8 @@ html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item {
     color: #743089 !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item:hover {
-    background-color: rgba(167, 139, 250, 0.12) !important;
-    color: #a78bfa !important;
+    background-color: rgba(164, 95, 191, 0.12) !important;
+    color: #A45FBF !important;
 }
 
 /* Custom active dropdown item state with curved borders and matched violet theme background */
@@ -995,8 +995,8 @@ html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item:hover {
 }
 html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item.active,
 html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item.active:hover {
-    background-color: rgba(167, 139, 250, 0.18) !important;
-    color: #a78bfa !important;
+    background-color: rgba(164, 95, 191, 0.18) !important;
+    color: #A45FBF !important;
     font-weight: 700 !important;
 }
 
@@ -1028,8 +1028,8 @@ html[data-admin-theme="dark"] .flatpickr-months .flatpickr-month {
 }
 .flatpickr-current-month .numInputWrapper span.arrowUp::after { border-bottom-color: #743089 !important; }
 .flatpickr-current-month .numInputWrapper span.arrowDown::after { border-top-color: #743089 !important; }
-html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arrowUp::after { border-bottom-color: #a78bfa !important; }
-html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arrowDown::after { border-top-color: #a78bfa !important; }
+html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arrowUp::after { border-bottom-color: #A45FBF !important; }
+html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arrowDown::after { border-top-color: #A45FBF !important; }
 
 /* Fully hide native Flatpickr month select to render our premium curved dropdown */
 .flatpickr-monthDropdown-months,
@@ -1052,7 +1052,7 @@ html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arr
 }
 html[data-admin-theme="dark"] .flatpickr-current-month input.cur-year:hover,
 html[data-admin-theme="dark"] .flatpickr-current-month input.cur-year:focus {
-    background-color: rgba(167, 139, 250, 0.1) !important;
+    background-color: rgba(164, 95, 191, 0.1) !important;
 }
 
 /* Arrow buttons */
@@ -1065,8 +1065,8 @@ html[data-admin-theme="dark"] .flatpickr-current-month input.cur-year:focus {
 }
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-prev-month, 
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-next-month {
-    color: #a78bfa !important;
-    fill: #a78bfa !important;
+    color: #A45FBF !important;
+    fill: #A45FBF !important;
 }
 .flatpickr-months .flatpickr-prev-month:hover, 
 .flatpickr-months .flatpickr-next-month:hover {
@@ -1074,7 +1074,7 @@ html[data-admin-theme="dark"] .flatpickr-months .flatpickr-next-month {
 }
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-prev-month:hover, 
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-next-month:hover {
-    background-color: rgba(167, 139, 250, 0.12) !important;
+    background-color: rgba(164, 95, 191, 0.12) !important;
 }
 
 /* Weekday header */
@@ -1107,8 +1107,8 @@ html[data-admin-theme="dark"] .flatpickr-day {
 }
 html[data-admin-theme="dark"] .flatpickr-day:hover, 
 html[data-admin-theme="dark"] .flatpickr-day:focus {
-    background-color: rgba(167, 139, 250, 0.12) !important;
-    color: #a78bfa !important;
+    background-color: rgba(164, 95, 191, 0.12) !important;
+    color: #A45FBF !important;
 }
 
 /* Selected Days */
@@ -1123,9 +1123,9 @@ html[data-admin-theme="dark"] .flatpickr-day:focus {
 html[data-admin-theme="dark"] .flatpickr-day.selected, 
 html[data-admin-theme="dark"] .flatpickr-day.startRange, 
 html[data-admin-theme="dark"] .flatpickr-day.endRange {
-    background: linear-gradient(135deg, #a78bfa, #c084fc) !important;
+    background: linear-gradient(135deg, #A45FBF, #A45FBF) !important;
     color: #0c1427 !important;
-    box-shadow: 0 4px 10px rgba(167, 139, 250, 0.25) !important;
+    box-shadow: 0 4px 10px rgba(164, 95, 191, 0.25) !important;
 }
 
 /* Disabled Days */
@@ -1158,7 +1158,7 @@ html[data-admin-theme="dark"] .flatpickr-time input:hover,
 html[data-admin-theme="dark"] .flatpickr-time .flatpickr-am-pm:hover, 
 html[data-admin-theme="dark"] .flatpickr-time input:focus, 
 html[data-admin-theme="dark"] .flatpickr-time .flatpickr-am-pm:focus {
-    background: rgba(167, 139, 250, 0.12) !important;
+    background: rgba(164, 95, 191, 0.12) !important;
 }
 .flatpickr-time input, 
 .flatpickr-time .flatpickr-am-pm {
@@ -1181,7 +1181,7 @@ html[data-admin-theme="dark"] .datetime-picker-icon {
     color: #743089 !important;
 }
 html[data-admin-theme="dark"] .position-relative:focus-within .datetime-picker-icon {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
 }
 
 /* Additional premium curved styling for Flatpickr clock inputs */
@@ -1222,8 +1222,8 @@ html[data-admin-theme="dark"] .position-relative:focus-within .datetime-picker-i
 }
 
 html[data-admin-theme="dark"] .flatpickr-custom-month-btn {
-    border-color: #a78bfa !important;
-    background-color: rgba(167, 139, 250, 0.08) !important;
+    border-color: #A45FBF !important;
+    background-color: rgba(164, 95, 191, 0.08) !important;
     color: #cbd5e1 !important;
 }
 
@@ -1233,7 +1233,7 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-btn {
 }
 
 html[data-admin-theme="dark"] .flatpickr-custom-month-btn:hover {
-    background-color: rgba(167, 139, 250, 0.15) !important;
+    background-color: rgba(164, 95, 191, 0.15) !important;
 }
 
 .flatpickr-custom-month-btn i {
@@ -1323,8 +1323,8 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-item {
 }
 
 html[data-admin-theme="dark"] .flatpickr-custom-month-item:hover {
-    background-color: rgba(167, 139, 250, 0.12) !important;
-    color: #a78bfa !important;
+    background-color: rgba(164, 95, 191, 0.12) !important;
+    color: #A45FBF !important;
 }
 
 /* Selected state active styling */
@@ -1334,8 +1334,8 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-item:hover {
 }
 
 html[data-admin-theme="dark"] .flatpickr-custom-month-item.active {
-    background-color: rgba(167, 139, 250, 0.18) !important;
-    color: #a78bfa !important;
+    background-color: rgba(164, 95, 191, 0.18) !important;
+    color: #A45FBF !important;
 }
 
 /* Force absolute visibility on Flatpickr calendar containers to prevent clipping */

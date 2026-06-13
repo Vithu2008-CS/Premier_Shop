@@ -217,7 +217,7 @@
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
 
 /* Soft-colored badges for dark mode */
-html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(167, 139, 250, 0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(164, 95, 191, 0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success { background: rgba(52, 211, 153, 0.15) !important; color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-warning { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
 html[data-admin-theme="dark"] .bg-soft-danger { background: rgba(248, 113, 113, 0.15) !important; color: #f87171 !important; }
@@ -229,7 +229,7 @@ html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148, 163, 18
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .text-hover-primary:hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
     text-decoration: none !important;
 }
 
@@ -307,8 +307,8 @@ html[data-admin-theme="dark"] .form-control {
     color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191, 0.2) !important;
 }
 
 /* Premium Buttons */
@@ -319,7 +319,7 @@ html[data-admin-theme="dark"] .form-control:focus {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #743089, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     border: none !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
     color: #ffffff !important;
@@ -384,7 +384,7 @@ html[data-admin-theme="dark"] #sortDropdown:hover {
     color: #743089 !important;
 }
 .dropdown-menu .dropdown-item.active {
-    background: linear-gradient(135deg, #743089, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     color: #ffffff !important;
     font-weight: 700 !important;
 }
@@ -403,7 +403,7 @@ html[data-admin-theme="dark"] .dropdown-menu .dropdown-item:hover {
     color: #ffffff !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu .dropdown-item.active {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6) !important;
+    background: linear-gradient(135deg, #A45FBF, #8E3CA6) !important;
     color: #0c1427 !important;
 }
 

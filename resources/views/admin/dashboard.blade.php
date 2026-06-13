@@ -22,7 +22,7 @@
     <h4 class="mb-0">Welcome to Dashboard</h4>
   </div>
   <div class="d-none d-md-flex align-items-center flex-wrap text-nowrap">
-    <a href="{{ route('admin.products.create') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center rounded-pill mb-2 mb-md-0" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
+    <a href="{{ route('admin.products.create') }}" class="btn btn-accent d-inline-flex align-items-center justify-content-center rounded-pill mb-2 mb-md-0" style="height: 38px; font-size: 0.875rem; padding: 0 16px;">
       <i data-feather="plus-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i>
       <span>Add Product</span>
     </a>
@@ -256,16 +256,31 @@ html[data-admin-theme="dark"] .card {
 /* Hover effect for summary cards */
 .col-md-3 a:hover .card {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(114, 124, 245, 0.08) !important;
-    border-color: rgba(114, 124, 245, 0.3) !important;
+    box-shadow: 0 10px 25px rgba(116, 48, 137, 0.08) !important;
+    border-color: rgba(116, 48, 137, 0.3) !important;
 }
 html[data-admin-theme="dark"] .col-md-3 a:hover .card {
-    box-shadow: 0 10px 25px rgba(167, 139, 250, 0.12) !important;
+    box-shadow: 0 10px 25px rgba(164, 95, 191, 0.12) !important;
 }
 /* Curves for alert boxes */
 .alert {
     border-radius: 14px !important;
 }
+/* Stat card brand polish — purple→yellow accent strip + bold numbers */
+.row.flex-grow > .col-md-3 .card { position: relative; }
+.row.flex-grow > .col-md-3 .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #743089 0%, #A45FBF 50%, #FFDD00 100%);
+}
+.row.flex-grow > .col-md-3 .card h3 {
+    font-weight: 800;
+    color: #743089;
+    letter-spacing: -0.5px;
+}
+html[data-admin-theme="dark"] .row.flex-grow > .col-md-3 .card h3 { color: #ffffff; }
 </style>
 @endsection
 
@@ -341,7 +356,7 @@ html[data-admin-theme="dark"] .col-md-3 a:hover .card {
               size: 7
             }
           },
-          colors: ["#727cf5"],
+          colors: ["#743089"],
           grid: {
             padding: {
               left: 0,

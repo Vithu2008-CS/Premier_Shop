@@ -235,7 +235,7 @@
                         </div>
 
                         <div class="d-none d-lg-block">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mt-4" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(116, 48, 137, 0.2);">
+                            <button type="submit" class="btn btn-accent btn-lg w-100 py-3 mt-4" style="border-radius: 50px; font-weight: 800;">
                                 <i class="bi bi-shield-lock-fill me-2"></i> Place Order Now
                             </button>
                         </div>
@@ -377,7 +377,7 @@
                     </div>
 
                     <div class="d-lg-none">
-                        <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg w-100 py-3" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(116, 48, 137, 0.2);">
+                        <button type="submit" form="checkoutForm" class="btn btn-accent btn-lg w-100 py-3" style="border-radius: 50px; font-weight: 800;">
                             <i class="bi bi-shield-lock-fill me-2"></i> Place Order
                         </button>
                     </div>

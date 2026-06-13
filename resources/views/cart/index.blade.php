@@ -24,7 +24,7 @@
                 </div>
                 <h4 class="fw-bold mb-2">Your cart is empty</h4>
                 <p class="text-muted mb-4">Looks like you haven't added anything yet!</p>
-                <a href="{{ route('products.index') }}" class="btn btn-add-cart">
+                <a href="{{ route('products.index') }}" class="btn btn-brand rounded-pill px-4 py-2">
                     <i class="bi bi-arrow-left me-2"></i> Continue Shopping
                 </a>
             </div>
@@ -195,8 +195,8 @@
                                 
                                 <div id="checkout-error" class="alert alert-danger py-2 small d-none">Please select at least one item.</div>
 
-                                <button type="submit" id="checkout-btn" class="btn btn-add-cart w-100 py-3 fw-bold">
-                                    <i class="bi bi-lock me-2"></i> Proceed to Checkout
+                                <button type="submit" id="checkout-btn" class="btn btn-accent w-100 py-3 fw-bold rounded-pill">
+                                    <i class="bi bi-lock-fill me-2"></i> Proceed to Checkout
                                 </button>
                                 <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100 mt-2 border-0" style="border-radius:50px;">
                                     <i class="bi bi-arrow-left me-1"></i> Continue Shopping

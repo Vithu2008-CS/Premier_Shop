@@ -323,8 +323,8 @@ html[data-admin-theme="dark"] .evidence-thumb-container {
     border-color: #743089 !important;
 }
 html[data-admin-theme="dark"] .evidence-thumb-container:hover {
-    border-color: #a78bfa !important;
-    box-shadow: 0 6px 12px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 6px 12px rgba(164, 95, 191, 0.2) !important;
 }
 .evidence-thumb {
     width: 100% !important;
@@ -398,8 +398,8 @@ html[data-admin-theme="dark"] .form-control {
     color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191, 0.2) !important;
 }
 
 /* Border styles */
@@ -418,7 +418,7 @@ html[data-admin-theme="dark"] .border-bottom-subtle {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #743089, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     border: none !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
     color: #ffffff !important;
@@ -438,11 +438,11 @@ html[data-admin-theme="dark"] .border-bottom-subtle {
     transform: translateY(-1px);
 }
 html[data-admin-theme="dark"] .btn-outline-primary {
-    border-color: #a78bfa !important;
-    color: #a78bfa !important;
+    border-color: #A45FBF !important;
+    color: #A45FBF !important;
 }
 html[data-admin-theme="dark"] .btn-outline-primary:hover {
-    background-color: #a78bfa !important;
+    background-color: #A45FBF !important;
     color: #0c1427 !important;
 }
 
@@ -507,7 +507,7 @@ html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover {
 }
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #743089, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #A45FBF)) !important;
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }
@@ -647,7 +647,7 @@ html[data-admin-theme="dark"] .floating-save-bar .text-muted {
     font-weight: 600;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 </style>
 

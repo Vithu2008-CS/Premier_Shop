@@ -132,7 +132,7 @@ html[data-admin-theme="dark"] .bg-soft-info { background: rgba(34, 211, 238, 0.1
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .text-hover-primary:hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
     text-decoration: none !important;
 }
 

@@ -256,7 +256,7 @@
 .bg-soft-primary   { background: rgba(116, 48, 137,0.1) !important; color: #743089 !important; }
 .bg-soft-success   { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
-html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(167,139,250,0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(164, 95, 191,0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success   { background: rgba(52,211,153,0.15) !important; color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148,163,184,0.15) !important; color: #94a3b8 !important; }
 
@@ -267,7 +267,7 @@ html[data-admin-theme="dark"] td { color: #cbd5e1 !important; }
 html[data-admin-theme="light"] .text-dark-theme-aware { color: #1e293b !important; }
 html[data-admin-theme="dark"]  .text-dark-theme-aware { color: #cbd5e1 !important; }
 .text-hover-primary:hover { color: #743089 !important; text-decoration: none !important; }
-html[data-admin-theme="dark"] .text-hover-primary:hover { color: #a78bfa !important; }
+html[data-admin-theme="dark"] .text-hover-primary:hover { color: #A45FBF !important; }
 
 /* ── Status dots ─────────────────────────────────────────────────────────── */
 .pulse-green {
@@ -287,7 +287,7 @@ html[data-admin-theme="dark"] .text-hover-primary:hover { color: #a78bfa !import
     font-size: 0.85rem !important;
     font-weight: 700 !important;
     font-family: 'Outfit', sans-serif !important;
-    background: linear-gradient(135deg,#743089,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
     border: none !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
     color: #fff !important;
@@ -360,7 +360,7 @@ html[data-admin-theme="light"] .track-modal-card {
 
 .track-modal-avatar {
     width: 44px; height: 44px; border-radius: 14px;
-    background: linear-gradient(135deg,#743089,#a78bfa);
+    background: linear-gradient(135deg,#743089,#A45FBF);
     display: flex; align-items: center; justify-content: center;
     font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.1rem;
     color: #fff; flex-shrink: 0;

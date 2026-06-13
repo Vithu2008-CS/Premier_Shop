@@ -382,8 +382,8 @@ html[data-admin-theme="dark"] .custom-premium-checkbox {
     border-color: #743089 !important;
 }
 html[data-admin-theme="dark"] .custom-premium-checkbox:checked {
-    background-color: #a78bfa !important;
-    border-color: #a78bfa !important;
+    background-color: #A45FBF !important;
+    border-color: #A45FBF !important;
 }
 .custom-premium-checkbox:checked::after {
     content: '';
@@ -481,8 +481,8 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link {
     color: #743089 !important;
 }
 html[data-admin-theme="dark"] .nav-tabs .nav-link.active {
-    background: rgba(167, 139, 250, 0.15) !important;
-    color: #a78bfa !important;
+    background: rgba(164, 95, 191, 0.15) !important;
+    color: #A45FBF !important;
 }
 .nav-tabs .nav-link:hover:not(.active) {
     background: rgba(0, 0, 0, 0.03) !important;
@@ -620,7 +620,7 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     font-size: 0.8rem;
     font-weight: 700;
     margin-top: auto;
-    background: linear-gradient(135deg, #743089, #a78bfa);
+    background: linear-gradient(135deg, #743089, #A45FBF);
     color: #fff;
     text-align: center;
     box-shadow: 0 4px 10px rgba(116, 48, 137,0.25);
@@ -639,7 +639,7 @@ html[data-admin-theme="dark"] .device-screen {
     color: #ffffff;
 }
 html[data-admin-theme="dark"] .device-header {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 html[data-admin-theme="dark"] .device-title {
     color: #ffffff;
@@ -653,7 +653,7 @@ html[data-admin-theme="dark"] .device-thumb-dot {
     background: rgba(255, 255, 255, 0.05);
 }
 html[data-admin-theme="dark"] .device-price {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 html[data-admin-theme="dark"] .device-desc-text {
     color: #94a3b8 !important;
@@ -676,8 +676,8 @@ html[data-admin-theme="dark"] .collapse-trigger-btn {
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .collapse-trigger-btn:hover {
-    color: #a78bfa !important;
-    background-color: rgba(167, 139, 250, 0.04) !important;
+    color: #A45FBF !important;
+    background-color: rgba(164, 95, 191, 0.04) !important;
 }
 .collapse-trigger-btn:focus {
     text-decoration: none !important;
@@ -886,7 +886,7 @@ html[data-admin-theme="dark"] .input-group .form-control {
 
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #743089, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #A45FBF)) !important;
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }

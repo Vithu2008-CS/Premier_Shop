@@ -50,8 +50,8 @@ html[data-admin-theme="dark"] .form-control {
     color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167,139,250,0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191,0.2) !important;
 }
 
 /* Border */
@@ -117,7 +117,7 @@ html[data-admin-theme="dark"] .floating-save-bar {
 html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light { border-color: rgba(255,255,255,0.3) !important; color: #fff !important; }
 html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover { background: rgba(255,255,255,0.1) !important; }
 .floating-save-bar .btn-primary {
-    background: linear-gradient(135deg,#743089,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
     border: none !important; color: #fff !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
 }

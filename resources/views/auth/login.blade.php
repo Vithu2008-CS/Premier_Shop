@@ -77,8 +77,16 @@
     </div>
 
     <div class="auth-side-illustration">
-        <div class="illustration-bg-decor"></div>
-        <img src="{{ asset('images/shopping_bag_3d.png') }}" alt="Premier Shop" class="auth-illustration-img">
+        <div class="auth-showcase">
+            <span class="auth-showcase-badge">Premier Shop</span>
+            <h2 class="auth-showcase-title">Everything you love,<br><span class="accent">delivered fresh.</span></h2>
+            <p class="auth-showcase-sub">Thousands of quality products at unbeatable prices, with fast local delivery — all in one place.</p>
+            <ul class="auth-showcase-list">
+                <li><i class="bi bi-lightning-charge-fill"></i> Same-day delivery on local orders</li>
+                <li><i class="bi bi-gift-fill"></i> Exclusive member offers &amp; loyalty rewards</li>
+                <li><i class="bi bi-shield-check"></i> Secure checkout &amp; easy returns</li>
+            </ul>
+        </div>
     </div>
 </div>
 @endsection

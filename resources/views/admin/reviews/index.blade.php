@@ -104,7 +104,7 @@
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
 
 /* Soft-colored badges for dark mode */
-html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(167, 139, 250, 0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(164, 95, 191, 0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success { background: rgba(52, 211, 153, 0.15) !important; color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-warning { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
 html[data-admin-theme="dark"] .bg-soft-danger { background: rgba(248, 113, 113, 0.15) !important; color: #f87171 !important; }
@@ -116,7 +116,7 @@ html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148, 163, 18
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .text-hover-primary:hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
     text-decoration: none !important;
 }
 

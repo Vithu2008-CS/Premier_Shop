@@ -163,7 +163,7 @@ html[data-admin-theme="dark"] .card {
 
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #743089, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #A45FBF)) !important;
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }

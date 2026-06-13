@@ -52,8 +52,8 @@ html[data-admin-theme="dark"] .form-control {
     color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167,139,250,0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191,0.2) !important;
 }
 
 /* Border */
@@ -121,7 +121,7 @@ html[data-admin-theme="dark"] .floating-save-bar {
 html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light { border-color: rgba(255,255,255,0.3) !important; color: #fff !important; }
 html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover { background: rgba(255,255,255,0.1) !important; }
 .floating-save-bar .btn-primary {
-    background: linear-gradient(135deg,#743089,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
     border: none !important; color: #fff !important;
     box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
 }
@@ -317,7 +317,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
                     <div class="mb-3">
                         <button type="button" id="btn-track-driver"
                                 class="btn btn-primary w-100 d-flex align-items-center justify-content-center"
-                                style="border-radius:30px !important;font-weight:700;font-family:'Outfit';background:linear-gradient(135deg,#743089,#a78bfa) !important;border:none;padding:10px 20px;box-shadow:0 4px 12px rgba(116, 48, 137,0.25);gap:8px;">
+                                style="border-radius:30px !important;font-weight:700;font-family:'Outfit';background:linear-gradient(135deg,#743089,#A45FBF) !important;border:none;padding:10px 20px;box-shadow:0 4px 12px rgba(116, 48, 137,0.25);gap:8px;">
                             <i class="bi bi-radar" id="track-icon" style="font-size:1rem;"></i>
                             <span id="track-btn-text">Track Driver (Get Exact GPS)</span>
                         </button>

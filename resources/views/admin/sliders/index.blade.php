@@ -20,7 +20,7 @@ html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
 .bg-soft-warning   { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
 .bg-soft-info      { background: rgba(6,182,212,0.1) !important;  color: #06b6d4 !important; }
-html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(167,139,250,0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(164, 95, 191,0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success   { background: rgba(52,211,153,0.15) !important;  color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148,163,184,0.15) !important; color: #94a3b8 !important; }
 html[data-admin-theme="dark"] .bg-soft-warning   { background: rgba(251,191,36,0.15) !important;  color: #fbbf24 !important; }
@@ -31,7 +31,7 @@ html[data-admin-theme="dark"] .bg-soft-info      { background: rgba(103,232,249,
     border-radius: 30px !important; padding: 8px 22px !important;
     font-size: 0.82rem !important; font-weight: 700 !important;
     font-family: 'Outfit', sans-serif !important;
-    background: linear-gradient(135deg,#743089,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
     border: none !important; box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
     color: #fff !important; transition: all 0.25s ease !important;
 }
@@ -60,7 +60,7 @@ html[data-admin-theme="dark"] .slider-section-header {
 .type-pill-main { background: rgba(116, 48, 137,0.12); color: #743089; }
 .type-pill-sub1 { background: rgba(16,185,129,0.12);  color: #10b981; }
 .type-pill-sub2 { background: rgba(245,158,11,0.12);  color: #f59e0b; }
-html[data-admin-theme="dark"] .type-pill-main { background: rgba(167,139,250,0.18); color: #a78bfa; }
+html[data-admin-theme="dark"] .type-pill-main { background: rgba(164, 95, 191,0.18); color: #A45FBF; }
 html[data-admin-theme="dark"] .type-pill-sub1 { background: rgba(52,211,153,0.18);  color: #34d399; }
 html[data-admin-theme="dark"] .type-pill-sub2 { background: rgba(251,191,36,0.18);  color: #fbbf24; }
 
@@ -83,7 +83,7 @@ html[data-admin-theme="dark"] .size-hint { background: rgba(255,255,255,0.04); c
     box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
 }
 .slider-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(116, 48, 137,0.1) !important; }
-html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(167,139,250,0.12) !important; }
+html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(164, 95, 191,0.12) !important; }
 
 .slider-card-thumb {
     position: relative; width: 100%; padding-top: 52%;
@@ -149,8 +149,8 @@ html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(
     font-weight: 600; transition: all 0.2s ease;
 }
 .slider-link-chip:hover { background: rgba(116, 48, 137,0.12); color: #743089; }
-html[data-admin-theme="dark"] .slider-link-chip { color: #a78bfa; background: rgba(167,139,250,0.1); }
-html[data-admin-theme="dark"] .slider-link-chip:hover { background: rgba(167,139,250,0.18); }
+html[data-admin-theme="dark"] .slider-link-chip { color: #A45FBF; background: rgba(164, 95, 191,0.1); }
+html[data-admin-theme="dark"] .slider-link-chip:hover { background: rgba(164, 95, 191,0.18); }
 
 .slider-card-footer {
     display: flex; align-items: center; justify-content: space-between;
@@ -167,8 +167,8 @@ html[data-admin-theme="dark"] .slider-card-footer { border-top-color: rgba(255,2
 }
 .slider-action-btn.btn-edit  { background: rgba(116, 48, 137,0.08); color: #743089; }
 .slider-action-btn.btn-edit:hover { background: #743089; color: #fff; }
-html[data-admin-theme="dark"] .slider-action-btn.btn-edit { background: rgba(167,139,250,0.12); color: #a78bfa; }
-html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #a78bfa; color: #1e293b; }
+html[data-admin-theme="dark"] .slider-action-btn.btn-edit { background: rgba(164, 95, 191,0.12); color: #A45FBF; }
+html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #A45FBF; color: #1e293b; }
 .slider-action-btn.btn-toggle-on  { background: rgba(16,185,129,0.08); color: #10b981; }
 .slider-action-btn.btn-toggle-on:hover  { background: #10b981; color: #fff; }
 .slider-action-btn.btn-toggle-off { background: rgba(100,116,139,0.08); color: #64748b; }

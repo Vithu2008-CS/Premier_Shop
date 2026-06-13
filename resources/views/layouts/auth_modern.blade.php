@@ -96,12 +96,36 @@
 
         .auth-side-illustration {
             flex: 1;
-            background: #E3F2FD;
+            background:
+                radial-gradient(circle at 18% 22%, rgba(255,221,0,0.18), transparent 42%),
+                radial-gradient(circle at 82% 80%, rgba(168,95,191,0.45), transparent 45%),
+                linear-gradient(140deg, #8E3CA6 0%, #743089 52%, #5A1E6B 100%);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
+        }
+        .auth-side-illustration::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .auth-side-illustration::after {
+            content: '';
+            position: absolute;
+            width: 320px; height: 320px;
+            right: -90px; top: -90px;
+            background: radial-gradient(circle, rgba(255,221,0,0.22), transparent 70%);
+            filter: blur(8px);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
         @media (max-width: 992px) {
@@ -208,6 +232,7 @@
 
         .auth-input:focus {
             border-color: var(--auth-primary);
+            box-shadow: 0 0 0 4px var(--ps-accent-soft);
         }
 
         .auth-input-icon {
@@ -233,8 +258,14 @@
             margin-top: 1rem;
         }
 
+        .auth-btn-primary {
+            box-shadow: 0 8px 22px var(--ps-primary-glow);
+        }
+
         .auth-btn-primary:hover {
-            background: #0052CC;
+            background: #5A1E6B;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px var(--ps-primary-glow);
         }
 
         .auth-footer-text {
@@ -266,6 +297,63 @@
             top: 0;
             left: 0;
             background-image: none;
+        }
+
+        /* Branded showcase panel (white text + yellow accents on purple) */
+        .auth-showcase {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            padding: 2rem;
+            color: #fff;
+        }
+        .auth-showcase-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 100px;
+            background: var(--ps-accent);
+            color: var(--ps-on-accent);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .auth-showcase-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 2.6rem;
+            line-height: 1.12;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        .auth-showcase-title .accent { color: var(--ps-accent); }
+        .auth-showcase-sub {
+            font-size: 1.02rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.82);
+            margin-bottom: 2rem;
+        }
+        .auth-showcase-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 0.9rem;
+        }
+        .auth-showcase-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.92);
+        }
+        .auth-showcase-list i {
+            color: var(--ps-accent);
+            font-size: 1.25rem;
+            flex-shrink: 0;
         }
     </style>
 </head>
