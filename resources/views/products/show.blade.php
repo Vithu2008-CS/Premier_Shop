@@ -24,7 +24,7 @@
 .pdp-zoom.zooming .pdp-zoom-img { transform: scale(2.1); }
 @media (hover: none) { .pdp-zoom { cursor: default; } .pdp-zoom.zooming .pdp-zoom-img { transform: none; } }
 /* Active thumbnail highlight, kept in sync with the carousel */
-.thumb-wrap.active { opacity: 1 !important; border-color: #6C5CE7 !important; box-shadow: 0 0 0 2px rgba(108,92,231,.25); }
+.thumb-wrap.active { opacity: 1 !important; border-color: #743089 !important; box-shadow: 0 0 0 2px rgba(116, 48, 137,.25); }
 .thumb-wrap:hover { opacity: 1 !important; }
 </style>
 @endpush
@@ -127,7 +127,7 @@
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div class="d-flex gap-2">
                         @if($product->category)
-                            <span class="badge" style="background:rgba(108,92,231,0.1);color:#6C5CE7;">{{ $product->category->name }}</span>
+                            <span class="badge" style="background:rgba(116, 48, 137,0.1);color:#743089;">{{ $product->category->name }}</span>
                         @endif
                         @if($product->is_age_restricted)
                             <span class="badge bg-danger">🔞 Age 16+ Only</span>
@@ -394,7 +394,7 @@
                                     @endif
 
                                     @if($review->admin_reply)
-                                        <div class="p-3 mt-2 rounded-3" style="background:rgba(108, 92, 231, 0.05); border-left:3px solid var(--ps-primary);">
+                                        <div class="p-3 mt-2 rounded-3" style="background:rgba(116, 48, 137, 0.05); border-left:3px solid var(--ps-primary);">
                                             <div class="d-flex align-items-center gap-2 mb-2">
                                                 <i class="bi bi-shop text-primary"></i>
                                                 <strong class="text-body small">Response from Premier Shop</strong>

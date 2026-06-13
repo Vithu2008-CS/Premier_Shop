@@ -46,21 +46,24 @@
 
 .slider-cta-btn {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: clamp(0.6rem,1.5vw,0.85rem) clamp(1.2rem,3vw,2rem);
+    padding: clamp(0.6rem,1.5vw,0.85rem) clamp(1.3rem,3vw,2.1rem);
     border-radius: 50px;
-    background: #ffffff; color: #1a1a2e;
-    font-weight: 700; font-size: clamp(0.82rem,1.8vw,1rem);
+    background: linear-gradient(135deg,#FFE65C 0%,#FFDD00 55%,#F5C400 100%);
+    color: #2A1030;
+    font-weight: 800; font-size: clamp(0.82rem,1.8vw,1rem);
     text-decoration: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+    box-shadow: 0 6px 24px rgba(255,221,0,0.4);
     transition: all 0.25s ease; white-space: nowrap;
 }
 .slider-cta-btn:hover {
-    background: linear-gradient(135deg,#6c5ce7,#a78bfa);
-    color: #ffffff;
+    background: linear-gradient(135deg,#FFEC80 0%,#FFDD00 100%);
+    color: #2A1030;
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(108,92,231,0.35);
+    box-shadow: 0 10px 32px rgba(255,221,0,0.55);
     text-decoration: none;
 }
+.slider-cta-btn i { transition: transform 0.25s ease; }
+.slider-cta-btn:hover i { transform: translateX(4px); }
 
 /* ── Sub-slider banner sections ─────────────────────────── */
 .sub-slider-section { padding: 0; margin: 0; }
@@ -634,7 +637,7 @@
     ═══════════════════════════════════════════════════════════ --}}
     <section class="testimonial-section" aria-label="Customer Reviews">
         <div class="container text-center mb-5 scroll-reveal">
-            <span class="badge rounded-pill mb-2" style="background: rgba(108,92,231,0.1); color: var(--ps-primary); font-weight: 700; font-size: 0.75rem;">
+            <span class="badge rounded-pill mb-2" style="background: rgba(116, 48, 137,0.1); color: var(--ps-primary); font-weight: 700; font-size: 0.75rem;">
                 <i class="bi bi-chat-quote-fill me-1"></i>Client Testimonials
             </span>
             <h2 class="section-title">What Our <span class="gradient-text">Customers Say</span></h2>

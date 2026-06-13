@@ -41,7 +41,7 @@
 
     <style>
         :root {
-            --auth-primary: #6C5CE7;
+            --auth-primary: #743089;
             --auth-bg-light: var(--ps-surface-secondary);
             --auth-text-dark: var(--ps-text);
             --auth-text-muted: var(--ps-text-muted);

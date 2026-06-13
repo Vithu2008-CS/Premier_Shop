@@ -164,7 +164,7 @@
         padding: 8px 16px;
         white-space: nowrap;
     }
-    .btn-sort:hover { border-color: #6C5CE7; color: #6C5CE7; }
+    .btn-sort:hover { border-color: #743089; color: #743089; }
     .plp-sort .dropdown-menu {
         border-radius: 14px;
         border: 1px solid var(--ps-border, rgba(0,0,0,.08));
@@ -178,22 +178,22 @@
         padding: 7px 12px;
         color: var(--ps-text, #2D3436);
     }
-    .plp-sort .dropdown-item:hover { background: rgba(108,92,231,.08); color: #6C5CE7; }
-    .plp-sort .dropdown-item.active { background: #6C5CE7; color: #fff; }
+    .plp-sort .dropdown-item:hover { background: rgba(116, 48, 137,.08); color: #743089; }
+    .plp-sort .dropdown-item.active { background: #743089; color: #fff; }
 
     .plp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; align-items: center; }
     .plp-chips-label { font-size: .76rem; font-weight: 700; color: var(--ps-text-muted, #636e72); font-family: 'Outfit', sans-serif; }
     .plp-chip {
         display: inline-flex; align-items: center; gap: 6px;
-        background: rgba(108,92,231,.08);
-        border: 1px solid rgba(108,92,231,.18);
-        color: #6C5CE7;
+        background: rgba(116, 48, 137,.08);
+        border: 1px solid rgba(116, 48, 137,.18);
+        color: #743089;
         border-radius: 100px;
         padding: 5px 12px;
         font-size: .78rem; font-weight: 700; font-family: 'Outfit', sans-serif;
         text-decoration: none; transition: all .2s ease;
     }
-    .plp-chip:hover { background: #6C5CE7; color: #fff; }
+    .plp-chip:hover { background: #743089; color: #fff; }
     .plp-chip i { font-size: .64rem; }
     .plp-chip-clear { font-size: .76rem; font-weight: 700; color: var(--ps-text-muted, #636e72); text-decoration: none; padding: 5px 6px; }
     .plp-chip-clear:hover { color: #e17055; text-decoration: underline; }
@@ -201,7 +201,7 @@
     /* Rating pills + availability checks in the filter form */
     .filter-pill {
         cursor: pointer;
-        border: 1.5px solid rgba(108,92,231,.2);
+        border: 1.5px solid rgba(116, 48, 137,.2);
         border-radius: 100px;
         padding: 5px 14px;
         font-size: .8rem; font-weight: 700; font-family: 'Outfit', sans-serif;
@@ -210,9 +210,9 @@
         display: inline-flex; align-items: center; gap: 5px;
     }
     .filter-pill .bi-star-fill { color: #f39c12; }
-    .filter-pill:hover { border-color: #6C5CE7; color: #6C5CE7; }
+    .filter-pill:hover { border-color: #743089; color: #743089; }
     .filter-pill.active,
-    .filter-pill:has(input:checked) { background: #6C5CE7; border-color: #6C5CE7; color: #fff; }
+    .filter-pill:has(input:checked) { background: #743089; border-color: #743089; color: #fff; }
     .filter-pill.active .bi-star-fill,
     .filter-pill:has(input:checked) .bi-star-fill { color: #fff; }
     .filter-check { cursor: pointer; font-size: .85rem; font-weight: 500; color: var(--ps-text, #2D3436); }

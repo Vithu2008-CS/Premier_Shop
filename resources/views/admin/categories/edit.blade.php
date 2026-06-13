@@ -163,13 +163,13 @@ html[data-admin-theme="dark"] .card {
 
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #6c5ce7, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #a78bfa)) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }
 .floating-save-bar .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(116, 48, 137, 0.3) !important;
     color: #ffffff !important;
 }
 

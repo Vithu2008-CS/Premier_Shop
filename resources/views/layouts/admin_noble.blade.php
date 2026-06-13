@@ -185,8 +185,8 @@
         /* Focused search box container glow */
         .navbar-content .search-form .input-group:focus-within {
             background-color: #ffffff !important;
-            border-color: #6c5ce7 !important;
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15), 0 4px 12px rgba(0,0,0,0.03) !important;
+            border-color: #743089 !important;
+            box-shadow: 0 0 0 3px rgba(116, 48, 137, 0.15), 0 4px 12px rgba(0,0,0,0.03) !important;
         }
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group:focus-within {
             background-color: #0c1427 !important;
@@ -209,7 +209,7 @@
         /* The Search Icon itself with a beautiful purple color and proper space */
         .navbar-content .search-form .input-group-text i,
         .navbar-content .search-form .input-group-text svg {
-            color: #6c5ce7 !important;
+            color: #743089 !important;
             width: 18px !important;
             height: 18px !important;
             margin-right: 20px !important; /* Spacious margin between search icon and text */
@@ -275,10 +275,10 @@
             font-weight: 800 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.8px !important;
-            color: #6c5ce7 !important;
+            color: #743089 !important;
             margin-bottom: 8px !important;
             padding-bottom: 4px !important;
-            border-bottom: 1px dashed rgba(108, 92, 231, 0.12) !important;
+            border-bottom: 1px dashed rgba(116, 48, 137, 0.12) !important;
         }
         html[data-admin-theme="dark"] .omni-search-category-title {
             color: #a78bfa !important;
@@ -300,8 +300,8 @@
             color: #cbd5e1 !important;
         }
         .omni-search-item:hover, .omni-search-item.active {
-            background-color: rgba(108, 92, 231, 0.06) !important;
-            color: #6c5ce7 !important;
+            background-color: rgba(116, 48, 137, 0.06) !important;
+            color: #743089 !important;
             text-decoration: none !important;
             transform: translateY(-0.5px) !important;
             outline: none !important;
@@ -324,8 +324,8 @@
             width: 36px !important;
             height: 36px !important;
             border-radius: 50% !important;
-            background-color: rgba(108, 92, 231, 0.08) !important;
-            color: #6c5ce7 !important;
+            background-color: rgba(116, 48, 137, 0.08) !important;
+            color: #743089 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -518,7 +518,7 @@
                                             </div>
                                             <div class="text-right">
                                                 <div class="font-weight-bold" style="font-size: 0.82rem;">£${o.total}</div>
-                                                <span class="badge px-2 py-0.5 mt-1" style="font-size: 0.65rem; border-radius: 20px; background: rgba(108,92,231,0.08); color: #6c5ce7; font-weight: 700;">${o.status}</span>
+                                                <span class="badge px-2 py-0.5 mt-1" style="font-size: 0.65rem; border-radius: 20px; background: rgba(116, 48, 137,0.08); color: #743089; font-weight: 700;">${o.status}</span>
                                             </div>
                                         </a>
                                     `);

@@ -19,7 +19,7 @@
 
         @if($items->isEmpty())
             <div class="text-center py-5 fade-up">
-                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(108,92,231,0.08);border-radius:50%;">
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(116, 48, 137,0.08);border-radius:50%;">
                     <i class="bi bi-bag-x text-primary" style="font-size:3rem;"></i>
                 </div>
                 <h4 class="fw-bold mb-2">Your cart is empty</h4>
@@ -163,7 +163,7 @@
                                     </div>
                                     
                                     <!-- Milestone Insight Banner -->
-                                    <div class="p-3 mt-3 rounded-4 border border-dashed text-start" style="background: rgba(108, 92, 231, 0.05); border-color: var(--ps-primary) !important;">
+                                    <div class="p-3 mt-3 rounded-4 border border-dashed text-start" style="background: rgba(116, 48, 137, 0.05); border-color: var(--ps-primary) !important;">
                                         <p id="perk-insight-text" class="small text-muted mb-0 fw-semibold" style="line-height: 1.5;">
                                             Calculating eligible order incentives...
                                         </p>

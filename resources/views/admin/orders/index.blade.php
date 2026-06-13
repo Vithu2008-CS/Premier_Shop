@@ -34,7 +34,7 @@
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead>
-              <tr style="border-bottom: 2px solid rgba(108,92,231,0.08);">
+              <tr style="border-bottom: 2px solid rgba(116, 48, 137,0.08);">
                 <th class="font-weight-bold" style="font-family: 'Outfit', sans-serif;">Order #</th>
                 <th class="font-weight-bold" style="font-family: 'Outfit', sans-serif;">Customer</th>
                 <th class="font-weight-bold text-end" style="font-family: 'Outfit', sans-serif;">Total</th>
@@ -129,7 +129,7 @@
 </div>
 
 <style>
-.bg-soft-primary { background: rgba(108,92,231,0.1); color: #6c5ce7; }
+.bg-soft-primary { background: rgba(116, 48, 137,0.1); color: #743089; }
 .bg-soft-success { background: rgba(16,185,129,0.1); color: #10b981; }
 .bg-soft-warning { background: rgba(245,158,11,0.1); color: #f59e0b; }
 .bg-soft-danger { background: rgba(239,68,68,0.1); color: #ef4444; }
@@ -172,12 +172,12 @@ html[data-admin-theme="dark"] .status-dropdown-btn:hover {
     padding: 6px 12px !important;
 }
 .dropdown-menu-status .dropdown-item:hover {
-    background: rgba(108, 92, 231, 0.08) !important;
-    color: #6c5ce7 !important;
+    background: rgba(116, 48, 137, 0.08) !important;
+    color: #743089 !important;
 }
 .dropdown-menu-status .active-status-item {
-    background: rgba(108, 92, 231, 0.12) !important;
-    color: #6c5ce7 !important;
+    background: rgba(116, 48, 137, 0.12) !important;
+    color: #743089 !important;
 }
 
 /* Dark Theme Adaptation for dropdown menu list box */
@@ -205,7 +205,7 @@ html[data-admin-theme="dark"] .dropdown-menu-status .active-status-item {
     padding: 0;
 }
 .page-breadcrumb .breadcrumb-item a {
-    color: #6c5ce7;
+    color: #743089;
     font-weight: 500;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {

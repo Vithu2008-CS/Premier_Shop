@@ -85,7 +85,7 @@
           </div>
       </div>
       <div class="col-sm-6 col-md-3 mb-3 mb-md-0 d-none d-sm-block">
-          <div class="card border-0 shadow-sm p-4 h-100 flex-column justify-content-between theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(108,92,231,0.06) !important;">
+          <div class="card border-0 shadow-sm p-4 h-100 flex-column justify-content-between theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(116, 48, 137,0.06) !important;">
               <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.8px; font-size: 0.72rem;">Order Status</span>
               <div class="mt-2">
                   @php
@@ -106,7 +106,7 @@
           </div>
       </div>
       <div class="col-sm-6 col-md-3 d-none d-sm-block">
-          <div class="card border-0 shadow-sm p-4 h-100 flex-column justify-content-between theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(108,92,231,0.06) !important;">
+          <div class="card border-0 shadow-sm p-4 h-100 flex-column justify-content-between theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(116, 48, 137,0.06) !important;">
               <span class="text-muted small text-uppercase font-weight-bold" style="letter-spacing: 0.8px; font-size: 0.72rem;">Payment Details</span>
               <div class="mt-2">
                   @php
@@ -126,7 +126,7 @@
 
       {{-- Combined Order Status & Payment Card for Mobile View Only --}}
       <div class="col-12 d-block d-sm-none mb-3">
-          <div class="card border-0 shadow-sm p-3 theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(108,92,231,0.06) !important;">
+          <div class="card border-0 shadow-sm p-3 theme-card-bg" style="border-radius: 18px !important; border: 1px solid rgba(116, 48, 137,0.06) !important;">
               <div class="row align-items-center">
                   {{-- Left half: Order Status --}}
                   <div class="col-6 border-right-subtle">
@@ -171,7 +171,7 @@
           <div class="table-responsive">
             <table class="table table-hover align-middle table-custom-padding">
               <thead>
-                <tr class="text-uppercase small text-muted font-weight-bold" style="border-bottom: 2px solid rgba(108,92,231,0.06); letter-spacing: 0.5px; font-size: 0.72rem;">
+                <tr class="text-uppercase small text-muted font-weight-bold" style="border-bottom: 2px solid rgba(116, 48, 137,0.06); letter-spacing: 0.5px; font-size: 0.72rem;">
                   <th class="pl-0">Product</th>
                   <th class="text-center">Quantity</th>
                   <th class="text-right">Unit Price</th>
@@ -180,7 +180,7 @@
               </thead>
               <tbody>
                 @foreach($order->items as $item)
-                <tr class="table-row-hover-effect" style="border-bottom: 1px solid rgba(108,92,231,0.04);">
+                <tr class="table-row-hover-effect" style="border-bottom: 1px solid rgba(116, 48, 137,0.04);">
                   <td class="pl-0 py-3 align-middle">
                     <span class="fw-700 text-theme-dark-bold" style="font-size: 0.9rem;">{{ $item->product->name }}</span>
                   </td>
@@ -196,7 +196,7 @@
           {{-- Pricing Breakdown --}}
           <div class="row mt-4 pt-3 justify-content-end">
             <div class="col-md-7 col-lg-6">
-              <div class="pricing-summary-card p-4 rounded-4" style="background: rgba(108,92,231,0.02); border: 1px solid rgba(108,92,231,0.05);">
+              <div class="pricing-summary-card p-4 rounded-4" style="background: rgba(116, 48, 137,0.02); border: 1px solid rgba(116, 48, 137,0.05);">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="text-muted small">Cart Subtotal</span>
                   <span class="font-weight-bold text-theme-dark-bold">£{{ number_format($order->subtotal, 2) }}</span>
@@ -353,7 +353,7 @@
             {{-- Driver State Column --}}
             <div class="col-md-6 mb-4 mb-md-0">
               @if($order->driver)
-                <div class="d-flex align-items-center p-4 rounded-4" style="background: rgba(108,92,231,0.03); border: 1.5px solid rgba(108,92,231,0.07); border-radius: 16px !important;">
+                <div class="d-flex align-items-center p-4 rounded-4" style="background: rgba(116, 48, 137,0.03); border: 1.5px solid rgba(116, 48, 137,0.07); border-radius: 16px !important;">
                   <div class="wd-52 h-52 rounded-circle bg-warning text-white d-flex align-items-center justify-content-center font-weight-bold shadow-sm mr-3" style="font-size: 1.25rem; min-width: 52px; height: 52px;">
                     {{ substr($order->driver->name, 0, 1) }}
                   </div>
@@ -434,7 +434,7 @@
             <i class="bi bi-person-fill mr-2"></i> Customer Information
           </h6>
           
-          <div class="d-flex align-items-center p-3 rounded-4 mb-3" style="background: rgba(108,92,231,0.03); border: 1px solid rgba(108,92,231,0.06); border-radius: 15px !important;">
+          <div class="d-flex align-items-center p-3 rounded-4 mb-3" style="background: rgba(116, 48, 137,0.03); border: 1px solid rgba(116, 48, 137,0.06); border-radius: 15px !important;">
             <div class="wd-48 h-48 rounded-circle bg-light-info text-info font-weight-bold d-flex align-items-center justify-content-center mr-3 shadow-sm" style="font-size: 1.15rem; font-family: 'Outfit', sans-serif; min-width: 48px; height: 48px;">
               {{ substr($order->user->name, 0, 1) }}
             </div>
@@ -468,7 +468,7 @@
           </h6>
 
           @if(isset($order->shipping_address['address_line']))
-            <div class="d-flex align-items-start gap-2.5 p-3 rounded-4 mb-2.5" style="background: rgba(108,92,231,0.03); border: 1px solid rgba(108,92,231,0.06); border-radius: 15px !important;">
+            <div class="d-flex align-items-start gap-2.5 p-3 rounded-4 mb-2.5" style="background: rgba(116, 48, 137,0.03); border: 1px solid rgba(116, 48, 137,0.06); border-radius: 15px !important;">
               <i class="bi bi-geo-alt-fill text-primary mr-3" style="font-size: 1.1rem; margin-top: 2px;"></i>
               <div>
                 <h6 class="mb-1 text-theme-dark-bold fw-700" style="font-size: 0.88rem;">Delivery Address</h6>
@@ -550,7 +550,7 @@
 
           {{-- Order action row --}}
           <div class="d-flex align-items-center justify-content-between mt-2">
-            <a href="{{ route('admin.orders.print', $order) }}" class="btn btn-outline-primary p-0 d-flex align-items-center justify-content-center text-center" style="height: 28px !important; border-radius: 6px !important; font-size: 0.72rem !important; border-color: rgba(108,92,231,0.2) !important; width: calc(50% - 3px); font-weight: 600;">
+            <a href="{{ route('admin.orders.print', $order) }}" class="btn btn-outline-primary p-0 d-flex align-items-center justify-content-center text-center" style="height: 28px !important; border-radius: 6px !important; font-size: 0.72rem !important; border-color: rgba(116, 48, 137,0.2) !important; width: calc(50% - 3px); font-weight: 600;">
               <i class="bi bi-printer-fill mr-1" style="font-size: 0.78rem;"></i> Download PDF
             </a>
             
@@ -666,7 +666,7 @@
 
 /* Gradients */
 .widget-grad-purple {
-    background: linear-gradient(135deg, #6c5ce7 0%, #8555e3 100%) !important;
+    background: linear-gradient(135deg, #743089 0%, #8555e3 100%) !important;
 }
 .widget-grad-blue {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
@@ -674,7 +674,7 @@
 
 /* Badge colors */
 .bg-soft-success { background: rgba(16,185,129,0.1); color: #10b981; }
-.bg-soft-primary { background: rgba(108,92,231,0.1); color: #6c5ce7; }
+.bg-soft-primary { background: rgba(116, 48, 137,0.1); color: #743089; }
 .bg-soft-warning { background: rgba(245,158,11,0.1); color: #f59e0b; }
 .bg-soft-danger { background: rgba(239,68,68,0.1); color: #ef4444; }
 .bg-soft-info { background: rgba(6,182,212,0.1); color: #06b6d4; }
@@ -730,8 +730,8 @@ html[data-admin-theme="dark"] select.form-control {
     color: #e2e8f0 !important;
 }
 .form-control:focus, select.form-control:focus {
-    border-color: #6c5ce7 !important;
-    box-shadow: 0 0 0 3.5px rgba(108, 92, 231, 0.15) !important;
+    border-color: #743089 !important;
+    box-shadow: 0 0 0 3.5px rgba(116, 48, 137, 0.15) !important;
     background-color: var(--input-bg-focus, #ffffff) !important;
 }
 html[data-admin-theme="dark"] .form-control:focus,
@@ -777,7 +777,7 @@ html[data-admin-theme="dark"] select.form-control:focus {
     transition: transform .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
 }
 .custom-switch-premium .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #6c5ce7 !important;
+    background-color: #743089 !important;
 }
 .custom-switch-premium .custom-control-input:checked ~ .custom-control-label::after {
     transform: translateY(-50%) translateX(1rem) !important;
@@ -796,22 +796,22 @@ html[data-admin-theme="dark"] .custom-switch-premium .custom-control-label::befo
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #6c5ce7, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #a78bfa) !important;
     border: none !important;
-    box-shadow: 0 4px 14px rgba(108, 92, 231, 0.25) !important;
+    box-shadow: 0 4px 14px rgba(116, 48, 137, 0.25) !important;
     color: #ffffff !important;
 }
 .btn-primary:hover {
     transform: translateY(-1.5px);
-    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(116, 48, 137, 0.35) !important;
 }
 .btn-outline-primary {
-    border: 1.5px solid #6c5ce7 !important;
-    color: #6c5ce7 !important;
+    border: 1.5px solid #743089 !important;
+    color: #743089 !important;
     background: transparent !important;
 }
 .btn-outline-primary:hover {
-    background-color: #6c5ce7 !important;
+    background-color: #743089 !important;
     color: #ffffff !important;
     transform: translateY(-1px);
 }
@@ -837,21 +837,21 @@ html[data-admin-theme="dark"] .btn-outline-primary:hover {
 
 /* Border styles */
 .border-bottom-subtle {
-    border-bottom: 1.5px solid rgba(108, 92, 231, 0.06) !important;
+    border-bottom: 1.5px solid rgba(116, 48, 137, 0.06) !important;
 }
 html[data-admin-theme="dark"] .border-bottom-subtle {
     border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .border-right-subtle {
-    border-right: 1.5px solid rgba(108, 92, 231, 0.06) !important;
+    border-right: 1.5px solid rgba(116, 48, 137, 0.06) !important;
 }
 html[data-admin-theme="dark"] .border-right-subtle {
     border-right: 1.5px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .border-dashed {
-    border-top: 1px dashed rgba(108, 92, 231, 0.12) !important;
+    border-top: 1px dashed rgba(116, 48, 137, 0.12) !important;
 }
 html[data-admin-theme="dark"] .border-dashed {
     border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
@@ -868,7 +868,7 @@ html[data-admin-theme="dark"] .border-dashed {
     transition: background-color 0.2s ease;
 }
 .table-row-hover-effect:hover {
-    background-color: rgba(108, 92, 231, 0.015);
+    background-color: rgba(116, 48, 137, 0.015);
 }
 html[data-admin-theme="dark"] .table-row-hover-effect:hover {
     background-color: rgba(255, 255, 255, 0.01);
@@ -895,7 +895,7 @@ html[data-admin-theme="dark"] .table-row-hover-effect:hover {
     padding: 0;
 }
 .page-breadcrumb .breadcrumb-item a {
-    color: #6c5ce7;
+    color: #743089;
     font-weight: 600;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
@@ -941,9 +941,9 @@ html[data-admin-theme="dark"] .custom-select-btn {
     color: #cbd5e1 !important;
 }
 .custom-select-btn:hover, .custom-select-btn:focus, .custom-select-btn:active {
-    border-color: #6c5ce7 !important;
+    border-color: #743089 !important;
     background-color: var(--input-bg, #ffffff) !important;
-    box-shadow: 0 0 0 3.5px rgba(108, 92, 231, 0.15) !important;
+    box-shadow: 0 0 0 3.5px rgba(116, 48, 137, 0.15) !important;
 }
 html[data-admin-theme="dark"] .custom-select-btn:hover,
 html[data-admin-theme="dark"] .custom-select-btn:focus,
@@ -978,8 +978,8 @@ html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item {
     color: #cbd5e1 !important;
 }
 .dropdown-menu-premium .dropdown-item:hover {
-    background-color: rgba(108, 92, 231, 0.08) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.08) !important;
+    color: #743089 !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item:hover {
     background-color: rgba(167, 139, 250, 0.12) !important;
@@ -989,8 +989,8 @@ html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item:hover {
 /* Custom active dropdown item state with curved borders and matched violet theme background */
 .dropdown-menu-premium .dropdown-item.active,
 .dropdown-menu-premium .dropdown-item.active:hover {
-    background-color: rgba(108, 92, 231, 0.12) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.12) !important;
+    color: #743089 !important;
     font-weight: 700 !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-premium .dropdown-item.active,
@@ -1026,8 +1026,8 @@ html[data-admin-theme="dark"] .flatpickr-calendar {
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-month {
     color: #f1f5f9 !important;
 }
-.flatpickr-current-month .numInputWrapper span.arrowUp::after { border-bottom-color: #6c5ce7 !important; }
-.flatpickr-current-month .numInputWrapper span.arrowDown::after { border-top-color: #6c5ce7 !important; }
+.flatpickr-current-month .numInputWrapper span.arrowUp::after { border-bottom-color: #743089 !important; }
+.flatpickr-current-month .numInputWrapper span.arrowDown::after { border-top-color: #743089 !important; }
 html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arrowUp::after { border-bottom-color: #a78bfa !important; }
 html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arrowDown::after { border-top-color: #a78bfa !important; }
 
@@ -1048,7 +1048,7 @@ html[data-admin-theme="dark"] .flatpickr-current-month .numInputWrapper span.arr
 }
 .flatpickr-current-month input.cur-year:hover,
 .flatpickr-current-month input.cur-year:focus {
-    background-color: rgba(108, 92, 231, 0.06) !important;
+    background-color: rgba(116, 48, 137, 0.06) !important;
 }
 html[data-admin-theme="dark"] .flatpickr-current-month input.cur-year:hover,
 html[data-admin-theme="dark"] .flatpickr-current-month input.cur-year:focus {
@@ -1058,8 +1058,8 @@ html[data-admin-theme="dark"] .flatpickr-current-month input.cur-year:focus {
 /* Arrow buttons */
 .flatpickr-months .flatpickr-prev-month, 
 .flatpickr-months .flatpickr-next-month {
-    color: #6c5ce7 !important;
-    fill: #6c5ce7 !important;
+    color: #743089 !important;
+    fill: #743089 !important;
     padding: 8px !important;
     border-radius: 50% !important;
 }
@@ -1070,7 +1070,7 @@ html[data-admin-theme="dark"] .flatpickr-months .flatpickr-next-month {
 }
 .flatpickr-months .flatpickr-prev-month:hover, 
 .flatpickr-months .flatpickr-next-month:hover {
-    background-color: rgba(108, 92, 231, 0.08) !important;
+    background-color: rgba(116, 48, 137, 0.08) !important;
 }
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-prev-month:hover, 
 html[data-admin-theme="dark"] .flatpickr-months .flatpickr-next-month:hover {
@@ -1101,8 +1101,8 @@ html[data-admin-theme="dark"] .flatpickr-day {
 }
 .flatpickr-day:hover, 
 .flatpickr-day:focus {
-    background-color: rgba(108, 92, 231, 0.08) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.08) !important;
+    color: #743089 !important;
     border-color: transparent !important;
 }
 html[data-admin-theme="dark"] .flatpickr-day:hover, 
@@ -1115,10 +1115,10 @@ html[data-admin-theme="dark"] .flatpickr-day:focus {
 .flatpickr-day.selected, 
 .flatpickr-day.startRange, 
 .flatpickr-day.endRange {
-    background: linear-gradient(135deg, #6c5ce7, #8555e3) !important;
+    background: linear-gradient(135deg, #743089, #8555e3) !important;
     color: #ffffff !important;
     border-color: transparent !important;
-    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.25) !important;
+    box-shadow: 0 4px 10px rgba(116, 48, 137, 0.25) !important;
 }
 html[data-admin-theme="dark"] .flatpickr-day.selected, 
 html[data-admin-theme="dark"] .flatpickr-day.startRange, 
@@ -1142,7 +1142,7 @@ html[data-admin-theme="dark"] .flatpickr-day.flatpickr-disabled:hover {
 
 /* Time Picker Section */
 .flatpickr-time {
-    border-top: 1.5px solid rgba(108, 92, 231, 0.08) !important;
+    border-top: 1.5px solid rgba(116, 48, 137, 0.08) !important;
     border-radius: 0 0 14px 14px !important;
 }
 html[data-admin-theme="dark"] .flatpickr-time {
@@ -1152,7 +1152,7 @@ html[data-admin-theme="dark"] .flatpickr-time {
 .flatpickr-time .flatpickr-am-pm:hover, 
 .flatpickr-time input:focus, 
 .flatpickr-time .flatpickr-am-pm:focus {
-    background: rgba(108, 92, 231, 0.08) !important;
+    background: rgba(116, 48, 137, 0.08) !important;
 }
 html[data-admin-theme="dark"] .flatpickr-time input:hover, 
 html[data-admin-theme="dark"] .flatpickr-time .flatpickr-am-pm:hover, 
@@ -1178,7 +1178,7 @@ html[data-admin-theme="dark"] .datetime-picker-icon {
     color: #94a3b8 !important;
 }
 .position-relative:focus-within .datetime-picker-icon {
-    color: #6c5ce7 !important;
+    color: #743089 !important;
 }
 html[data-admin-theme="dark"] .position-relative:focus-within .datetime-picker-icon {
     color: #a78bfa !important;
@@ -1213,8 +1213,8 @@ html[data-admin-theme="dark"] .position-relative:focus-within .datetime-picker-i
     gap: 6px !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
-    border: 1.5px solid #6c5ce7 !important;
-    background-color: rgba(108, 92, 231, 0.04) !important;
+    border: 1.5px solid #743089 !important;
+    background-color: rgba(116, 48, 137, 0.04) !important;
     color: #1e293b !important;
     outline: none !important;
     line-height: 1 !important;
@@ -1228,7 +1228,7 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-btn {
 }
 
 .flatpickr-custom-month-btn:hover {
-    background-color: rgba(108, 92, 231, 0.08) !important;
+    background-color: rgba(116, 48, 137, 0.08) !important;
     transform: translateY(-0.5px);
 }
 
@@ -1318,8 +1318,8 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-item {
 }
 
 .flatpickr-custom-month-item:hover {
-    background-color: rgba(108, 92, 231, 0.08) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.08) !important;
+    color: #743089 !important;
 }
 
 html[data-admin-theme="dark"] .flatpickr-custom-month-item:hover {
@@ -1329,8 +1329,8 @@ html[data-admin-theme="dark"] .flatpickr-custom-month-item:hover {
 
 /* Selected state active styling */
 .flatpickr-custom-month-item.active {
-    background-color: rgba(108, 92, 231, 0.12) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.12) !important;
+    color: #743089 !important;
 }
 
 html[data-admin-theme="dark"] .flatpickr-custom-month-item.active {

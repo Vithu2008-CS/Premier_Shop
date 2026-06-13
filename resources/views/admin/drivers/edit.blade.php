@@ -27,7 +27,7 @@ html[data-admin-theme="light"] .text-theme-dark-bold { color: #1e293b !important
 html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important; }
 
 /* Soft colour tokens */
-.bg-soft-primary   { background: rgba(108,92,231,0.1) !important;  color: #6c5ce7 !important; }
+.bg-soft-primary   { background: rgba(116, 48, 137,0.1) !important;  color: #743089 !important; }
 .bg-soft-success   { background: rgba(16,185,129,0.1) !important;   color: #10b981 !important; }
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important;  color: #64748b !important; }
 .bg-soft-warning   { background: rgba(245,158,11,0.1) !important;   color: #f59e0b !important; }
@@ -43,8 +43,8 @@ html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important
     color: #1e293b !important;
 }
 .form-control:focus, select.form-control:focus {
-    border-color: #6c5ce7 !important;
-    box-shadow: 0 0 0 3.5px rgba(108,92,231,0.15) !important;
+    border-color: #743089 !important;
+    box-shadow: 0 0 0 3.5px rgba(116, 48, 137,0.15) !important;
 }
 html[data-admin-theme="dark"] .form-control {
     background-color: #080f1d !important;
@@ -57,7 +57,7 @@ html[data-admin-theme="dark"] .form-control:focus {
 }
 
 /* Border */
-.border-bottom-subtle { border-bottom: 1.5px solid rgba(108,92,231,0.06) !important; }
+.border-bottom-subtle { border-bottom: 1.5px solid rgba(116, 48, 137,0.06) !important; }
 html[data-admin-theme="dark"] .border-bottom-subtle { border-bottom: 1.5px solid rgba(255,255,255,0.05) !important; }
 
 /* Pulsing green dot */
@@ -121,11 +121,11 @@ html[data-admin-theme="dark"] .floating-save-bar {
 html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light { border-color: rgba(255,255,255,0.3) !important; color: #fff !important; }
 html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover { background: rgba(255,255,255,0.1) !important; }
 .floating-save-bar .btn-primary {
-    background: linear-gradient(135deg,#6c5ce7,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#a78bfa) !important;
     border: none !important; color: #fff !important;
-    box-shadow: 0 4px 12px rgba(108,92,231,0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
 }
-.floating-save-bar .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(108,92,231,0.3) !important; color:#fff !important; }
+.floating-save-bar .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(116, 48, 137,0.3) !important; color:#fff !important; }
 .floating-save-bar .btn-danger {
     background: transparent !important; border: 1.8px solid #ff3366 !important; color: #ff3366 !important;
 }
@@ -160,7 +160,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
         </ol>
         <a href="{{ route('admin.drivers.index') }}"
            class="btn btn-outline-primary btn-sm rounded-pill px-3 d-inline-flex align-items-center"
-           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';border:1.5px solid #6c5ce7;color:#6c5ce7;">
+           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';border:1.5px solid #743089;color:#743089;">
             <i class="bi bi-arrow-left mr-2" style="font-size:0.85rem;margin-right:6px;"></i> Back to fleet
         </a>
     </nav>
@@ -184,7 +184,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
                         </div>
 
                         {{-- Avatar banner --}}
-                        <div class="d-flex align-items-center p-4 rounded-4 mb-4" style="background:rgba(108,92,231,0.03);border:1.5px solid rgba(108,92,231,0.06);">
+                        <div class="d-flex align-items-center p-4 rounded-4 mb-4" style="background:rgba(116, 48, 137,0.03);border:1.5px solid rgba(116, 48, 137,0.06);">
                             <div class="rounded-circle bg-soft-primary text-primary font-weight-bold d-flex align-items-center justify-content-center mr-4 shadow-sm"
                                  style="font-size:1.5rem;min-width:64px;height:64px;margin-right:16px;">
                                 {{ strtoupper(substr($driver->name, 0, 1)) }}
@@ -317,7 +317,7 @@ html[data-admin-theme="dark"] .floating-save-bar .floating-bar-title { color: #f
                     <div class="mb-3">
                         <button type="button" id="btn-track-driver"
                                 class="btn btn-primary w-100 d-flex align-items-center justify-content-center"
-                                style="border-radius:30px !important;font-weight:700;font-family:'Outfit';background:linear-gradient(135deg,#6c5ce7,#a78bfa) !important;border:none;padding:10px 20px;box-shadow:0 4px 12px rgba(108,92,231,0.25);gap:8px;">
+                                style="border-radius:30px !important;font-weight:700;font-family:'Outfit';background:linear-gradient(135deg,#743089,#a78bfa) !important;border:none;padding:10px 20px;box-shadow:0 4px 12px rgba(116, 48, 137,0.25);gap:8px;">
                             <i class="bi bi-radar" id="track-icon" style="font-size:1rem;"></i>
                             <span id="track-btn-text">Track Driver (Get Exact GPS)</span>
                         </button>
@@ -475,7 +475,7 @@ $(function () {
                 icon: {
                     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                     scale: 7,
-                    fillColor: '#6c5ce7',
+                    fillColor: '#743089',
                     fillOpacity: 0.95,
                     strokeColor: '#ffffff',
                     strokeWeight: 2.5,

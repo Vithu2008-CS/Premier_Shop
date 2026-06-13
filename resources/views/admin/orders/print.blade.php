@@ -49,7 +49,7 @@
         .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .badge-pending { background-color: #ffeaa7; color: #d35400; }
         .badge-processing { background-color: #81ecec; color: #0097e6; }
-        .badge-shipped { background-color: #a29bfe; color: #6c5ce7; }
+        .badge-shipped { background-color: #A45FBF; color: #743089; }
         .badge-delivered { background-color: #55efc4; color: #00b894; }
         .badge-cancelled { background-color: #ff7675; color: #d63031; }
 

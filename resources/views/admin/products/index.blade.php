@@ -154,7 +154,7 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .product-row-btn:hover {
-    background-color: rgba(108, 92, 231, 0.04) !important;
+    background-color: rgba(116, 48, 137, 0.04) !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
@@ -162,7 +162,7 @@ html[data-admin-theme="dark"] .product-row-btn:hover {
     background-color: rgba(167, 139, 250, 0.05) !important;
 }
 .product-row-btn:hover .text-primary-hover {
-    color: #6c5ce7 !important;
+    color: #743089 !important;
 }
 html[data-admin-theme="dark"] .product-row-btn:hover .text-primary-hover {
     color: #a78bfa !important;

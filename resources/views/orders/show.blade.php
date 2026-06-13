@@ -342,7 +342,7 @@
                         });
 
                         // Warehouse + destination markers
-                        new google.maps.Marker({ position: warehouse,   map: map, icon: makePin('#6C5CE7', '🏢'), title: 'Premier Shop Central Depot' });
+                        new google.maps.Marker({ position: warehouse,   map: map, icon: makePin('#743089', '🏢'), title: 'Premier Shop Central Depot' });
                         new google.maps.Marker({ position: destination, map: map, icon: makePin('#E17055', '🏠'), title: 'Delivery Address' });
 
                         // Dashed route line

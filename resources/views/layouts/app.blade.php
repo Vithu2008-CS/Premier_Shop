@@ -60,7 +60,7 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 28px;
             padding: 10px 16px;
-            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.08), 0 5px 15px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 15px 35px rgba(116, 48, 137, 0.08), 0 5px 15px rgba(0, 0, 0, 0.03);
             z-index: 1050;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -110,20 +110,20 @@
         }
         
         .dock-item:hover, .dock-item.active {
-            color: #6C5CE7;
+            color: #743089;
         }
         
         [data-bs-theme="dark"] .dock-item:hover, [data-bs-theme="dark"] .dock-item.active {
-            color: #A29BFE;
+            color: #A45FBF;
         }
         
         .dock-item:hover i, .dock-item.active i {
-            color: #6C5CE7;
+            color: #743089;
         }
         
         [data-bs-theme="dark"] .dock-item:hover i, [data-bs-theme="dark"] .dock-item.active i {
-            color: #A29BFE;
-            text-shadow: 0 0 10px rgba(162, 155, 254, 0.5);
+            color: #A45FBF;
+            text-shadow: 0 0 10px rgba(164, 95, 191, 0.5);
         }
         
         .dock-item.active .dock-icon-wrapper {
@@ -137,22 +137,22 @@
             bottom: 2px;
             width: 5px;
             height: 5px;
-            background-color: #6C5CE7;
+            background-color: #743089;
             border-radius: 50%;
-            box-shadow: 0 0 8px #6C5CE7;
+            box-shadow: 0 0 8px #743089;
             transition: all 0.3s ease;
         }
         
         [data-bs-theme="dark"] .dock-item.active::after {
-            background-color: #A29BFE;
-            box-shadow: 0 0 8px #A29BFE;
+            background-color: #A45FBF;
+            box-shadow: 0 0 8px #A45FBF;
         }
         
         /* Beautiful Premium Footer Enhancements */
         .footer-premium {
             position: relative;
             background: linear-gradient(180deg, #0b0a11 0%, #040307 100%) !important;
-            border-top: 1px solid rgba(162, 155, 254, 0.08) !important;
+            border-top: 1px solid rgba(164, 95, 191, 0.08) !important;
             overflow: hidden;
             padding: 80px 0 0 !important;
             font-family: 'Inter', sans-serif;
@@ -166,7 +166,7 @@
             transform: translateX(-50%);
             width: 600px;
             height: 400px;
-            background: radial-gradient(circle, rgba(162, 155, 254, 0.08) 0%, rgba(162, 155, 254, 0) 70%);
+            background: radial-gradient(circle, rgba(164, 95, 191, 0.08) 0%, rgba(164, 95, 191, 0) 70%);
             pointer-events: none;
             z-index: 0;
         }
@@ -190,7 +190,7 @@
             left: 0;
             width: 35px;
             height: 2.5px;
-            background: linear-gradient(90deg, #6C5CE7, #A29BFE);
+            background: linear-gradient(90deg, #743089, #A45FBF);
             border-radius: 5px;
         }
         
@@ -220,7 +220,7 @@
         
         .footer-links li a:hover {
             padding-left: 12px;
-            color: #A29BFE !important;
+            color: #A45FBF !important;
         }
         
         .footer-links li a::before {
@@ -229,7 +229,7 @@
             left: -12px;
             opacity: 0;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            color: #A29BFE;
+            color: #A45FBF;
             font-weight: bold;
         }
         
@@ -242,7 +242,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 1.6rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #ffffff 30%, #A29BFE 100%);
+            background: linear-gradient(135deg, #ffffff 30%, #A45FBF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
@@ -268,11 +268,11 @@
         }
         
         .social-icons a:hover {
-            background: rgba(162, 155, 254, 0.15);
-            border-color: rgba(162, 155, 254, 0.3);
-            color: #A29BFE !important;
+            background: rgba(164, 95, 191, 0.15);
+            border-color: rgba(164, 95, 191, 0.3);
+            color: #A45FBF !important;
             transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(162, 155, 254, 0.2);
+            box-shadow: 0 8px 20px rgba(164, 95, 191, 0.2);
         }
         
         .footer-bottom {
@@ -331,13 +331,13 @@
         }
         
         .category-drawer-tile:hover {
-            background: rgba(108, 92, 231, 0.08);
-            border-color: rgba(108, 92, 231, 0.2);
+            background: rgba(116, 48, 137, 0.08);
+            border-color: rgba(116, 48, 137, 0.2);
         }
         
         [data-bs-theme="dark"] .category-drawer-tile:hover {
-            background: rgba(162, 155, 254, 0.15);
-            border-color: rgba(162, 155, 254, 0.3);
+            background: rgba(164, 95, 191, 0.15);
+            border-color: rgba(164, 95, 191, 0.3);
         }
         
         .category-drawer-tile .tile-icon {
@@ -347,13 +347,13 @@
             align-items: center;
             justify-content: center;
             border-radius: 8px;
-            background: rgba(108, 92, 231, 0.1);
-            color: #6C5CE7;
+            background: rgba(116, 48, 137, 0.1);
+            color: #743089;
         }
         
         [data-bs-theme="dark"] .category-drawer-tile .tile-icon {
-            background: rgba(162, 155, 254, 0.15);
-            color: #A29BFE;
+            background: rgba(164, 95, 191, 0.15);
+            color: #A45FBF;
         }
         
         .category-drawer-tile .tile-icon img {
@@ -383,7 +383,7 @@
         }
         
         .btn-close-custom:hover {
-            color: #6C5CE7;
+            color: #743089;
         }
         
         /* Compact Milestone & Trust cards on mobile */
@@ -519,16 +519,16 @@
 
         /* Premium Brand Gradient Buttons */
         .btn-premium-gradient {
-            background: linear-gradient(135deg, #6C5CE7 0%, #8E2DE2 100%) !important;
+            background: linear-gradient(135deg, #743089 0%, #5A1E6B 100%) !important;
             border: none !important;
             color: #ffffff !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         
         .btn-premium-gradient:hover {
-            background: linear-gradient(135deg, #8E2DE2 0%, #6C5CE7 100%) !important;
+            background: linear-gradient(135deg, #5A1E6B 0%, #743089 100%) !important;
             transform: translateY(-2px) !important;
-            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35) !important;
+            box-shadow: 0 8px 20px rgba(116, 48, 137, 0.35) !important;
             color: #ffffff !important;
         }
 
@@ -539,8 +539,8 @@
         .status-badge.status-processing { background: rgba(2, 128, 144, 0.08) !important; color: #028090 !important; }
         [data-bs-theme="dark"] .status-badge.status-processing { background: rgba(2, 128, 144, 0.18) !important; color: #00E5FF !important; }
 
-        .status-badge.status-shipped { background: rgba(108, 92, 231, 0.08) !important; color: #6C5CE7 !important; }
-        [data-bs-theme="dark"] .status-badge.status-shipped { background: rgba(162, 155, 254, 0.18) !important; color: #A29BFE !important; }
+        .status-badge.status-shipped { background: rgba(116, 48, 137, 0.08) !important; color: #743089 !important; }
+        [data-bs-theme="dark"] .status-badge.status-shipped { background: rgba(164, 95, 191, 0.18) !important; color: #A45FBF !important; }
 
         .status-badge.status-delivered { background: rgba(42, 157, 143, 0.08) !important; color: #2A9D8F !important; }
         [data-bs-theme="dark"] .status-badge.status-delivered { background: rgba(42, 157, 143, 0.18) !important; color: #4ADBB3 !important; }
@@ -875,7 +875,7 @@
                     <div class="col-lg-5">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <i class="bi bi-envelope-heart-fill text-primary fs-4"></i>
-                            <span class="badge rounded-pill" style="background: rgba(108,92,231,0.2); color: #A29BFE; font-size: 0.75rem;">Newsletter</span>
+                            <span class="badge rounded-pill" style="background: rgba(116, 48, 137,0.2); color: #A45FBF; font-size: 0.75rem;">Newsletter</span>
                         </div>
                         <h3 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Stay in the loop</h3>
                         <p class="text-muted small mb-0">Get exclusive offers, new arrivals, and special discounts delivered to your inbox.</p>
@@ -1580,8 +1580,8 @@
 
             /* Advanced Coupons Ticket Stub Styles */
             .coupon-ticket {
-                background: linear-gradient(135deg, rgba(108, 92, 231, 0.08), rgba(108, 92, 231, 0.02));
-                border: 2px dashed rgba(108, 92, 231, 0.25);
+                background: linear-gradient(135deg, rgba(116, 48, 137, 0.08), rgba(116, 48, 137, 0.02));
+                border: 2px dashed rgba(116, 48, 137, 0.25);
                 border-radius: 14px;
                 position: relative;
                 padding: 12px;
@@ -1590,13 +1590,13 @@
                 transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             }
             [data-bs-theme="dark"] .coupon-ticket {
-                background: linear-gradient(135deg, rgba(162, 155, 254, 0.08), rgba(162, 155, 254, 0.02));
-                border-color: rgba(162, 155, 254, 0.25);
+                background: linear-gradient(135deg, rgba(164, 95, 191, 0.08), rgba(164, 95, 191, 0.02));
+                border-color: rgba(164, 95, 191, 0.25);
             }
             .coupon-ticket:hover {
                 border-color: var(--ps-primary);
                 transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(108, 92, 231, 0.08);
+                box-shadow: 0 8px 20px rgba(116, 48, 137, 0.08);
             }
             .coupon-ticket::before, .coupon-ticket::after {
                 content: '';
@@ -1604,13 +1604,13 @@
                 width: 14px;
                 height: 14px;
                 background: var(--ps-surface-bg);
-                border: 2px solid rgba(108, 92, 231, 0.25);
+                border: 2px solid rgba(116, 48, 137, 0.25);
                 border-radius: 50%;
                 top: 50%;
                 transform: translateY(-50%);
             }
             [data-bs-theme="dark"] .coupon-ticket::before, [data-bs-theme="dark"] .coupon-ticket::after {
-                border-color: rgba(162, 155, 254, 0.25);
+                border-color: rgba(164, 95, 191, 0.25);
             }
             .coupon-ticket::before { left: -8px; border-left: none; }
             .coupon-ticket::after { right: -8px; border-right: none; }
@@ -1654,7 +1654,7 @@
                 display: flex;
                 align-items: center;
                 gap: 15px;
-                background: rgba(108, 92, 231, 0.04);
+                background: rgba(116, 48, 137, 0.04);
                 border: 1px solid var(--ps-border);
                 border-radius: 16px;
                 padding: 12px;
@@ -2256,7 +2256,7 @@
                                             <span>🚚 Shipping Progress</span>
                                             <span class="text-primary">Add £${neededForFree.toFixed(2)} more for FREE delivery</span>
                                         </div>
-                                        <div class="booster-progress" style="background: rgba(108,92,231,0.05);">
+                                        <div class="booster-progress" style="background: rgba(116, 48, 137,0.05);">
                                             <div class="progress-bar bg-primary" role="progressbar" style="width: ${percent}%; height: 100%;"></div>
                                         </div>
                                     </div>
@@ -2299,7 +2299,7 @@
                                     <span class="text-primary">£${data.subtotal.toFixed(2)}</span>
                                 </div>
                                 <div class="d-grid gap-2 mt-2">
-                                    <a href="{{ route('checkout.index') }}" class="btn btn-primary rounded-pill py-2.5 fw-bold" style="background: var(--ps-gradient); border:none; box-shadow: 0 4px 15px rgba(108,92,231,0.25);">
+                                    <a href="{{ route('checkout.index') }}" class="btn btn-primary rounded-pill py-2.5 fw-bold" style="background: var(--ps-gradient); border:none; box-shadow: 0 4px 15px rgba(116, 48, 137,0.25);">
                                         <i class="bi bi-shield-lock-fill me-1"></i> Proceed to Checkout
                                     </a>
                                     <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill py-2 fw-bold" style="border-color: var(--ps-border); color: var(--ps-text); background: var(--ps-surface-bg);">

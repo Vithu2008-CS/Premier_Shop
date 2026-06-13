@@ -21,7 +21,7 @@
         transition: color 0.2s;
         margin-bottom: 16px;
     }
-    .od-back:hover { color: #A29BFE; }
+    .od-back:hover { color: #A45FBF; }
     .od-back i { font-size: 0.9rem; }
 
     .od-title {
@@ -56,7 +56,7 @@
         justify-content: center;
         font-size: 0.88rem;
     }
-    .hicon-purple { background: rgba(108,92,231,0.2); color: #A29BFE; }
+    .hicon-purple { background: rgba(116, 48, 137,0.2); color: #A45FBF; }
     .hicon-teal   { background: rgba(0,184,148,0.15);  color: #00cec9; }
     .hicon-amber  { background: rgba(253,203,110,0.15); color: #fdcb6e; }
     .hicon-red    { background: rgba(255,118,117,0.15); color: #ff7675; }
@@ -73,7 +73,7 @@
     .customer-avatar {
         width: 52px; height: 52px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+        background: linear-gradient(135deg, #743089, #A45FBF);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -82,7 +82,7 @@
         font-size: 1.3rem;
         color: #fff;
         flex-shrink: 0;
-        box-shadow: 0 4px 16px rgba(108,92,231,0.4);
+        box-shadow: 0 4px 16px rgba(116, 48, 137,0.4);
     }
     .customer-name {
         font-family: 'Outfit', sans-serif;
@@ -149,7 +149,7 @@
         font-family: 'Outfit', sans-serif;
         font-weight: 700;
         font-size: 0.95rem;
-        color: #A29BFE;
+        color: #A45FBF;
         flex-shrink: 0;
     }
     .order-total-row {
@@ -190,8 +190,8 @@
     }
     .od-input:focus {
         outline: none;
-        border-color: rgba(108,92,231,0.5);
-        background: rgba(108,92,231,0.06);
+        border-color: rgba(116, 48, 137,0.5);
+        background: rgba(116, 48, 137,0.06);
         color: #fff;
     }
     .od-file-wrap {
@@ -205,8 +205,8 @@
         position: relative;
     }
     .od-file-wrap:hover {
-        border-color: rgba(108,92,231,0.4);
-        background: rgba(108,92,231,0.05);
+        border-color: rgba(116, 48, 137,0.4);
+        background: rgba(116, 48, 137,0.05);
     }
     .od-file-wrap input[type="file"] {
         position: absolute;
@@ -275,7 +275,7 @@
         font-weight: 700;
         font-family: 'Outfit', sans-serif;
     }
-    .osb-shipped    { background: rgba(108,92,231,0.15); color: #A29BFE; }
+    .osb-shipped    { background: rgba(116, 48, 137,0.15); color: #A45FBF; }
     .osb-processing { background: rgba(253,203,110,0.15); color: #fdcb6e; }
     .osb-delivered  { background: rgba(0,184,148,0.12); color: #55efc4; }
 

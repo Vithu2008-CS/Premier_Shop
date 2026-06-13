@@ -23,7 +23,7 @@
         </ol>
         <a href="{{ route('admin.delivery-zones.create') }}"
            class="btn btn-primary btn-sm d-inline-flex align-items-center"
-           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';padding:8px 20px;background:linear-gradient(135deg,#6c5ce7,#a78bfa);border:none;box-shadow:0 4px 12px rgba(108,92,231,0.25);">
+           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';padding:8px 20px;background:linear-gradient(135deg,#743089,#a78bfa);border:none;box-shadow:0 4px 12px rgba(116, 48, 137,0.25);">
             <i class="bi bi-plus-circle" style="font-size:0.9rem;margin-right:6px;"></i> Add Zone
         </a>
     </nav>
@@ -85,7 +85,7 @@
                     <p class="text-muted mb-1 font-weight-bold" style="font-family:'Outfit';">No delivery zones yet</p>
                     <p class="text-muted small mb-3">Customers are quoted the flat-rate fallback until you add a zone.</p>
                     <a href="{{ route('admin.delivery-zones.create') }}" class="btn btn-primary btn-sm"
-                       style="border-radius:30px !important;font-weight:700;padding:8px 20px;background:linear-gradient(135deg,#6c5ce7,#a78bfa);border:none;">
+                       style="border-radius:30px !important;font-weight:700;padding:8px 20px;background:linear-gradient(135deg,#743089,#a78bfa);border:none;">
                         <i class="bi bi-plus-circle" style="margin-right:6px;"></i> Add your first zone
                     </a>
                 </div>

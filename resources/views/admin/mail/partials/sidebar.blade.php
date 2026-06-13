@@ -61,8 +61,8 @@
     transition: all 0.2s ease !important;
 }
 .email-aside .aside-nav .nav li.active a {
-    background-color: rgba(108, 92, 231, 0.15) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.15) !important;
+    color: #743089 !important;
     font-weight: 700 !important;
 }
 html[data-admin-theme="dark"] .email-aside .aside-nav .nav li.active a {

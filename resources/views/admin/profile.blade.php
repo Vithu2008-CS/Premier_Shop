@@ -21,7 +21,7 @@
     <div class="col-lg-4 mb-4">
         <div class="card glass-card text-center border-0 shadow-lg h-100 overflow-hidden" style="border-radius: 20px; backdrop-filter: blur(15px);">
             {{-- Decorative header --}}
-            <div class="profile-card-header-decor" style="height: 110px; background: linear-gradient(135deg, #727cf5 0%, #6c5ce7 100%); opacity: 0.85;"></div>
+            <div class="profile-card-header-decor" style="height: 110px; background: linear-gradient(135deg, #727cf5 0%, #743089 100%); opacity: 0.85;"></div>
             
             <div class="card-body pt-0 pb-4 position-relative">
                 {{-- Avatar --}}
@@ -516,7 +516,7 @@
     }
     .avatar-upload-overlay:hover {
         transform: scale(1.1);
-        background-color: #6c5ce7 !important;
+        background-color: #743089 !important;
     }
     
     @keyframes rotateHalo {

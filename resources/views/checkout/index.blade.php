@@ -46,9 +46,9 @@
     }
     .coupon-ticket-stub:hover {
         transform: translateY(-2px);
-        background: rgba(108, 92, 231, 0.05) !important;
+        background: rgba(116, 48, 137, 0.05) !important;
         border-color: var(--ps-primary) !important;
-        box-shadow: 0 4px 10px rgba(108, 92, 231, 0.08);
+        box-shadow: 0 4px 10px rgba(116, 48, 137, 0.08);
     }
     .custom-scrollbar::-webkit-scrollbar {
         height: 4px;
@@ -90,7 +90,7 @@
                     </div>
                     <div class="stepper-line" style="width: 40px; height: 2px; background: var(--ps-border);"></div>
                     <div class="stepper-step active d-flex align-items-center gap-2">
-                        <span class="step-num rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:28px; height:28px; background: rgba(108,92,231,0.15); color:var(--ps-primary); border: 1px solid var(--ps-primary); font-size:0.85rem;">2</span>
+                        <span class="step-num rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:28px; height:28px; background: rgba(116, 48, 137,0.15); color:var(--ps-primary); border: 1px solid var(--ps-primary); font-size:0.85rem;">2</span>
                         <span class="step-label fw-bold small text-primary">Secure Pay</span>
                     </div>
                     <div class="stepper-line" style="width: 40px; height: 2px; background: var(--ps-border);"></div>
@@ -235,7 +235,7 @@
                         </div>
 
                         <div class="d-none d-lg-block">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mt-4" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mt-4" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(116, 48, 137, 0.2);">
                                 <i class="bi bi-shield-lock-fill me-2"></i> Place Order Now
                             </button>
                         </div>
@@ -377,7 +377,7 @@
                     </div>
 
                     <div class="d-lg-none">
-                        <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg w-100 py-3" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);">
+                        <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg w-100 py-3" style="border-radius: 50px; background: var(--ps-gradient); border: none; font-weight: 700; box-shadow: 0 10px 20px rgba(116, 48, 137, 0.2);">
                             <i class="bi bi-shield-lock-fill me-2"></i> Place Order
                         </button>
                     </div>
@@ -649,7 +649,7 @@
                 mode: 'payment',
                 amount: initialAmount,
                 currency: 'gbp',
-                appearance: { theme: 'stripe', variables: { colorPrimary: '#6C5CE7', borderRadius: '10px' } }
+                appearance: { theme: 'stripe', variables: { colorPrimary: '#743089', borderRadius: '10px' } }
             });
             elements.create('payment', { layout: 'tabs' }).mount('#payment-element');
         }

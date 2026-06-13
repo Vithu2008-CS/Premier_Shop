@@ -7,13 +7,13 @@
 --}}
 @extends('emails.layouts.master')
 @section('title', 'Your cart is waiting')
-@section('header_style', 'background:#6C5CE7;')
+@section('header_style', 'background:#743089;')
 @section('header_subtitle', 'You left some items behind')
 
 @section('content')
 <tr>
     <td style="padding:30px 40px 0;text-align:center;">
-        <div style="display:inline-block;width:80px;height:80px;background:#6C5CE7;border-radius:50%;line-height:80px;font-size:40px;">
+        <div style="display:inline-block;width:80px;height:80px;background:#743089;border-radius:50%;line-height:80px;font-size:40px;">
             🛒
         </div>
     </td>
@@ -45,7 +45,7 @@
                                 <p style="margin:4px 0 0;font-size:13px;color:#636e72;">Qty: {{ $item->quantity }}</p>
                             </td>
                             <td style="text-align:right;vertical-align:middle;white-space:nowrap;">
-                                <strong style="color:#6C5CE7;font-size:14px;">£{{ number_format($item->line_total, 2) }}</strong>
+                                <strong style="color:#743089;font-size:14px;">£{{ number_format($item->line_total, 2) }}</strong>
                             </td>
                         </tr>
                     </table>
@@ -62,7 +62,7 @@
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td style="font-size:16px;color:#2d3436;font-weight:700;">Subtotal</td>
-                <td style="text-align:right;font-size:18px;color:#6C5CE7;font-weight:800;">£{{ number_format($subtotal, 2) }}</td>
+                <td style="text-align:right;font-size:18px;color:#743089;font-weight:800;">£{{ number_format($subtotal, 2) }}</td>
             </tr>
         </table>
     </td>
@@ -70,7 +70,7 @@
 
 <tr>
     <td style="padding:24px 40px 30px;text-align:center;">
-        <a href="{{ url('/cart') }}" style="display:inline-block;background:#6C5CE7;color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/cart') }}" style="display:inline-block;background:#743089;color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
             Complete Your Order →
         </a>
         <p style="margin:16px 0 0;font-size:12px;color:#b2bec3;">

@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
         icon: {
             path:        google.maps.SymbolPath.CIRCLE,
             scale:       10,
-            fillColor:   '#6c5ce7',
+            fillColor:   '#743089',
             fillOpacity: 1,
             strokeColor: '#ffffff',
             strokeWeight: 2.5,

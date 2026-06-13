@@ -102,7 +102,7 @@
                 <div class="d-flex flex-column gap-3">
                     {{-- Address Card --}}
                     <div class="contact-info-card">
-                        <div class="contact-info-icon" style="background: rgba(108, 92, 231, 0.12); color: #6C5CE7;">
+                        <div class="contact-info-icon" style="background: rgba(116, 48, 137, 0.12); color: #743089;">
                             <i class="bi bi-geo-alt-fill"></i>
                         </div>
                         <div>

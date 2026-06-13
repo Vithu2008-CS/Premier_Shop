@@ -13,13 +13,13 @@
     <style>
         body { font-family: 'Helvetica', sans-serif; color: #333; line-height: 1.5; margin: 0; padding: 0; }
         .container { padding: 30px; }
-        .header { border-bottom: 3px solid #6c5ce7; padding-bottom: 20px; margin-bottom: 30px; }
+        .header { border-bottom: 3px solid #743089; padding-bottom: 20px; margin-bottom: 30px; }
         .header:after { content: ""; display: table; clear: both; }
-        .logo { float: left; font-size: 24px; font-weight: bold; color: #6c5ce7; text-transform: uppercase; }
+        .logo { float: left; font-size: 24px; font-weight: bold; color: #743089; text-transform: uppercase; }
         .report-info { float: right; text-align: right; }
         .stats-grid { margin-bottom: 30px; }
         .stats-grid:after { content: ""; display: table; clear: both; }
-        .stat-card { float: left; width: 30%; margin-right: 3%; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #6c5ce7; }
+        .stat-card { float: left; width: 30%; margin-right: 3%; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #743089; }
         .stat-label { font-size: 12px; color: #777; text-transform: uppercase; margin-bottom: 5px; }
         .stat-value { font-size: 20px; font-weight: bold; color: #333; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }

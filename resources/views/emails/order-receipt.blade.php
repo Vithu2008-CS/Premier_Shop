@@ -35,7 +35,7 @@
                             <td align="right" style="font-size:13px;color:#636e72;padding-bottom:4px;">Date</td>
                         </tr>
                         <tr>
-                            <td style="font-size:18px;font-weight:700;color:#6C5CE7;">{{ $order->order_number }}</td>
+                            <td style="font-size:18px;font-weight:700;color:#743089;">{{ $order->order_number }}</td>
                             <td align="right" style="font-size:14px;color:#2d3436;font-weight:600;">{{ $order->created_at->format('d M Y, H:i') }}</td>
                         </tr>
                     </table>
@@ -48,7 +48,7 @@
     <td style="padding:0 40px;">
         <h3 style="margin:0 0 12px;font-size:16px;color:#2d3436;font-weight:700;">🛒 Items Ordered</h3>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
-            <tr style="background:#6C5CE7;">
+            <tr style="background:#743089;">
                 <td style="padding:10px 14px;color:#fff;font-size:12px;font-weight:600;border-radius:8px 0 0 0;text-transform:uppercase;">Product</td>
                 <td align="center" style="padding:10px;color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;">Qty</td>
                 <td align="center" style="padding:10px;color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;">Price</td>
@@ -90,7 +90,7 @@
                         </tr>
                         <tr>
                             <td style="padding:12px 0 6px;font-size:20px;font-weight:800;color:#2d3436;">Total</td>
-                            <td align="right" style="padding:12px 0 6px;font-size:20px;font-weight:800;color:#6C5CE7;">£{{ number_format($order->total, 2) }}</td>
+                            <td align="right" style="padding:12px 0 6px;font-size:20px;font-weight:800;color:#743089;">£{{ number_format($order->total, 2) }}</td>
                         </tr>
                     </table>
                 </td>
@@ -102,7 +102,7 @@
 <tr>
     <td style="padding:0 40px 20px;">
         <h3 style="margin:0 0 8px;font-size:16px;color:#2d3436;font-weight:700;">📦 Delivery Address</h3>
-        <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;border-left:4px solid #6C5CE7;text-align:left;">
+        <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;border-left:4px solid #743089;text-align:left;">
             <p style="margin:0;font-size:14px;color:#2d3436;line-height:1.7;">
                 {{ $order->shipping_address['address_line'] ?? '' }}<br>
                 {{ $order->shipping_address['city'] ?? '' }}<br>
@@ -122,7 +122,7 @@
 </tr>
 <tr>
     <td style="padding:10px 40px 40px;text-align:center;">
-        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#6C5CE7;color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#743089;color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
             View Order Details →
         </a>
     </td>

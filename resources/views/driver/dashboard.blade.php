@@ -116,7 +116,7 @@
         font-size: 1.2rem;
         flex-shrink: 0;
     }
-    .stat-icon.purple { background: rgba(108,92,231,0.18); color: #A29BFE; }
+    .stat-icon.purple { background: rgba(116, 48, 137,0.18); color: #A45FBF; }
     .stat-icon.teal   { background: rgba(0,184,148,0.15);  color: #00cec9; }
     .stat-icon.amber  { background: rgba(253,203,110,0.15); color: #fdcb6e; }
     .stat-val {
@@ -152,7 +152,7 @@
         justify-content: center;
         font-size: 0.85rem;
     }
-    .sh-icon.purple { background: rgba(108,92,231,0.2); color: #A29BFE; }
+    .sh-icon.purple { background: rgba(116, 48, 137,0.2); color: #A45FBF; }
     .sh-icon.green  { background: rgba(0,184,148,0.15); color: #00cec9; }
 
     /* section divider */
@@ -179,10 +179,10 @@
         box-shadow: 0 16px 48px rgba(0,0,0,0.4);
     }
     .dcard.status-processing { border-left-color: #fdcb6e; }
-    .dcard.status-shipped    { border-left-color: #6C5CE7; }
+    .dcard.status-shipped    { border-left-color: #743089; }
     .dcard.status-delivered  { border-left-color: #00b894; opacity: 0.75; }
     .dcard:hover.status-processing { box-shadow: 0 16px 48px rgba(253,203,110,0.12), 0 0 0 1px rgba(253,203,110,0.1); border-color: rgba(253,203,110,0.2); }
-    .dcard:hover.status-shipped    { box-shadow: 0 16px 48px rgba(108,92,231,0.15), 0 0 0 1px rgba(108,92,231,0.1); border-color: rgba(108,92,231,0.2); }
+    .dcard:hover.status-shipped    { box-shadow: 0 16px 48px rgba(116, 48, 137,0.15), 0 0 0 1px rgba(116, 48, 137,0.1); border-color: rgba(116, 48, 137,0.2); }
 
     .dcard-body { padding: 20px; }
 
@@ -192,8 +192,8 @@
         font-size: 0.78rem;
         padding: 4px 10px;
         border-radius: 8px;
-        background: rgba(108,92,231,0.15);
-        color: #A29BFE;
+        background: rgba(116, 48, 137,0.15);
+        color: #A45FBF;
         letter-spacing: 0.5px;
     }
     .dcard-number.delivered {
@@ -209,7 +209,7 @@
         border-radius: 100px;
     }
     .dstatus-processing { background: rgba(253,203,110,0.15); color: #fdcb6e; }
-    .dstatus-shipped    { background: rgba(108,92,231,0.15);  color: #A29BFE; }
+    .dstatus-shipped    { background: rgba(116, 48, 137,0.15);  color: #A45FBF; }
     .dstatus-delivered  { background: rgba(0,184,148,0.12);   color: #55efc4; }
 
     .dcard-customer {
@@ -256,7 +256,7 @@
         gap: 6px;
         padding: 8px 18px;
         border-radius: 100px;
-        background: linear-gradient(135deg, #6C5CE7, #8E2DE2);
+        background: linear-gradient(135deg, #743089, #5A1E6B);
         color: #fff;
         font-size: 0.8rem;
         font-weight: 700;
@@ -264,11 +264,11 @@
         text-decoration: none;
         border: none;
         transition: all 0.2s ease;
-        box-shadow: 0 4px 14px rgba(108,92,231,0.35);
+        box-shadow: 0 4px 14px rgba(116, 48, 137,0.35);
     }
     .btn-view-order:hover {
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(108,92,231,0.45);
+        box-shadow: 0 6px 20px rgba(116, 48, 137,0.45);
         color: #fff;
     }
     .btn-history {
@@ -492,7 +492,7 @@
         <span class="sh-icon purple"><i class="bi bi-truck-front"></i></span>
         To Deliver
         @if($pendingOrders->count() > 0)
-            <span style="background:rgba(108,92,231,0.2);color:#A29BFE;font-size:0.72rem;padding:2px 9px;border-radius:100px;font-weight:700;">{{ $pendingOrders->count() }}</span>
+            <span style="background:rgba(116, 48, 137,0.2);color:#A45FBF;font-size:0.72rem;padding:2px 9px;border-radius:100px;font-weight:700;">{{ $pendingOrders->count() }}</span>
         @endif
     </div>
 
