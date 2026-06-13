@@ -14,13 +14,13 @@
     /* Premium Profile Swoosh Wave Header */
     .profile-card-header {
         position: relative;
-        background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+        background: linear-gradient(135deg, #743089 0%, #A45FBF 100%);
         border-radius: 0 0 40px 40px;
         padding: 50px 20px 40px;
         color: #ffffff;
         text-align: center;
         overflow: hidden;
-        box-shadow: 0 10px 25px rgba(108, 92, 231, 0.15);
+        box-shadow: 0 10px 25px rgba(116, 48, 137, 0.15);
     }
     
     .profile-card-header::before {
@@ -107,7 +107,7 @@
     .camera-badge-profile:hover {
         background: #f0f0f0;
         transform: scale(1.1);
-        color: var(--bs-primary, #6C5CE7);
+        color: var(--bs-primary, #743089);
     }
 
     .profile-name-bold {
@@ -131,7 +131,7 @@
     .orders-card-profile {
         background: #ffffff;
         border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(108, 92, 231, 0.04), 0 2px 10px rgba(0,0,0,0.01);
+        box-shadow: 0 10px 30px rgba(116, 48, 137, 0.04), 0 2px 10px rgba(0,0,0,0.01);
         padding: 24px;
         margin-top: 24px;
         border: 1px solid rgba(0,0,0,0.02);
@@ -224,7 +224,7 @@
     .actions-list-profile {
         background: #ffffff;
         border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(108, 92, 231, 0.04), 0 2px 10px rgba(0,0,0,0.01);
+        box-shadow: 0 10px 30px rgba(116, 48, 137, 0.04), 0 2px 10px rgba(0,0,0,0.01);
         padding: 8px 16px;
         margin-top: 24px;
         border: 1px solid rgba(0,0,0,0.02);
@@ -255,7 +255,7 @@
     }
 
     .action-row-item:hover {
-        color: var(--bs-primary, #6C5CE7);
+        color: var(--bs-primary, #743089);
     }
 
     .action-row-left {
@@ -272,7 +272,7 @@
     }
 
     .action-row-item:hover .action-row-icon {
-        color: var(--bs-primary, #6C5CE7);
+        color: var(--bs-primary, #743089);
     }
 
     .action-row-text {
@@ -372,7 +372,7 @@
         <div class="orders-grid-profile">
             {{-- Pending --}}
             <a href="{{ route('orders.index') }}" class="order-tile-item">
-                <div class="order-tile-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+                <div class="order-tile-icon" style="background: rgba(116, 48, 137, 0.1); color: #743089;">
                     <i class="bi bi-wallet2"></i>
                 </div>
                 <span class="order-tile-label">Pending</span>

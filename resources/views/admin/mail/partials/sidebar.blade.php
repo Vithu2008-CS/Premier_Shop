@@ -61,13 +61,13 @@
     transition: all 0.2s ease !important;
 }
 .email-aside .aside-nav .nav li.active a {
-    background-color: rgba(108, 92, 231, 0.15) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.15) !important;
+    color: #743089 !important;
     font-weight: 700 !important;
 }
 html[data-admin-theme="dark"] .email-aside .aside-nav .nav li.active a {
-    background-color: rgba(167, 139, 250, 0.2) !important;
-    color: #a78bfa !important;
+    background-color: rgba(164, 95, 191, 0.2) !important;
+    color: #A45FBF !important;
 }
 .email-aside .aside-nav .nav li a:hover {
     background-color: rgba(0, 0, 0, 0.04) !important;

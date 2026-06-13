@@ -38,7 +38,7 @@
 
             {{-- Product Workspace Card (Tabbed) --}}
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
-                <div class="card-header bg-transparent border-0 pb-0 pt-3" style="background: rgba(108,92,231,0.02) !important;">
+                <div class="card-header bg-transparent border-0 pb-0 pt-3" style="background: rgba(116, 48, 137,0.02) !important;">
                     <ul class="nav nav-tabs card-header-tabs border-0 gap-2" id="product-workspace-tabs" role="tablist">
                         <li class="nav-item">
                             <button class="nav-link {{ $activeTab === 'info' ? 'active' : '' }} fw-bold border-0 px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="info-tab" data-toggle="tab" data-bs-toggle="tab" data-target="#info-pane" data-bs-target="#info-pane" type="button" role="tab">
@@ -243,7 +243,7 @@
         <div class="col-lg-4 grid-margin d-flex flex-column gap-4 position-sticky-sidebar">
             {{-- Collapsible Live Preview Card --}}
             <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
-                <div class="card-header p-0 border-bottom" style="background: rgba(108,92,231,0.02); height: 48px;">
+                <div class="card-header p-0 border-bottom" style="background: rgba(116, 48, 137,0.02); height: 48px;">
                     <button class="btn btn-link w-100 h-100 text-start text-decoration-none px-4 py-3 d-flex align-items-center justify-content-between fw-bold text-muted collapse-trigger-btn" type="button" data-bs-toggle="collapse" data-bs-target="#live-preview-collapse" aria-expanded="true">
                         <span class="small text-uppercase letter-spacing-1 d-flex align-items-center" style="font-size: 0.72rem; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">
                             <span class="live-indicator me-2"></span> Live Page Preview
@@ -378,12 +378,12 @@ html[data-admin-theme="dark"] .custom-premium-checkbox {
     background-color: #0c1427 !important;
 }
 .custom-premium-checkbox:checked {
-    background-color: #6c5ce7 !important;
-    border-color: #6c5ce7 !important;
+    background-color: #743089 !important;
+    border-color: #743089 !important;
 }
 html[data-admin-theme="dark"] .custom-premium-checkbox:checked {
-    background-color: #a78bfa !important;
-    border-color: #a78bfa !important;
+    background-color: #A45FBF !important;
+    border-color: #A45FBF !important;
 }
 .custom-premium-checkbox:checked::after {
     content: '';
@@ -449,7 +449,7 @@ html[data-admin-theme="dark"] .qr-code-img {
 
 /* Scoped custom premium styles for mobile preview & priority manager */
 .fw-600 { font-weight: 600; }
-.bg-soft-primary { background: rgba(108,92,231,0.1); color: #6c5ce7; }
+.bg-soft-primary { background: rgba(116, 48, 137,0.1); color: #743089; }
 .live-indicator {
     width: 8px;
     height: 8px;
@@ -477,12 +477,12 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link {
     color: #94a3b8 !important;
 }
 .nav-tabs .nav-link.active {
-    background: rgba(108, 92, 231, 0.1) !important;
-    color: #6c5ce7 !important;
+    background: rgba(116, 48, 137, 0.1) !important;
+    color: #743089 !important;
 }
 html[data-admin-theme="dark"] .nav-tabs .nav-link.active {
-    background: rgba(167, 139, 250, 0.15) !important;
-    color: #a78bfa !important;
+    background: rgba(164, 95, 191, 0.15) !important;
+    color: #A45FBF !important;
 }
 .nav-tabs .nav-link:hover:not(.active) {
     background: rgba(0, 0, 0, 0.03) !important;
@@ -534,7 +534,7 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     opacity: 0.8;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: #6c5ce7; /* Brand purple category header */
+    color: #743089; /* Brand purple category header */
     font-weight: 700;
     transition: color 0.25s ease;
 }
@@ -585,8 +585,8 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     transition: all 0.2s ease;
 }
 .device-thumb-dot.active {
-    border-color: #6c5ce7;
-    box-shadow: 0 0 5px rgba(108,92,231,0.5);
+    border-color: #743089;
+    box-shadow: 0 0 5px rgba(116, 48, 137,0.5);
 }
 .device-thumb-dot img {
     width: 100%;
@@ -602,7 +602,7 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
 .device-price {
     font-size: 1.2rem;
     font-weight: 800;
-    color: #6c5ce7; /* Brand purple price */
+    color: #743089; /* Brand purple price */
     transition: color 0.25s ease;
 }
 .device-badge {
@@ -620,10 +620,10 @@ html[data-admin-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
     font-size: 0.8rem;
     font-weight: 700;
     margin-top: auto;
-    background: linear-gradient(135deg, #6c5ce7, #a78bfa);
+    background: linear-gradient(135deg, #743089, #A45FBF);
     color: #fff;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(108,92,231,0.25);
+    box-shadow: 0 4px 10px rgba(116, 48, 137,0.25);
 }
 .device-desc-text {
     color: #475569 !important; /* Soft dark gray description */
@@ -639,7 +639,7 @@ html[data-admin-theme="dark"] .device-screen {
     color: #ffffff;
 }
 html[data-admin-theme="dark"] .device-header {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 html[data-admin-theme="dark"] .device-title {
     color: #ffffff;
@@ -653,7 +653,7 @@ html[data-admin-theme="dark"] .device-thumb-dot {
     background: rgba(255, 255, 255, 0.05);
 }
 html[data-admin-theme="dark"] .device-price {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 html[data-admin-theme="dark"] .device-desc-text {
     color: #94a3b8 !important;
@@ -671,13 +671,13 @@ html[data-admin-theme="dark"] .collapse-trigger-btn {
     color: #cbd5e1 !important;
 }
 .collapse-trigger-btn:hover {
-    color: #6c5ce7 !important;
-    background-color: rgba(108, 92, 231, 0.04) !important;
+    color: #743089 !important;
+    background-color: rgba(116, 48, 137, 0.04) !important;
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .collapse-trigger-btn:hover {
-    color: #a78bfa !important;
-    background-color: rgba(167, 139, 250, 0.04) !important;
+    color: #A45FBF !important;
+    background-color: rgba(164, 95, 191, 0.04) !important;
 }
 .collapse-trigger-btn:focus {
     text-decoration: none !important;
@@ -694,19 +694,19 @@ html[data-admin-theme="dark"] .collapse-trigger-btn:hover {
 
 /* Media Manager Zone */
 .upload-dropzone {
-    border: 2px dashed rgba(108,92,231,0.3);
+    border: 2px dashed rgba(116, 48, 137,0.3);
     border-radius: 16px;
     padding: 30px 20px;
     text-align: center;
-    background: rgba(108,92,231,0.01);
+    background: rgba(116, 48, 137,0.01);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 .upload-dropzone:hover {
-    border-color: #6c5ce7;
-    background: rgba(108,92,231,0.04);
+    border-color: #743089;
+    background: rgba(116, 48, 137,0.04);
 }
 .media-list-grid {
     display: grid;
@@ -730,7 +730,7 @@ html[data-admin-theme="dark"] .media-sort-item {
 .media-sort-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-    border-color: rgba(108,92,231,0.25);
+    border-color: rgba(116, 48, 137,0.25);
 }
 .media-sort-img-wrap {
     width: 100%;
@@ -787,9 +787,9 @@ html[data-admin-theme="dark"] .media-btn-circle {
     color: #cbd5e1;
 }
 .media-btn-circle:hover {
-    background: #6c5ce7;
+    background: #743089;
     color: #fff;
-    border-color: #6c5ce7;
+    border-color: #743089;
 }
 .media-btn-circle.btn-star-active,
 html[data-admin-theme="dark"] .media-btn-circle.btn-star-active,
@@ -850,8 +850,8 @@ html[data-admin-theme="dark"] .input-group .form-control {
     border-color: rgba(255, 255, 255, 0.08) !important;
 }
 .input-group:focus-within .input-group-text {
-    border-color: #6c5ce7 !important;
-    background: rgba(108, 92, 231, 0.03) !important;
+    border-color: #743089 !important;
+    background: rgba(116, 48, 137, 0.03) !important;
 }
 .floating-save-bar .button-group {
     display: flex;
@@ -886,13 +886,13 @@ html[data-admin-theme="dark"] .input-group .form-control {
 
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #6c5ce7, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #A45FBF)) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }
 .floating-save-bar .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(116, 48, 137, 0.3) !important;
     color: #ffffff !important;
 }
 

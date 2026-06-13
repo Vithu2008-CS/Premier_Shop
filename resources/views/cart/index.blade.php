@@ -19,12 +19,12 @@
 
         @if($items->isEmpty())
             <div class="text-center py-5 fade-up">
-                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(108,92,231,0.08);border-radius:50%;">
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(116, 48, 137,0.08);border-radius:50%;">
                     <i class="bi bi-bag-x text-primary" style="font-size:3rem;"></i>
                 </div>
                 <h4 class="fw-bold mb-2">Your cart is empty</h4>
                 <p class="text-muted mb-4">Looks like you haven't added anything yet!</p>
-                <a href="{{ route('products.index') }}" class="btn btn-add-cart">
+                <a href="{{ route('products.index') }}" class="btn btn-brand rounded-pill px-4 py-2">
                     <i class="bi bi-arrow-left me-2"></i> Continue Shopping
                 </a>
             </div>
@@ -163,7 +163,7 @@
                                     </div>
                                     
                                     <!-- Milestone Insight Banner -->
-                                    <div class="p-3 mt-3 rounded-4 border border-dashed text-start" style="background: rgba(108, 92, 231, 0.05); border-color: var(--ps-primary) !important;">
+                                    <div class="p-3 mt-3 rounded-4 border border-dashed text-start" style="background: rgba(116, 48, 137, 0.05); border-color: var(--ps-primary) !important;">
                                         <p id="perk-insight-text" class="small text-muted mb-0 fw-semibold" style="line-height: 1.5;">
                                             Calculating eligible order incentives...
                                         </p>
@@ -195,8 +195,8 @@
                                 
                                 <div id="checkout-error" class="alert alert-danger py-2 small d-none">Please select at least one item.</div>
 
-                                <button type="submit" id="checkout-btn" class="btn btn-add-cart w-100 py-3 fw-bold">
-                                    <i class="bi bi-lock me-2"></i> Proceed to Checkout
+                                <button type="submit" id="checkout-btn" class="btn btn-accent w-100 py-3 fw-bold rounded-pill">
+                                    <i class="bi bi-lock-fill me-2"></i> Proceed to Checkout
                                 </button>
                                 <a href="{{ route('products.index') }}" class="btn btn-outline-secondary w-100 mt-2 border-0" style="border-radius:50px;">
                                     <i class="bi bi-arrow-left me-1"></i> Continue Shopping

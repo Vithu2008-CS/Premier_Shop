@@ -29,7 +29,7 @@
 
 <tr>
     <td style="padding:0 40px 20px;">
-        <div style="background:#f8f9fa;border-radius:12px;padding:20px;border-left:4px solid #6C5CE7;text-align:left;">
+        <div style="background:#f8f9fa;border-radius:12px;padding:20px;border-left:4px solid #743089;text-align:left;">
             <p style="margin:0;font-size:14px;color:#2d3436;line-height:1.8;">
                 @if($order->status === 'processing' && $order->processing_date)
                     <strong>Processing Started:</strong> {{ $order->processing_date->format('M d, Y h:i A') }}<br>
@@ -59,7 +59,7 @@
 
 <tr>
     <td style="padding:10px 40px 40px;text-align:center;">
-        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#6C5CE7;color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#743089;color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
             View Order Details →
         </a>
     </td>

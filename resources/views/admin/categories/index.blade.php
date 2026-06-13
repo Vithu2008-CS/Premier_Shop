@@ -98,18 +98,18 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .category-row-btn:hover {
-    background-color: rgba(108, 92, 231, 0.04) !important;
+    background-color: rgba(116, 48, 137, 0.04) !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 html[data-admin-theme="dark"] .category-row-btn:hover {
-    background-color: rgba(167, 139, 250, 0.05) !important;
+    background-color: rgba(164, 95, 191, 0.05) !important;
 }
 .category-row-btn:hover .text-primary-hover {
-    color: #6c5ce7 !important;
+    color: #743089 !important;
 }
 html[data-admin-theme="dark"] .category-row-btn:hover .text-primary-hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
 }
 
 </style>

@@ -66,7 +66,39 @@
 
     <style>
         .sidebar .sidebar-header .sidebar-brand span {
-            color: #727cf5;
+            color: #FFDD00;
+        }
+
+        /* ── Brand accent overrides — yellow (#FFDD00) on purple (#743089) ── */
+        .sidebar .nav-item.active { position: relative; }
+        .sidebar .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 7px; bottom: 7px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: #FFDD00;
+        }
+        .sidebar .nav-item.active > .nav-link .link-title,
+        .sidebar .nav-item.active > .nav-link .link-icon {
+            color: #743089 !important;
+        }
+        html[data-admin-theme="dark"] .sidebar .nav-item.active > .nav-link .link-title,
+        html[data-admin-theme="dark"] .sidebar .nav-item.active > .nav-link .link-icon {
+            color: #C9A0DD !important;
+        }
+        /* Yellow accent CTA available in admin */
+        .btn-accent {
+            background: #FFDD00 !important;
+            border-color: #FFDD00 !important;
+            color: #2A1030 !important;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(255, 221, 0, 0.3);
+        }
+        .btn-accent:hover {
+            background: #F5C400 !important;
+            color: #2A1030 !important;
+            transform: translateY(-1px);
         }
 
         /* Custom styled Choose File buttons with theme support */
@@ -185,13 +217,13 @@
         /* Focused search box container glow */
         .navbar-content .search-form .input-group:focus-within {
             background-color: #ffffff !important;
-            border-color: #6c5ce7 !important;
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15), 0 4px 12px rgba(0,0,0,0.03) !important;
+            border-color: #743089 !important;
+            box-shadow: 0 0 0 3px rgba(116, 48, 137, 0.15), 0 4px 12px rgba(0,0,0,0.03) !important;
         }
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group:focus-within {
             background-color: #0c1427 !important;
-            border-color: #a78bfa !important;
-            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25), 0 4px 12px rgba(0,0,0,0.2) !important;
+            border-color: #A45FBF !important;
+            box-shadow: 0 0 0 3px rgba(164, 95, 191, 0.25), 0 4px 12px rgba(0,0,0,0.2) !important;
         }
 
         /* Transparent prepend area */
@@ -209,7 +241,7 @@
         /* The Search Icon itself with a beautiful purple color and proper space */
         .navbar-content .search-form .input-group-text i,
         .navbar-content .search-form .input-group-text svg {
-            color: #6c5ce7 !important;
+            color: #743089 !important;
             width: 18px !important;
             height: 18px !important;
             margin-right: 20px !important; /* Spacious margin between search icon and text */
@@ -217,7 +249,7 @@
         }
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group-text i,
         html[data-admin-theme="dark"] .navbar-content .search-form .input-group-text svg {
-            color: #a78bfa !important;
+            color: #A45FBF !important;
         }
         .navbar-content .search-form .input-group:focus-within .input-group-text i,
         .navbar-content .search-form .input-group:focus-within .input-group-text svg {
@@ -275,13 +307,13 @@
             font-weight: 800 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.8px !important;
-            color: #6c5ce7 !important;
+            color: #743089 !important;
             margin-bottom: 8px !important;
             padding-bottom: 4px !important;
-            border-bottom: 1px dashed rgba(108, 92, 231, 0.12) !important;
+            border-bottom: 1px dashed rgba(116, 48, 137, 0.12) !important;
         }
         html[data-admin-theme="dark"] .omni-search-category-title {
-            color: #a78bfa !important;
+            color: #A45FBF !important;
             border-bottom-color: rgba(255, 255, 255, 0.08) !important;
         }
 
@@ -300,15 +332,15 @@
             color: #cbd5e1 !important;
         }
         .omni-search-item:hover, .omni-search-item.active {
-            background-color: rgba(108, 92, 231, 0.06) !important;
-            color: #6c5ce7 !important;
+            background-color: rgba(116, 48, 137, 0.06) !important;
+            color: #743089 !important;
             text-decoration: none !important;
             transform: translateY(-0.5px) !important;
             outline: none !important;
         }
         html[data-admin-theme="dark"] .omni-search-item:hover, html[data-admin-theme="dark"] .omni-search-item.active {
-            background-color: rgba(167, 139, 250, 0.1) !important;
-            color: #a78bfa !important;
+            background-color: rgba(164, 95, 191, 0.1) !important;
+            color: #A45FBF !important;
             text-decoration: none !important;
         }
 
@@ -324,8 +356,8 @@
             width: 36px !important;
             height: 36px !important;
             border-radius: 50% !important;
-            background-color: rgba(108, 92, 231, 0.08) !important;
-            color: #6c5ce7 !important;
+            background-color: rgba(116, 48, 137, 0.08) !important;
+            color: #743089 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -334,8 +366,8 @@
             margin-right: 10px !important;
         }
         html[data-admin-theme="dark"] .omni-search-avatar {
-            background-color: rgba(167, 139, 250, 0.12) !important;
-            color: #a78bfa !important;
+            background-color: rgba(164, 95, 191, 0.12) !important;
+            color: #A45FBF !important;
         }
     </style>
 
@@ -518,7 +550,7 @@
                                             </div>
                                             <div class="text-right">
                                                 <div class="font-weight-bold" style="font-size: 0.82rem;">£${o.total}</div>
-                                                <span class="badge px-2 py-0.5 mt-1" style="font-size: 0.65rem; border-radius: 20px; background: rgba(108,92,231,0.08); color: #6c5ce7; font-weight: 700;">${o.status}</span>
+                                                <span class="badge px-2 py-0.5 mt-1" style="font-size: 0.65rem; border-radius: 20px; background: rgba(116, 48, 137,0.08); color: #743089; font-weight: 700;">${o.status}</span>
                                             </div>
                                         </a>
                                     `);

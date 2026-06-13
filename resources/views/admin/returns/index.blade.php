@@ -128,11 +128,11 @@ html[data-admin-theme="dark"] .bg-soft-info { background: rgba(34, 211, 238, 0.1
 
 /* Hover effects for primary text link */
 .text-hover-primary:hover {
-    color: #6c5ce7 !important;
+    color: #743089 !important;
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .text-hover-primary:hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
     text-decoration: none !important;
 }
 
@@ -175,7 +175,7 @@ html[data-admin-theme="dark"] .text-hover-primary:hover {
 
 /* Table rows dynamic hover theme styling */
 tbody tr:hover {
-    background-color: rgba(108, 92, 231, 0.02) !important;
+    background-color: rgba(116, 48, 137, 0.02) !important;
 }
 html[data-admin-theme="dark"] tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.015) !important;

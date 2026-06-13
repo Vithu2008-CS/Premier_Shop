@@ -62,7 +62,7 @@
 
         @if($categories->isEmpty())
             <div class="text-center py-5 reveal-3d">
-                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(108,92,231,0.08);border-radius:50%;">
+                <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width:100px;height:100px;background:rgba(116, 48, 137,0.08);border-radius:50%;">
                     <i class="bi bi-grid text-primary" style="font-size:3rem;"></i>
                 </div>
                 <h4 class="fw-bold mb-2">No categories yet</h4>

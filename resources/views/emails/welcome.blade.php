@@ -7,7 +7,7 @@
 --}}
 @extends('emails.layouts.master')
 @section('title', 'Welcome to Premier Shop')
-@section('header_style', 'background:#6C5CE7;')
+@section('header_style', 'background:#743089;')
 @section('header_subtitle', 'Your account has been created successfully')
 
 @section('content')
@@ -79,8 +79,8 @@
 
 <tr>
     <td style="padding:0 40px 20px;">
-        <div style="background:#f8f9fa;border-radius:12px;padding:20px;border-left:4px solid #6C5CE7;text-align:left;">
-            <h4 style="margin:0 0 8px;font-size:14px;color:#6C5CE7;font-weight:700;">YOUR ACCOUNT DETAILS</h4>
+        <div style="background:#f8f9fa;border-radius:12px;padding:20px;border-left:4px solid #743089;text-align:left;">
+            <h4 style="margin:0 0 8px;font-size:14px;color:#743089;font-weight:700;">YOUR ACCOUNT DETAILS</h4>
             <p style="margin:0;font-size:14px;color:#2d3436;line-height:1.8;">
                 <strong>Name:</strong> {{ $user->name }}<br>
                 <strong>Email:</strong> {{ $user->email }}<br>
@@ -92,7 +92,7 @@
 
 <tr>
     <td style="padding:10px 40px 30px;text-align:center;">
-        <a href="{{ url('/products') }}" style="display:inline-block;background:#6C5CE7;color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/products') }}" style="display:inline-block;background:#743089;color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
             Start Shopping →
         </a>
     </td>

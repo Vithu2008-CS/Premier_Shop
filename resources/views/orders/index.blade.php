@@ -21,10 +21,10 @@
 
     .order-card {
         background: #ffffff;
-        border: 1px solid rgba(108, 92, 231, 0.1) !important;
+        border: 1px solid rgba(116, 48, 137, 0.1) !important;
         border-left: 5px solid #ced4da !important; /* Dynamic status indicator left border */
         border-radius: 20px;
-        box-shadow: 0 8px 24px rgba(108, 92, 231, 0.03) !important;
+        box-shadow: 0 8px 24px rgba(116, 48, 137, 0.03) !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden;
         margin-bottom: 20px !important;
@@ -39,19 +39,19 @@
     /* Dynamic status indicator left border - Elite Professional Colors */
     .order-card.border-pending { border-left-color: #D4AF37 !important; }
     .order-card.border-processing { border-left-color: #028090 !important; }
-    .order-card.border-shipped { border-left-color: #6C5CE7 !important; }
+    .order-card.border-shipped { border-left-color: #743089 !important; }
     .order-card.border-delivered { border-left-color: #2A9D8F !important; }
     .order-card.border-cancelled { border-left-color: #7F8C8D !important; }
 
     .order-card.border-pending:hover { border-color: rgba(212, 175, 55, 0.25) !important; box-shadow: 0 16px 32px rgba(212, 175, 55, 0.08) !important; transform: translateY(-4px); }
     .order-card.border-processing:hover { border-color: rgba(2, 128, 144, 0.25) !important; box-shadow: 0 16px 32px rgba(2, 128, 144, 0.08) !important; transform: translateY(-4px); }
-    .order-card.border-shipped:hover { border-color: rgba(108, 92, 231, 0.25) !important; box-shadow: 0 16px 32px rgba(108, 92, 231, 0.08) !important; transform: translateY(-4px); }
+    .order-card.border-shipped:hover { border-color: rgba(116, 48, 137, 0.25) !important; box-shadow: 0 16px 32px rgba(116, 48, 137, 0.08) !important; transform: translateY(-4px); }
     .order-card.border-delivered:hover { border-color: rgba(42, 157, 143, 0.25) !important; box-shadow: 0 16px 32px rgba(42, 157, 143, 0.08) !important; transform: translateY(-4px); }
     .order-card.border-cancelled:hover { border-color: rgba(127, 140, 141, 0.25) !important; box-shadow: 0 16px 32px rgba(127, 140, 141, 0.08) !important; transform: translateY(-4px); }
 
     .order-card-header {
-        background: rgba(108, 92, 231, 0.015);
-        border-bottom: 1px solid rgba(108, 92, 231, 0.06);
+        background: rgba(116, 48, 137, 0.015);
+        border-bottom: 1px solid rgba(116, 48, 137, 0.06);
         padding: 12px 20px;
     }
 
@@ -64,16 +64,16 @@
         font-family: 'Outfit', sans-serif;
         font-weight: 800;
         font-size: 0.82rem;
-        background: rgba(108, 92, 231, 0.08);
-        color: #6C5CE7;
+        background: rgba(116, 48, 137, 0.08);
+        color: #743089;
         padding: 4px 10px;
         border-radius: 8px;
         letter-spacing: 0.5px;
     }
 
     [data-bs-theme="dark"] .order-id-badge {
-        background: rgba(162, 155, 254, 0.15);
-        color: #A29BFE;
+        background: rgba(164, 95, 191, 0.15);
+        color: #A45FBF;
     }
 
     .order-product-thumbnail-group {
@@ -100,7 +100,7 @@
 
     .order-product-thumbnail:hover {
         transform: scale(1.06) translateY(-1px);
-        border-color: #6C5CE7;
+        border-color: #743089;
     }
 
     .order-product-thumbnail img {
@@ -113,9 +113,9 @@
         width: 48px;
         height: 48px;
         border-radius: 12px;
-        background: rgba(108, 92, 231, 0.06);
-        border: 1.5px dashed rgba(108, 92, 231, 0.2);
-        color: #6C5CE7;
+        background: rgba(116, 48, 137, 0.06);
+        border: 1.5px dashed rgba(116, 48, 137, 0.2);
+        color: #743089;
         font-size: 0.78rem;
         font-weight: 700;
         display: flex;
@@ -126,20 +126,20 @@
     }
 
     [data-bs-theme="dark"] .order-remaining-badge {
-        background: rgba(162, 155, 254, 0.08);
-        border-color: rgba(162, 155, 254, 0.25);
-        color: #A29BFE;
+        background: rgba(164, 95, 191, 0.08);
+        border-color: rgba(164, 95, 191, 0.25);
+        color: #A45FBF;
     }
 
     .order-remaining-badge:hover {
-        background: #6C5CE7;
-        border-color: #6C5CE7;
+        background: #743089;
+        border-color: #743089;
         color: #fff;
     }
 
     [data-bs-theme="dark"] .order-remaining-badge:hover {
-        background: #A29BFE;
-        border-color: #A29BFE;
+        background: #A45FBF;
+        border-color: #A45FBF;
         color: #0f0e17;
     }
 
@@ -186,7 +186,7 @@
         }
 
         .order-col-divider {
-            border-right: 1px solid rgba(108, 92, 231, 0.07);
+            border-right: 1px solid rgba(116, 48, 137, 0.07);
         }
 
         [data-bs-theme="dark"] .order-col-divider {

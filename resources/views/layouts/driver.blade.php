@@ -28,8 +28,8 @@
             min-height: 100vh;
             color: #e0dff5;
             background-image:
-                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(108,92,231,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(142,45,226,0.05) 0%, transparent 60%);
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(116, 48, 137,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(90, 30, 107,0.05) 0%, transparent 60%);
         }
 
         /* ── Navbar ───────────────────────────────────────────── */
@@ -53,21 +53,21 @@
             align-items: center;
             gap: 10px;
         }
-        .driver-brand:hover { color: #A29BFE; }
+        .driver-brand:hover { color: #A45FBF; }
         .brand-icon {
             width: 36px;
             height: 36px;
             border-radius: 11px;
-            background: linear-gradient(135deg, #6C5CE7 0%, #8E2DE2 100%);
+            background: linear-gradient(135deg, #743089 0%, #5A1E6B 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1rem;
-            box-shadow: 0 4px 14px rgba(108,92,231,0.45);
+            box-shadow: 0 4px 14px rgba(116, 48, 137,0.45);
             flex-shrink: 0;
         }
         .driver-role-badge {
-            background: linear-gradient(135deg, #6C5CE7, #8E2DE2);
+            background: linear-gradient(135deg, #743089, #5A1E6B);
             color: #fff;
             font-size: 0.58rem;
             font-weight: 800;
@@ -109,8 +109,8 @@
         .driver-avatar {
             width: 36px; height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6C5CE7, #A29BFE);
-            border: 2px solid rgba(162,155,254,0.35);
+            background: linear-gradient(135deg, #743089, #A45FBF);
+            border: 2px solid rgba(164, 95, 191,0.35);
             color: #fff;
             display: flex;
             align-items: center;
@@ -123,7 +123,7 @@
         }
         .driver-avatar:hover {
             transform: scale(1.08);
-            border-color: rgba(162,155,254,0.6);
+            border-color: rgba(164, 95, 191,0.6);
         }
 
         /* dropdown */
@@ -131,7 +131,7 @@
             background: #16152a;
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 18px;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(108,92,231,0.08);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(116, 48, 137,0.08);
             overflow: hidden;
             min-width: 220px;
             padding: 6px;

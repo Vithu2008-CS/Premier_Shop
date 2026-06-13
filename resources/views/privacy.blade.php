@@ -10,7 +10,7 @@
 @section('content')
 <section class="contact-page py-5">
     <div class="contact-bg-orbs">
-        <div class="orb orb-1" style="background: radial-gradient(circle, rgba(108, 92, 231, 0.15) 0%, rgba(255,255,255,0) 70%);"></div>
+        <div class="orb orb-1" style="background: radial-gradient(circle, rgba(116, 48, 137, 0.15) 0%, rgba(255,255,255,0) 70%);"></div>
         <div class="orb orb-2" style="background: radial-gradient(circle, rgba(0, 206, 201, 0.15) 0%, rgba(255,255,255,0) 70%);"></div>
         <div class="orb orb-3" style="background: radial-gradient(circle, rgba(0, 184, 148, 0.15) 0%, rgba(255,255,255,0) 70%);"></div>
     </div>

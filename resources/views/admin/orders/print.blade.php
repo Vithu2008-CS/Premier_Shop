@@ -14,9 +14,9 @@
     <style>
         body { font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 0; }
         .container { max-width: 800px; margin: auto; padding: 40px; }
-        .header { border-bottom: 3px solid #3498db; padding-bottom: 25px; margin-bottom: 40px; }
+        .header { border-bottom: 3px solid #743089; padding-bottom: 25px; margin-bottom: 40px; }
         .header:after { content: ""; display: table; clear: both; }
-        .logo { float: left; font-size: 32px; font-weight: bold; color: #3498db; text-transform: uppercase; letter-spacing: 1px; }
+        .logo { float: left; font-size: 32px; font-weight: bold; color: #743089; text-transform: uppercase; letter-spacing: 1px; }
         .shop-info { float: right; text-align: right; font-size: 13px; color: #555; }
         .shop-info strong { color: #333; font-size: 15px; }
 
@@ -25,7 +25,7 @@
         .invoice-details .bill-to { float: left; width: 45%; }
         .invoice-details .order-info { float: right; width: 45%; text-align: right; }
         
-        .section-title { font-size: 12px; text-transform: uppercase; color: #3498db; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 3px; display: inline-block; }
+        .section-title { font-size: 12px; text-transform: uppercase; color: #743089; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 3px; display: inline-block; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
         th { background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; padding: 15px 12px; text-align: left; font-size: 13px; color: #555; text-transform: uppercase; }
@@ -40,16 +40,16 @@
         .summary-row:after { content: ""; display: table; clear: both; }
         .summary-label { float: left; color: #777; font-size: 14px; }
         .summary-value { float: right; font-weight: bold; font-size: 14px; }
-        .total-row { border-top: 2px solid #3498db; margin-top: 15px; padding-top: 15px; font-size: 20px; color: #3498db; }
+        .total-row { border-top: 2px solid #743089; margin-top: 15px; padding-top: 15px; font-size: 20px; color: #743089; }
 
         .footer { margin-top: 60px; text-align: center; border-top: 1px solid #eee; padding-top: 30px; }
-        .footer h3 { color: #3498db; margin-bottom: 5px; font-size: 18px; }
+        .footer h3 { color: #743089; margin-bottom: 5px; font-size: 18px; }
         .footer p { color: #888; font-size: 12px; margin-top: 0; }
 
         .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .badge-pending { background-color: #ffeaa7; color: #d35400; }
         .badge-processing { background-color: #81ecec; color: #0097e6; }
-        .badge-shipped { background-color: #a29bfe; color: #6c5ce7; }
+        .badge-shipped { background-color: #A45FBF; color: #743089; }
         .badge-delivered { background-color: #55efc4; color: #00b894; }
         .badge-cancelled { background-color: #ff7675; color: #d63031; }
 
@@ -80,7 +80,7 @@
             </div>
             <div class="order-info">
                 <div class="section-title">Invoice Details</div>
-                <div style="margin-bottom: 5px;"><strong>Receipt #:</strong> <span style="color: #3498db;">{{ $order->order_number }}</span></div>
+                <div style="margin-bottom: 5px;"><strong>Receipt #:</strong> <span style="color: #743089;">{{ $order->order_number }}</span></div>
                 <div style="margin-bottom: 5px;"><strong>Date:</strong> {{ $order->created_at->format('F d, Y') }}</div>
                 <div style="margin-bottom: 5px;"><strong>Payment:</strong> <span style="text-transform: capitalize;">{{ $order->payment_method ?? 'Debit/Credit Card' }}</span></div>
                 <div><strong>Status:</strong> 

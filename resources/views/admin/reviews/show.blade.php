@@ -27,7 +27,7 @@
 
                     {{-- Customer Info Card --}}
                     <h6 class="text-muted small font-weight-bold text-uppercase mb-3" style="letter-spacing: 0.8px;">Customer Information</h6>
-                    <div class="d-flex align-items-center p-4 rounded-4 mb-4" style="background: rgba(108,92,231,0.03); border: 1.5px solid rgba(108,92,231,0.06);">
+                    <div class="d-flex align-items-center p-4 rounded-4 mb-4" style="background: rgba(116, 48, 137,0.03); border: 1.5px solid rgba(116, 48, 137,0.06);">
                         <div class="wd-52 h-52 rounded-circle bg-soft-primary text-primary font-weight-bold d-flex align-items-center justify-content-center mr-3 shadow-sm" style="font-size: 1.25rem; min-width: 52px; height: 52px;">
                             {{ strtoupper(substr($review->user->name, 0, 1)) }}
                         </div>
@@ -52,7 +52,7 @@
 
                     {{-- Star Rating & Core Message --}}
                     <h6 class="text-muted small font-weight-bold text-uppercase mb-3" style="letter-spacing: 0.8px;">Review Content</h6>
-                    <div class="p-4 rounded-4 mb-0" style="background: rgba(108,92,231,0.02); border-left: 4px solid #6c5ce7 !important;">
+                    <div class="p-4 rounded-4 mb-0" style="background: rgba(116, 48, 137,0.02); border-left: 4px solid #743089 !important;">
                         <div class="d-flex align-items-center mb-3">
                             <span class="text-muted small font-weight-bold mr-3">Rating Score:</span>
                             <div class="text-warning d-flex gap-0.5" style="font-size: 1.1rem;">
@@ -215,7 +215,7 @@
 .fw-800 { font-weight: 800; }
 
 /* Soft background styles */
-.bg-soft-primary { background: rgba(108, 92, 231, 0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-primary { background: rgba(116, 48, 137, 0.1) !important; color: #743089 !important; }
 .bg-soft-secondary { background: rgba(100, 116, 139, 0.1) !important; color: #64748b !important; }
 .bg-soft-success { background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important; }
 .bg-soft-warning { background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; }
@@ -244,12 +244,12 @@ html[data-admin-theme="dark"] .evidence-thumb-container {
 }
 .evidence-thumb-container:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(108, 92, 231, 0.15) !important;
-    border-color: #6c5ce7 !important;
+    box-shadow: 0 6px 12px rgba(116, 48, 137, 0.15) !important;
+    border-color: #743089 !important;
 }
 html[data-admin-theme="dark"] .evidence-thumb-container:hover {
-    border-color: #a78bfa !important;
-    box-shadow: 0 6px 12px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 6px 12px rgba(164, 95, 191, 0.2) !important;
 }
 .evidence-thumb {
     width: 100% !important;
@@ -281,8 +281,8 @@ html[data-admin-theme="dark"] .evidence-thumb-container:hover {
     color: var(--input-color, #1e293b) !important;
 }
 .form-control:focus, select.form-control:focus {
-    border-color: #6c5ce7 !important;
-    box-shadow: 0 0 0 3.5px rgba(108, 92, 231, 0.15) !important;
+    border-color: #743089 !important;
+    box-shadow: 0 0 0 3.5px rgba(116, 48, 137, 0.15) !important;
 }
 
 /* Theme adaptation */
@@ -312,13 +312,13 @@ html[data-admin-theme="dark"] .form-control {
     color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191, 0.2) !important;
 }
 
 /* Border styles */
 .border-bottom-subtle {
-    border-bottom: 1.5px solid rgba(108, 92, 231, 0.06) !important;
+    border-bottom: 1.5px solid rgba(116, 48, 137, 0.06) !important;
 }
 html[data-admin-theme="dark"] .border-bottom-subtle {
     border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
@@ -332,31 +332,31 @@ html[data-admin-theme="dark"] .border-bottom-subtle {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #6c5ce7, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     border: none !important;
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
     color: #ffffff !important;
 }
 .btn-primary:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(116, 48, 137, 0.3) !important;
 }
 .btn-outline-primary {
-    border: 1.5px solid #6c5ce7 !important;
-    color: #6c5ce7 !important;
+    border: 1.5px solid #743089 !important;
+    color: #743089 !important;
     background: transparent !important;
 }
 .btn-outline-primary:hover {
-    background-color: #6c5ce7 !important;
+    background-color: #743089 !important;
     color: #ffffff !important;
     transform: translateY(-1px);
 }
 html[data-admin-theme="dark"] .btn-outline-primary {
-    border-color: #a78bfa !important;
-    color: #a78bfa !important;
+    border-color: #A45FBF !important;
+    color: #A45FBF !important;
 }
 html[data-admin-theme="dark"] .btn-outline-primary:hover {
-    background-color: #a78bfa !important;
+    background-color: #A45FBF !important;
     color: #0c1427 !important;
 }
 
@@ -421,13 +421,13 @@ html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover {
 }
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #6c5ce7, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #A45FBF)) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }
 .floating-save-bar .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(116, 48, 137, 0.3) !important;
     color: #ffffff !important;
 }
 
@@ -557,11 +557,11 @@ html[data-admin-theme="dark"] .floating-save-bar .text-muted {
     padding: 0;
 }
 .page-breadcrumb .breadcrumb-item a {
-    color: #6c5ce7;
+    color: #743089;
     font-weight: 600;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 </style>
 

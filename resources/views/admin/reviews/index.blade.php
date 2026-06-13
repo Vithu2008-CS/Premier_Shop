@@ -97,14 +97,14 @@
 
 <style>
 /* Soft-colored badges for light mode */
-.bg-soft-primary { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-primary { background: rgba(116, 48, 137,0.1) !important; color: #743089 !important; }
 .bg-soft-success { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
 .bg-soft-warning { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
 .bg-soft-danger { background: rgba(239,68,68,0.1) !important; color: #ef4444 !important; }
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
 
 /* Soft-colored badges for dark mode */
-html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(167, 139, 250, 0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(164, 95, 191, 0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success { background: rgba(52, 211, 153, 0.15) !important; color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-warning { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
 html[data-admin-theme="dark"] .bg-soft-danger { background: rgba(248, 113, 113, 0.15) !important; color: #f87171 !important; }
@@ -112,11 +112,11 @@ html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148, 163, 18
 
 /* Hover links */
 .text-hover-primary:hover {
-    color: #6c5ce7 !important;
+    color: #743089 !important;
     text-decoration: none !important;
 }
 html[data-admin-theme="dark"] .text-hover-primary:hover {
-    color: #a78bfa !important;
+    color: #A45FBF !important;
     text-decoration: none !important;
 }
 
@@ -128,7 +128,7 @@ html[data-admin-theme="dark"] .text-dark-theme-aware {
 }
 
 tbody tr:hover {
-    background-color: rgba(108, 92, 231, 0.015) !important;
+    background-color: rgba(116, 48, 137, 0.015) !important;
 }
 html[data-admin-theme="dark"] tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.01) !important;

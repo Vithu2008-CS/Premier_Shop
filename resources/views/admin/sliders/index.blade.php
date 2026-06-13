@@ -15,12 +15,12 @@ html[data-admin-theme="dark"]  .theme-card-bg { background-color: #0c1427 !impor
 html[data-admin-theme="light"] .text-theme-dark-bold { color: #1e293b !important; }
 html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important; }
 
-.bg-soft-primary   { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-primary   { background: rgba(116, 48, 137,0.1) !important; color: #743089 !important; }
 .bg-soft-success   { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
 .bg-soft-warning   { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
 .bg-soft-info      { background: rgba(6,182,212,0.1) !important;  color: #06b6d4 !important; }
-html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(167,139,250,0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(164, 95, 191,0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success   { background: rgba(52,211,153,0.15) !important;  color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148,163,184,0.15) !important; color: #94a3b8 !important; }
 html[data-admin-theme="dark"] .bg-soft-warning   { background: rgba(251,191,36,0.15) !important;  color: #fbbf24 !important; }
@@ -31,18 +31,18 @@ html[data-admin-theme="dark"] .bg-soft-info      { background: rgba(103,232,249,
     border-radius: 30px !important; padding: 8px 22px !important;
     font-size: 0.82rem !important; font-weight: 700 !important;
     font-family: 'Outfit', sans-serif !important;
-    background: linear-gradient(135deg,#6c5ce7,#a78bfa) !important;
-    border: none !important; box-shadow: 0 4px 12px rgba(108,92,231,0.2) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
+    border: none !important; box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
     color: #fff !important; transition: all 0.25s ease !important;
 }
-.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(108,92,231,0.3) !important; color:#fff !important; }
+.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(116, 48, 137,0.3) !important; color:#fff !important; }
 
 /* Section header */
 .slider-section-header {
     display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 10px;
     margin-bottom: 1.25rem; padding-bottom: 0.75rem;
-    border-bottom: 2px solid rgba(108,92,231,0.07);
+    border-bottom: 2px solid rgba(116, 48, 137,0.07);
 }
 html[data-admin-theme="dark"] .slider-section-header {
     border-bottom-color: rgba(255,255,255,0.05);
@@ -57,10 +57,10 @@ html[data-admin-theme="dark"] .slider-section-header {
     font-size: 0.68rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.4px;
 }
-.type-pill-main { background: rgba(108,92,231,0.12); color: #6c5ce7; }
+.type-pill-main { background: rgba(116, 48, 137,0.12); color: #743089; }
 .type-pill-sub1 { background: rgba(16,185,129,0.12);  color: #10b981; }
 .type-pill-sub2 { background: rgba(245,158,11,0.12);  color: #f59e0b; }
-html[data-admin-theme="dark"] .type-pill-main { background: rgba(167,139,250,0.18); color: #a78bfa; }
+html[data-admin-theme="dark"] .type-pill-main { background: rgba(164, 95, 191,0.18); color: #A45FBF; }
 html[data-admin-theme="dark"] .type-pill-sub1 { background: rgba(52,211,153,0.18);  color: #34d399; }
 html[data-admin-theme="dark"] .type-pill-sub2 { background: rgba(251,191,36,0.18);  color: #fbbf24; }
 
@@ -82,8 +82,8 @@ html[data-admin-theme="dark"] .size-hint { background: rgba(255,255,255,0.04); c
     border: none !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
 }
-.slider-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(108,92,231,0.1) !important; }
-html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(167,139,250,0.12) !important; }
+.slider-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(116, 48, 137,0.1) !important; }
+html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(164, 95, 191,0.12) !important; }
 
 .slider-card-thumb {
     position: relative; width: 100%; padding-top: 52%;
@@ -142,20 +142,20 @@ html[data-admin-theme="dark"] .slider-card:hover { box-shadow: 0 12px 30px rgba(
 }
 .slider-link-chip {
     display: inline-flex; align-items: center; gap: 4px;
-    font-size: 0.7rem; color: #6c5ce7;
-    background: rgba(108,92,231,0.06); padding: 3px 9px; border-radius: 20px;
+    font-size: 0.7rem; color: #743089;
+    background: rgba(116, 48, 137,0.06); padding: 3px 9px; border-radius: 20px;
     text-decoration: none !important; max-width: 100%;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     font-weight: 600; transition: all 0.2s ease;
 }
-.slider-link-chip:hover { background: rgba(108,92,231,0.12); color: #6c5ce7; }
-html[data-admin-theme="dark"] .slider-link-chip { color: #a78bfa; background: rgba(167,139,250,0.1); }
-html[data-admin-theme="dark"] .slider-link-chip:hover { background: rgba(167,139,250,0.18); }
+.slider-link-chip:hover { background: rgba(116, 48, 137,0.12); color: #743089; }
+html[data-admin-theme="dark"] .slider-link-chip { color: #A45FBF; background: rgba(164, 95, 191,0.1); }
+html[data-admin-theme="dark"] .slider-link-chip:hover { background: rgba(164, 95, 191,0.18); }
 
 .slider-card-footer {
     display: flex; align-items: center; justify-content: space-between;
     padding: 0.7rem 1.25rem 0.85rem;
-    border-top: 1.5px solid rgba(108,92,231,0.05) !important; gap: 8px;
+    border-top: 1.5px solid rgba(116, 48, 137,0.05) !important; gap: 8px;
 }
 html[data-admin-theme="dark"] .slider-card-footer { border-top-color: rgba(255,255,255,0.04) !important; }
 
@@ -165,10 +165,10 @@ html[data-admin-theme="dark"] .slider-card-footer { border-top-color: rgba(255,2
     font-size: 0.73rem; font-weight: 700; border: none;
     cursor: pointer; text-decoration: none !important; transition: all 0.2s ease;
 }
-.slider-action-btn.btn-edit  { background: rgba(108,92,231,0.08); color: #6c5ce7; }
-.slider-action-btn.btn-edit:hover { background: #6c5ce7; color: #fff; }
-html[data-admin-theme="dark"] .slider-action-btn.btn-edit { background: rgba(167,139,250,0.12); color: #a78bfa; }
-html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #a78bfa; color: #1e293b; }
+.slider-action-btn.btn-edit  { background: rgba(116, 48, 137,0.08); color: #743089; }
+.slider-action-btn.btn-edit:hover { background: #743089; color: #fff; }
+html[data-admin-theme="dark"] .slider-action-btn.btn-edit { background: rgba(164, 95, 191,0.12); color: #A45FBF; }
+html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #A45FBF; color: #1e293b; }
 .slider-action-btn.btn-toggle-on  { background: rgba(16,185,129,0.08); color: #10b981; }
 .slider-action-btn.btn-toggle-on:hover  { background: #10b981; color: #fff; }
 .slider-action-btn.btn-toggle-off { background: rgba(100,116,139,0.08); color: #64748b; }
@@ -251,7 +251,7 @@ html[data-admin-theme="dark"] .slider-action-btn.btn-edit:hover { background: #a
                 @include('admin.sliders._card', ['slider' => $slider])
             @empty
                 <div class="slider-empty card theme-card-bg border-0" style="border-radius:18px;">
-                    <i data-feather="monitor" style="width:44px;height:44px;stroke-width:1;color:#6c5ce7;opacity:0.5;margin:0 auto 12px;" ></i>
+                    <i data-feather="monitor" style="width:44px;height:44px;stroke-width:1;color:#743089;opacity:0.5;margin:0 auto 12px;" ></i>
                     <p class="text-muted small mb-0">No main sliders yet.</p>
                 </div>
             @endforelse

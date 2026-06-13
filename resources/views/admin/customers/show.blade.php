@@ -28,7 +28,7 @@
                             </h5>
                         </div>
 
-                        <div class="customer-profile-banner d-flex align-items-center p-4 rounded-4 mb-4" style="background: rgba(108,92,231,0.03); border: 1.5px solid rgba(108,92,231,0.06);">
+                        <div class="customer-profile-banner d-flex align-items-center p-4 rounded-4 mb-4" style="background: rgba(116, 48, 137,0.03); border: 1.5px solid rgba(116, 48, 137,0.06);">
                             <div class="customer-profile-avatar wd-64 h-64 rounded-circle bg-soft-primary text-primary font-weight-bold d-flex align-items-center justify-content-center mr-4 shadow-sm" style="font-size: 1.5rem; min-width: 64px; height: 64px;">
                                 {{ strtoupper(substr($customer->name, 0, 1)) }}
                             </div>
@@ -463,7 +463,7 @@ html[data-admin-theme="dark"] .timeline-divider {
 .fw-800 { font-weight: 800; }
 
 /* Soft background styles */
-.bg-soft-primary { background: rgba(108, 92, 231, 0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-primary { background: rgba(116, 48, 137, 0.1) !important; color: #743089 !important; }
 .bg-soft-secondary { background: rgba(100, 116, 139, 0.1) !important; color: #64748b !important; }
 .bg-soft-success { background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important; }
 .bg-soft-warning { background: rgba(245, 158, 11, 0.1) !important; color: #f59e0b !important; }
@@ -474,7 +474,7 @@ html[data-admin-theme="dark"] .timeline-divider {
     transition: background-color 0.2s ease;
 }
 .table-row-hover-effect:hover {
-    background-color: rgba(108, 92, 231, 0.015) !important;
+    background-color: rgba(116, 48, 137, 0.015) !important;
 }
 
 /* Forms & curved inputs */
@@ -488,8 +488,8 @@ html[data-admin-theme="dark"] .timeline-divider {
     color: var(--input-color, #1e293b) !important;
 }
 .form-control:focus, select.form-control:focus {
-    border-color: #6c5ce7 !important;
-    box-shadow: 0 0 0 3.5px rgba(108, 92, 231, 0.15) !important;
+    border-color: #743089 !important;
+    box-shadow: 0 0 0 3.5px rgba(116, 48, 137, 0.15) !important;
 }
 
 /* Theme adaptation */
@@ -518,13 +518,13 @@ html[data-admin-theme="dark"] .form-control {
     color: #e2e8f0 !important;
 }
 html[data-admin-theme="dark"] .form-control:focus {
-    border-color: #a78bfa !important;
-    box-shadow: 0 0 0 3.5px rgba(167, 139, 250, 0.2) !important;
+    border-color: #A45FBF !important;
+    box-shadow: 0 0 0 3.5px rgba(164, 95, 191, 0.2) !important;
 }
 
 /* Border styles */
 .border-bottom-subtle {
-    border-bottom: 1.5px solid rgba(108, 92, 231, 0.06) !important;
+    border-bottom: 1.5px solid rgba(116, 48, 137, 0.06) !important;
 }
 html[data-admin-theme="dark"] .border-bottom-subtle {
     border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
@@ -538,31 +538,31 @@ html[data-admin-theme="dark"] .border-bottom-subtle {
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #6c5ce7, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     border: none !important;
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
     color: #ffffff !important;
 }
 .btn-primary:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(116, 48, 137, 0.3) !important;
 }
 .btn-outline-primary {
-    border: 1.5px solid #6c5ce7 !important;
-    color: #6c5ce7 !important;
+    border: 1.5px solid #743089 !important;
+    color: #743089 !important;
     background: transparent !important;
 }
 .btn-outline-primary:hover {
-    background-color: #6c5ce7 !important;
+    background-color: #743089 !important;
     color: #ffffff !important;
     transform: translateY(-1px);
 }
 html[data-admin-theme="dark"] .btn-outline-primary {
-    border-color: #a78bfa !important;
-    color: #a78bfa !important;
+    border-color: #A45FBF !important;
+    color: #A45FBF !important;
 }
 html[data-admin-theme="dark"] .btn-outline-primary:hover {
-    background-color: #a78bfa !important;
+    background-color: #A45FBF !important;
     color: #0c1427 !important;
 }
 
@@ -627,13 +627,13 @@ html[data-admin-theme="dark"] .floating-save-bar .btn-outline-light:hover {
 }
 .floating-save-bar .btn-primary {
     border: 1.5px solid transparent !important;
-    background: var(--ps-gradient, linear-gradient(135deg, #6c5ce7, #a78bfa)) !important;
+    background: var(--ps-gradient, linear-gradient(135deg, #743089, #A45FBF)) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137, 0.2) !important;
 }
 .floating-save-bar .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(108, 92, 231, 0.3) !important;
+    box-shadow: 0 6px 16px rgba(116, 48, 137, 0.3) !important;
     color: #ffffff !important;
 }
 
@@ -752,18 +752,18 @@ html[data-admin-theme="dark"] .floating-save-bar .text-muted {
     background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(108, 92, 231, 0.2);
+    background: rgba(116, 48, 137, 0.2);
     border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(108, 92, 231, 0.4);
+    background: rgba(116, 48, 137, 0.4);
 }
 
 /* Premium Dropdown listbox and option items with curved edges */
 .dropdown-menu {
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
     border-radius: 12px !important;
-    border: 1.5px solid rgba(108, 92, 231, 0.06) !important;
+    border: 1.5px solid rgba(116, 48, 137, 0.06) !important;
     padding: 6px !important;
 }
 .dropdown-menu .dropdown-item {
@@ -775,11 +775,11 @@ html[data-admin-theme="dark"] .floating-save-bar .text-muted {
     transition: all 0.2s ease !important;
 }
 .dropdown-menu .dropdown-item:hover {
-    background-color: rgba(108, 92, 231, 0.06) !important;
-    color: #6c5ce7 !important;
+    background-color: rgba(116, 48, 137, 0.06) !important;
+    color: #743089 !important;
 }
 .dropdown-menu .dropdown-item.active {
-    background: linear-gradient(135deg, #6c5ce7, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     color: #ffffff !important;
     font-weight: 700 !important;
 }
@@ -798,7 +798,7 @@ html[data-admin-theme="dark"] .dropdown-menu .dropdown-item:hover {
     color: #ffffff !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu .dropdown-item.active {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6) !important;
+    background: linear-gradient(135deg, #A45FBF, #8E3CA6) !important;
     color: #0c1427 !important;
 }
 
@@ -844,11 +844,11 @@ html[data-admin-theme="dark"] #purchaseSortDropdown:hover {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .premium-custom-checkbox:hover input ~ .checkmark {
-    border-color: #6c5ce7;
-    background-color: rgba(108, 92, 231, 0.03);
+    border-color: #743089;
+    background-color: rgba(116, 48, 137, 0.03);
 }
 .premium-custom-checkbox input:checked ~ .checkmark {
-    background: linear-gradient(135deg, #6c5ce7, #a78bfa) !important;
+    background: linear-gradient(135deg, #743089, #A45FBF) !important;
     border-color: transparent !important;
 }
 .premium-custom-checkbox .checkmark:after {
@@ -875,11 +875,11 @@ html[data-admin-theme="dark"] .premium-custom-checkbox .checkmark {
     border-color: rgba(255, 255, 255, 0.2) !important;
 }
 html[data-admin-theme="dark"] .premium-custom-checkbox:hover input ~ .checkmark {
-    border-color: #a78bfa !important;
+    border-color: #A45FBF !important;
     background-color: rgba(255, 255, 255, 0.02) !important;
 }
 html[data-admin-theme="dark"] .premium-custom-checkbox input:checked ~ .checkmark {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6) !important;
+    background: linear-gradient(135deg, #A45FBF, #8E3CA6) !important;
     border-color: transparent !important;
 }
 

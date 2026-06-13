@@ -17,12 +17,12 @@
 .rounded-3 { border-radius: 12px !important; }
 
 /* Soft badges */
-.bg-soft-primary   { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-primary   { background: rgba(116, 48, 137,0.1) !important; color: #743089 !important; }
 .bg-soft-success   { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
 .bg-soft-info      { background: rgba(6,182,212,0.1) !important; color: #06b6d4 !important; }
 .bg-soft-danger    { background: rgba(239,68,68,0.1) !important; color: #ef4444 !important; }
-html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(167,139,250,0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(164, 95, 191,0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success   { background: rgba(52,211,153,0.15) !important; color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148,163,184,0.15) !important; color: #94a3b8 !important; }
 html[data-admin-theme="dark"] .bg-soft-info      { background: rgba(34,211,238,0.15) !important; color: #22d3ee !important; }
@@ -41,16 +41,16 @@ html[data-admin-theme="dark"]  .text-theme-dark-bold { color: #f1f5f9 !important
     font-size: 0.82rem !important;
     font-weight: 700 !important;
     font-family: 'Outfit', sans-serif !important;
-    background: linear-gradient(135deg,#6c5ce7,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
     border: none !important;
-    box-shadow: 0 4px 12px rgba(108,92,231,0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
     color: #fff !important;
     transition: all 0.25s ease !important;
 }
-.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(108,92,231,0.3) !important; color:#fff !important; }
+.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(116, 48, 137,0.3) !important; color:#fff !important; }
 
 /* Table hover */
-tbody tr:hover { background-color: rgba(108,92,231,0.015) !important; }
+tbody tr:hover { background-color: rgba(116, 48, 137,0.015) !important; }
 html[data-admin-theme="dark"] tbody tr:hover { background-color: rgba(255,255,255,0.01) !important; }
 html[data-admin-theme="dark"] td { color: #cbd5e1 !important; }
 
@@ -222,7 +222,7 @@ html[data-admin-theme="dark"] .coupon-table-row {
                 <div class="d-flex align-items-stretch mb-3 p-0 rounded-4 theme-card-bg overflow-hidden mobile-coupon-card" style="min-height: 100px;">
                     <!-- Left side: Value Banner -->
                     <div class="d-flex flex-column align-items-center justify-content-center px-3 text-white text-center" 
-                         style="background: linear-gradient(135deg, #6c5ce7, #a78bfa); min-width: 90px; max-width: 95px;">
+                         style="background: linear-gradient(135deg, #743089, #A45FBF); min-width: 90px; max-width: 95px;">
                         <span class="font-weight-bold" style="font-family: 'Outfit'; font-size: 1.15rem; line-height: 1.1;">
                             {{ $coupon->discount_type === 'percentage' ? $coupon->discount_value . '%' : '£' . number_format($coupon->discount_value, 0) }}
                         </span>

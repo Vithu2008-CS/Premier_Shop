@@ -34,7 +34,7 @@
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead>
-              <tr style="border-bottom: 2px solid rgba(108,92,231,0.08);">
+              <tr style="border-bottom: 2px solid rgba(116, 48, 137,0.08);">
                 <th class="font-weight-bold" style="font-family: 'Outfit', sans-serif;">Order #</th>
                 <th class="font-weight-bold" style="font-family: 'Outfit', sans-serif;">Customer</th>
                 <th class="font-weight-bold text-end" style="font-family: 'Outfit', sans-serif;">Total</th>
@@ -129,13 +129,13 @@
 </div>
 
 <style>
-.bg-soft-primary { background: rgba(108,92,231,0.1); color: #6c5ce7; }
+.bg-soft-primary { background: rgba(116, 48, 137,0.1); color: #743089; }
 .bg-soft-success { background: rgba(16,185,129,0.1); color: #10b981; }
 .bg-soft-warning { background: rgba(245,158,11,0.1); color: #f59e0b; }
 .bg-soft-danger { background: rgba(239,68,68,0.1); color: #ef4444; }
 .bg-soft-info { background: rgba(6,182,212,0.1); color: #06b6d4; }
 
-html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(167, 139, 250, 0.15); color: #a78bfa; }
+html[data-admin-theme="dark"] .bg-soft-primary { background: rgba(164, 95, 191, 0.15); color: #A45FBF; }
 html[data-admin-theme="dark"] .bg-soft-success { background: rgba(52, 211, 153, 0.15); color: #34d399; }
 html[data-admin-theme="dark"] .bg-soft-warning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
 html[data-admin-theme="dark"] .bg-soft-danger { background: rgba(248, 113, 113, 0.15); color: #f87171; }
@@ -172,12 +172,12 @@ html[data-admin-theme="dark"] .status-dropdown-btn:hover {
     padding: 6px 12px !important;
 }
 .dropdown-menu-status .dropdown-item:hover {
-    background: rgba(108, 92, 231, 0.08) !important;
-    color: #6c5ce7 !important;
+    background: rgba(116, 48, 137, 0.08) !important;
+    color: #743089 !important;
 }
 .dropdown-menu-status .active-status-item {
-    background: rgba(108, 92, 231, 0.12) !important;
-    color: #6c5ce7 !important;
+    background: rgba(116, 48, 137, 0.12) !important;
+    color: #743089 !important;
 }
 
 /* Dark Theme Adaptation for dropdown menu list box */
@@ -190,12 +190,12 @@ html[data-admin-theme="dark"] .dropdown-menu-status .dropdown-item {
     color: #cbd5e1 !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-status .dropdown-item:hover {
-    background: rgba(167, 139, 250, 0.12) !important;
-    color: #a78bfa !important;
+    background: rgba(164, 95, 191, 0.12) !important;
+    color: #A45FBF !important;
 }
 html[data-admin-theme="dark"] .dropdown-menu-status .active-status-item {
-    background: rgba(167, 139, 250, 0.18) !important;
-    color: #a78bfa !important;
+    background: rgba(164, 95, 191, 0.18) !important;
+    color: #A45FBF !important;
 }
 .rounded-4 {
     border-radius: 18px !important;
@@ -205,11 +205,11 @@ html[data-admin-theme="dark"] .dropdown-menu-status .active-status-item {
     padding: 0;
 }
 .page-breadcrumb .breadcrumb-item a {
-    color: #6c5ce7;
+    color: #743089;
     font-weight: 500;
 }
 html[data-admin-theme="dark"] .page-breadcrumb .breadcrumb-item a {
-    color: #a78bfa;
+    color: #A45FBF;
 }
 .page-breadcrumb .breadcrumb-item.active {
     color: #64748b;

@@ -123,8 +123,16 @@
     </div>
 
     <div class="auth-side-illustration">
-        <div class="illustration-bg-decor"></div>
-        <img src="{{ asset('images/shopping_bag_3d.png') }}" alt="Premier Shop" class="auth-illustration-img">
+        <div class="auth-showcase">
+            <span class="auth-showcase-badge">Join Premier Shop</span>
+            <h2 class="auth-showcase-title">Start shopping<br><span class="accent">smarter today.</span></h2>
+            <p class="auth-showcase-sub">Create your free account and unlock member pricing, faster checkout, and rewards on every order.</p>
+            <ul class="auth-showcase-list">
+                <li><i class="bi bi-star-fill"></i> Earn loyalty points on every purchase</li>
+                <li><i class="bi bi-truck"></i> Track orders &amp; deliveries in real time</li>
+                <li><i class="bi bi-heart-fill"></i> Save favourites to your wishlist</li>
+            </ul>
+        </div>
     </div>
 </div>
 @endsection

@@ -21,17 +21,17 @@
     <div class="col-lg-4 mb-4">
         <div class="card glass-card text-center border-0 shadow-lg h-100 overflow-hidden" style="border-radius: 20px; backdrop-filter: blur(15px);">
             {{-- Decorative header --}}
-            <div class="profile-card-header-decor" style="height: 110px; background: linear-gradient(135deg, #727cf5 0%, #6c5ce7 100%); opacity: 0.85;"></div>
+            <div class="profile-card-header-decor" style="height: 110px; background: linear-gradient(135deg, #743089 0%, #743089 100%); opacity: 0.85;"></div>
             
             <div class="card-body pt-0 pb-4 position-relative">
                 {{-- Avatar --}}
                 <div class="position-relative d-inline-block" style="margin-top: -65px;">
-                    <div class="avatar-halo shadow-lg" style="width: 130px; height: 130px; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, #727cf5, #00cec9); animation: rotateHalo 6s linear infinite;">
+                    <div class="avatar-halo shadow-lg" style="width: 130px; height: 130px; border-radius: 50%; padding: 4px; background: linear-gradient(135deg, #743089, #00cec9); animation: rotateHalo 6s linear infinite;">
                         <div class="w-100 h-100 rounded-circle overflow-hidden bg-dark border border-3 theme-avatar-border">
                             <img id="profileCardAvatar" src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-100 h-100 object-fit-cover">
                         </div>
                     </div>
-                    <label for="profile_photo_file" class="avatar-upload-overlay d-flex align-items-center justify-content-center shadow" style="width: 36px; height: 36px; border-radius: 50%; background: #727cf5; color: #fff; position: absolute; bottom: 5px; right: 5px; cursor: pointer; transition: all 0.2s ease;">
+                    <label for="profile_photo_file" class="avatar-upload-overlay d-flex align-items-center justify-content-center shadow" style="width: 36px; height: 36px; border-radius: 50%; background: #743089; color: #fff; position: absolute; bottom: 5px; right: 5px; cursor: pointer; transition: all 0.2s ease;">
                         <i class="bi bi-camera-fill" style="font-size: 1.1rem;"></i>
                     </label>
                 </div>
@@ -100,7 +100,7 @@
                     <h6 class="theme-heading fw-bold small text-uppercase mb-3" style="letter-spacing: 0.5px;">Live Store Metrics</h6>
                     <div class="row g-2 text-center">
                         <div class="col-4">
-                            <div class="p-2.5 rounded-3 glass-card border border-light border-opacity-10 d-flex flex-column h-100" style="background: rgba(114, 124, 245, 0.06); transition: all 0.3s ease;">
+                            <div class="p-2.5 rounded-3 glass-card border border-light border-opacity-10 d-flex flex-column h-100" style="background: rgba(116, 48, 137, 0.06); transition: all 0.3s ease;">
                                 <span class="fw-bold text-primary fs-5" style="font-family: 'Outfit', sans-serif;">{{ \App\Models\Order::count() }}</span>
                                 <span class="text-muted small mt-auto" style="font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2px;">Store Orders</span>
                             </div>
@@ -448,22 +448,22 @@
 
     /* Custom shortcut buttons responsive styling */
     .shortcut-btn {
-        background: rgba(114, 124, 245, 0.04) !important;
+        background: rgba(116, 48, 137, 0.04) !important;
         transition: all 0.3s ease;
     }
     html[data-admin-theme="dark"] .shortcut-btn {
         color: rgba(255, 255, 255, 0.7) !important;
     }
     html[data-admin-theme="dark"] .shortcut-btn:hover {
-        background: rgba(114, 124, 245, 0.12) !important;
+        background: rgba(116, 48, 137, 0.12) !important;
         color: #ffffff !important;
     }
     html[data-admin-theme="light"] .shortcut-btn {
         color: #4b5563 !important;
     }
     html[data-admin-theme="light"] .shortcut-btn:hover {
-        background: rgba(114, 124, 245, 0.08) !important;
-        color: #727cf5 !important;
+        background: rgba(116, 48, 137, 0.08) !important;
+        color: #743089 !important;
     }
 
     /* Premium style variables & transitions specifically for admin profile tab console */
@@ -485,7 +485,7 @@
         color: #111827 !important;
     }
     #profileTab .nav-link.active {
-        color: #727cf5 !important;
+        color: #743089 !important;
         background: transparent !important;
     }
     #profileTab .nav-link.active::after {
@@ -495,7 +495,7 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #727cf5, #00cec9);
+        background: linear-gradient(90deg, #743089, #00cec9);
         border-radius: 3px 3px 0 0;
         animation: scaleIn 0.25s ease forwards;
     }
@@ -516,7 +516,7 @@
     }
     .avatar-upload-overlay:hover {
         transform: scale(1.1);
-        background-color: #6c5ce7 !important;
+        background-color: #743089 !important;
     }
     
     @keyframes rotateHalo {

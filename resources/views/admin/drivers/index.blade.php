@@ -253,21 +253,21 @@
 .rounded-4 { border-radius: 18px !important; }
 
 /* ── Soft badges ─────────────────────────────────────────────────────────── */
-.bg-soft-primary   { background: rgba(108,92,231,0.1) !important; color: #6c5ce7 !important; }
+.bg-soft-primary   { background: rgba(116, 48, 137,0.1) !important; color: #743089 !important; }
 .bg-soft-success   { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
 .bg-soft-secondary { background: rgba(100,116,139,0.1) !important; color: #64748b !important; }
-html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(167,139,250,0.15) !important; color: #a78bfa !important; }
+html[data-admin-theme="dark"] .bg-soft-primary   { background: rgba(164, 95, 191,0.15) !important; color: #A45FBF !important; }
 html[data-admin-theme="dark"] .bg-soft-success   { background: rgba(52,211,153,0.15) !important; color: #34d399 !important; }
 html[data-admin-theme="dark"] .bg-soft-secondary { background: rgba(148,163,184,0.15) !important; color: #94a3b8 !important; }
 
 /* ── Table ───────────────────────────────────────────────────────────────── */
-tbody tr:hover { background-color: rgba(108,92,231,0.015) !important; }
+tbody tr:hover { background-color: rgba(116, 48, 137,0.015) !important; }
 html[data-admin-theme="dark"] tbody tr:hover { background-color: rgba(255,255,255,0.01) !important; }
 html[data-admin-theme="dark"] td { color: #cbd5e1 !important; }
 html[data-admin-theme="light"] .text-dark-theme-aware { color: #1e293b !important; }
 html[data-admin-theme="dark"]  .text-dark-theme-aware { color: #cbd5e1 !important; }
-.text-hover-primary:hover { color: #6c5ce7 !important; text-decoration: none !important; }
-html[data-admin-theme="dark"] .text-hover-primary:hover { color: #a78bfa !important; }
+.text-hover-primary:hover { color: #743089 !important; text-decoration: none !important; }
+html[data-admin-theme="dark"] .text-hover-primary:hover { color: #A45FBF !important; }
 
 /* ── Status dots ─────────────────────────────────────────────────────────── */
 .pulse-green {
@@ -287,13 +287,13 @@ html[data-admin-theme="dark"] .text-hover-primary:hover { color: #a78bfa !import
     font-size: 0.85rem !important;
     font-weight: 700 !important;
     font-family: 'Outfit', sans-serif !important;
-    background: linear-gradient(135deg,#6c5ce7,#a78bfa) !important;
+    background: linear-gradient(135deg,#743089,#A45FBF) !important;
     border: none !important;
-    box-shadow: 0 4px 12px rgba(108,92,231,0.2) !important;
+    box-shadow: 0 4px 12px rgba(116, 48, 137,0.2) !important;
     color: #fff !important;
     transition: all 0.25s ease !important;
 }
-.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(108,92,231,0.3) !important; color:#fff !important; }
+.btn-curved:hover { transform: translateY(-1px) !important; box-shadow: 0 6px 16px rgba(116, 48, 137,0.3) !important; color:#fff !important; }
 
 /* ── Track button ────────────────────────────────────────────────────────── */
 .btn-track-driver {
@@ -360,7 +360,7 @@ html[data-admin-theme="light"] .track-modal-card {
 
 .track-modal-avatar {
     width: 44px; height: 44px; border-radius: 14px;
-    background: linear-gradient(135deg,#6c5ce7,#a78bfa);
+    background: linear-gradient(135deg,#743089,#A45FBF);
     display: flex; align-items: center; justify-content: center;
     font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.1rem;
     color: #fff; flex-shrink: 0;
@@ -421,8 +421,8 @@ html[data-admin-theme="light"] .track-map-overlay-inner { color: #475569; }
 /* Spinner */
 .track-spinner {
     width: 36px; height: 36px;
-    border: 3px solid rgba(108,92,231,0.2);
-    border-top-color: #6c5ce7;
+    border: 3px solid rgba(116, 48, 137,0.2);
+    border-top-color: #743089;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
@@ -660,7 +660,7 @@ html[data-admin-theme="light"] .btn-close-track {
             trailLine = new google.maps.Polyline({
                 path: posTrail,
                 geodesic: true,
-                strokeColor: '#6c5ce7',
+                strokeColor: '#743089',
                 strokeOpacity: 0.4,
                 strokeWeight: 2.5,
                 map: trackMap,
@@ -725,7 +725,7 @@ html[data-admin-theme="light"] .btn-close-track {
                     icon: {
                         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                         scale: 7,
-                        fillColor: moved ? '#6c5ce7' : '#94a3b8',
+                        fillColor: moved ? '#743089' : '#94a3b8',
                         fillOpacity: 0.95,
                         strokeColor: '#ffffff',
                         strokeWeight: 2.5,
@@ -745,7 +745,7 @@ html[data-admin-theme="light"] .btn-close-track {
                 trackMarker.setIcon({
                     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                     scale: 7,
-                    fillColor: moved ? '#6c5ce7' : '#94a3b8',
+                    fillColor: moved ? '#743089' : '#94a3b8',
                     fillOpacity: 0.95,
                     strokeColor: '#ffffff',
                     strokeWeight: 2.5,
@@ -754,10 +754,10 @@ html[data-admin-theme="light"] .btn-close-track {
 
             if (!trackCircle) {
                 trackCircle = new google.maps.Circle({
-                    strokeColor: fresh ? '#6c5ce7' : '#94a3b8',
+                    strokeColor: fresh ? '#743089' : '#94a3b8',
                     strokeOpacity: 0.8,
                     strokeWeight: 1,
-                    fillColor: fresh ? '#6c5ce7' : '#94a3b8',
+                    fillColor: fresh ? '#743089' : '#94a3b8',
                     fillOpacity: 0.07,
                     map: trackMap,
                     center: { lat: lat, lng: lng },
@@ -766,8 +766,8 @@ html[data-admin-theme="light"] .btn-close-track {
             } else {
                 trackCircle.setCenter({ lat: lat, lng: lng });
                 trackCircle.setOptions({
-                    strokeColor: fresh ? '#6c5ce7' : '#94a3b8',
-                    fillColor: fresh ? '#6c5ce7' : '#94a3b8',
+                    strokeColor: fresh ? '#743089' : '#94a3b8',
+                    fillColor: fresh ? '#743089' : '#94a3b8',
                 });
             }
 

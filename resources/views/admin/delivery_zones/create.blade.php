@@ -23,7 +23,7 @@
         </ol>
         <a href="{{ route('admin.delivery-zones.index') }}"
            class="btn btn-outline-primary btn-sm rounded-pill px-3 d-inline-flex align-items-center"
-           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';border:1.5px solid #6c5ce7;color:#6c5ce7;">
+           style="border-radius:30px !important;font-weight:700;font-family:'Outfit';border:1.5px solid #743089;color:#743089;">
             <i class="bi bi-arrow-left" style="font-size:0.85rem;margin-right:6px;"></i> Back to Zones
         </a>
     </nav>
