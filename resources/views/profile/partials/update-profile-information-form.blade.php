@@ -99,7 +99,7 @@
         </div>
 
         <div class="mt-4 d-flex align-items-center gap-3">
-            <button type="submit" class="btn btn-add-cart px-4">{{ __('Save') }}</button>
+            <button type="submit" class="btn btn-accent px-4 rounded-pill">{{ __('Save') }}</button>
 
             @if (session('status') === 'profile-updated')
                 <span class="text-success small fw-bold animate__animated animate__fadeOut animate__delay-2s">

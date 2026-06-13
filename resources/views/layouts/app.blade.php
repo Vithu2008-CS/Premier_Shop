@@ -905,7 +905,7 @@
             <div class="row g-4">
                 {{-- Column 1: About Premier Shop --}}
                 <div class="col-12 col-lg-5 mb-4 mb-lg-0">
-                    <div class="footer-brand">🛍️ Premier Shop</div>
+                    <div class="footer-brand"><i class="bi bi-bag-heart-fill me-2"></i>Premier Shop</div>
                     <p class="mb-4 text-white-50" style="font-size:0.9rem; line-height: 1.6;">
                         Your one-stop destination for quality products at unbeatable prices.
                     </p>
