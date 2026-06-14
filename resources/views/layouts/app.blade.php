@@ -1468,10 +1468,10 @@
                     
                     <!-- Quick Replies -->
                     <div class="quick-replies d-flex flex-wrap gap-1.5 mt-2">
-                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="where is my order">📦 Where is my order?</button>
-                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="loyalty points">💰 Check loyalty points</button>
-                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="return policy">💳 Returns policy</button>
-                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="active coupons">🎁 Active coupons</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="where is my order"><i class="bi bi-box-seam me-1"></i>Where is my order?</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="loyalty points"><i class="bi bi-coin me-1"></i>Check loyalty points</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="return policy"><i class="bi bi-arrow-return-left me-1"></i>Returns policy</button>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1.5 text-start fw-semibold shadow-sm qr-btn" style="font-size: 0.75rem;" data-query="active coupons"><i class="bi bi-gift me-1"></i>Active coupons</button>
                     </div>
                 </div>
                 
@@ -1888,7 +1888,7 @@
                 window.copyCoupon = function(code, btn) {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(code).then(() => {
-                            showToast("🎟️ Coupon code copied!");
+                            showToast("Coupon code copied!");
                             btn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Copied`;
                             setTimeout(() => { btn.innerHTML = `<i class="bi bi-copy"></i> Copy`; }, 2000);
                         });
@@ -1899,7 +1899,7 @@
                         el.select();
                         document.execCommand('copy');
                         document.body.removeChild(el);
-                        showToast("🎟️ Coupon code copied!");
+                        showToast("Coupon code copied!");
                         btn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Copied`;
                         setTimeout(() => { btn.innerHTML = `<i class="bi bi-copy"></i> Copy`; }, 2000);
                     }
@@ -1920,11 +1920,11 @@
                                 formField.submit();
                             }
                             btn.innerHTML = `<i class="bi bi-check2"></i> Applied`;
-                            showToast("🎉 Coupon applied successfully!");
+                            showToast("Coupon applied successfully!");
                             setTimeout(() => { btn.innerHTML = `<i class="bi bi-lightning-fill"></i> Apply`; }, 2000);
                         }, 800);
                     } else {
-                        showToast("⚠️ Go to the checkout page to apply coupons.");
+                        showToast("Go to the checkout page to apply coupons.");
                     }
                 };
 
@@ -1963,22 +1963,22 @@
                         <div class="assist-timeline text-start">
                             <div class="assist-timeline-item ${step1}">
                                 <div class="assist-timeline-dot"></div>
-                                <div class="small fw-bold">🛒 Placed & Confirmed</div>
+                                <div class="small fw-bold"><i class="bi bi-cart-check me-1"></i>Placed & Confirmed</div>
                                 <div class="text-muted" style="font-size:0.68rem;">Order recorded on: ${order.created_at}</div>
                             </div>
                             <div class="assist-timeline-item ${step2}">
                                 <div class="assist-timeline-dot"></div>
-                                <div class="small fw-bold">⚙️ Preparing Package</div>
+                                <div class="small fw-bold"><i class="bi bi-gear-fill me-1"></i>Preparing Package</div>
                                 <div class="text-muted" style="font-size:0.68rem;">Quality checking & boxing</div>
                             </div>
                             <div class="assist-timeline-item ${step3}">
                                 <div class="assist-timeline-dot"></div>
-                                <div class="small fw-bold">🚚 Dispatched In-Transit</div>
+                                <div class="small fw-bold"><i class="bi bi-truck me-1"></i>Dispatched In-Transit</div>
                                 <div class="text-muted" style="font-size:0.68rem;">${order.shipped_date ? `Sent out: ${order.shipped_date}` : 'Awaiting courier pickup'}</div>
                             </div>
                             <div class="assist-timeline-item ${step4}">
                                 <div class="assist-timeline-dot"></div>
-                                <div class="small fw-bold">📦 Delivered & Proofed</div>
+                                <div class="small fw-bold"><i class="bi bi-box-seam-fill me-1"></i>Delivered & Proofed</div>
                                 <div class="text-muted" style="font-size:0.68rem;">${order.delivered_date ? `Received: ${order.delivered_date}` : 'Estimated soon'}</div>
                             </div>
                         </div>
@@ -2008,7 +2008,7 @@
                     if (q.includes('coupon') || q.includes('discount') || q.includes('code') || q.includes('offer')) {
                         if (activeCouponsList && activeCouponsList.length > 0) {
                             let couponListHtml = `
-                                <strong>🎁 Store Active Coupons</strong>
+                                <strong><i class="bi bi-gift me-1"></i>Store Active Coupons</strong>
                                 <p class="my-1.5 small text-muted" style="font-size:0.75rem;">Here are active coupon offers. You can copy them or apply instantly during checkout!</p>
                                 <div class="d-flex flex-column gap-2 mt-2 text-start">`;
                             
@@ -2023,7 +2023,7 @@
                                             <span class="fw-bold text-success" style="font-size:0.85rem;">${valStr} OFF</span>
                                         </div>
                                         <div class="text-muted" style="font-size:0.7rem; line-height: 1.3;">
-                                            🎟️ Storewide Discount${minStr}
+                                            <i class="bi bi-ticket-perforated me-1"></i>Storewide Discount${minStr}
                                         </div>
                                         <div class="d-flex gap-1.5 mt-2 justify-content-end">
                                             <button data-call="copyCoupon" data-args="[&quot;${escapeHTML(cp.code)}&quot;, &quot;$el&quot;]" class="btn btn-outline-secondary btn-xs rounded-pill px-2.5 py-1 text-decoration-none d-flex align-items-center gap-1" style="font-size:0.65rem; font-weight:600; border:1px solid var(--ps-border); background:var(--ps-surface-bg); color:var(--ps-text);"><i class="bi bi-copy"></i> Copy</button>
@@ -2095,23 +2095,23 @@
                         if (activeCartSubtotal >= 100) {
                             boosterWidget = `
                                 <div class="mt-2 p-2 rounded bg-success bg-opacity-10 text-success small" style="font-size:0.75rem; border: 1px solid rgba(0, 184, 148, 0.2);">
-                                    🔥 <strong>1.5x Points Booster ACTIVE!</strong> Your basket subtotal of <strong>£${activeCartSubtotal.toFixed(2)}</strong> qualifies for 1.5x rewards!
+                                    <i class="bi bi-fire me-1"></i><strong>1.5x Points Booster ACTIVE!</strong> Your basket subtotal of <strong>£${activeCartSubtotal.toFixed(2)}</strong> qualifies for 1.5x rewards!
                                 </div>`;
                         } else if (activeCartSubtotal > 0) {
                             const needed = 100 - activeCartSubtotal;
                             boosterWidget = `
                                 <div class="mt-2 p-2 rounded bg-warning bg-opacity-10 text-warning-emphasis small" style="font-size:0.75rem; border: 1px solid rgba(253, 203, 110, 0.2);">
-                                    💡 <strong>Points Booster Progress:</strong> Add only <strong>£${needed.toFixed(2)}</strong> more to your cart to trigger the **1.5x Points Booster**!
+                                    <i class="bi bi-lightbulb me-1"></i><strong>Points Booster Progress:</strong> Add only <strong>£${needed.toFixed(2)}</strong> more to your cart to trigger the **1.5x Points Booster**!
                                 </div>`;
                         } else {
                             boosterWidget = `
                                 <div class="mt-2 p-2 rounded bg-light text-muted small" style="font-size:0.75rem; border: 1px solid var(--ps-border);">
-                                    💡 Spend <strong>£100</strong> or more in one order to unlock the **1.5x Points Booster** rewards!
+                                    <i class="bi bi-lightbulb me-1"></i>Spend <strong>£100</strong> or more in one order to unlock the **1.5x Points Booster** rewards!
                                 </div>`;
                         }
 
                         return `
-                            <strong>⭐ Loyalty Rewards Wallet</strong>
+                            <strong><i class="bi bi-star-fill me-1"></i>Loyalty Rewards Wallet</strong>
                             
                             <div class="loyalty-progress-container text-start mt-2">
                                 <div class="loyalty-wheel">
@@ -2149,7 +2149,7 @@
                     }
                     
                     if (q.includes('thank') || q.includes('thanks') || q.includes('awesome')) {
-                        return `You are very welcome! If you need anything else, feel free to type another question. Happy shopping! 🛍️`;
+                        return `You are very welcome! If you need anything else, feel free to type another question. Happy shopping!`;
                     }
                     
                     return `That's an interesting question! I am optimized for checkouts, order tracking, returns, and loyalty point rewards. Try asking me about:
@@ -2253,7 +2253,7 @@
                                 progressHtml += `
                                     <div class="booster-bar-wrap mb-2">
                                         <div class="d-flex justify-content-between fw-bold mb-1" style="font-size: 0.72rem;">
-                                            <span>🚚 Shipping Progress</span>
+                                            <span><i class="bi bi-truck me-1"></i>Shipping Progress</span>
                                             <span class="text-primary">Add £${neededForFree.toFixed(2)} more for FREE delivery</span>
                                         </div>
                                         <div class="booster-progress" style="background: rgba(116, 48, 137,0.05);">
@@ -2264,7 +2264,7 @@
                             } else {
                                 progressHtml += `
                                     <div class="booster-bar-wrap text-success fw-bold d-flex align-items-center gap-1.5 mb-2" style="font-size: 0.72rem;">
-                                        🎉 <span>Your order qualifies for <strong>FREE Delivery!</strong></span>
+                                        <i class="bi bi-check-circle-fill me-1"></i><span>Your order qualifies for <strong>FREE Delivery!</strong></span>
                                     </div>
                                 `;
                             }
@@ -2276,7 +2276,7 @@
                                 progressHtml += `
                                     <div class="booster-bar-wrap mb-1">
                                         <div class="d-flex justify-content-between fw-bold mb-1" style="font-size: 0.72rem;">
-                                            <span>🔥 Points Booster</span>
+                                            <span><i class="bi bi-fire me-1"></i>Points Booster</span>
                                             <span class="text-warning">Add £${neededForBooster.toFixed(2)} more for 1.5x rewards</span>
                                         </div>
                                         <div class="booster-progress" style="background: rgba(253, 203, 110, 0.05);">
@@ -2287,7 +2287,7 @@
                             } else {
                                 progressHtml += `
                                     <div class="booster-bar-wrap text-warning fw-bold d-flex align-items-center gap-1.5 mb-1" style="font-size: 0.72rem;">
-                                        🚀 <span><strong>1.5x Points Booster ACTIVE!</strong> Earn 1.5x rewards!</span>
+                                        <i class="bi bi-rocket-takeoff-fill me-1"></i><span><strong>1.5x Points Booster ACTIVE!</strong> Earn 1.5x rewards!</span>
                                     </div>
                                 `;
                             }
