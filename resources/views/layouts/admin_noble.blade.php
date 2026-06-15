@@ -100,6 +100,37 @@
             color: #2A1030 !important;
             transform: translateY(-1px);
         }
+        /* Primary action buttons = brand yellow (match storefront CTAs) */
+        .btn-primary {
+            background: #FFDD00 !important;
+            border-color: #FFDD00 !important;
+            color: #2A1030 !important;
+            font-weight: 700;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:focus-visible {
+            background: #F5C400 !important;
+            border-color: #F5C400 !important;
+            color: #2A1030 !important;
+            box-shadow: 0 4px 14px rgba(255, 221, 0, 0.3) !important;
+        }
+        /* Outline-primary stays purple for clear hierarchy */
+        .btn-outline-primary {
+            border-color: #743089 !important;
+            color: #743089 !important;
+        }
+        .btn-outline-primary:hover, .btn-outline-primary:active {
+            background: #743089 !important;
+            border-color: #743089 !important;
+            color: #ffffff !important;
+        }
+        html[data-admin-theme="dark"] .btn-outline-primary {
+            border-color: #A45FBF !important;
+            color: #C9A0DD !important;
+        }
+        html[data-admin-theme="dark"] .btn-outline-primary:hover {
+            background: #A45FBF !important;
+            color: #1a1a2e !important;
+        }
 
         /* Custom styled Choose File buttons with theme support */
         .form-control[type="file"] {

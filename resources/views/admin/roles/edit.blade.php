@@ -74,7 +74,7 @@
                     </div>
                     
                     <div class="mb-4">
-                        <input type="text" id="permissionSearch" class="form-control" placeholder="🔍 Search privileges by name or module..." style="border-radius: 12px; padding: 10px 15px;">
+                        <input type="text" id="permissionSearch" class="form-control" placeholder="Search privileges by name or module..." style="border-radius: 12px; padding: 10px 15px;">
                     </div>
                     
                     @foreach($permissions as $group => $groupPerms)

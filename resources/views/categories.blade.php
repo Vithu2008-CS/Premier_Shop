@@ -67,7 +67,7 @@
                 </div>
                 <h4 class="fw-bold mb-2">No categories yet</h4>
                 <p class="text-muted mb-4">Categories will appear here once added.</p>
-                <a href="{{ route('products.index') }}" class="btn btn-add-cart">Browse All Products</a>
+                <a href="{{ route('products.index') }}" class="btn btn-brand rounded-pill px-4 py-2">Browse All Products</a>
             </div>
         @endif
     </div>

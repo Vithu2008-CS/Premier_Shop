@@ -5863,3 +5863,12 @@ button:focus-visible,
   }
 }
 
+// --- Contrast guard: yellow is a FILL colour, not a text colour ----------
+// $warning drives both .bg-warning (bright yellow fills — good w/ dark text)
+// and .text-warning (yellow text — fails WCAG on light). Decouple: keep text
+// an accessible dark gold on light surfaces, bright yellow only on dark.
+.text-warning { color: #9A6B00 !important; }
+[data-bs-theme="dark"] .text-warning { color: #FFE15C !important; }
+// .text-accent (brand yellow text) is only legible on dark/purple surfaces
+[data-bs-theme="dark"] .text-accent { color: var(--ps-accent) !important; }
+
