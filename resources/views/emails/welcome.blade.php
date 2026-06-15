@@ -92,7 +92,7 @@
 
 <tr>
     <td style="padding:10px 40px 30px;text-align:center;">
-        <a href="{{ url('/products') }}" style="display:inline-block;background:#743089;color:#ffffff;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/products') }}" style="display:inline-block;background:#FFDD00;color:#2A1030;padding:14px 40px;border-radius:50px;text-decoration:none;font-size:16px;font-weight:700;letter-spacing:0.5px;">
             Start Shopping →
         </a>
     </td>

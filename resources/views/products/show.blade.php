@@ -89,7 +89,7 @@
                                 @foreach($product->images as $i => $img)
                                     <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
                                         <div class="product-img-main-wrap pdp-zoom" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: transparent; overflow: hidden; padding: 0;">
-                                            <img src="{{ $img }}" class="img-fluid w-100 h-100 pdp-zoom-img" alt="{{ $product->name }}" style="object-fit: contain;">
+                                            <img src="{{ $img }}" class="img-fluid w-100 h-100 pdp-zoom-img" alt="{{ $product->name }}" style="object-fit: contain;" loading="{{ $i === 0 ? 'eager' : 'lazy' }}" decoding="async" fetchpriority="{{ $i === 0 ? 'high' : 'auto' }}" width="480" height="480">
                                         </div>
                                     </div>
                                 @endforeach
@@ -108,7 +108,7 @@
                             <div class="d-flex gap-2 mt-3 overflow-auto pb-2 custom-scrollbar justify-content-center">
                                 @foreach($product->images as $i => $img)
                                     <div class="thumb-wrap {{ $i === 0 ? 'active' : '' }}" data-call="goToProductSlide" data-args="[{{ $i }}]" style="width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; opacity: 0.6; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--ps-border);">
-                                        <img src="{{ $img }}" class="w-100 h-100" style="object-fit: cover;" alt="Thumb {{ $i + 1 }}">
+                                        <img src="{{ $img }}" class="w-100 h-100" style="object-fit: cover;" alt="View {{ $i + 1 }} of {{ $product->name }}" loading="lazy" decoding="async" width="56" height="56">
                                     </div>
                                 @endforeach
                             </div>
@@ -387,7 +387,7 @@
                                         <div class="d-flex gap-2 mb-3 overflow-auto custom-scrollbar pb-2">
                                             @foreach($review->photos as $photo)
                                                 <a href="{{ Storage::url($photo) }}" target="_blank">
-                                                    <img src="{{ Storage::url($photo) }}" class="rounded-3" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--ps-border);" alt="Review Image">
+                                                    <img src="{{ Storage::url($photo) }}" class="rounded-3" style="width:80px;height:80px;object-fit:cover;border:1px solid var(--ps-border);" alt="Customer review photo" loading="lazy" decoding="async" width="80" height="80">
                                                 </a>
                                             @endforeach
                                         </div>
@@ -433,7 +433,7 @@
                         @csrf
                         <div class="modal-body">
                             <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:var(--ps-surface-secondary);">
-                                <img src="{{ $product->images[0] ?? '' }}" class="rounded" style="width:50px;height:50px;object-fit:cover;">
+                                <img src="{{ $product->images[0] ?? '' }}" class="rounded" style="width:50px;height:50px;object-fit:cover;" alt="{{ $product->name }}" loading="lazy" decoding="async" width="50" height="50">
                                 <div>
                                     <div class="fw-bold fs-6 lh-sm">{{ $product->name }}</div>
                                 </div>

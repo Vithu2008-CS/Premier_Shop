@@ -37,9 +37,17 @@ class AppServiceProvider extends ServiceProvider
         // Use Bootstrap 5 pagination link templates throughout the app
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
-        // Inject product categories into every storefront page nav
+        // Inject product categories into every storefront page nav.
+        // Eager-load a slim set of active products (used by the mega-menu) to
+        // avoid an N+1 query per category on every page load.
         \Illuminate\Support\Facades\View::composer('layouts.app', function ($view) {
-            $view->with('globalCategories', \App\Models\Category::withCount('products')->get());
+            $view->with('globalCategories', \App\Models\Category::withCount('products')
+                ->with(['products' => function ($q) {
+                    $q->where('is_active', true)
+                        ->select('id', 'category_id', 'name', 'slug')
+                        ->latest('id');
+                }])
+                ->get());
         });
 
         // Inject live admin counters into the admin layout (sidebar / topbar)
