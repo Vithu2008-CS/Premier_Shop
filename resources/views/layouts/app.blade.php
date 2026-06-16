@@ -1735,7 +1735,7 @@
                 
                 // Active DB Datasets injected securely.
                 // JSON_HEX_* flags escape <, >, &, ', " so a data value containing
-                // "</script>" (or HTML) cannot break out of this inline script block.
+                // "<\/script>" (or HTML) cannot break out of this inline script block.
                 const activeCouponsList = {!! json_encode($activeCoupons, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
                 const userOrdersList = {!! json_encode($userOrders, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
                 
