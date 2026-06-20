@@ -20,6 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
         }
         $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
 
+        // Global rate-limit safety net: throttle every web route with the `web`
+        // limiter (300/min per user|IP, defined in AppServiceProvider). This
+        // guarantees rate limiting on ALL endpoints — including otherwise
+        // unthrottled public pages (home, catalogue, product detail) — while
+        // tighter per-route limiters (throttle:login, throttle:checkout, …)
+        // still stack on top for sensitive actions. Runs after StartSession so
+        // authenticated requests are keyed by user id. (OWASP API4:2023.)
+        $middleware->appendToGroup('web', 'throttle:web');
+
         // Stripe posts webhooks without a CSRF token; it is authenticated by its
         // signature header instead (verified in StripeWebhookController).
         $middleware->validateCsrfTokens(except: [

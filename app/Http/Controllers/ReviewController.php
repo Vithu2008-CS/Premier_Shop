@@ -27,10 +27,14 @@ class ReviewController extends Controller
      */
     public function store(Request $request, Product $product)
     {
+        // Bound every field: integer range on rating, length caps on free text
+        // (an uncapped comment is a storage/DoS vector), and a hard cap of 6
+        // image files to stop a single request uploading hundreds of photos.
         $request->validate([
             'rating'   => 'required|integer|min:1|max:5',
             'title'    => 'nullable|string|max:255',
-            'comment'  => 'nullable|string',
+            'comment'  => 'nullable|string|max:5000',
+            'photos'   => 'nullable|array|max:6',
             'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

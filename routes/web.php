@@ -11,8 +11,13 @@
  *  auth + driver   — must have driver role; prefix: /driver
  *
  * Rate limiters (defined in AppServiceProvider):
+ *  throttle:web      — 300 req/min per user/IP. Global net auto-applied to the
+ *                      whole web group (bootstrap/app.php) so every route below
+ *                      is rate limited even without an explicit throttle here.
  *  throttle:login    — 5 req/min per IP (auth actions)
  *  throttle:checkout — 10 req/min per user (coupon, shipping, process)
+ *  throttle:uploads  — 10 req/min per user/IP (review photo uploads)
+ *  throttle:N,M      — inline N req / M min (e.g. contact, newsletter, suggest)
  */
 
 use App\Http\Controllers\Admin\CategoryController;
@@ -45,7 +50,9 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->na
 
 // Product catalogue — public browsing
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/products/suggest', [ProductController::class, 'suggest'])->name('products.suggest'); // AJAX autocomplete
+// Public live-search autocomplete: hits the DB per query, so cap it (60/min per
+// user|IP) on top of the global net to blunt scripted catalogue scraping.
+Route::get('/products/suggest', [ProductController::class, 'suggest'])->name('products.suggest')->middleware('throttle:60,1'); // AJAX autocomplete
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 // Rate-limited: order numbers are timestamp-derived (uniqid) and therefore partly
 // guessable, so throttle public tracking to slow order-number enumeration.
@@ -131,8 +138,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ── Reviews ──────────────────────────────────────────────────────────────
-    // Purchase verification is enforced inside ReviewController::store()
-    Route::post('/products/{product}/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    // Purchase verification is enforced inside ReviewController::store().
+    // throttle:uploads (10/min) caps the photo-upload + loyalty-point award path.
+    Route::post('/products/{product}/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store')->middleware('throttle:uploads');
 
     // ── Wishlist ─────────────────────────────────────────────────────────────
     Route::get('/wishlists', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlists.index');

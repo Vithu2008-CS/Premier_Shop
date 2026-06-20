@@ -76,13 +76,35 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register named rate limiters referenced via throttle:<name> middleware.
      *
+     *  web      — 300 req/min per user/IP. Global safety net appended to the
+     *             whole `web` middleware group in bootstrap/app.php, so EVERY
+     *             public/auth route is covered even when it has no per-route
+     *             throttle (OWASP API4:2023 — Unrestricted Resource Consumption).
      *  api      — 60 req/min per authenticated user or IP (general API use)
      *  login    — 5 req/min per IP (login, register, OTP, password reset)
      *  uploads  — 10 req/min per user/IP (file upload endpoints)
      *  checkout — 10 req/min per user/IP (coupon, shipping calc, process order)
+     *
+     * Keying strategy: authenticated requests are limited per user id (so one
+     * abusive account can't exhaust a shared-office IP's budget); anonymous
+     * requests fall back to client IP (resolved from the real client only when
+     * behind a TRUSTED_PROXIES proxy — see bootstrap/app.php).
+     *
+     * All limiters that gate normal browsing are disabled under unit tests via
+     * Limit::none() so the suite can fire many requests without false 429s.
      */
     protected function configureRateLimiting(): void
     {
+        // Generous global ceiling: a heavy human browsing session is well under
+        // this (~30–60 req/min), 30s notification polling is ~2/min, so genuine
+        // users are never affected while scripted floods are capped. Tune here
+        // if a high-traffic shared NAT/proxy legitimately exceeds it.
+        RateLimiter::for('web', function (Request $request) {
+            return app()->runningUnitTests()
+                ? Limit::none()
+                : Limit::perMinute(300)->by($request->user()?->id ?: $request->ip());
+        });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });

@@ -24,9 +24,12 @@ class ShippingCalculationController extends Controller
      */
     public function calculate(Request $request)
     {
+        // Length-bound both fields: they are concatenated into the address sent
+        // to the external geocoding API, so cap them to realistic sizes to stop
+        // oversized/garbage payloads being forwarded upstream.
         $request->validate([
-            'address_line' => 'required|string',
-            'city'         => 'required|string',
+            'address_line' => 'required|string|max:255',
+            'city'         => 'required|string|max:120',
         ]);
 
         $cartItems = auth()->user()->cartItems()->with('product')->get();
