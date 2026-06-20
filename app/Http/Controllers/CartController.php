@@ -110,9 +110,11 @@ class CartController extends Controller
      */
     private function addToCart(Request $request): array
     {
+        // quantity is capped (max:1000) so a tampered request can't submit a
+        // huge integer; the per-product stock ceiling is still enforced below.
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1|max:1000',
         ]);
 
         $product = Product::where('is_active', true)->findOrFail($request->product_id);
@@ -163,7 +165,7 @@ class CartController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $request->validate(['quantity' => 'required|integer|min:1']);
+        $request->validate(['quantity' => 'required|integer|min:1|max:1000']);
 
         if ($request->quantity > $cartItem->product->stock) {
             return $request->wantsJson()

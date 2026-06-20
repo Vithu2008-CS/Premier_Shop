@@ -19,6 +19,21 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        // Validate/bound query-string inputs before they reach the query builder.
+        // All are optional (nullable) so this never breaks normal browsing, but
+        // it caps free-text length (anti-DoS) and rejects non-numeric prices.
+        // Filter VALUES are still bound as parameters below — this is an extra
+        // type/length guard, not the SQL-injection defence on its own.
+        $request->validate([
+            'category'  => 'nullable|string|max:255',
+            'search'    => 'nullable|string|max:150',
+            'min_price' => 'nullable|numeric|min:0|max:1000000',
+            'max_price' => 'nullable|numeric|min:0|max:1000000',
+            'rating'    => 'nullable|numeric|min:0|max:5',
+            'sort'      => 'nullable|string|in:newest,price_low,price_high,name,rating',
+            'page'      => 'nullable|integer|min:1',
+        ]);
+
         // Average of approved reviews, exposed as reviews_avg_rating for the card + rating sort
         $query = Product::with(['category', 'reviews'])
             ->withAvg(['reviews' => fn ($q) => $q->approved()], 'rating')
@@ -207,9 +222,13 @@ class ProductController extends Controller
      */
     public function suggest(Request $request)
     {
-        $q = $request->get('q', '');
+        // Trim + length-bound the term. It is interpolated into a cache key and
+        // fed to a LIKE filter, so cap it (2–100 chars) to prevent unbounded
+        // cache-key growth and oversized scans. Out-of-range input yields an
+        // empty list (graceful for this live-search XHR rather than a 422).
+        $q = trim((string) $request->get('q', ''));
 
-        if (strlen($q) < 2) {
+        if (strlen($q) < 2 || strlen($q) > 100) {
             return response()->json([]);
         }
 
