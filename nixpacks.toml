@@ -1,5 +1,8 @@
+# Pin php83 explicitly so the runtime PHP matches the php83Extensions build —
+# without it nixpacks may run a different PHP version, and the 8.3-built
+# pdo_mysql then fails to load ("could not find driver" at migrate time).
 [phases.setup]
-nixPkgs = ["...", "php83Extensions.pdo_mysql"]
+nixPkgs = ["...", "php83", "php83Extensions.pdo_mysql"]
 
 [phases.build]
 cmds = [
@@ -11,16 +14,22 @@ cmds = [
     # pre-exists.) NOTE: uploads land in storage/app/public — mount that on a
     # persistent volume, or switch to S3, or they are wiped on each redeploy.
     "php artisan storage:link",
-    "php artisan config:cache",
+    # config:cache is NOT run here — at build time Railway's runtime env vars
+    # (DB_*, MAIL_*, APP_KEY, ...) don't exist yet, so caching now bakes the
+    # config defaults (mysql @ 127.0.0.1 / laravel) and the cache then shadows
+    # the real env at runtime. It is cached in the start command instead, where
+    # the env vars are present. route/view caches carry no env, so build is fine.
     "php artisan route:cache",
     "php artisan view:cache"
 ]
 
 [start]
-# 1. Apply migrations (never seed in prod).
-# 2. Run the scheduler in the background (cart:remind-abandoned hourly + user
+# 1. Cache config NOW (runtime) so it captures the real DB_*/MAIL_*/APP_* env
+#    vars Railway injects — must run before migrate so it connects to the right DB.
+# 2. Apply migrations (never seed in prod).
+# 3. Run the scheduler in the background (cart:remind-abandoned hourly + user
 #    pruning). withoutOverlapping uses the shared DB cache lock, so it stays
 #    deduped even if the service scales to multiple instances.
-# 3. Serve in the foreground. NOTE: `artisan serve` is PHP's single-threaded
+# 4. Serve in the foreground. NOTE: `artisan serve` is PHP's single-threaded
 #    dev server — fine for a demo, but front with nginx + php-fpm for real load.
-cmd = "php artisan migrate --force && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "php artisan config:cache && php artisan migrate --force && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
