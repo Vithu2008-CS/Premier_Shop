@@ -6,10 +6,21 @@ cmds = [
     "composer install --no-dev --optimize-autoloader",
     "npm ci",
     "npm run build",
+    # Symlink public/storage → storage/app/public so uploaded product/profile
+    # images are web-reachable. (Built on a fresh image, so the link never
+    # pre-exists.) NOTE: uploads land in storage/app/public — mount that on a
+    # persistent volume, or switch to S3, or they are wiped on each redeploy.
+    "php artisan storage:link",
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache"
 ]
 
 [start]
-cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+# 1. Apply migrations (never seed in prod).
+# 2. Run the scheduler in the background (cart:remind-abandoned hourly + user
+#    pruning). withoutOverlapping uses the shared DB cache lock, so it stays
+#    deduped even if the service scales to multiple instances.
+# 3. Serve in the foreground. NOTE: `artisan serve` is PHP's single-threaded
+#    dev server — fine for a demo, but front with nginx + php-fpm for real load.
+cmd = "php artisan migrate --force && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
