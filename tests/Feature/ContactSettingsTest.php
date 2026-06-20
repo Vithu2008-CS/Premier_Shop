@@ -13,6 +13,7 @@ class ContactSettingsTest extends TestCase
     use RefreshDatabase;
 
     protected $admin;
+
     protected $customer;
 
     protected function setUp(): void
@@ -38,16 +39,16 @@ class ContactSettingsTest extends TestCase
     private function validPayload(array $overrides = []): array
     {
         return array_merge([
-            'contact_phone'              => '+44 770 000 0000',
+            'contact_phone' => '+44 770 000 0000',
             'contact_phone_availability' => 'Available 24/7',
-            'contact_email'              => 'support@shop.test',
+            'contact_email' => 'support@shop.test',
             'contact_email_availability' => 'Replies within 24 hours',
-            'contact_address'            => 'London, United Kingdom',
-            'contact_hours'              => 'Mon-Sat, 9 AM - 6 PM',
-            'social_facebook'            => 'https://facebook.com/shop',
-            'social_instagram'           => null,
-            'social_twitter'             => null,
-            'social_tiktok'              => null,
+            'contact_address' => 'London, United Kingdom',
+            'contact_hours' => 'Mon-Sat, 9 AM - 6 PM',
+            'social_facebook' => 'https://facebook.com/shop',
+            'social_instagram' => null,
+            'social_twitter' => null,
+            'social_tiktok' => null,
         ], $overrides);
     }
 

@@ -114,14 +114,14 @@ class DriverController extends Controller
     public function updateLocation(Request $request)
     {
         $request->validate([
-            'latitude'  => 'required|numeric|between:-90,90',
+            'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $driver = auth()->user();
         $driver->update([
-            'latitude'            => $request->latitude,
-            'longitude'           => $request->longitude,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'location_updated_at' => now(),
         ]);
 

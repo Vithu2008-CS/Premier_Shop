@@ -26,7 +26,7 @@ class MailSecurityTest extends TestCase
         $admin = User::factory()->create(['role_id' => $adminRole->id]);
 
         $this->actingAs($admin)->post(route('admin.mail.send'), [
-            'to'      => ['customer@example.com'],
+            'to' => ['customer@example.com'],
             'subject' => 'Hello',
             'message' => "Hi **there** <script>alert('xss')</script>",
         ])->assertStatus(302);

@@ -3,12 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Product;
-use App\Models\UserItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\User;
+use App\Models\Product;
 use App\Models\Role;
+use App\Models\User;
+use App\Models\UserItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,8 +17,11 @@ class CustomerControllerTest extends TestCase
     use RefreshDatabase;
 
     protected $adminRole;
+
     protected $customerRole;
+
     protected $admin;
+
     protected $customer;
 
     protected function setUp(): void
@@ -58,7 +61,7 @@ class CustomerControllerTest extends TestCase
     public function test_admin_can_filter_customers_index_by_orders()
     {
         $product = Product::factory()->create();
-        
+
         // Active orders for customer
         $order = Order::create([
             'user_id' => $this->customer->id,
@@ -74,9 +77,9 @@ class CustomerControllerTest extends TestCase
         $another = User::factory()->create(['role_id' => $this->customerRole->id]);
 
         $response = $this->actingAs($this->admin)->get(route('admin.customers.index', [
-            'min_orders' => 1
+            'min_orders' => 1,
         ]));
-        
+
         $response->assertStatus(200);
         $response->assertSee($this->customer->name);
         $response->assertDontSee($another->name);
@@ -108,9 +111,9 @@ class CustomerControllerTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->admin)->get(route('admin.customers.index', [
-            'min_spent' => 50
+            'min_spent' => 50,
         ]));
-        
+
         $response->assertStatus(200);
         $response->assertSee($this->customer->name);
         $response->assertDontSee($another->name);
@@ -157,7 +160,7 @@ class CustomerControllerTest extends TestCase
         // Sort by Most Quantity (Item 1 with Qty 5 should be first)
         $response = $this->actingAs($this->admin)->get(route('admin.customers.show', [
             'customer' => $this->customer->id,
-            'purchase_sort' => 'qty_desc'
+            'purchase_sort' => 'qty_desc',
         ]));
         $response->assertStatus(200);
         $purchasedFiltered = $response->viewData('purchasedItems')->items();
@@ -166,7 +169,7 @@ class CustomerControllerTest extends TestCase
         // Sort by Least Quantity (Item 2 with Qty 1 should be first)
         $response = $this->actingAs($this->admin)->get(route('admin.customers.show', [
             'customer' => $this->customer->id,
-            'purchase_sort' => 'qty_asc'
+            'purchase_sort' => 'qty_asc',
         ]));
         $response->assertStatus(200);
         $purchasedFiltered = $response->viewData('purchasedItems')->items();
@@ -175,7 +178,7 @@ class CustomerControllerTest extends TestCase
         // Sort by Most Line Total (Item 2 with total £20 should be first)
         $response = $this->actingAs($this->admin)->get(route('admin.customers.show', [
             'customer' => $this->customer->id,
-            'purchase_sort' => 'total_desc'
+            'purchase_sort' => 'total_desc',
         ]));
         $response->assertStatus(200);
         $purchasedFiltered = $response->viewData('purchasedItems')->items();
@@ -184,7 +187,7 @@ class CustomerControllerTest extends TestCase
         // Sort by Least Line Total (Item 1 with total £10 should be first)
         $response = $this->actingAs($this->admin)->get(route('admin.customers.show', [
             'customer' => $this->customer->id,
-            'purchase_sort' => 'total_asc'
+            'purchase_sort' => 'total_asc',
         ]));
         $response->assertStatus(200);
         $purchasedFiltered = $response->viewData('purchasedItems')->items();
@@ -213,7 +216,7 @@ class CustomerControllerTest extends TestCase
     public function test_personalized_offer_is_applied_to_user_item_line_total()
     {
         $product = Product::factory()->create(['price' => 10.00]);
-        
+
         $this->customer->update([
             'offer_discount_percentage' => 10.00,
             'offer_scope' => 'all',

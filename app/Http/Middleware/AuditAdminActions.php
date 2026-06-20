@@ -39,13 +39,13 @@ class AuditAdminActions
 
         try {
             AuditLog::create([
-                'user_id'    => $request->user()?->id,
-                'action'     => $request->route()?->getName()
+                'user_id' => $request->user()?->id,
+                'action' => $request->route()?->getName()
                     ?: $request->method().' '.$request->path(),
-                'method'     => $request->method(),
-                'url'        => substr($request->fullUrl(), 0, 2048),
-                'payload'    => $this->sanitize($request->input()),
-                'status'     => $response->getStatusCode(),
+                'method' => $request->method(),
+                'url' => substr($request->fullUrl(), 0, 2048),
+                'payload' => $this->sanitize($request->input()),
+                'status' => $response->getStatusCode(),
                 'ip_address' => $request->ip(),
                 'user_agent' => substr((string) $request->userAgent(), 0, 512),
             ]);

@@ -6,9 +6,9 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserItem;
-use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -274,4 +274,3 @@ class ProductControllerTest extends TestCase
         $this->get(route('products.show', $product->slug))->assertStatus(404);
     }
 }
-

@@ -68,28 +68,28 @@ class AppNotification extends Model
     {
         $statusMessages = [
             'processing' => 'Your order is now being processed!',
-            'shipped'    => 'Your order has been shipped and is on its way!',
-            'delivered'  => 'Your order has been delivered. Enjoy!',
-            'cancelled'  => 'Your order has been cancelled.',
+            'shipped' => 'Your order has been shipped and is on its way!',
+            'delivered' => 'Your order has been delivered. Enjoy!',
+            'cancelled' => 'Your order has been cancelled.',
         ];
 
         $statusIcons = [
             'processing' => 'bi-box-seam',
-            'shipped'    => 'bi-truck',
-            'delivered'  => 'bi-check-circle-fill',
-            'cancelled'  => 'bi-x-circle',
+            'shipped' => 'bi-truck',
+            'delivered' => 'bi-check-circle-fill',
+            'cancelled' => 'bi-x-circle',
         ];
 
         $message = $statusMessages[$order->status] ?? "Order status updated to {$order->status}.";
-        $icon    = $statusIcons[$order->status] ?? 'bi-bell';
+        $icon = $statusIcons[$order->status] ?? 'bi-bell';
 
         self::create([
             'user_id' => $order->user_id,
-            'type'    => 'order_status',
-            'title'   => "Order #{$order->order_number}",
+            'type' => 'order_status',
+            'title' => "Order #{$order->order_number}",
             'message' => $message,
-            'icon'    => $icon,
-            'url'     => route('orders.show', $order),
+            'icon' => $icon,
+            'url' => route('orders.show', $order),
         ]);
     }
 
@@ -101,11 +101,11 @@ class AppNotification extends Model
         foreach ($staffUsers as $user) {
             self::create([
                 'user_id' => $user->id,
-                'type'    => 'new_order',
-                'title'   => 'New Order Received',
+                'type' => 'new_order',
+                'title' => 'New Order Received',
                 'message' => "Order #{$order->order_number} placed by {$order->user->name} — £".number_format($order->total, 2),
-                'icon'    => 'bi-bag-plus-fill',
-                'url'     => route('admin.orders.show', $order),
+                'icon' => 'bi-bag-plus-fill',
+                'url' => route('admin.orders.show', $order),
             ]);
         }
     }
@@ -118,11 +118,11 @@ class AppNotification extends Model
         foreach ($staffUsers as $user) {
             self::create([
                 'user_id' => $user->id,
-                'type'    => 'low_stock',
-                'title'   => 'Low Stock Alert',
+                'type' => 'low_stock',
+                'title' => 'Low Stock Alert',
                 'message' => "{$product->name} has only {$product->stock} units left!",
-                'icon'    => 'bi-exclamation-triangle-fill',
-                'url'     => route('admin.products.edit', $product),
+                'icon' => 'bi-exclamation-triangle-fill',
+                'url' => route('admin.products.edit', $product),
             ]);
         }
     }
@@ -137,11 +137,11 @@ class AppNotification extends Model
         foreach ($wishlistUserIds as $userId) {
             self::create([
                 'user_id' => $userId,
-                'type'    => 'back_in_stock',
-                'title'   => 'Back in Stock!',
+                'type' => 'back_in_stock',
+                'title' => 'Back in Stock!',
                 'message' => "{$product->name} is back in stock. Don't miss out!",
-                'icon'    => 'bi-bag-check-fill',
-                'url'     => route('products.show', $product->slug),
+                'icon' => 'bi-bag-check-fill',
+                'url' => route('products.show', $product->slug),
             ]);
         }
     }
@@ -154,11 +154,11 @@ class AppNotification extends Model
         foreach ($staffUsers as $user) {
             self::create([
                 'user_id' => $user->id,
-                'type'    => 'new_return',
-                'title'   => 'New Return Request',
+                'type' => 'new_return',
+                'title' => 'New Return Request',
                 'message' => "Return request submitted for Order #{$return->order->order_number} by {$return->user->name}.",
-                'icon'    => 'bi-arrow-return-left',
-                'url'     => route('admin.returns.show', $return),
+                'icon' => 'bi-arrow-return-left',
+                'url' => route('admin.returns.show', $return),
             ]);
         }
     }
@@ -185,11 +185,11 @@ class AppNotification extends Model
 
         self::create([
             'user_id' => $return->user_id,
-            'type'    => 'return_status',
-            'title'   => "Return #{$return->id} Updated",
+            'type' => 'return_status',
+            'title' => "Return #{$return->id} Updated",
             'message' => $statusMessages[$return->status],
-            'icon'    => $statusIcons[$return->status] ?? 'bi-info-circle',
-            'url'     => route('returns.show', $return),
+            'icon' => $statusIcons[$return->status] ?? 'bi-info-circle',
+            'url' => route('returns.show', $return),
         ]);
     }
 }

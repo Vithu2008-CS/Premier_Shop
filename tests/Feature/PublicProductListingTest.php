@@ -25,6 +25,7 @@ class PublicProductListingTest extends TestCase
     use RefreshDatabase;
 
     private Category $category;
+
     private User $reviewer;
 
     protected function setUp(): void
@@ -41,7 +42,7 @@ class PublicProductListingTest extends TestCase
     {
         return Product::factory()->create(array_merge([
             'category_id' => $this->category->id,
-            'is_active'   => true,
+            'is_active' => true,
         ], $attrs));
     }
 
@@ -111,7 +112,7 @@ class PublicProductListingTest extends TestCase
     public function test_rating_filter_uses_approved_reviews(): void
     {
         $highRated = $this->product(['name' => 'TopRatedThing']);
-        $lowRated  = $this->product(['name' => 'PoorlyRatedThing']);
+        $lowRated = $this->product(['name' => 'PoorlyRatedThing']);
 
         Review::create([
             'user_id' => $this->reviewer->id, 'product_id' => $highRated->id,
@@ -140,7 +141,7 @@ class PublicProductListingTest extends TestCase
     public function test_product_detail_page_renders_with_gallery_polish(): void
     {
         $product = $this->product([
-            'name'   => 'DetailWidget',
+            'name' => 'DetailWidget',
             'images' => ['/storage/products/x.webp', '/storage/products/y.webp'],
         ]);
 

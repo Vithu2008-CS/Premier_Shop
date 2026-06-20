@@ -20,8 +20,11 @@ class AdminAuthorizationTest extends TestCase
     use RefreshDatabase;
 
     private Role $adminRole;
+
     private Role $managerRole;
+
     private Role $accountantRole;
+
     private Role $customerRole;
 
     protected function setUp(): void
@@ -93,7 +96,7 @@ class AdminAuthorizationTest extends TestCase
 
     public function test_manager_cannot_change_a_customer_role(): void
     {
-        $manager  = $this->user($this->managerRole);
+        $manager = $this->user($this->managerRole);
         $customer = $this->user($this->customerRole);
 
         // Manager lacks customers.update → blocked at the route before any logic runs.
@@ -111,7 +114,7 @@ class AdminAuthorizationTest extends TestCase
         $custom = Role::create(['name' => 'support', 'display_name' => 'Support', 'is_staff' => true]);
         $custom->permissions()->sync([$this->perms['customers.update']->id]);
 
-        $support  = $this->user($custom);
+        $support = $this->user($custom);
         $customer = $this->user($this->customerRole);
 
         $this->actingAs($support)
@@ -127,9 +130,9 @@ class AdminAuthorizationTest extends TestCase
         $custom = Role::create(['name' => 'support', 'display_name' => 'Support', 'is_staff' => true]);
         $custom->permissions()->sync([$this->perms['customers.update']->id]);
 
-        $support  = $this->user($custom);
+        $support = $this->user($custom);
         $customer = $this->user($this->customerRole);
-        $other    = Role::create(['name' => 'vip', 'display_name' => 'VIP', 'is_staff' => false]);
+        $other = Role::create(['name' => 'vip', 'display_name' => 'VIP', 'is_staff' => false]);
 
         $this->actingAs($support)
             ->put(route('admin.customers.update', $customer), ['role_id' => $other->id])

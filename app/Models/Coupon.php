@@ -24,11 +24,11 @@ class Coupon extends Model
     protected function casts(): array
     {
         return [
-            'discount_value'   => 'decimal:2',
+            'discount_value' => 'decimal:2',
             'min_order_amount' => 'decimal:2',
-            'valid_from'       => 'datetime',
-            'valid_until'      => 'datetime',
-            'is_active'        => 'boolean',
+            'valid_from' => 'datetime',
+            'valid_until' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 

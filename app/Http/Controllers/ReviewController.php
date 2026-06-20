@@ -31,10 +31,10 @@ class ReviewController extends Controller
         // (an uncapped comment is a storage/DoS vector), and a hard cap of 6
         // image files to stop a single request uploading hundreds of photos.
         $request->validate([
-            'rating'   => 'required|integer|min:1|max:5',
-            'title'    => 'nullable|string|max:255',
-            'comment'  => 'nullable|string|max:5000',
-            'photos'   => 'nullable|array|max:6',
+            'rating' => 'required|integer|min:1|max:5',
+            'title' => 'nullable|string|max:255',
+            'comment' => 'nullable|string|max:5000',
+            'photos' => 'nullable|array|max:6',
             'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -62,13 +62,13 @@ class ReviewController extends Controller
         }
 
         Review::create([
-            'user_id'     => auth()->id(),
-            'product_id'  => $product->id,
-            'rating'      => $request->rating,
-            'title'       => $request->title,
-            'comment'     => $request->comment,
+            'user_id' => auth()->id(),
+            'product_id' => $product->id,
+            'rating' => $request->rating,
+            'title' => $request->title,
+            'comment' => $request->comment,
             'is_approved' => true,  // auto-approve; admin can revoke via ReviewController@toggleApproval
-            'photos'      => empty($photoPaths) ? null : $photoPaths,
+            'photos' => empty($photoPaths) ? null : $photoPaths,
         ]);
 
         // Gamification: 50 points per first review on a product (duplicate blocked above)
@@ -76,11 +76,11 @@ class ReviewController extends Controller
         auth()->user()->increment('loyalty_points', $pointsToAward);
 
         RewardPointTransaction::create([
-            'user_id'     => auth()->id(),
-            'amount'      => $pointsToAward,
-            'type'        => 'earned',
+            'user_id' => auth()->id(),
+            'amount' => $pointsToAward,
+            'type' => 'earned',
             'description' => 'Earned for reviewing '.$product->name,
-            'order_id'    => null,
+            'order_id' => null,
         ]);
 
         return back()->with('success', "Your review has been published! You earned {$pointsToAward} loyalty points.");

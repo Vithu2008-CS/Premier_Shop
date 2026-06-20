@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\AuditLog;
 use App\Models\Role;
-use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,6 +13,7 @@ class AuditLogTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $customer;
 
     protected function setUp(): void
@@ -50,8 +50,8 @@ class AuditLogTest extends TestCase
 
         $this->assertDatabaseHas('audit_logs', [
             'user_id' => $this->admin->id,
-            'action'  => 'admin.settings.store',
-            'method'  => 'POST',
+            'action' => 'admin.settings.store',
+            'method' => 'POST',
         ]);
     }
 
@@ -75,7 +75,7 @@ class AuditLogTest extends TestCase
     {
         $this->actingAs($this->admin)->post(route('admin.settings.store'), [
             'shop_name' => 'Test Shop',
-            'password'  => 'super-secret',
+            'password' => 'super-secret',
         ]);
 
         $log = AuditLog::first();
@@ -88,11 +88,11 @@ class AuditLogTest extends TestCase
     {
         AuditLog::create([
             'user_id' => $this->admin->id,
-            'action'  => 'admin.products.update',
-            'method'  => 'PUT',
-            'url'     => 'http://localhost/admin/products/1',
+            'action' => 'admin.products.update',
+            'method' => 'PUT',
+            'url' => 'http://localhost/admin/products/1',
             'payload' => ['name' => 'Widget'],
-            'status'  => 302,
+            'status' => 302,
         ]);
 
         $response = $this->actingAs($this->admin)->get(route('admin.audit-logs.index'));

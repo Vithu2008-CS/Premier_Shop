@@ -60,9 +60,9 @@ class DeliveryZoneTest extends TestCase
 
     public function test_fee_resolution_per_zone_rule(): void
     {
-        $free      = new DeliveryZone(['is_free' => true, 'delivery_fee' => 9.99]);
+        $free = new DeliveryZone(['is_free' => true, 'delivery_fee' => 9.99]);
         $threshold = new DeliveryZone(['is_free' => false, 'free_over_amount' => 20, 'delivery_fee' => 2.50]);
-        $flat      = new DeliveryZone(['is_free' => false, 'delivery_fee' => 3.00]);
+        $flat = new DeliveryZone(['is_free' => false, 'delivery_fee' => 3.00]);
 
         $this->assertSame(0.0, $free->feeFor(5.0));
         $this->assertSame(0.0, $threshold->feeFor(25.0));   // over £20 → free
@@ -102,17 +102,17 @@ class DeliveryZoneTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.delivery-zones.store'), [
-                'name'             => 'Town Centre',
-                'min_miles'        => '0',
-                'max_miles'        => '1.5',
+                'name' => 'Town Centre',
+                'min_miles' => '0',
+                'max_miles' => '1.5',
                 'free_over_amount' => '20',
-                'delivery_fee'     => '2.50',
+                'delivery_fee' => '2.50',
             ])
             ->assertRedirect(route('admin.delivery-zones.index'));
 
         $this->assertDatabaseHas('delivery_zones', [
-            'name'         => 'Town Centre',
-            'max_miles'    => 1.5,
+            'name' => 'Town Centre',
+            'max_miles' => 1.5,
             'delivery_fee' => 2.50,
         ]);
     }
@@ -121,7 +121,7 @@ class DeliveryZoneTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.delivery-zones.store'), [
-                'name'      => 'Backwards',
+                'name' => 'Backwards',
                 'min_miles' => '5',
                 'max_miles' => '1.5',
             ])
@@ -134,9 +134,9 @@ class DeliveryZoneTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.delivery-zones.store'), [
-                'name'         => 'Negative',
-                'min_miles'    => '0',
-                'max_miles'    => '5',
+                'name' => 'Negative',
+                'min_miles' => '0',
+                'max_miles' => '5',
                 'delivery_fee' => '-2.50',
             ])
             ->assertSessionHasErrors('delivery_fee');
@@ -148,9 +148,9 @@ class DeliveryZoneTest extends TestCase
 
         $this->actingAs($this->admin)
             ->put(route('admin.delivery-zones.update', $zone), [
-                'name'         => 'New Name',
-                'min_miles'    => '0',
-                'max_miles'    => '6',
+                'name' => 'New Name',
+                'min_miles' => '0',
+                'max_miles' => '6',
                 'delivery_fee' => '3.00',
             ])
             ->assertRedirect(route('admin.delivery-zones.index'));
@@ -189,18 +189,18 @@ class DeliveryZoneTest extends TestCase
         $product = Product::factory()->create(['price' => $subtotal, 'stock' => 50, 'category_id' => $category->id]);
 
         UserItem::create([
-            'user_id'    => $user->id,
+            'user_id' => $user->id,
             'product_id' => $product->id,
-            'quantity'   => 1,
-            'type'       => 'cart',
+            'quantity' => 1,
+            'type' => 'cart',
         ]);
 
         config(['services.google.maps_key' => 'mocked-key']);
         Http::fake([
             'maps.googleapis.com/*' => Http::response([
                 'status' => 'OK',
-                'rows'   => [['elements' => [[
-                    'status'   => 'OK',
+                'rows' => [['elements' => [[
+                    'status' => 'OK',
                     'distance' => ['value' => 16093.44], // 10 miles
                 ]]]],
             ]),
@@ -216,7 +216,7 @@ class DeliveryZoneTest extends TestCase
         $response = $this->actingAs($this->customerWithCart(10.00))
             ->postJson(route('checkout.calculateShippingDynamic'), [
                 'address_line' => '10 Downing Street',
-                'city'         => 'London',
+                'city' => 'London',
             ]);
 
         $response->assertOk();
@@ -231,7 +231,7 @@ class DeliveryZoneTest extends TestCase
         $response = $this->actingAs($this->customerWithCart(30.00))
             ->postJson(route('checkout.calculateShippingDynamic'), [
                 'address_line' => '10 Downing Street',
-                'city'         => 'London',
+                'city' => 'London',
             ]);
 
         $response->assertOk();
@@ -246,7 +246,7 @@ class DeliveryZoneTest extends TestCase
         $response = $this->actingAs($this->customerWithCart(3.00))
             ->postJson(route('checkout.calculateShippingDynamic'), [
                 'address_line' => '10 Downing Street',
-                'city'         => 'London',
+                'city' => 'London',
             ]);
 
         $response->assertOk();
@@ -259,7 +259,7 @@ class DeliveryZoneTest extends TestCase
         $response = $this->actingAs($this->customerWithCart(10.00))
             ->postJson(route('checkout.calculateShippingDynamic'), [
                 'address_line' => '10 Downing Street',
-                'city'         => 'London',
+                'city' => 'London',
             ]);
 
         $response->assertOk();
@@ -273,7 +273,7 @@ class DeliveryZoneTest extends TestCase
         $response = $this->actingAs($user)
             ->postJson(route('checkout.calculateShippingDynamic'), [
                 'address_line' => '10 Downing Street',
-                'city'         => 'London',
+                'city' => 'London',
             ]);
 
         $response->assertOk();
@@ -294,8 +294,8 @@ class DeliveryZoneTest extends TestCase
         Http::fake([
             'maps.googleapis.com/*' => Http::response([
                 'status' => 'OK',
-                'rows'   => [['elements' => [[
-                    'status'   => 'OK',
+                'rows' => [['elements' => [[
+                    'status' => 'OK',
                     'distance' => ['value' => 16093.44],
                 ]]]],
             ]),

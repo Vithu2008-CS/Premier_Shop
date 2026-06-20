@@ -2,22 +2,16 @@
 
 namespace App\Helpers;
 
+use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Http\File;
 
 class ImageHelper
 {
     /**
      * Convert an uploaded image file into WebP format and save it on the specified disk/folder.
      * Falls back to normal upload for SVGs or if conversion fails.
-     *
-     * @param UploadedFile $file
-     * @param string $folder
-     * @param string $disk
-     * @param int $quality
-     * @return string
      */
     public static function storeAsWebp(UploadedFile $file, string $folder, string $disk = 'public', int $quality = 85): string
     {
@@ -75,6 +69,7 @@ class ImageHelper
             $tempFile = tempnam(sys_get_temp_dir(), 'webp');
             if ($tempFile === false) {
                 imagedestroy($image);
+
                 return $file->store($folder, $disk);
             }
 
@@ -82,22 +77,24 @@ class ImageHelper
             $success = @imagewebp($image, $tempFile, $quality);
             imagedestroy($image);
 
-            if (!$success) {
+            if (! $success) {
                 @unlink($tempFile);
+
                 return $file->store($folder, $disk);
             }
 
             // Store the converted webp file using Laravel Storage
-            $fileName = Str::random(40) . '.webp';
+            $fileName = Str::random(40).'.webp';
             Storage::disk($disk)->putFileAs($folder, new File($tempFile), $fileName);
 
             // Clean up temp file
             @unlink($tempFile);
 
-            return $folder . '/' . $fileName;
+            return $folder.'/'.$fileName;
         } catch (\Throwable $e) {
             // Log warning or just fall back to standard store
-            \Log::warning('WebP conversion failed, falling back to original upload: ' . $e->getMessage());
+            \Log::warning('WebP conversion failed, falling back to original upload: '.$e->getMessage());
+
             return $file->store($folder, $disk);
         }
     }

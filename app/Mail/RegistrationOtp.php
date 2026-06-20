@@ -25,7 +25,7 @@ class RegistrationOtp extends Mailable
 
     public function __construct(string $otp, string $userName)
     {
-        $this->otp      = $otp;
+        $this->otp = $otp;
         $this->userName = $userName;
     }
 

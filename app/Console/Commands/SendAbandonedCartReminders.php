@@ -27,7 +27,7 @@ class SendAbandonedCartReminders extends Command
 
     public function handle(): int
     {
-        $idleCutoff  = now()->subHours((int) $this->option('hours'));
+        $idleCutoff = now()->subHours((int) $this->option('hours'));
         $staleCutoff = now()->subDays((int) $this->option('max-age-days'));
 
         $sent = 0;

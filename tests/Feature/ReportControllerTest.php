@@ -23,7 +23,9 @@ class ReportControllerTest extends TestCase
     use RefreshDatabase;
 
     private Role $adminRole;
+
     private Role $customerRole;
+
     private User $admin;
 
     protected function setUp(): void

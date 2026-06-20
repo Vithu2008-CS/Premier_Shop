@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Mail\OrderStatusUpdated;
 use App\Models\Order;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\OrderStatusUpdated;
 use Tests\TestCase;
 
 class OrderControllerTest extends TestCase
@@ -109,7 +109,6 @@ class OrderControllerTest extends TestCase
             return $mail->order->id === $order->id && $mail->hasTo($this->customer->email);
         });
     }
-
 
     public function test_order_status_updated_mailable_renders_with_null_shipped_date_when_status_is_shipped()
     {
@@ -225,7 +224,3 @@ class OrderControllerTest extends TestCase
         $response->assertSee('Assigned Driver');
     }
 }
-
-
-
-

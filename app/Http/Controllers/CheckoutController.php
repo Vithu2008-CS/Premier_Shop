@@ -86,7 +86,7 @@ class CheckoutController extends Controller
             return back()->with('error', 'Invalid coupon code.');
         }
 
-        $items    = $this->purchasableCartItems();
+        $items = $this->purchasableCartItems();
         if ($request->has('items')) {
             $items = $items->whereIn('id', $request->items);
         }
@@ -100,18 +100,18 @@ class CheckoutController extends Controller
 
         // Store coupon details in session so process() can apply them without a second lookup
         session(['coupon' => [
-            'code'     => $coupon->code,
+            'code' => $coupon->code,
             'discount' => $coupon->calculateDiscount($subtotal),
-            'id'       => $coupon->id,
+            'id' => $coupon->id,
         ]]);
 
         if ($request->wantsJson()) {
             return response()->json([
-                'success'  => true,
-                'message'  => "Coupon '{$coupon->code}' applied!",
-                'coupon'   => session('coupon'),
+                'success' => true,
+                'message' => "Coupon '{$coupon->code}' applied!",
+                'coupon' => session('coupon'),
                 'subtotal' => number_format($subtotal, 2),
-                'total'    => number_format($subtotal - session('coupon.discount'), 2),
+                'total' => number_format($subtotal - session('coupon.discount'), 2),
             ]);
         }
 
@@ -127,10 +127,10 @@ class CheckoutController extends Controller
             $subtotal = $this->purchasableCartItems()->sum('line_total');
 
             return response()->json([
-                'success'  => true,
-                'message'  => 'Coupon removed.',
+                'success' => true,
+                'message' => 'Coupon removed.',
                 'subtotal' => number_format($subtotal, 2),
-                'total'    => number_format($subtotal, 2),
+                'total' => number_format($subtotal, 2),
             ]);
         }
 
@@ -148,10 +148,10 @@ class CheckoutController extends Controller
         $subtotal = $purchasedItems->sum('line_total');
 
         // Shipping — admin-defined distance zones with flat-rate fallback
-        $destination  = "{$request->address_line}, {$request->city}, UK";
-        $quote        = $this->deliveryZones->quoteForAddress($destination, (float) $subtotal);
+        $destination = "{$request->address_line}, {$request->city}, UK";
+        $quote = $this->deliveryZones->quoteForAddress($destination, (float) $subtotal);
         $shippingCost = max(0.0, (float) $quote['cost']);
-        $distance     = $quote['distance_miles'];
+        $distance = $quote['distance_miles'];
 
         // Coupon discount
         $discount = 0;
@@ -160,9 +160,9 @@ class CheckoutController extends Controller
         if (session('coupon')) {
             $coupon = Coupon::find(session('coupon.id'));
             if ($coupon && $coupon->isValid($subtotal)) {
-                $discount   = $coupon->calculateDiscount($subtotal);
+                $discount = $coupon->calculateDiscount($subtotal);
                 $couponCode = $coupon->code;
-                $couponId   = $coupon->id;
+                $couponId = $coupon->id;
             }
         }
         $subtotalAfterCoupon = $subtotal - $discount;
@@ -172,7 +172,7 @@ class CheckoutController extends Controller
         $pointsUsed = 0;
         $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
         if ($request->has('use_points') && $loyaltyEnabled) {
-            $userPoints     = auth()->user()->loyalty_points;
+            $userPoints = auth()->user()->loyalty_points;
             $redemptionRate = (float) ($settings->other_settings['points_redemption_value'] ?? 0.01);
             // rate > 0 guards rows saved before validation enforced it — a zero
             // rate would burn the user's whole balance for a £0 discount (and
@@ -181,10 +181,10 @@ class CheckoutController extends Controller
                 $maxValueFromPoints = $userPoints * $redemptionRate;
                 if ($maxValueFromPoints >= $subtotalAfterCoupon) {
                     $pointsDiscount = $subtotalAfterCoupon;
-                    $pointsUsed     = (int) ceil($subtotalAfterCoupon / $redemptionRate);
+                    $pointsUsed = (int) ceil($subtotalAfterCoupon / $redemptionRate);
                 } else {
                     $pointsDiscount = $maxValueFromPoints;
-                    $pointsUsed     = $userPoints;
+                    $pointsUsed = $userPoints;
                 }
             }
         }
@@ -211,8 +211,8 @@ class CheckoutController extends Controller
 
         $request->validate([
             'address_line' => 'required|string|max:255',
-            'city'         => 'required|string|max:100',
-            'items'        => 'nullable|array',
+            'city' => 'required|string|max:100',
+            'items' => 'nullable|array',
         ]);
 
         $allCartItems = $this->purchasableCartItems();
@@ -245,17 +245,17 @@ class CheckoutController extends Controller
 
         try {
             $intent = $this->stripe->createPaymentIntent($amountMinor, [
-                'user_id'         => (string) auth()->id(),
-                'subtotal'        => (string) round($pricing['subtotal'], 2),
-                'discount'        => (string) round($pricing['discount'], 2),
-                'coupon_code'     => (string) ($pricing['couponCode'] ?? ''),
-                'coupon_id'       => (string) ($pricing['couponId'] ?? ''),
+                'user_id' => (string) auth()->id(),
+                'subtotal' => (string) round($pricing['subtotal'], 2),
+                'discount' => (string) round($pricing['discount'], 2),
+                'coupon_code' => (string) ($pricing['couponCode'] ?? ''),
+                'coupon_id' => (string) ($pricing['couponId'] ?? ''),
                 'points_discount' => (string) round($pricing['pointsDiscount'], 2),
-                'points_used'     => (string) $pricing['pointsUsed'],
-                'shipping'        => (string) round($pricing['shippingCost'], 2),
-                'distance'        => $pricing['distance'] !== null ? (string) $pricing['distance'] : '',
-                'total'           => (string) round($pricing['total'], 2),
-                'item_ids'        => $itemIdsCsv,
+                'points_used' => (string) $pricing['pointsUsed'],
+                'shipping' => (string) round($pricing['shippingCost'], 2),
+                'distance' => $pricing['distance'] !== null ? (string) $pricing['distance'] : '',
+                'total' => (string) round($pricing['total'], 2),
+                'item_ids' => $itemIdsCsv,
             ]);
         } catch (\Throwable $e) {
             \Log::error('Stripe PaymentIntent creation failed: '.$e->getMessage());
@@ -265,7 +265,7 @@ class CheckoutController extends Controller
 
         return response()->json([
             'clientSecret' => $intent->client_secret,
-            'amount'       => $amountMinor,
+            'amount' => $amountMinor,
         ]);
     }
 
@@ -289,10 +289,10 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'address_line' => 'required|string|max:255',
-            'city'         => 'required|string|max:100',
-            'phone'        => 'required|string|max:20',
+            'city' => 'required|string|max:100',
+            'phone' => 'required|string|max:20',
             'payment_method' => 'required|string|in:Debit/Credit Card,Bank Transfer',
-            'items'        => 'nullable|array',
+            'items' => 'nullable|array',
         ]);
 
         $allCartItems = $this->purchasableCartItems();
@@ -312,7 +312,7 @@ class CheckoutController extends Controller
         // Resolve the authoritative price breakdown. For card payments it comes from
         // the verified Stripe PaymentIntent's metadata (server-set at creation, so the
         // client cannot tamper with prices); for bank transfer it is computed live.
-        $paymentStatus   = 'pending';
+        $paymentStatus = 'pending';
         $paymentIntentId = null;
 
         if ($request->payment_method === 'Debit/Credit Card') {
@@ -344,16 +344,16 @@ class CheckoutController extends Controller
 
             // Authoritative pricing = the metadata captured when the intent was created.
             $m = $intent->metadata;
-            $subtotal       = (float) ($m->subtotal ?? 0);
-            $discount       = (float) ($m->discount ?? 0);
-            $couponCode     = ($m->coupon_code ?? '') !== '' ? $m->coupon_code : null;
-            $couponId       = ($m->coupon_id ?? '') !== '' ? (int) $m->coupon_id : null;
+            $subtotal = (float) ($m->subtotal ?? 0);
+            $discount = (float) ($m->discount ?? 0);
+            $couponCode = ($m->coupon_code ?? '') !== '' ? $m->coupon_code : null;
+            $couponId = ($m->coupon_id ?? '') !== '' ? (int) $m->coupon_id : null;
             $pointsDiscount = (float) ($m->points_discount ?? 0);
-            $pointsUsed     = (int) ($m->points_used ?? 0);
-            $shippingCost   = (float) ($m->shipping ?? 0);
-            $distance       = ($m->distance ?? '') !== '' ? (float) $m->distance : null;
-            $total          = $intent->amount / 100;       // exactly what was charged
-            $settings       = Setting::first();
+            $pointsUsed = (int) ($m->points_used ?? 0);
+            $shippingCost = (float) ($m->shipping ?? 0);
+            $distance = ($m->distance ?? '') !== '' ? (float) $m->distance : null;
+            $total = $intent->amount / 100;       // exactly what was charged
+            $settings = Setting::first();
             $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
 
             // Restrict the order to exactly the cart rows that were priced into this
@@ -366,30 +366,29 @@ class CheckoutController extends Controller
                 }
             }
 
-            $paymentStatus   = 'completed';
+            $paymentStatus = 'completed';
             $paymentIntentId = $intent->id;
         } else {
             // Bank transfer — price live; order stays pending until funds clear.
-            $pricing        = $this->computeOrderPricing($purchasedItems, $request);
-            $settings       = $pricing['settings'];
-            $subtotal       = $pricing['subtotal'];
-            $discount       = $pricing['discount'];
-            $couponCode     = $pricing['couponCode'];
-            $couponId       = $pricing['couponId'];
-            $shippingCost   = $pricing['shippingCost'];
-            $distance       = $pricing['distance'];
+            $pricing = $this->computeOrderPricing($purchasedItems, $request);
+            $settings = $pricing['settings'];
+            $subtotal = $pricing['subtotal'];
+            $discount = $pricing['discount'];
+            $couponCode = $pricing['couponCode'];
+            $couponId = $pricing['couponId'];
+            $shippingCost = $pricing['shippingCost'];
+            $distance = $pricing['distance'];
             $pointsDiscount = $pricing['pointsDiscount'];
-            $pointsUsed     = $pricing['pointsUsed'];
+            $pointsUsed = $pricing['pointsUsed'];
             $loyaltyEnabled = $pricing['loyaltyEnabled'];
-            $total          = $pricing['total'];
+            $total = $pricing['total'];
         }
 
         // ── DB Transaction: create order, items, stock decrement, points ─────
         try {
             $order = DB::transaction(function () use (
                 $request, $purchasedItems, $subtotal, $discount, $couponCode, $couponId,
-                $shippingCost, $distance, $total, $settings, $pointsDiscount, $pointsUsed,
-                $loyaltyEnabled, $paymentStatus, $paymentIntentId
+                $shippingCost, $distance, $total, $pointsDiscount, $pointsUsed, $paymentStatus, $paymentIntentId
             ) {
                 // Pre-flight validation inside the transaction so stock checks are atomic
                 foreach ($purchasedItems as $item) {
@@ -402,34 +401,34 @@ class CheckoutController extends Controller
                 }
 
                 $order = Order::create([
-                    'user_id'         => auth()->id(),
-                    'order_number'    => Order::generateOrderNumber(),
-                    'status'          => 'pending',
-                    'subtotal'        => $subtotal,
+                    'user_id' => auth()->id(),
+                    'order_number' => Order::generateOrderNumber(),
+                    'status' => 'pending',
+                    'subtotal' => $subtotal,
                     'discount_amount' => $discount,
-                    'coupon_code'     => $couponCode,
+                    'coupon_code' => $couponCode,
                     'points_discount' => $pointsDiscount,
-                    'points_used'     => $pointsUsed,
-                    'shipping_cost'   => $shippingCost,
-                    'distance'        => $distance,
-                    'total'           => $total,
+                    'points_used' => $pointsUsed,
+                    'shipping_cost' => $shippingCost,
+                    'distance' => $distance,
+                    'total' => $total,
                     'shipping_address' => [
                         'address_line' => $request->address_line,
-                        'city'         => $request->city,
-                        'phone'        => $request->phone,
+                        'city' => $request->city,
+                        'phone' => $request->phone,
                     ],
-                    'payment_method'    => $request->payment_method,
-                    'payment_status'    => $paymentStatus,
+                    'payment_method' => $request->payment_method,
+                    'payment_status' => $paymentStatus,
                     'payment_intent_id' => $paymentIntentId,
                 ]);
 
                 // Snapshot item prices at time of purchase (price can change later)
                 foreach ($purchasedItems as $item) {
                     OrderItem::create([
-                        'order_id'   => $order->id,
+                        'order_id' => $order->id,
                         'product_id' => $item->product_id,
-                        'quantity'   => $item->quantity,
-                        'price'      => $item->product->price,
+                        'quantity' => $item->quantity,
+                        'price' => $item->product->price,
                     ]);
                     $item->product->decrement('stock', $item->quantity);
                 }
@@ -443,11 +442,11 @@ class CheckoutController extends Controller
                 if ($pointsUsed > 0) {
                     auth()->user()->decrement('loyalty_points', $pointsUsed);
                     \App\Models\RewardPointTransaction::create([
-                        'user_id'     => auth()->id(),
-                        'amount'      => -$pointsUsed,
-                        'type'        => 'redeemed',
+                        'user_id' => auth()->id(),
+                        'amount' => -$pointsUsed,
+                        'type' => 'redeemed',
                         'description' => "Redeemed for Order #{$order->order_number}",
-                        'order_id'    => $order->id,
+                        'order_id' => $order->id,
                     ]);
                 }
 
@@ -476,12 +475,12 @@ class CheckoutController extends Controller
 
             $htmlContent = view('emails.order-receipt', compact('order'))->render();
             \App\Models\ContactMessage::create([
-                'name'    => 'System (Checkout)',
-                'email'   => $order->user->email,
+                'name' => 'System (Checkout)',
+                'email' => $order->user->email,
                 'subject' => 'Your Premier Shop Order #'.$order->order_number,
                 'message' => $htmlContent,
                 'is_read' => true,
-                'folder'  => 'sent',
+                'folder' => 'sent',
             ]);
         } catch (\Exception $e) {
             \Log::error('Failed to send order receipt: '.$e->getMessage());
@@ -499,5 +498,4 @@ class CheckoutController extends Controller
 
         return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
     }
-
 }

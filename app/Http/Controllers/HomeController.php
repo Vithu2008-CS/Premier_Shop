@@ -28,25 +28,21 @@ class HomeController extends Controller
 
         $isUnder16 = auth()->check() && auth()->user()->isUnder16();
         // Suffix differentiates cache entries per age group
-        $suffix    = $isUnder16 ? '_restricted' : '_all';
+        $suffix = $isUnder16 ? '_restricted' : '_all';
 
         // Main hero carousel sliders (type='slider')
-        $mainSliders = cache()->remember('home_sliders_main', 300, fn () =>
-            Promotion::where('type', 'slider')->active()->orderBy('order_priority')->get()
+        $mainSliders = cache()->remember('home_sliders_main', 300, fn () => Promotion::where('type', 'slider')->active()->orderBy('order_priority')->get()
         );
 
         // Sub-banner 1 — shown after New Arrivals section (type='slider_mid')
-        $subSliders1 = cache()->remember('home_sliders_mid', 300, fn () =>
-            Promotion::where('type', 'slider_mid')->active()->orderBy('order_priority')->get()
+        $subSliders1 = cache()->remember('home_sliders_mid', 300, fn () => Promotion::where('type', 'slider_mid')->active()->orderBy('order_priority')->get()
         );
 
         // Sub-banner 2 — shown after Recently Viewed section (type='slider_top')
-        $subSliders2 = cache()->remember('home_sliders_top', 300, fn () =>
-            Promotion::where('type', 'slider_top')->active()->orderBy('order_priority')->get()
+        $subSliders2 = cache()->remember('home_sliders_top', 300, fn () => Promotion::where('type', 'slider_top')->active()->orderBy('order_priority')->get()
         );
 
-        $categories = cache()->remember('home_categories', 300, fn () =>
-            Category::all()
+        $categories = cache()->remember('home_categories', 300, fn () => Category::all()
         );
 
         // Products currently on bulk/offer pricing
@@ -93,8 +89,7 @@ class HomeController extends Controller
         });
 
         // Banner-style promotional images beneath the product sections
-        $promotions = cache()->remember('home_promotions', 300, fn () =>
-            Promotion::banners()->active()->take(3)->get()
+        $promotions = cache()->remember('home_promotions', 300, fn () => Promotion::banners()->active()->take(3)->get()
         );
 
         // Recently viewed — DB for logged-in users, session array for guests

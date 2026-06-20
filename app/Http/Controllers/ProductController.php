@@ -25,13 +25,13 @@ class ProductController extends Controller
         // Filter VALUES are still bound as parameters below — this is an extra
         // type/length guard, not the SQL-injection defence on its own.
         $request->validate([
-            'category'  => 'nullable|string|max:255',
-            'search'    => 'nullable|string|max:150',
+            'category' => 'nullable|string|max:255',
+            'search' => 'nullable|string|max:150',
             'min_price' => 'nullable|numeric|min:0|max:1000000',
             'max_price' => 'nullable|numeric|min:0|max:1000000',
-            'rating'    => 'nullable|numeric|min:0|max:5',
-            'sort'      => 'nullable|string|in:newest,price_low,price_high,name,rating',
-            'page'      => 'nullable|integer|min:1',
+            'rating' => 'nullable|numeric|min:0|max:5',
+            'sort' => 'nullable|string|in:newest,price_low,price_high,name,rating',
+            'page' => 'nullable|integer|min:1',
         ]);
 
         // Average of approved reviews, exposed as reviews_avg_rating for the card + rating sort
@@ -52,7 +52,7 @@ class ProductController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -84,11 +84,11 @@ class ProductController extends Controller
 
         // Dynamic sort column
         match ($request->get('sort', 'newest')) {
-            'price_low'  => $query->orderBy('price', 'asc'),
+            'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
-            'name'       => $query->orderBy('name', 'asc'),
-            'rating'     => $query->orderByDesc('reviews_avg_rating'),
-            default      => $query->orderBy('created_at', 'desc'),
+            'name' => $query->orderBy('name', 'asc'),
+            'rating' => $query->orderByDesc('reviews_avg_rating'),
+            default => $query->orderBy('created_at', 'desc'),
         };
 
         // Hide age-restricted products from verified under-16 users
@@ -96,7 +96,7 @@ class ProductController extends Controller
             $query->where('is_age_restricted', false);
         }
 
-        $products   = $query->paginate(12)->withQueryString();
+        $products = $query->paginate(12)->withQueryString();
         $categories = Category::all();
 
         // Catalogue price bounds power the price-filter placeholders
@@ -234,14 +234,13 @@ class ProductController extends Controller
 
         $isUnder16 = auth()->check() && auth()->user()->isUnder16();
         // Separate cache keys prevent age-restricted suggestions leaking to under-16 users
-        $cacheKey  = 'search_suggest_'.($isUnder16 ? 'restricted_' : 'all_').$q;
+        $cacheKey = 'search_suggest_'.($isUnder16 ? 'restricted_' : 'all_').$q;
 
         return cache()->remember($cacheKey, 300, function () use ($q, $isUnder16) {
             $query = Product::with('category:id,name')
                 ->where('is_active', true)
-                ->where(fn ($q2) =>
-                    $q2->where('name', 'like', "%{$q}%")
-                       ->orWhereHas('category', fn ($cq) => $cq->where('name', 'like', "%{$q}%"))
+                ->where(fn ($q2) => $q2->where('name', 'like', "%{$q}%")
+                    ->orWhereHas('category', fn ($cq) => $cq->where('name', 'like', "%{$q}%"))
                 );
 
             if ($isUnder16) {
@@ -251,12 +250,12 @@ class ProductController extends Controller
             return $query->limit(6)
                 ->get(['id', 'name', 'slug', 'price', 'images', 'category_id'])
                 ->map(fn ($p) => [
-                    'name'     => $p->name,
-                    'slug'     => $p->slug,
-                    'price'    => '£'.number_format($p->price, 2),
-                    'image'    => $p->first_image,
+                    'name' => $p->name,
+                    'slug' => $p->slug,
+                    'price' => '£'.number_format($p->price, 2),
+                    'image' => $p->first_image,
                     'category' => $p->category?->name,
-                    'url'      => route('products.show', $p->slug),
+                    'url' => route('products.show', $p->slug),
                 ]);
         });
     }

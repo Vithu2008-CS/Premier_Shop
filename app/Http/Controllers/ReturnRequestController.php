@@ -54,11 +54,11 @@ class ReturnRequestController extends Controller
         }
 
         $request->validate([
-            'reason'        => 'required|string',
+            'reason' => 'required|string',
             'customer_note' => 'nullable|string',
-            'items'         => 'required|array',
-            'items.*'       => 'integer|min:0',
-            'photo'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'items' => 'required|array',
+            'items.*' => 'integer|min:0',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         // Filter out items with 0 quantity (unchecked in the form)
@@ -82,12 +82,12 @@ class ReturnRequestController extends Controller
         }
 
         $returnRequest = ReturnRequest::create([
-            'order_id'      => $order->id,
-            'user_id'       => auth()->id(),
-            'status'        => 'pending',
-            'reason'        => $request->reason,
+            'order_id' => $order->id,
+            'user_id' => auth()->id(),
+            'status' => 'pending',
+            'reason' => $request->reason,
             'customer_note' => $request->customer_note,
-            'photo_path'    => $photoPath,
+            'photo_path' => $photoPath,
         ]);
 
         // Create one ReturnRequestItem row per selected order item
@@ -96,8 +96,8 @@ class ReturnRequestController extends Controller
             if ($orderItem && $qty <= $orderItem->quantity) {
                 ReturnRequestItem::create([
                     'return_request_id' => $returnRequest->id,
-                    'order_item_id'     => $orderItemId,
-                    'quantity'          => $qty,
+                    'order_item_id' => $orderItemId,
+                    'quantity' => $qty,
                 ]);
             }
         }

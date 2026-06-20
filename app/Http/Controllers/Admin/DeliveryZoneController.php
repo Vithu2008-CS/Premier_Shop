@@ -70,16 +70,16 @@ class DeliveryZoneController extends Controller
     private function validateZone(Request $request): array
     {
         $validated = $request->validate([
-            'name'             => 'required|string|max:100',
-            'min_miles'        => 'required|numeric|min:0|max:999999.99',
-            'max_miles'        => 'required|numeric|gt:min_miles|max:999999.99',
+            'name' => 'required|string|max:100',
+            'min_miles' => 'required|numeric|min:0|max:999999.99',
+            'max_miles' => 'required|numeric|gt:min_miles|max:999999.99',
             'free_over_amount' => 'nullable|numeric|min:0|max:99999999.99',
-            'delivery_fee'     => 'nullable|numeric|min:0|max:99999999.99',
+            'delivery_fee' => 'nullable|numeric|min:0|max:99999999.99',
         ], [
             'max_miles.gt' => 'The zone end (max miles) must be greater than its start (min miles).',
         ]);
 
-        $validated['is_free']      = $request->has('is_free');
+        $validated['is_free'] = $request->has('is_free');
         $validated['delivery_fee'] = $validated['delivery_fee'] ?? 0;
 
         return $validated;

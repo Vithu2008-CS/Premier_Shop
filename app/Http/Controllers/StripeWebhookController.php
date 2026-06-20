@@ -18,9 +18,7 @@ use Illuminate\Support\Facades\Log;
  */
 class StripeWebhookController extends Controller
 {
-    public function __construct(private StripeService $stripe)
-    {
-    }
+    public function __construct(private StripeService $stripe) {}
 
     public function handle(Request $request)
     {

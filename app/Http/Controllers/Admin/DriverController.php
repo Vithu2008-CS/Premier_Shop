@@ -24,8 +24,7 @@ class DriverController extends Controller
     public function index()
     {
         $drivers = User::whereHas('role', fn ($q) => $q->where('name', 'driver'))
-            ->withCount(['assignedOrders as processing_orders_count' => fn ($q) =>
-                $q->whereIn('status', ['pending', 'processing', 'shipped'])
+            ->withCount(['assignedOrders as processing_orders_count' => fn ($q) => $q->whereIn('status', ['pending', 'processing', 'shipped']),
             ])
             ->latest()
             ->get();
@@ -43,25 +42,25 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone'    => ['required', 'string', 'max:20'],
-            'dob'      => ['required', 'date', 'before:today'],
-            'address'  => ['nullable', 'string', 'max:500'],
+            'phone' => ['required', 'string', 'max:20'],
+            'dob' => ['required', 'date', 'before:today'],
+            'address' => ['nullable', 'string', 'max:500'],
         ]);
 
         // Lookup the driver role — fail hard if it doesn't exist (seeder not run)
         $driverRole = Role::where('name', 'driver')->firstOrFail();
 
         User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'phone'    => $request->phone,
-            'dob'      => $request->dob,
-            'address'  => $request->address,
-            'role_id'  => $driverRole->id,
+            'phone' => $request->phone,
+            'dob' => $request->dob,
+            'address' => $request->address,
+            'role_id' => $driverRole->id,
         ]);
 
         return redirect()->route('admin.drivers.index')->with('success', 'Driver created successfully.');
@@ -88,20 +87,20 @@ class DriverController extends Controller
         }
 
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             // Unique rule ignores the driver's own row
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$driver->id],
-            'phone'    => ['required', 'string', 'max:20'],
-            'dob'      => ['required', 'date', 'before:today'],
-            'address'  => ['nullable', 'string', 'max:500'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$driver->id],
+            'phone' => ['required', 'string', 'max:20'],
+            'dob' => ['required', 'date', 'before:today'],
+            'address' => ['nullable', 'string', 'max:500'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $data = [
-            'name'    => $request->name,
-            'email'   => $request->email,
-            'phone'   => $request->phone,
-            'dob'     => $request->dob,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'dob' => $request->dob,
             'address' => $request->address,
         ];
 
@@ -146,14 +145,14 @@ class DriverController extends Controller
             : null;
 
         return response()->json([
-            'driver_id'            => $driver->id,
-            'driver_name'          => $driver->name,
-            'latitude'             => $driver->latitude,
-            'longitude'            => $driver->longitude,
-            'is_on_duty'           => (bool) $driver->is_on_duty,
-            'location_updated_at'  => $driver->location_updated_at?->toIso8601String(),
+            'driver_id' => $driver->id,
+            'driver_name' => $driver->name,
+            'latitude' => $driver->latitude,
+            'longitude' => $driver->longitude,
+            'is_on_duty' => (bool) $driver->is_on_duty,
+            'location_updated_at' => $driver->location_updated_at?->toIso8601String(),
             'location_age_seconds' => $locationAgeSeconds,
-            'active_orders_count'  => $driver->assignedOrders()
+            'active_orders_count' => $driver->assignedOrders()
                 ->whereIn('status', ['pending', 'processing', 'shipped'])
                 ->count(),
         ]);

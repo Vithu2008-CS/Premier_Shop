@@ -23,15 +23,15 @@ class CustomerController extends Controller
         $query = User::whereHas('role', fn ($q) => $q->where('name', 'customer'))
             ->with('role')
             ->withCount('orders')
-            ->withSum(['orders as total_spent' => fn($q) => $q->where('status', '!=', 'cancelled')], 'total');
+            ->withSum(['orders as total_spent' => fn ($q) => $q->where('status', '!=', 'cancelled')], 'total');
 
         $sortBy = $request->input('sort_by', 'newest');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -40,8 +40,8 @@ class CustomerController extends Controller
         }
 
         if ($minSpent !== null && $minSpent !== '') {
-            $query->where(function($q) use ($minSpent) {
-                $q->where(fn($sub) => $sub->selectRaw('cast(coalesce(sum(total), 0) as float)')
+            $query->where(function ($q) use ($minSpent) {
+                $q->where(fn ($sub) => $sub->selectRaw('cast(coalesce(sum(total), 0) as float)')
                     ->from('orders')
                     ->whereColumn('orders.user_id', 'users.id')
                     ->where('orders.status', '!=', 'cancelled'),
@@ -163,7 +163,7 @@ class CustomerController extends Controller
         $customer->role_id = $request->role_id;
         $customer->offer_discount_percentage = $request->offer_discount_percentage ?: null;
         $customer->offer_scope = $request->offer_discount_percentage ? $request->offer_scope : null;
-        
+
         if ($request->offer_discount_percentage && $request->offer_scope === 'selected' && is_array($request->offer_product_ids)) {
             $customer->offer_product_ids = array_map('intval', $request->offer_product_ids);
         } else {

@@ -20,11 +20,11 @@ class DeliveryZone extends Model
     ];
 
     protected $casts = [
-        'min_miles'        => 'decimal:2',
-        'max_miles'        => 'decimal:2',
-        'is_free'          => 'boolean',
+        'min_miles' => 'decimal:2',
+        'max_miles' => 'decimal:2',
+        'is_free' => 'boolean',
         'free_over_amount' => 'decimal:2',
-        'delivery_fee'     => 'decimal:2',
+        'delivery_fee' => 'decimal:2',
     ];
 
     /**

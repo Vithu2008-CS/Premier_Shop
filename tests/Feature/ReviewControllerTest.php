@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use App\Models\Review;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,8 +14,11 @@ class ReviewControllerTest extends TestCase
     use RefreshDatabase;
 
     protected $adminRole;
+
     protected $customerRole;
+
     protected $admin;
+
     protected $customer;
 
     protected function setUp(): void

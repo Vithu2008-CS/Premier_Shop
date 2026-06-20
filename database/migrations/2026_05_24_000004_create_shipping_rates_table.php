@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -23,10 +23,10 @@ return new class extends Migration
         // Seed default rates so the application functions out-of-the-box
         DB::table('shipping_rates')->insert([
             'base_connection_fee' => 5.00,
-            'per_mile_rate'       => 0.50,
-            'per_kg_surcharge'    => 0.20,
-            'created_at'          => now(),
-            'updated_at'          => now(),
+            'per_mile_rate' => 0.50,
+            'per_kg_surcharge' => 0.20,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 

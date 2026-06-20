@@ -34,8 +34,8 @@ class AdminCouponValidationTest extends TestCase
     private function payload(array $overrides = []): array
     {
         return array_merge([
-            'code'           => 'SAVE10',
-            'discount_type'  => 'percentage',
+            'code' => 'SAVE10',
+            'discount_type' => 'percentage',
             'discount_value' => '10',
         ], $overrides);
     }
@@ -68,7 +68,7 @@ class AdminCouponValidationTest extends TestCase
 
         $this->actingAs($this->admin)
             ->put(route('admin.coupons.update', $coupon), $this->payload([
-                'code'           => 'summer10', // same code, different case
+                'code' => 'summer10', // same code, different case
                 'discount_value' => '15',
             ]))
             ->assertRedirect(route('admin.coupons.index'));
@@ -82,7 +82,7 @@ class AdminCouponValidationTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.coupons.store'), $this->payload([
-                'valid_from'  => '2026-07-01 00:00:00',
+                'valid_from' => '2026-07-01 00:00:00',
                 'valid_until' => '2026-06-01 00:00:00',
             ]))
             ->assertSessionHasErrors('valid_until');
@@ -126,7 +126,7 @@ class AdminCouponValidationTest extends TestCase
         // The 100 cap applies to percentages only — a £150 fixed coupon is legal
         $this->actingAs($this->admin)
             ->post(route('admin.coupons.store'), $this->payload([
-                'discount_type'  => 'fixed',
+                'discount_type' => 'fixed',
                 'discount_value' => '150',
             ]))
             ->assertRedirect(route('admin.coupons.index'));
@@ -147,7 +147,7 @@ class AdminCouponValidationTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.coupons.store'), $this->payload([
-                'discount_type'  => 'fixed',
+                'discount_type' => 'fixed',
                 'discount_value' => '100000000', // > decimal(10,2) max of 99,999,999.99
             ]))
             ->assertSessionHasErrors('discount_value');

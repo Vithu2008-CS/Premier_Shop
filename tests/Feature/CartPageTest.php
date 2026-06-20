@@ -31,10 +31,10 @@ class CartPageTest extends TestCase
     public function test_cart_lists_active_items_with_server_line_totals(): void
     {
         $product = Product::factory()->create([
-            'name'        => 'CartWidget',
+            'name' => 'CartWidget',
             'category_id' => Category::factory()->create()->id,
-            'is_active'   => true,
-            'stock'       => 10,
+            'is_active' => true,
+            'stock' => 10,
         ]);
         UserItem::create([
             'user_id' => $this->user->id, 'product_id' => $product->id,

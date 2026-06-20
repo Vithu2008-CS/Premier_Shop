@@ -29,7 +29,7 @@ class AdminCategoryValidationTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.categories.store'), [
-                'name'       => 'Beverages',
+                'name' => 'Beverages',
                 'image_link' => 'https://example.com/img.jpg',
             ])
             ->assertRedirect(route('admin.categories.index'));
@@ -41,7 +41,7 @@ class AdminCategoryValidationTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.categories.store'), [
-                'name'       => 'Snacks',
+                'name' => 'Snacks',
                 'image_link' => 'javascript:alert(1)',
             ])
             ->assertSessionHasErrors('image_link');

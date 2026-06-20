@@ -43,13 +43,13 @@ class CartController extends Controller
                         'price' => (float) $item->product->active_price,
                         'first_image' => $item->product->first_image,
                         'stock' => $item->product->stock,
-                    ]
+                    ],
                 ];
             });
 
-        $subtotal  = $items->sum('line_total');
+        $subtotal = $items->sum('line_total');
         $threshold = Setting::get('free_delivery_threshold', 50);
-        $baseFee   = Setting::get('flat_rate_fee', 5.99);
+        $baseFee = Setting::get('flat_rate_fee', 5.99);
 
         return response()->json([
             'items' => $items,
@@ -93,8 +93,8 @@ class CartController extends Controller
 
         if ($request->wantsJson()) {
             return response()->json([
-                'success'  => true,
-                'message'  => 'Proceeding to checkout...',
+                'success' => true,
+                'message' => 'Proceeding to checkout...',
                 'redirect' => route('checkout.index'),
             ]);
         }
@@ -114,7 +114,7 @@ class CartController extends Controller
         // huge integer; the per-product stock ceiling is still enforced below.
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1|max:1000',
+            'quantity' => 'required|integer|min:1|max:1000',
         ]);
 
         $product = Product::where('is_active', true)->findOrFail($request->product_id);
@@ -138,16 +138,16 @@ class CartController extends Controller
             $cartItem->update(['quantity' => $newQty]);
         } else {
             UserItem::create([
-                'user_id'    => auth()->id(),
+                'user_id' => auth()->id(),
                 'product_id' => $product->id,
-                'quantity'   => $request->quantity,
-                'type'       => 'cart',
+                'quantity' => $request->quantity,
+                'type' => 'cart',
             ]);
         }
 
         return [
-            'success'   => true,
-            'message'   => "{$product->name} added to cart!",
+            'success' => true,
+            'message' => "{$product->name} added to cart!",
             // Return fresh total for the nav badge to update via JS
             'cartCount' => auth()->user()->cartItems()->sum('quantity'),
         ];
@@ -176,20 +176,20 @@ class CartController extends Controller
         $cartItem->update(['quantity' => $request->quantity]);
 
         if ($request->wantsJson()) {
-            $items      = auth()->user()->cartItems()->with('product')->get();
-            $subtotal   = $items->sum('line_total');
-            $threshold  = Setting::get('free_delivery_threshold', 50);
-            $baseFee    = Setting::get('flat_rate_fee', 5.99);
-            $shipping   = $subtotal >= $threshold ? 0 : $baseFee;
+            $items = auth()->user()->cartItems()->with('product')->get();
+            $subtotal = $items->sum('line_total');
+            $threshold = Setting::get('free_delivery_threshold', 50);
+            $baseFee = Setting::get('flat_rate_fee', 5.99);
+            $shipping = $subtotal >= $threshold ? 0 : $baseFee;
 
             return response()->json([
-                'success'    => true,
-                'message'    => 'Cart updated.',
-                'lineTotal'  => number_format($cartItem->line_total, 2),
-                'subtotal'   => number_format($subtotal, 2),
+                'success' => true,
+                'message' => 'Cart updated.',
+                'lineTotal' => number_format($cartItem->line_total, 2),
+                'subtotal' => number_format($subtotal, 2),
                 'totalItems' => $items->sum('quantity'),
-                'shipping'   => $shipping == 0 ? 'Free' : '£'.number_format($baseFee, 2),
-                'total'      => number_format($subtotal + $shipping, 2),
+                'shipping' => $shipping == 0 ? 'Free' : '£'.number_format($baseFee, 2),
+                'total' => number_format($subtotal + $shipping, 2),
             ]);
         }
 
@@ -216,19 +216,19 @@ class CartController extends Controller
                 return response()->json(['success' => true, 'empty' => true]);
             }
 
-            $subtotal  = $items->sum('line_total');
+            $subtotal = $items->sum('line_total');
             $threshold = Setting::get('free_delivery_threshold', 50);
-            $baseFee   = Setting::get('flat_rate_fee', 5.99);
-            $shipping  = $subtotal >= $threshold ? 0 : $baseFee;
+            $baseFee = Setting::get('flat_rate_fee', 5.99);
+            $shipping = $subtotal >= $threshold ? 0 : $baseFee;
 
             return response()->json([
-                'success'    => true,
-                'empty'      => false,
-                'message'    => 'Item removed from cart.',
-                'subtotal'   => number_format($subtotal, 2),
+                'success' => true,
+                'empty' => false,
+                'message' => 'Item removed from cart.',
+                'subtotal' => number_format($subtotal, 2),
                 'totalItems' => $items->sum('quantity'),
-                'shipping'   => $shipping == 0 ? 'Free' : '£'.number_format($baseFee, 2),
-                'total'      => number_format($subtotal + $shipping, 2),
+                'shipping' => $shipping == 0 ? 'Free' : '£'.number_format($baseFee, 2),
+                'total' => number_format($subtotal + $shipping, 2),
             ]);
         }
 

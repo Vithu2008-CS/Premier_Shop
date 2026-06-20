@@ -73,7 +73,7 @@ class OrderController extends Controller
         $request->validate(['cancellation_reason' => 'required|string|max:1000']);
 
         $order->update([
-            'status'              => 'cancelled',
+            'status' => 'cancelled',
             'cancellation_reason' => $request->cancellation_reason,
         ]);
 
@@ -92,23 +92,22 @@ class OrderController extends Controller
             ->with(['driver'])
             ->first(['id', 'order_number', 'status', 'total', 'created_at', 'shipped_date', 'delivered_date', 'driver_id', 'user_id']);
 
-        if (!$order) {
+        if (! $order) {
             return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
         }
 
         return response()->json([
             'success' => true,
             'order' => [
-                'order_number'   => $order->order_number,
-                'status'         => $order->status,
-                'total'          => (float) $order->total,
-                'created_at'     => $order->created_at->format('d M Y'),
-                'shipped_date'   => $order->shipped_date ? $order->shipped_date->format('d M Y') : null,
+                'order_number' => $order->order_number,
+                'status' => $order->status,
+                'total' => (float) $order->total,
+                'created_at' => $order->created_at->format('d M Y'),
+                'shipped_date' => $order->shipped_date ? $order->shipped_date->format('d M Y') : null,
                 'delivered_date' => $order->delivered_date ? $order->delivered_date->format('d M Y') : null,
-                'driver_name'    => $order->driver->name ?? null,
-                'url'            => auth()->check() && (auth()->id() === $order->user_id || auth()->user()->isAdmin()) ? route('orders.show', $order) : null,
-            ]
+                'driver_name' => $order->driver->name ?? null,
+                'url' => auth()->check() && (auth()->id() === $order->user_id || auth()->user()->isAdmin()) ? route('orders.show', $order) : null,
+            ],
         ]);
     }
 }
-

@@ -24,6 +24,7 @@ class CheckoutPaymentTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Product $product;
 
     protected function setUp(): void
@@ -34,32 +35,45 @@ class CheckoutPaymentTest extends TestCase
         $this->user = User::factory()->create(['role_id' => $role->id]);
 
         $this->product = Product::factory()->create([
-            'name'        => 'PayWidget',
+            'name' => 'PayWidget',
             'category_id' => Category::factory()->create()->id,
-            'is_active'   => true,
-            'price'       => 20,
-            'stock'       => 10,
+            'is_active' => true,
+            'price' => 20,
+            'stock' => 10,
         ]);
     }
 
     private function addToCart(int $qty = 1): void
     {
         UserItem::create([
-            'user_id'    => $this->user->id,
+            'user_id' => $this->user->id,
             'product_id' => $this->product->id,
-            'quantity'   => $qty,
-            'type'       => 'cart',
+            'quantity' => $qty,
+            'type' => 'cart',
         ]);
     }
 
     /** Bind a fake StripeService that reports configured and returns the given intent. */
     private function fakeStripe(?PaymentIntent $intent, bool $configured = true): void
     {
-        $fake = new class($intent, $configured) extends StripeService {
+        $fake = new class($intent, $configured) extends StripeService
+        {
             public function __construct(private ?PaymentIntent $intent, private bool $configured) {}
-            public function isConfigured(): bool { return $this->configured; }
-            public function currency(): string { return 'gbp'; }
-            public function retrievePaymentIntent(string $id): PaymentIntent { return $this->intent; }
+
+            public function isConfigured(): bool
+            {
+                return $this->configured;
+            }
+
+            public function currency(): string
+            {
+                return 'gbp';
+            }
+
+            public function retrievePaymentIntent(string $id): PaymentIntent
+            {
+                return $this->intent;
+            }
         };
 
         $this->app->instance(StripeService::class, $fake);
@@ -68,16 +82,16 @@ class CheckoutPaymentTest extends TestCase
     private function intent(array $overrides = []): PaymentIntent
     {
         return PaymentIntent::constructFrom(array_merge([
-            'id'       => 'pi_test_123',
-            'status'   => 'succeeded',
+            'id' => 'pi_test_123',
+            'status' => 'succeeded',
             'currency' => 'gbp',
-            'amount'   => 2500, // £25.00 (subtotal £20 + £5 shipping)
+            'amount' => 2500, // £25.00 (subtotal £20 + £5 shipping)
             'metadata' => [
-                'user_id'         => (string) $this->user->id,
-                'subtotal'        => '20', 'discount' => '0',
-                'coupon_code'     => '', 'coupon_id' => '',
+                'user_id' => (string) $this->user->id,
+                'subtotal' => '20', 'discount' => '0',
+                'coupon_code' => '', 'coupon_id' => '',
                 'points_discount' => '0', 'points_used' => '0',
-                'shipping'        => '5', 'distance' => '', 'total' => '25',
+                'shipping' => '5', 'distance' => '', 'total' => '25',
             ],
         ], $overrides));
     }
@@ -85,10 +99,10 @@ class CheckoutPaymentTest extends TestCase
     private function placeCardOrder(string $intentId = 'pi_test_123')
     {
         return $this->actingAs($this->user)->post(route('checkout.process'), [
-            'address_line'      => '1 Test Street',
-            'city'              => 'London',
-            'phone'             => '07123456789',
-            'payment_method'    => 'Debit/Credit Card',
+            'address_line' => '1 Test Street',
+            'city' => 'London',
+            'phone' => '07123456789',
+            'payment_method' => 'Debit/Credit Card',
             'payment_intent_id' => $intentId,
         ]);
     }
@@ -101,8 +115,8 @@ class CheckoutPaymentTest extends TestCase
         $this->placeCardOrder()->assertStatus(302);
 
         $this->assertDatabaseHas('orders', [
-            'user_id'           => $this->user->id,
-            'payment_status'    => 'completed',
+            'user_id' => $this->user->id,
+            'payment_status' => 'completed',
             'payment_intent_id' => 'pi_test_123',
         ]);
         // Stock decremented inside the transaction.
@@ -209,14 +223,14 @@ class CheckoutPaymentTest extends TestCase
         $this->fakeStripe(null, configured: false);
 
         $this->actingAs($this->user)->post(route('checkout.process'), [
-            'address_line'   => '1 Test Street',
-            'city'           => 'London',
-            'phone'          => '07123456789',
+            'address_line' => '1 Test Street',
+            'city' => 'London',
+            'phone' => '07123456789',
             'payment_method' => 'Bank Transfer',
         ])->assertStatus(302);
 
         $this->assertDatabaseHas('orders', [
-            'user_id'        => $this->user->id,
+            'user_id' => $this->user->id,
             'payment_method' => 'Bank Transfer',
             'payment_status' => 'pending',
             'payment_intent_id' => null,
