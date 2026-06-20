@@ -22,8 +22,8 @@
 
                     {{-- Header --}}
                     <tr>
-                        <td style="@yield('header_style', 'background:#743089;') padding:40px 40px 30px; text-align:center;">
-                            <h1 style="margin:0;font-size:28px;color:#ffffff;font-weight:700;">🛍️ Premier Shop</h1>
+                        <td style="@yield('header_style', 'background:#743089;') border-bottom:4px solid #FFDD00; padding:40px 40px 30px; text-align:center;">
+                            <h1 style="margin:0;font-size:28px;color:#ffffff;font-weight:700;letter-spacing:-0.5px;">Premier<span style="color:#FFDD00;">Shop</span></h1>
                             @hasSection('header_subtitle')
                                 <p style="margin:10px 0 0;font-size:14px;color:rgba(255,255,255,0.85);">@yield('header_subtitle')</p>
                             @endif
@@ -36,7 +36,7 @@
                     {{-- Footer --}}
                     <tr>
                         <td style="background:#2d3436;padding:30px 40px;text-align:center;">
-                            <p style="margin:0 0 8px;font-size:16px;color:#fff;font-weight:700;">🛍️ Premier Shop</p>
+                            <p style="margin:0 0 8px;font-size:16px;color:#fff;font-weight:700;">Premier<span style="color:#FFDD00;">Shop</span></p>
                             <p style="margin:0 0 12px;font-size:13px;color:rgba(255,255,255,0.6);">Your one-stop destination for quality products</p>
                             <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.4);">
                                 London, UK &nbsp;|&nbsp; info@premiershop.com &nbsp;|&nbsp; +44 770 000 0000

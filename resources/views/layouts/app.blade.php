@@ -35,8 +35,10 @@
     <meta name="twitter:description" content="Your one-stop destination for quality products at unbeatable prices.">
     <title>@yield('title', 'Premier Shop — Quality Products')</title>
     <script src="{{ asset('js/csp-shim.js') }}" defer></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" media="print" data-media-onload="all">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></noscript>
+    {{-- Icon font loaded normally (not via the print-media defer trick) so icons
+         always render — the deferred shim could miss the load event for a cached
+         stylesheet, leaving icons stuck at media="print" (invisible). --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -559,6 +561,9 @@
 </head>
 
 <body>
+    {{-- Skip to content (keyboard / screen-reader accessibility) --}}
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     {{-- Toast Container --}}
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
         <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -581,8 +586,8 @@
             <div class="search-wrapper d-none d-lg-block flex-grow-1 mx-4">
                 <div class="search-container position-relative">
                     <input type="text" id="searchInput" class="form-control search-input"
-                        placeholder="Search products..." autocomplete="off">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
+                        placeholder="Search products..." autocomplete="off" aria-label="Search products" role="searchbox">
+                    <button class="search-btn" type="button" aria-label="Search"><i class="bi bi-search" aria-hidden="true"></i></button>
                     <div id="searchSuggestions" class="search-suggestions"></div>
                 </div>
             </div>
@@ -761,7 +766,8 @@
                                             </div>
                                             <ul class="list-unstyled ps-0 mega-product-list">
                                                 @php
-                                                    $topProducts = $cat->products()->where('is_active', true)->take(4)->get();
+                                                    // Uses the eager-loaded (active-only) products collection — no extra query
+                                                    $topProducts = $cat->products->take(4);
                                                 @endphp
                                                 @foreach($topProducts as $prod)
                                                     <li class="mb-2">
@@ -833,8 +839,8 @@
                 <div class="modal-body p-4">
                     <div class="search-container position-relative">
                         <input type="text" id="mobileSearchInput" class="form-control search-input"
-                             placeholder="Search products..." autocomplete="off">
-                        <button class="search-btn"><i class="bi bi-search"></i></button>
+                             placeholder="Search products..." autocomplete="off" aria-label="Search products" role="searchbox">
+                        <button class="search-btn" type="button" aria-label="Search"><i class="bi bi-search" aria-hidden="true"></i></button>
                         <div id="mobileSearchSuggestions" class="search-suggestions"></div>
                     </div>
                 </div>
@@ -861,7 +867,7 @@
     @endif
 
     {{-- Page Content --}}
-    <main class="page-enter">
+    <main class="page-enter" id="main-content" tabindex="-1">
         @yield('content')
     </main>
 
@@ -884,7 +890,7 @@
                         <form id="newsletterForm" class="newsletter-form">
                             <div class="input-group newsletter-input-group">
                                 <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input type="email" name="email" class="form-control" placeholder="Enter your email address" required id="newsletterEmail">
+                                <input type="email" name="email" class="form-control" placeholder="Enter your email address" required id="newsletterEmail" aria-label="Email address for newsletter">
                                 <button type="submit" class="btn btn-newsletter" id="newsletterBtn">
                                     <span class="newsletter-btn-text">Subscribe</span>
                                     <i class="bi bi-arrow-right ms-1"></i>
@@ -915,10 +921,10 @@
                         <li class="mb-2"><i class="bi bi-telephone me-2 text-primary"></i>{{ \App\Models\Setting::get('contact_phone', '+44 770 000 0000') }}</li>
                     </ul>
                     <div class="social-icons">
-                        <a href="{{ \App\Models\Setting::get('social_facebook', '#') }}" target="_blank"><i class="bi bi-facebook"></i></a>
-                        <a href="{{ \App\Models\Setting::get('social_twitter', '#') }}" target="_blank"><i class="bi bi-twitter-x"></i></a>
-                        <a href="{{ \App\Models\Setting::get('social_instagram', '#') }}" target="_blank"><i class="bi bi-instagram"></i></a>
-                        <a href="{{ \App\Models\Setting::get('social_tiktok', '#') }}" target="_blank"><i class="bi bi-tiktok"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_facebook', '#') }}" target="_blank" rel="noopener" aria-label="Premier Shop on Facebook"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_twitter', '#') }}" target="_blank" rel="noopener" aria-label="Premier Shop on X"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_instagram', '#') }}" target="_blank" rel="noopener" aria-label="Premier Shop on Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+                        <a href="{{ \App\Models\Setting::get('social_tiktok', '#') }}" target="_blank" rel="noopener" aria-label="Premier Shop on TikTok"><i class="bi bi-tiktok" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -1731,7 +1737,7 @@
                 
                 // Active DB Datasets injected securely.
                 // JSON_HEX_* flags escape <, >, &, ', " so a data value containing
-                // "</script>" (or HTML) cannot break out of this inline script block.
+                // "<\/script>" (or HTML) cannot break out of this inline script block.
                 const activeCouponsList = {!! json_encode($activeCoupons, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
                 const userOrdersList = {!! json_encode($userOrders, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
                 

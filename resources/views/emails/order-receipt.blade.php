@@ -122,7 +122,7 @@
 </tr>
 <tr>
     <td style="padding:10px 40px 40px;text-align:center;">
-        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#743089;color:#ffffff;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
+        <a href="{{ url('/orders/' . $order->id) }}" style="display:inline-block;background:#FFDD00;color:#2A1030;padding:14px 36px;border-radius:50px;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.5px;">
             View Order Details →
         </a>
     </td>

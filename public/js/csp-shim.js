@@ -133,11 +133,28 @@
         }
     }, true);
 
-    document.addEventListener('load', function (event) {
-        var el = event.target;
+    function applyMediaOnload(el) {
         if (el instanceof Element && el.tagName === 'LINK' && el.hasAttribute('data-media-onload')) {
             el.media = el.getAttribute('data-media-onload');
             el.removeAttribute('data-media-onload');
         }
+    }
+
+    // Swap media once a stylesheet finishes loading after this shim runs.
+    document.addEventListener('load', function (event) {
+        applyMediaOnload(event.target);
     }, true);
+
+    // This shim is deferred, so browser-cached stylesheets may have already
+    // fired their load event before the listener above existed — leaving their
+    // media stuck at "print" forever (fonts/icons never appear). Flush any such
+    // links immediately, and again on DOMContentLoaded for safety.
+    function flushMediaOnload() {
+        var links = document.querySelectorAll('link[data-media-onload]');
+        for (var i = 0; i < links.length; i++) applyMediaOnload(links[i]);
+    }
+    flushMediaOnload();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', flushMediaOnload);
+    }
 })();
