@@ -451,29 +451,12 @@ class CheckoutController extends Controller
                     ]);
                 }
 
-                // Award earned points based on the net paid amount (after discounts)
-                if ($loyaltyEnabled) {
-                    $ptsPerPound      = $settings->other_settings['points_per_pound'] ?? 1;
-                    $earnableSubtotal = $subtotal - $discount - $pointsDiscount;
-                    
-                    // Premium perk: Apply 1.5x points booster if the customer spent £100 or more
-                    if ($earnableSubtotal >= 100) {
-                        $ptsPerPound = $ptsPerPound * 1.5;
-                    }
-                    
-                    $pointsEarned     = (int) floor($earnableSubtotal * $ptsPerPound);
-
-                    if ($pointsEarned > 0) {
-                        auth()->user()->increment('loyalty_points', $pointsEarned);
-                        \App\Models\RewardPointTransaction::create([
-                            'user_id'     => auth()->id(),
-                            'amount'      => $pointsEarned,
-                            'type'        => 'earned',
-                            'description' => "Earned from Order #{$order->order_number}",
-                            'order_id'    => $order->id,
-                        ]);
-                    }
-                }
+                // Award earned points — only for orders that are already PAID
+                // (card payments are 'completed' here). Bank-transfer orders stay
+                // 'pending' and earn nothing yet; they earn on payment confirmation
+                // (admin status update / Stripe webhook) so unpaid orders can't mint
+                // redeemable points. Centralised + idempotent in the model.
+                $order->awardLoyaltyPoints();
 
                 return $order;
             });

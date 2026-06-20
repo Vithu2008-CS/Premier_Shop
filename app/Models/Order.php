@@ -215,11 +215,78 @@ class Order extends Model
     }
 
     /**
-     * Generate a unique order number with a "PS-" prefix.
-     * Uses uniqid() (microsecond-based) so collisions are effectively impossible.
+     * Award loyalty points earned by this order — but only once the order is
+     * actually PAID. Returns true when points were granted.
+     *
+     * Why gated on payment: bank-transfer orders are created with
+     * payment_status='pending' (funds have not cleared). Awarding at creation
+     * let a customer place unpaid orders, accrue points, and redeem them on a
+     * real order before ever paying. Points are therefore granted here — called
+     * from checkout for already-paid (card) orders, and from the admin/webhook
+     * payment-completion paths for bank transfers once funds are confirmed.
+     *
+     * Idempotent: an order grants its earned points at most once, regardless of
+     * how many times its payment/status is toggled (guards double-award when an
+     * admin flips payment_status or a webhook re-fires).
+     */
+    public function awardLoyaltyPoints(): bool
+    {
+        if ($this->payment_status !== 'completed' || $this->status === 'cancelled') {
+            return false;
+        }
+
+        $settings = Setting::first();
+        if (! $settings || ! ($settings->other_settings['loyalty_enabled'] ?? false)) {
+            return false;
+        }
+
+        // Already granted for this order — never award twice.
+        if ($this->rewardPointTransactions()->where('type', 'earned')->exists()) {
+            return false;
+        }
+
+        if (! $this->user) {
+            return false;
+        }
+
+        $ptsPerPound      = $settings->other_settings['points_per_pound'] ?? 1;
+        $earnableSubtotal = (float) $this->subtotal - (float) $this->discount_amount - (float) $this->points_discount;
+
+        // Premium perk: 1.5x points booster on a net spend of £100+
+        if ($earnableSubtotal >= 100) {
+            $ptsPerPound *= 1.5;
+        }
+
+        $pointsEarned = (int) floor($earnableSubtotal * $ptsPerPound);
+        if ($pointsEarned <= 0) {
+            return false;
+        }
+
+        $this->user->increment('loyalty_points', $pointsEarned);
+        RewardPointTransaction::create([
+            'user_id'     => $this->user_id,
+            'amount'      => $pointsEarned,
+            'type'        => 'earned',
+            'description' => "Earned from Order #{$this->order_number}",
+            'order_id'    => $this->id,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Generate an unguessable, unique order number with a "PS-" prefix.
+     *
+     * Uses cryptographically-random bytes rather than uniqid(): uniqid() is
+     * derived from the current microtime, so its output is time-sequential and
+     * an attacker who sees one order number can guess nearby ones. The public
+     * order-tracking endpoint (OrderController::trackPublic) keys on this value
+     * and discloses status/total/driver, so the number must not be predictable.
+     * 64 bits of entropy makes collisions negligible; the order_number column's
+     * UNIQUE constraint is the final backstop.
      */
     public static function generateOrderNumber(): string
     {
-        return 'PS-'.strtoupper(uniqid());
+        return 'PS-'.strtoupper(bin2hex(random_bytes(8)));
     }
 }

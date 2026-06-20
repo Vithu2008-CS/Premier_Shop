@@ -153,9 +153,10 @@ class SettingsOtherSettingsTest extends TestCase
             'use_points'     => '1',
         ])->assertStatus(302);
 
-        // Without the rate > 0 guard the whole balance is redeemed for £0.00.
-        // 500 kept + 20 earned on the £20 order (1 pt/£ default) = 520.
-        $this->assertSame(520, $user->fresh()->loyalty_points);
+        // Two guards proven at once: a zero redemption rate must NOT burn the
+        // balance, and a bank-transfer order (payment still pending) must NOT
+        // earn points until it is paid — so the balance stays exactly 500.
+        $this->assertSame(500, $user->fresh()->loyalty_points);
         $this->assertDatabaseHas('orders', ['user_id' => $user->id, 'points_used' => 0]);
     }
 }

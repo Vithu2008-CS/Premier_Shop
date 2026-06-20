@@ -93,6 +93,12 @@ class OrderController extends Controller
 
         if ($request->has('payment_status')) {
             $order->update(['payment_status' => $request->payment_status]);
+
+            // Bank-transfer orders earn loyalty points only once payment is
+            // confirmed here. Idempotent — re-confirming never double-awards.
+            if ($request->payment_status === 'completed') {
+                $order->awardLoyaltyPoints();
+            }
         }
 
         $statusChanged = $order->updateStatusAndTracking(
