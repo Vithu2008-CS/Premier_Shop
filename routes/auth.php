@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\MfaChallengeController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -39,6 +40,14 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store'])->middleware('throttle:login');
+
+    // MFA second-factor challenge — reachable only with a pending-MFA session
+    // set after a correct password (guarded in the controller). The user is not
+    // yet authenticated, so these sit in the guest group; once the code clears
+    // they are logged in and 'guest' redirects them away from these routes.
+    Route::get('mfa/challenge', [MfaChallengeController::class, 'show'])->name('mfa.challenge');
+    Route::post('mfa/challenge', [MfaChallengeController::class, 'store'])->middleware('throttle:login');
+    Route::post('mfa/resend', [MfaChallengeController::class, 'resend'])->name('mfa.resend')->middleware('throttle:login');
 
     // Password reset (forgot → email link → reset form → store new password)
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');

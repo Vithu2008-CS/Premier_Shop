@@ -29,7 +29,7 @@ class User extends Authenticatable
     }
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'mfa_enabled',
         'dob', 'phone', 'address', 'city',
         'role_id', 'is_on_duty', 'loyalty_points', 'profile_photo',
         'offer_discount_percentage', 'offer_scope', 'offer_product_ids',
@@ -40,20 +40,23 @@ class User extends Authenticatable
     protected $hidden = [
         'password',       // never serialise the hash
         'remember_token',
+        'login_otp',      // hashed MFA code — never expose
     ];
 
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'dob'               => 'date',
-            'loyalty_points'    => 'integer',
-            'is_on_duty'        => 'boolean',  // driver duty status
+            'password' => 'hashed',
+            'mfa_enabled' => 'boolean',
+            'login_otp_expires_at' => 'datetime',
+            'dob' => 'date',
+            'loyalty_points' => 'integer',
+            'is_on_duty' => 'boolean',  // driver duty status
             'offer_product_ids' => 'array',
-            'latitude'             => 'float',
-            'longitude'            => 'float',
-            'location_updated_at'  => 'datetime',
+            'latitude' => 'float',
+            'longitude' => 'float',
+            'location_updated_at' => 'datetime',
             'cart_reminder_sent_at' => 'datetime',
         ];
     }
@@ -64,9 +67,10 @@ class User extends Authenticatable
     public function getProfilePhotoUrlAttribute(): string
     {
         if ($this->profile_photo) {
-            return asset('storage/' . $this->profile_photo);
+            return asset('storage/'.$this->profile_photo);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=6C5CE7&color=fff&size=128&font-size=0.33';
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&background=6C5CE7&color=fff&size=128&font-size=0.33';
     }
 
     // ── Role helpers ─────────────────────────────────────────────────────────
@@ -85,6 +89,26 @@ class User extends Authenticatable
     public function isDriver(): bool
     {
         return $this->role && $this->role->name === 'driver';
+    }
+
+    // ── Multi-factor authentication ──────────────────────────────────────────
+
+    /**
+     * Email OTP is mandatory for staff (admin/manager/…) and drivers — the
+     * high-value accounts. These roles cannot opt out.
+     */
+    public function mfaEnforcedByRole(): bool
+    {
+        return $this->isAdmin() || $this->isStaff() || $this->isDriver();
+    }
+
+    /**
+     * Whether this login must clear the email second factor: enforced by role,
+     * or a customer who switched it on (mfa_enabled).
+     */
+    public function requiresMfa(): bool
+    {
+        return $this->mfaEnforcedByRole() || (bool) $this->mfa_enabled;
     }
 
     /** Staff = any role with is_staff = true (admin, manager, etc.). */

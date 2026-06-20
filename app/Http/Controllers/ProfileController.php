@@ -99,6 +99,30 @@ class ProfileController extends Controller
     }
 
     /**
+     * Toggle the customer email-OTP second factor (opt-in).
+     *
+     * Staff/admin/driver MFA is enforced by role and is not user-controllable,
+     * so a request to disable it from such an account is ignored.
+     */
+    public function updateMfa(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'mfa_enabled' => ['required', 'boolean'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->mfaEnforcedByRole()) {
+            return back()->with('status', 'two-factor-enabled');
+        }
+
+        $user->mfa_enabled = $request->boolean('mfa_enabled');
+        $user->save();
+
+        return back()->with('status', $user->mfa_enabled ? 'two-factor-enabled' : 'two-factor-disabled');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
