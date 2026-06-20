@@ -34,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if (app()->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Use Bootstrap 5 pagination link templates throughout the app
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
