@@ -45,3 +45,32 @@ jobs:
 
       - name: Run test suite
         run: php artisan test
+
+  # Fails the build on known-vulnerable dependencies (high severity or above),
+  # so the CVE bumps don't silently regress. Runs independently of the tests.
+  security-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      # --locked reads composer.lock against the advisories DB — no install needed.
+      - name: Audit Composer dependencies
+        run: composer audit --locked --no-interaction
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --audit-level=high gates on high/critical only, so the accepted dev-only
+      # esbuild low (vite-pinned) does not break the build.
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=high
