@@ -34,15 +34,15 @@ class WishlistController extends Controller
 
         if ($existing) {
             $existing->delete();
-            $status  = 'removed';
+            $status = 'removed';
             $message = 'Product removed from wishlist.';
         } else {
             UserItem::create([
-                'user_id'    => auth()->id(),
+                'user_id' => auth()->id(),
                 'product_id' => $product->id,
-                'type'       => 'wishlist',
+                'type' => 'wishlist',
             ]);
-            $status  = 'added';
+            $status = 'added';
             $message = 'Product added to wishlist.';
         }
 

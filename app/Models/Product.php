@@ -36,16 +36,16 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'images'                 => 'array',
-            'price'                  => 'decimal:2',
-            'wholesale_price'        => 'decimal:2',
-            'is_age_restricted'      => 'boolean',
-            'is_active'              => 'boolean',
-            'offer_active'           => 'boolean',
+            'images' => 'array',
+            'price' => 'decimal:2',
+            'wholesale_price' => 'decimal:2',
+            'is_age_restricted' => 'boolean',
+            'is_active' => 'boolean',
+            'offer_active' => 'boolean',
             'offer_discount_percent' => 'decimal:2',
-            'weight'                 => 'decimal:2',
-            'retail_offer'           => 'boolean',
-            'retail_offer_percentage'=> 'decimal:2',
+            'weight' => 'decimal:2',
+            'retail_offer' => 'boolean',
+            'retail_offer_percentage' => 'decimal:2',
         ];
     }
 
@@ -99,6 +99,7 @@ class Product extends Model
         if ($this->retail_offer && $this->retail_offer_percentage > 0) {
             return round($this->price * (1 - $this->retail_offer_percentage / 100), 2);
         }
+
         return (float) $this->price;
     }
 

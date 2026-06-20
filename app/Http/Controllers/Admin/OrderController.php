@@ -84,11 +84,11 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status'           => 'required|in:pending,processing,shipped,delivered,cancelled',
-            'payment_status'   => 'sometimes|required|in:pending,completed',
-            'processing_date'  => 'nullable|date|after:2020-01-01|before:2050-01-01',
-            'shipped_date'     => 'nullable|date|after:2020-01-01|before:2050-01-01',
-            'delivered_date'   => 'nullable|date|after:2020-01-01|before:2050-01-01',
+            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'payment_status' => 'sometimes|required|in:pending,completed',
+            'processing_date' => 'nullable|date|after:2020-01-01|before:2050-01-01',
+            'shipped_date' => 'nullable|date|after:2020-01-01|before:2050-01-01',
+            'delivered_date' => 'nullable|date|after:2020-01-01|before:2050-01-01',
         ]);
 
         if ($request->has('payment_status')) {
@@ -121,12 +121,12 @@ class OrderController extends Controller
 
                 $htmlContent = view('emails.orders.status_updated', compact('order'))->render();
                 \App\Models\ContactMessage::create([
-                    'name'    => 'System ('.(auth()->user()->name ?? 'Admin').')',
-                    'email'   => $order->user->email,
+                    'name' => 'System ('.(auth()->user()->name ?? 'Admin').')',
+                    'email' => $order->user->email,
                     'subject' => 'Your order #'.$order->order_number.' status has been updated to '.$order->status,
                     'message' => $htmlContent,
                     'is_read' => true,
-                    'folder'  => 'sent',
+                    'folder' => 'sent',
                 ]);
             } catch (\Exception $e) {
                 \Log::error("Failed to save notification/sent-record for order #{$order->order_number}: ".$e->getMessage());
@@ -141,6 +141,7 @@ class OrderController extends Controller
                     \Log::info("Status email sent to {$order->user->email} for order #{$order->order_number}.");
                 } catch (\Exception $e) {
                     \Log::error("Failed to send order status email for order #{$order->order_number}: ".$e->getMessage());
+
                     return back()
                         ->with('warning', 'Order updated, but the customer notification email could not be sent: '.$e->getMessage());
                 }
@@ -156,6 +157,7 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
+
         return back()->with('success', 'Order deleted successfully.');
     }
 }

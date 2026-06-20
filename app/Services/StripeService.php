@@ -43,10 +43,10 @@ class StripeService
     public function createPaymentIntent(int $amountMinor, array $metadata = []): PaymentIntent
     {
         return $this->client()->paymentIntents->create([
-            'amount'                    => $amountMinor,
-            'currency'                  => $this->currency(),
+            'amount' => $amountMinor,
+            'currency' => $this->currency(),
             'automatic_payment_methods' => ['enabled' => true],
-            'metadata'                  => $metadata,
+            'metadata' => $metadata,
         ]);
     }
 

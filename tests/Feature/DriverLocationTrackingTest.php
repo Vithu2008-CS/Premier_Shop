@@ -12,7 +12,9 @@ class DriverLocationTrackingTest extends TestCase
     use RefreshDatabase;
 
     private User $driver;
+
     private User $admin;
+
     private User $customer;
 
     protected function setUp(): void

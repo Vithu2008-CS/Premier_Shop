@@ -35,11 +35,11 @@ class RoleController extends Controller
     {
         $request->validate([
             // name must be lowercase_snake — used as a machine identifier in code
-            'name'          => 'required|string|max:50|unique:roles,name|regex:/^[a-z_]+$/',
-            'display_name'  => 'required|string|max:100',
-            'description'   => 'nullable|string|max:255',
-            'is_staff'      => 'boolean',
-            'permissions'   => 'array',
+            'name' => 'required|string|max:50|unique:roles,name|regex:/^[a-z_]+$/',
+            'display_name' => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
+            'is_staff' => 'boolean',
+            'permissions' => 'array',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
@@ -51,10 +51,10 @@ class RoleController extends Controller
         }
 
         $role = Role::create([
-            'name'         => $request->name,
+            'name' => $request->name,
             'display_name' => $request->display_name,
-            'description'  => $request->description,
-            'is_staff'     => $request->boolean('is_staff'),
+            'description' => $request->description,
+            'is_staff' => $request->boolean('is_staff'),
         ]);
 
         // sync() replaces the pivot rows in one query
@@ -69,7 +69,7 @@ class RoleController extends Controller
     /** Show the edit form pre-populated with the role's current permissions. */
     public function edit(Role $role)
     {
-        $permissions    = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
+        $permissions = Permission::orderBy('group')->orderBy('name')->get()->groupBy('group');
         // Array of permission IDs currently attached — used to pre-check checkboxes
         $rolePermissions = $role->permissions->pluck('id')->toArray();
 
@@ -80,10 +80,10 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'display_name'  => 'required|string|max:100',
-            'description'   => 'nullable|string|max:255',
-            'is_staff'      => 'boolean',
-            'permissions'   => 'array',
+            'display_name' => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
+            'is_staff' => 'boolean',
+            'permissions' => 'array',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
@@ -95,10 +95,10 @@ class RoleController extends Controller
 
         $role->update([
             'display_name' => $request->display_name,
-            'description'  => $request->description,
+            'description' => $request->description,
             // Admin role must stay staff: AdminMiddleware gates the panel on
             // is_staff, so unchecking it here would lock every admin out.
-            'is_staff'     => $role->name === 'admin' ? true : $request->boolean('is_staff'),
+            'is_staff' => $role->name === 'admin' ? true : $request->boolean('is_staff'),
         ]);
 
         // Pass empty array when no checkboxes submitted so all permissions are detached

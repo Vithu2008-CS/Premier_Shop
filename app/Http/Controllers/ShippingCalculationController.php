@@ -29,29 +29,29 @@ class ShippingCalculationController extends Controller
         // oversized/garbage payloads being forwarded upstream.
         $request->validate([
             'address_line' => 'required|string|max:255',
-            'city'         => 'required|string|max:120',
+            'city' => 'required|string|max:120',
         ]);
 
         $cartItems = auth()->user()->cartItems()->with('product')->get();
 
         if ($cartItems->isEmpty()) {
             return response()->json([
-                'cost'           => 0.00,
+                'cost' => 0.00,
                 'distance_miles' => 0,
-                'message'        => 'Your cart is empty.',
+                'message' => 'Your cart is empty.',
             ]);
         }
 
-        $subtotal    = (float) $cartItems->sum('line_total');
+        $subtotal = (float) $cartItems->sum('line_total');
         $destination = "{$request->address_line}, {$request->city}, UK";
 
         $quote = $this->deliveryZones->quoteForAddress($destination, $subtotal);
 
         return response()->json([
             // Clamp so a misconfigured zone can never quote below zero
-            'cost'           => round(max(0.0, (float) $quote['cost']), 2),
+            'cost' => round(max(0.0, (float) $quote['cost']), 2),
             'distance_miles' => $quote['distance_miles'] !== null ? round($quote['distance_miles'], 1) : null,
-            'message'        => $quote['message'],
+            'message' => $quote['message'],
         ]);
     }
 }

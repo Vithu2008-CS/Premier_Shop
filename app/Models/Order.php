@@ -31,16 +31,16 @@ class Order extends Model
     {
         return [
             'shipping_address' => 'array',
-            'subtotal'         => 'decimal:2',
-            'discount_amount'  => 'decimal:2',
-            'points_discount'  => 'decimal:2',
-            'points_used'      => 'integer',
-            'shipping_cost'    => 'decimal:2',
-            'total'            => 'decimal:2',
-            'distance'         => 'decimal:2',
-            'processing_date'  => 'datetime',
-            'shipped_date'     => 'datetime',
-            'delivered_date'   => 'datetime',
+            'subtotal' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'points_discount' => 'decimal:2',
+            'points_used' => 'integer',
+            'shipping_cost' => 'decimal:2',
+            'total' => 'decimal:2',
+            'distance' => 'decimal:2',
+            'processing_date' => 'datetime',
+            'shipped_date' => 'datetime',
+            'delivered_date' => 'datetime',
         ];
     }
 
@@ -85,9 +85,9 @@ class Order extends Model
     public function getQrCodeUrlAttribute(): string
     {
         return 'https://api.qrserver.com/v1/create-qr-code/?'.http_build_query([
-            'size'   => '150x150',
-            'data'   => route('orders.show', $this),
-            'color'  => '3498DB',
+            'size' => '150x150',
+            'data' => route('orders.show', $this),
+            'color' => '3498DB',
             'margin' => 0,
         ]);
     }
@@ -112,16 +112,16 @@ class Order extends Model
     public function updateStatusAndTracking(
         string $status,
         $processingDate = null,
-        $shippedDate    = null,
-        $deliveredDate  = null
+        $shippedDate = null,
+        $deliveredDate = null
     ): bool {
         $oldStatus = $this->status;
 
         $updates = [
-            'status'          => $status,
+            'status' => $status,
             'processing_date' => $processingDate ? \Carbon\Carbon::parse($processingDate) : $this->processing_date,
-            'shipped_date'    => $shippedDate    ? \Carbon\Carbon::parse($shippedDate)    : $this->shipped_date,
-            'delivered_date'  => $deliveredDate  ? \Carbon\Carbon::parse($deliveredDate)  : $this->delivered_date,
+            'shipped_date' => $shippedDate ? \Carbon\Carbon::parse($shippedDate) : $this->shipped_date,
+            'delivered_date' => $deliveredDate ? \Carbon\Carbon::parse($deliveredDate) : $this->delivered_date,
         ];
 
         // Fix dates where a 2-digit year was parsed as year 26 instead of 2026
@@ -153,12 +153,12 @@ class Order extends Model
         }
         if ($updates['status'] === 'shipped') {
             $updates['processing_date'] = $updates['processing_date'] ?? now();
-            $updates['shipped_date']    = $updates['shipped_date']    ?? now();
+            $updates['shipped_date'] = $updates['shipped_date'] ?? now();
         }
         if ($updates['status'] === 'delivered') {
             $updates['processing_date'] = $updates['processing_date'] ?? now();
-            $updates['shipped_date']    = $updates['shipped_date']    ?? now();
-            $updates['delivered_date']  = $updates['delivered_date']  ?? now();
+            $updates['shipped_date'] = $updates['shipped_date'] ?? now();
+            $updates['delivered_date'] = $updates['delivered_date'] ?? now();
         }
 
         $this->update($updates);
@@ -191,11 +191,11 @@ class Order extends Model
         if ($earnedTx && $this->user) {
             $this->user->decrement('loyalty_points', $earnedTx->amount);
             RewardPointTransaction::create([
-                'user_id'     => $this->user_id,
-                'amount'      => -$earnedTx->amount,
-                'type'        => 'refunded',
+                'user_id' => $this->user_id,
+                'amount' => -$earnedTx->amount,
+                'type' => 'refunded',
                 'description' => "Clawback for cancelled Order #{$this->order_number}",
-                'order_id'    => $this->id,
+                'order_id' => $this->id,
             ]);
         }
 
@@ -205,11 +205,11 @@ class Order extends Model
             $refundAmount = abs($spentTx->amount);
             $this->user->increment('loyalty_points', $refundAmount);
             RewardPointTransaction::create([
-                'user_id'     => $this->user_id,
-                'amount'      => $refundAmount,
-                'type'        => 'refunded',
+                'user_id' => $this->user_id,
+                'amount' => $refundAmount,
+                'type' => 'refunded',
                 'description' => "Refunded points for cancelled Order #{$this->order_number}",
-                'order_id'    => $this->id,
+                'order_id' => $this->id,
             ]);
         }
     }
@@ -249,7 +249,7 @@ class Order extends Model
             return false;
         }
 
-        $ptsPerPound      = $settings->other_settings['points_per_pound'] ?? 1;
+        $ptsPerPound = $settings->other_settings['points_per_pound'] ?? 1;
         $earnableSubtotal = (float) $this->subtotal - (float) $this->discount_amount - (float) $this->points_discount;
 
         // Premium perk: 1.5x points booster on a net spend of £100+
@@ -264,11 +264,11 @@ class Order extends Model
 
         $this->user->increment('loyalty_points', $pointsEarned);
         RewardPointTransaction::create([
-            'user_id'     => $this->user_id,
-            'amount'      => $pointsEarned,
-            'type'        => 'earned',
+            'user_id' => $this->user_id,
+            'amount' => $pointsEarned,
+            'type' => 'earned',
             'description' => "Earned from Order #{$this->order_number}",
-            'order_id'    => $this->id,
+            'order_id' => $this->id,
         ]);
 
         return true;

@@ -7,8 +7,8 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ReturnRequest;
 use App\Models\ReturnRequestItem;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

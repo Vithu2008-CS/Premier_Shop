@@ -105,8 +105,8 @@ class SettingsOtherSettingsTest extends TestCase
     {
         $this->actingAs($this->admin)
             ->post(route('admin.settings.store'), [
-                'loyalty_enabled'         => '1',
-                'points_per_pound'        => '5',
+                'loyalty_enabled' => '1',
+                'points_per_pound' => '5',
                 'points_redemption_value' => '0.02',
             ])
             ->assertSessionHasNoErrors();
@@ -130,7 +130,7 @@ class SettingsOtherSettingsTest extends TestCase
     {
         // Legacy blob written before gt:0 validation existed
         Setting::create(['other_settings' => [
-            'loyalty_enabled'         => true,
+            'loyalty_enabled' => true,
             'points_redemption_value' => 0,
         ]]);
 
@@ -139,18 +139,18 @@ class SettingsOtherSettingsTest extends TestCase
 
         $product = Product::factory()->create([
             'category_id' => Category::factory()->create()->id,
-            'is_active'   => true,
-            'price'       => 20,
-            'stock'       => 10,
+            'is_active' => true,
+            'price' => 20,
+            'stock' => 10,
         ]);
         UserItem::create(['user_id' => $user->id, 'product_id' => $product->id, 'quantity' => 1, 'type' => 'cart']);
 
         $this->actingAs($user)->post(route('checkout.process'), [
-            'address_line'   => '1 Test Street',
-            'city'           => 'London',
-            'phone'          => '07123456789',
+            'address_line' => '1 Test Street',
+            'city' => 'London',
+            'phone' => '07123456789',
             'payment_method' => 'Bank Transfer',
-            'use_points'     => '1',
+            'use_points' => '1',
         ])->assertStatus(302);
 
         // Two guards proven at once: a zero redemption rate must NOT burn the

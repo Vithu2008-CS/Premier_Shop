@@ -16,7 +16,6 @@ class ShippingCalculationService
      * Total Weight = Sum of (Item Weight * Quantity)
      *
      * @param  \Illuminate\Support\Collection  $cartItems
-     * @return float
      */
     public function calculateCartWeight($cartItems): float
     {
@@ -37,12 +36,12 @@ class ShippingCalculationService
      * Calculate the driving distance (in miles) between the shop origin and customer destination.
      *
      * @param  string  $destination  Customer delivery address
-     * @return float|null  Distance in miles, or null on failure (e.g., API limits or invalid address)
+     * @return float|null Distance in miles, or null on failure (e.g., API limits or invalid address)
      */
     public function calculateDrivingDistance(string $destination): ?float
     {
         $settings = Setting::first();
-        
+
         $origin = 'SW1A 1AA, London, UK'; // Warehouse fallback postcode
         if ($settings) {
             $other = $settings->other_settings ?? [];
@@ -55,29 +54,30 @@ class ShippingCalculationService
             }
         }
 
-        $apiKey   = config('services.google.maps_key');
+        $apiKey = config('services.google.maps_key');
 
         if (! $apiKey) {
             Log::error('Google Maps API key is not configured inside services config.');
+
             return null;
         }
 
         try {
             $response = Http::get('https://maps.googleapis.com/maps/api/distancematrix/json', [
-                'origins'      => $origin,
+                'origins' => $origin,
                 'destinations' => $destination,
-                'key'          => $apiKey,
-                'units'        => 'metric',
+                'key' => $apiKey,
+                'units' => 'metric',
             ]);
 
             if ($response->successful()) {
-                $data    = $response->json();
+                $data = $response->json();
                 $element = $data['rows'][0]['elements'][0] ?? [];
 
                 if (($data['status'] ?? '') === 'OK' && ($element['status'] ?? '') === 'OK') {
                     // Distance is returned in meters — convert to kilometers
                     $distanceKm = $element['distance']['value'] / 1000;
-                    
+
                     // Convert kilometers to miles (1 km = 0.621371 miles)
                     $distanceMiles = $distanceKm * 0.621371;
 
@@ -85,12 +85,12 @@ class ShippingCalculationService
                 }
 
                 // Log warning details for troubleshooting
-                Log::warning('Google Distance Matrix warning response status: ' . ($data['status'] ?? 'UNKNOWN') . ' Element status: ' . ($element['status'] ?? 'UNKNOWN'));
+                Log::warning('Google Distance Matrix warning response status: '.($data['status'] ?? 'UNKNOWN').' Element status: '.($element['status'] ?? 'UNKNOWN'));
             } else {
-                Log::error('Google Distance Matrix request failed with HTTP status: ' . $response->status());
+                Log::error('Google Distance Matrix request failed with HTTP status: '.$response->status());
             }
         } catch (\Exception $e) {
-            Log::error('Google Distance Matrix exception caught: ' . $e->getMessage());
+            Log::error('Google Distance Matrix exception caught: '.$e->getMessage());
         }
 
         return null; // Fallback indicator

@@ -15,9 +15,7 @@ use App\Models\Setting;
  */
 class DeliveryZoneService
 {
-    public function __construct(protected ShippingCalculationService $distanceService)
-    {
-    }
+    public function __construct(protected ShippingCalculationService $distanceService) {}
 
     /**
      * Quote delivery for a destination address.
@@ -51,10 +49,10 @@ class DeliveryZoneService
             }
 
             return [
-                'cost'           => $cost,
+                'cost' => $cost,
                 'distance_miles' => $distanceMiles,
-                'zone'           => $zone,
-                'message'        => $message,
+                'zone' => $zone,
+                'message' => $message,
             ];
         }
 
@@ -62,10 +60,10 @@ class DeliveryZoneService
         $flatRate = max(0.0, (float) (Setting::get('flat_rate_fee') ?? 5.99));
 
         return [
-            'cost'           => $flatRate,
+            'cost' => $flatRate,
             'distance_miles' => $distanceMiles,
-            'zone'           => null,
-            'message'        => $distanceMiles === null
+            'zone' => null,
+            'message' => $distanceMiles === null
                 ? 'Flat rate delivery.'
                 : sprintf('Flat rate delivery (%s miles — outside configured zones).', number_format($distanceMiles, 1)),
         ];

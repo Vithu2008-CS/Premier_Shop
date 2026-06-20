@@ -44,10 +44,10 @@ return new class extends Migration
 
         DB::table('shipping_rates')->insert([
             'base_connection_fee' => 5.00,
-            'per_mile_rate'       => 0.50,
-            'per_kg_surcharge'    => 0.20,
-            'created_at'          => now(),
-            'updated_at'          => now(),
+            'per_mile_rate' => 0.50,
+            'per_kg_surcharge' => 0.20,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         Schema::dropIfExists('delivery_zones');

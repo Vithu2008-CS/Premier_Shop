@@ -22,7 +22,7 @@ class ReturnRequest extends Model
      * been sent, so the status can no longer change.
      */
     public const ALLOWED_TRANSITIONS = [
-        'pending'  => ['approved', 'rejected'],
+        'pending' => ['approved', 'rejected'],
         'approved' => ['pending', 'rejected', 'refunded'],
         'rejected' => ['pending', 'approved'],
         'refunded' => [],

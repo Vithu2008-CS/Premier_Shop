@@ -46,8 +46,8 @@ class ReturnRequestController extends Controller
     public function update(Request $request, ReturnRequest $return)
     {
         $request->validate([
-            'status'        => 'required|in:pending,approved,rejected,refunded',
-            'admin_note'    => 'nullable|string',
+            'status' => 'required|in:pending,approved,rejected,refunded',
+            'admin_note' => 'nullable|string',
             'refund_amount' => 'required_if:status,refunded|nullable|numeric|min:0',
         ]);
 
@@ -63,8 +63,8 @@ class ReturnRequestController extends Controller
         // Status and stock must change together — wrap in a transaction
         DB::transaction(function () use ($request, $return, $oldStatus, $newStatus) {
             $return->update([
-                'status'        => $newStatus,
-                'admin_note'    => $request->admin_note,
+                'status' => $newStatus,
+                'admin_note' => $request->admin_note,
                 // Keep existing refund_amount if none submitted
                 'refund_amount' => $request->refund_amount ?? $return->refund_amount,
             ]);

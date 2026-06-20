@@ -32,17 +32,17 @@ class CheckoutPageTest extends TestCase
     public function test_checkout_renders_with_cart_items(): void
     {
         $product = Product::factory()->create([
-            'name'        => 'CheckoutWidget',
+            'name' => 'CheckoutWidget',
             'category_id' => Category::factory()->create()->id,
-            'is_active'   => true,
-            'stock'       => 10,
+            'is_active' => true,
+            'stock' => 10,
         ]);
 
         UserItem::create([
-            'user_id'    => $this->user->id,
+            'user_id' => $this->user->id,
             'product_id' => $product->id,
-            'quantity'   => 2,
-            'type'       => 'cart',
+            'quantity' => 2,
+            'type' => 'cart',
         ]);
 
         $this->actingAs($this->user)

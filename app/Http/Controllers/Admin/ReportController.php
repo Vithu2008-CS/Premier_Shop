@@ -80,10 +80,10 @@ class ReportController extends Controller
         $order = strtolower($request->get('order', 'desc')) === 'asc' ? 'asc' : 'desc';
 
         match ($sortBy) {
-            'price'    => $query->orderBy('price', $order),
-            'stock'    => $query->orderBy('stock', $order),
+            'price' => $query->orderBy('price', $order),
+            'stock' => $query->orderBy('stock', $order),
             'wishlist' => $query->orderBy('total_wishlist', $order),
-            default    => $query->orderBy('total_sold', $order),
+            default => $query->orderBy('total_sold', $order),
         };
 
         // Tie-break by id so pagination pages don't shuffle between requests

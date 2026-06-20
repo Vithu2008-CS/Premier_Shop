@@ -20,7 +20,9 @@ class AbandonedCartMail extends Mailable
     use Queueable, SerializesModels;
 
     public User $user;
+
     public Collection $items;
+
     public float $subtotal;
 
     public function __construct(User $user, Collection $items)

@@ -24,11 +24,11 @@ class ProductController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('barcode', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($catQuery) use ($search) {
-                      $catQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('barcode', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($catQuery) use ($search) {
+                        $catQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -49,23 +49,23 @@ class ProductController extends Controller
         $products = Product::with('category:id,name')
             ->where(function ($query) use ($q) {
                 $query->where('name', 'like', "%{$q}%")
-                      ->orWhere('barcode', 'like', "%{$q}%")
-                      ->orWhereHas('category', function ($catQuery) use ($q) {
-                          $catQuery->where('name', 'like', "%{$q}%");
-                      });
+                    ->orWhere('barcode', 'like', "%{$q}%")
+                    ->orWhereHas('category', function ($catQuery) use ($q) {
+                        $catQuery->where('name', 'like', "%{$q}%");
+                    });
             })
             ->limit(8)
             ->get(['id', 'name', 'price', 'images', 'category_id', 'stock']);
 
         return response()->json(
             $products->map(fn ($p) => [
-                'id'       => $p->id,
-                'name'     => $p->name,
-                'price'    => '£'.number_format($p->price, 2),
-                'stock'    => $p->stock,
-                'image'    => $p->first_image,
+                'id' => $p->id,
+                'name' => $p->name,
+                'price' => '£'.number_format($p->price, 2),
+                'stock' => $p->stock,
+                'image' => $p->first_image,
                 'category' => $p->category?->name,
-                'url'      => route('admin.products.edit', $p),
+                'url' => route('admin.products.edit', $p),
             ])
         );
     }
@@ -82,17 +82,17 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name'                    => 'required|string|max:255',
-            'description'             => 'nullable|string',
-            'price'                   => 'required|numeric|min:0',
-            'stock'                   => 'required|integer|min:0',
-            'category_id'             => 'nullable|exists:categories,id',
-            'product_type'            => 'required|in:normal,wholesale',
-            'is_age_restricted'       => 'boolean',
-            'barcode'                 => 'nullable|string|max:100',
-            'product_images.*'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'offer_min_qty'           => 'nullable|integer|min:1',
-            'offer_discount_percent'  => 'nullable|numeric|min:0|max:100',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'category_id' => 'nullable|exists:categories,id',
+            'product_type' => 'required|in:normal,wholesale',
+            'is_age_restricted' => 'boolean',
+            'barcode' => 'nullable|string|max:100',
+            'product_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'offer_min_qty' => 'nullable|integer|min:1',
+            'offer_discount_percent' => 'nullable|numeric|min:0|max:100',
             'retail_offer_percentage' => 'required_if:retail_offer,1|nullable|numeric|min:0|max:100',
         ];
 
@@ -105,14 +105,14 @@ class ProductController extends Controller
         $validated = $request->validate($rules);
 
         // Derive a unique URL-friendly slug from the product name
-        $validated['slug']               = Product::uniqueSlug($validated['name']);
+        $validated['slug'] = Product::uniqueSlug($validated['name']);
         // Checkboxes not submitted = false; use has() instead of boolean() to handle missing key
-        $validated['is_age_restricted']  = $request->has('is_age_restricted');
-        $validated['is_active']          = true;
-        $validated['offer_active']       = $request->has('offer_active');
-        $validated['retail_offer']       = $request->has('retail_offer');
+        $validated['is_age_restricted'] = $request->has('is_age_restricted');
+        $validated['is_active'] = true;
+        $validated['offer_active'] = $request->has('offer_active');
+        $validated['retail_offer'] = $request->has('retail_offer');
         $validated['retail_offer_percentage'] = $request->has('retail_offer') ? $request->input('retail_offer_percentage', 0.00) : 0.00;
-        $validated['weight']             = $request->has('weight_matters') ? $request->input('weight', 0.00) : 0.00;
+        $validated['weight'] = $request->has('weight_matters') ? $request->input('weight', 0.00) : 0.00;
 
         // Upload each product image to /storage/products and store its public path as WebP
         $images = [];
@@ -122,7 +122,7 @@ class ProductController extends Controller
         }
         if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
-                $path     = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
+                $path = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
                 $images[] = '/storage/'.$path;
             }
         }
@@ -152,17 +152,17 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $rules = [
-            'name'                    => 'required|string|max:255',
-            'description'             => 'nullable|string',
-            'price'                   => 'required|numeric|min:0',
-            'stock'                   => 'required|integer|min:0',
-            'category_id'             => 'nullable|exists:categories,id',
-            'product_type'            => 'required|in:normal,wholesale',
-            'is_age_restricted'       => 'boolean',
-            'barcode'                 => 'nullable|string|max:100',
-            'product_images.*'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'offer_min_qty'           => 'nullable|integer|min:1',
-            'offer_discount_percent'  => 'nullable|numeric|min:0|max:100',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'category_id' => 'nullable|exists:categories,id',
+            'product_type' => 'required|in:normal,wholesale',
+            'is_age_restricted' => 'boolean',
+            'barcode' => 'nullable|string|max:100',
+            'product_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'offer_min_qty' => 'nullable|integer|min:1',
+            'offer_discount_percent' => 'nullable|numeric|min:0|max:100',
             'retail_offer_percentage' => 'required_if:retail_offer,1|nullable|numeric|min:0|max:100',
         ];
 
@@ -175,10 +175,10 @@ class ProductController extends Controller
         $validated = $request->validate($rules);
 
         $validated['is_age_restricted'] = $request->has('is_age_restricted');
-        $validated['offer_active']      = $request->has('offer_active');
-        $validated['retail_offer']      = $request->has('retail_offer');
+        $validated['offer_active'] = $request->has('offer_active');
+        $validated['retail_offer'] = $request->has('retail_offer');
         $validated['retail_offer_percentage'] = $request->has('retail_offer') ? $request->input('retail_offer_percentage', 0.00) : 0.00;
-        $validated['weight']            = $request->has('weight_matters') ? $request->input('weight', 0.00) : 0.00;
+        $validated['weight'] = $request->has('weight_matters') ? $request->input('weight', 0.00) : 0.00;
 
         // Append any new WebP uploads to the product's existing image array in priority order
         $images = [];
@@ -190,7 +190,7 @@ class ProductController extends Controller
         }
         if ($request->hasFile('product_images')) {
             foreach ($request->file('product_images') as $image) {
-                $path     = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
+                $path = \App\Helpers\ImageHelper::storeAsWebp($image, 'products');
                 $images[] = '/storage/'.$path;
             }
         }
@@ -211,7 +211,7 @@ class ProductController extends Controller
         $path = \App\Helpers\ImageHelper::storeAsWebp($request->file('file'), 'products');
 
         return response()->json([
-            'url' => '/storage/' . $path
+            'url' => '/storage/'.$path,
         ]);
     }
 
@@ -256,15 +256,15 @@ class ProductController extends Controller
     public function findByQr(Request $request)
     {
         $productId = $request->input('product_id');
-        $product   = Product::find($productId);
+        $product = Product::find($productId);
 
         if (! $product) {
             return response()->json(['error' => 'Product not found'], 404);
         }
 
         return response()->json([
-            'id'    => $product->id,
-            'name'  => $product->name,
+            'id' => $product->id,
+            'name' => $product->name,
             'stock' => $product->stock,
             'price' => $product->price,
             'image' => $product->first_image,
@@ -289,17 +289,17 @@ class ProductController extends Controller
     {
         // Embed a UUID suffix so re-generated codes can't be confused with old ones
         $uniqueHash = Str::uuid()->toString();
-        $qrData     = url('/admin/products/'.$product->id.'/qr-lookup').'?uid='.$uniqueHash;
+        $qrData = url('/admin/products/'.$product->id.'/qr-lookup').'?uid='.$uniqueHash;
 
         // QR Server API — free tier, no API key needed, returns PNG
         $response = \Illuminate\Support\Facades\Http::timeout(10)
             ->get('https://api.qrserver.com/v1/create-qr-code/', [
-                'size'    => '300x300',
-                'data'    => $qrData,
-                'color'   => '6C5CE7',   // Premier Shop brand purple
+                'size' => '300x300',
+                'data' => $qrData,
+                'color' => '6C5CE7',   // Premier Shop brand purple
                 'bgcolor' => 'FFFFFF',
-                'format'  => 'png',
-                'margin'  => 10,
+                'format' => 'png',
+                'margin' => 10,
             ]);
 
         if ($response->failed()) {

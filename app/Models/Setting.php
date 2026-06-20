@@ -36,11 +36,11 @@ class Setting extends Model
     ];
 
     protected $casts = [
-        'other_settings'              => 'array',
-        'free_delivery_threshold'     => 'decimal:2',
-        'free_delivery_radius_miles'  => 'decimal:2',
-        'surcharge_per_mile'          => 'decimal:2',
-        'flat_rate_fee'               => 'decimal:2',
+        'other_settings' => 'array',
+        'free_delivery_threshold' => 'decimal:2',
+        'free_delivery_radius_miles' => 'decimal:2',
+        'surcharge_per_mile' => 'decimal:2',
+        'flat_rate_fee' => 'decimal:2',
     ];
 
     /**

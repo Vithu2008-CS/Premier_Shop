@@ -78,13 +78,13 @@ class CouponController extends Controller
 
         return [
             // On update, the unique rule ignores the coupon's own row
-            'code'             => 'required|string|max:50|unique:coupons,code'.($ignore ? ','.$ignore->id : ''),
-            'discount_type'    => 'required|in:percentage,fixed',
-            'discount_value'   => 'required|numeric|gt:0|max:'.$maxDiscount,
+            'code' => 'required|string|max:50|unique:coupons,code'.($ignore ? ','.$ignore->id : ''),
+            'discount_type' => 'required|in:percentage,fixed',
+            'discount_value' => 'required|numeric|gt:0|max:'.$maxDiscount,
             'min_order_amount' => 'nullable|numeric|min:0|max:99999999.99',
-            'valid_from'       => 'nullable|date',
-            'valid_until'      => 'nullable|date|after:valid_from',
-            'usage_limit'      => 'nullable|integer|min:1',
+            'valid_from' => 'nullable|date',
+            'valid_until' => 'nullable|date|after:valid_from',
+            'usage_limit' => 'nullable|integer|min:1',
         ];
     }
 

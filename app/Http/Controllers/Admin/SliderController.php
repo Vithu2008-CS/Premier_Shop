@@ -42,14 +42,14 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'           => 'nullable|string|max:255',
-            'image_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'image_link'      => 'nullable|url:http,https',
-            'link_url'        => 'nullable|url:http,https',
-            'button_text'     => 'nullable|string|max:50',
+            'title' => 'nullable|string|max:255',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image_link' => 'nullable|url:http,https',
+            'link_url' => 'nullable|url:http,https',
+            'button_text' => 'nullable|string|max:50',
             'button_position' => 'nullable|string|max:30',
-            'type'            => 'nullable|in:slider,slider_mid,slider_top',
-            'order_priority'  => 'integer',
+            'type' => 'nullable|in:slider,slider_mid,slider_top',
+            'order_priority' => 'integer',
         ]);
 
         $imagePath = null;
@@ -64,15 +64,15 @@ class SliderController extends Controller
         }
 
         Promotion::create([
-            'title'           => $request->title ?: 'Slider',
-            'image_path'      => $imagePath,
-            'link_url'        => $request->link_url,
-            'button_text'     => $request->button_text,
+            'title' => $request->title ?: 'Slider',
+            'image_path' => $imagePath,
+            'link_url' => $request->link_url,
+            'button_text' => $request->button_text,
             'button_position' => $request->button_position ?? 'bottom-center',
-            'text_align'      => 'center',
-            'type'            => $request->type ?? 'slider',
-            'order_priority'  => $request->order_priority ?? 0,
-            'is_active'       => $request->boolean('is_active', true),
+            'text_align' => 'center',
+            'type' => $request->type ?? 'slider',
+            'order_priority' => $request->order_priority ?? 0,
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         $this->clearSliderCaches();
@@ -101,14 +101,14 @@ class SliderController extends Controller
         }
 
         $request->validate([
-            'title'           => 'nullable|string|max:255',
-            'image_file'      => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'image_link'      => 'nullable|url:http,https',
-            'link_url'        => 'nullable|url:http,https',
-            'button_text'     => 'nullable|string|max:50',
+            'title' => 'nullable|string|max:255',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image_link' => 'nullable|url:http,https',
+            'link_url' => 'nullable|url:http,https',
+            'button_text' => 'nullable|string|max:50',
             'button_position' => 'nullable|string|max:30',
-            'type'            => 'nullable|in:slider,slider_mid,slider_top',
-            'order_priority'  => 'integer',
+            'type' => 'nullable|in:slider,slider_mid,slider_top',
+            'order_priority' => 'integer',
         ]);
 
         $data = $request->only(['title', 'link_url', 'button_text', 'button_position', 'order_priority', 'type']);

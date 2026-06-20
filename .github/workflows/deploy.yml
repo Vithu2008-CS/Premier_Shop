@@ -1,0 +1,47 @@
+name: deploy
+
+# Production deploy to Railway, gated on green CI: it runs only after the
+# `tests` workflow (PHPUnit suite + composer/npm security audit) completes
+# SUCCESSFULLY on main. A red suite or a high-severity advisory blocks the
+# deploy.
+#
+# Required repo/environment secrets (Settings → Secrets and variables → Actions):
+#   RAILWAY_TOKEN    — Railway *project* token (Project → Settings → Tokens)
+#   RAILWAY_SERVICE  — the service name to deploy (Railway service that runs the app)
+#
+# Until RAILWAY_TOKEN exists the deploy step fails fast and ships nothing, so
+# merging this workflow is safe. Reminder: set the app's runtime env vars
+# (DB_*, MAIL_*, APP_KEY, APP_URL, TRUSTED_PROXIES, STRIPE_*) in Railway first —
+# see .env.example — or the deploy will boot a broken app.
+on:
+  workflow_run:
+    workflows: ["tests"]
+    types: [completed]
+    branches: [main]
+
+# One production deploy at a time; let an in-flight deploy finish rather than
+# cancelling it mid-rollout.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only proceed when the upstream tests run actually passed.
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # Bind to a GitHub "production" environment so you can require manual
+    # approval / scope deploy secrets to it (Settings → Environments).
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Deploy to Railway
+        run: railway up --service "${{ secrets.RAILWAY_SERVICE }}" --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

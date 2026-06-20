@@ -37,8 +37,10 @@ class StripeWebhookTest extends TestCase
     /** Bind a fake that returns the given event, or throws a signature error. */
     private function fakeWebhook(?Event $event, bool $throw = false): void
     {
-        $fake = new class($event, $throw) extends StripeService {
+        $fake = new class($event, $throw) extends StripeService
+        {
             public function __construct(private ?Event $event, private bool $throw) {}
+
             public function constructWebhookEvent(string $payload, string $signature): Event
             {
                 if ($this->throw) {

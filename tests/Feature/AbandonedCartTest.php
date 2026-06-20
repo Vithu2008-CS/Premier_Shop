@@ -22,6 +22,7 @@ class AbandonedCartTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Product $product;
 
     protected function setUp(): void

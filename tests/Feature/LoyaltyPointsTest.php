@@ -28,7 +28,9 @@ class LoyaltyPointsTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $customer;
+
     private Product $product;
 
     protected function setUp(): void
@@ -46,19 +48,19 @@ class LoyaltyPointsTest extends TestCase
 
         $this->product = Product::factory()->create([
             'category_id' => Category::factory()->create()->id,
-            'is_active'   => true,
-            'price'       => 20,
-            'stock'       => 10,
+            'is_active' => true,
+            'price' => 20,
+            'stock' => 10,
         ]);
     }
 
     private function addToCart(int $qty = 1): void
     {
         UserItem::create([
-            'user_id'    => $this->customer->id,
+            'user_id' => $this->customer->id,
             'product_id' => $this->product->id,
-            'quantity'   => $qty,
-            'type'       => 'cart',
+            'quantity' => $qty,
+            'type' => 'cart',
         ]);
     }
 
@@ -66,24 +68,37 @@ class LoyaltyPointsTest extends TestCase
     private function fakeStripe(): void
     {
         $intent = PaymentIntent::constructFrom([
-            'id'       => 'pi_loyalty_1',
-            'status'   => 'succeeded',
+            'id' => 'pi_loyalty_1',
+            'status' => 'succeeded',
             'currency' => 'gbp',
-            'amount'   => 2500, // £20 subtotal + £5 shipping
+            'amount' => 2500, // £20 subtotal + £5 shipping
             'metadata' => [
-                'user_id'         => (string) $this->customer->id,
-                'subtotal'        => '20', 'discount' => '0',
-                'coupon_code'     => '', 'coupon_id' => '',
+                'user_id' => (string) $this->customer->id,
+                'subtotal' => '20', 'discount' => '0',
+                'coupon_code' => '', 'coupon_id' => '',
                 'points_discount' => '0', 'points_used' => '0',
-                'shipping'        => '5', 'distance' => '', 'total' => '25',
+                'shipping' => '5', 'distance' => '', 'total' => '25',
             ],
         ]);
 
-        $fake = new class($intent) extends StripeService {
+        $fake = new class($intent) extends StripeService
+        {
             public function __construct(private PaymentIntent $intent) {}
-            public function isConfigured(): bool { return true; }
-            public function currency(): string { return 'gbp'; }
-            public function retrievePaymentIntent(string $id): PaymentIntent { return $this->intent; }
+
+            public function isConfigured(): bool
+            {
+                return true;
+            }
+
+            public function currency(): string
+            {
+                return 'gbp';
+            }
+
+            public function retrievePaymentIntent(string $id): PaymentIntent
+            {
+                return $this->intent;
+            }
         };
 
         $this->app->instance(StripeService::class, $fake);
@@ -94,37 +109,37 @@ class LoyaltyPointsTest extends TestCase
         $this->addToCart();
 
         $this->actingAs($this->customer)->post(route('checkout.process'), [
-            'address_line'   => '1 Test Street',
-            'city'           => 'London',
-            'phone'          => '07123456789',
+            'address_line' => '1 Test Street',
+            'city' => 'London',
+            'phone' => '07123456789',
             'payment_method' => 'Bank Transfer',
         ])->assertStatus(302);
 
         // Order exists but is unpaid → no points granted, no 'earned' ledger row.
         $this->assertDatabaseHas('orders', [
-            'user_id'        => $this->customer->id,
+            'user_id' => $this->customer->id,
             'payment_status' => 'pending',
         ]);
         $this->assertSame(0, $this->customer->fresh()->loyalty_points);
         $this->assertDatabaseMissing('reward_point_transactions', [
             'user_id' => $this->customer->id,
-            'type'    => 'earned',
+            'type' => 'earned',
         ]);
     }
 
     public function test_admin_confirming_bank_transfer_payment_awards_points_once(): void
     {
         $order = Order::create([
-            'user_id'          => $this->customer->id,
-            'order_number'     => 'PS-LOYALTY-BT',
-            'status'           => 'pending',
-            'subtotal'         => 20,
-            'discount_amount'  => 0,
-            'points_discount'  => 0,
-            'total'            => 25,
+            'user_id' => $this->customer->id,
+            'order_number' => 'PS-LOYALTY-BT',
+            'status' => 'pending',
+            'subtotal' => 20,
+            'discount_amount' => 0,
+            'points_discount' => 0,
+            'total' => 25,
             'shipping_address' => ['address_line' => 'x', 'city' => 'y', 'phone' => 'z'],
-            'payment_method'   => 'Bank Transfer',
-            'payment_status'   => 'pending',
+            'payment_method' => 'Bank Transfer',
+            'payment_status' => 'pending',
         ]);
 
         // Confirm payment (status kept 'pending' so no status-change email fires).
@@ -148,10 +163,10 @@ class LoyaltyPointsTest extends TestCase
         $this->fakeStripe();
 
         $this->actingAs($this->customer)->post(route('checkout.process'), [
-            'address_line'      => '1 Test Street',
-            'city'              => 'London',
-            'phone'             => '07123456789',
-            'payment_method'    => 'Debit/Credit Card',
+            'address_line' => '1 Test Street',
+            'city' => 'London',
+            'phone' => '07123456789',
+            'payment_method' => 'Debit/Credit Card',
             'payment_intent_id' => 'pi_loyalty_1',
         ])->assertStatus(302);
 
@@ -159,8 +174,8 @@ class LoyaltyPointsTest extends TestCase
         $this->assertSame(20, $this->customer->fresh()->loyalty_points);
         $this->assertDatabaseHas('reward_point_transactions', [
             'user_id' => $this->customer->id,
-            'type'    => 'earned',
-            'amount'  => 20,
+            'type' => 'earned',
+            'amount' => 20,
         ]);
     }
 }
