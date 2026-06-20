@@ -486,6 +486,13 @@
                 </div>
             </div>
 
+            {{-- Two-Factor Sign-In --}}
+            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 20px;">
+                <div class="card-body p-4">
+                    @include('profile.partials.two-factor-form')
+                </div>
+            </div>
+
             {{-- Delete Account --}}
             <div class="card border-danger border-0 shadow-sm" style="border-radius: 20px;">
                 <div class="card-body p-4">

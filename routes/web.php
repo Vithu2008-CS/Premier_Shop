@@ -87,7 +87,6 @@ Route::get('/robots.txt', function () {
 // (see bootstrap/app.php). Confirms payment asynchronously as a backstop.
 Route::post('/stripe/webhook', [\App\Http\Controllers\StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 
-
 // ── AUTHENTICATED CUSTOMER ROUTES ────────────────────────────────────────────
 // Requires login. Covers cart, checkout, orders, profile, reviews, wishlist,
 // addresses, notifications, and returns.
@@ -110,10 +109,10 @@ Route::middleware('auth')->group(function () {
         }
 
         return response()->json([
-            'flat_rate_fee'               => $s->flat_rate_fee,
-            'free_delivery_threshold'     => $s->free_delivery_threshold,
-            'free_delivery_radius_miles'  => $s->free_delivery_radius_miles,
-            'surcharge_per_mile'          => $s->surcharge_per_mile,
+            'flat_rate_fee' => $s->flat_rate_fee,
+            'free_delivery_threshold' => $s->free_delivery_threshold,
+            'free_delivery_radius_miles' => $s->free_delivery_radius_miles,
+            'surcharge_per_mile' => $s->surcharge_per_mile,
         ]);
     });
 
@@ -135,6 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/rewards', [ProfileController::class, 'rewards'])->name('profile.rewards'); // loyalty points history
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/mfa', [ProfileController::class, 'updateMfa'])->name('profile.mfa.update'); // email 2FA opt-in
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ── Reviews ──────────────────────────────────────────────────────────────
@@ -292,21 +292,21 @@ Route::middleware(['auth', 'admin', 'audit.admin'])->prefix('admin')->name('admi
     // All mail records are ContactMessage rows; folder column = inbox|sent|draft|trash
     Route::group(['prefix' => 'mail', 'as' => 'mail.'], function () {
         // Read-only views require mail.view; state-changing actions require mail.manage.
-        Route::get('inbox',       [\App\Http\Controllers\Admin\MailController::class, 'inbox'])->name('inbox')->middleware('permission:mail.view');
-        Route::get('sent',        [\App\Http\Controllers\Admin\MailController::class, 'sent'])->name('sent')->middleware('permission:mail.view');
-        Route::get('important',   [\App\Http\Controllers\Admin\MailController::class, 'important'])->name('important')->middleware('permission:mail.view');
-        Route::get('drafts',      [\App\Http\Controllers\Admin\MailController::class, 'drafts'])->name('drafts')->middleware('permission:mail.view');
-        Route::get('trash',       [\App\Http\Controllers\Admin\MailController::class, 'trash'])->name('trash')->middleware('permission:mail.view');
+        Route::get('inbox', [\App\Http\Controllers\Admin\MailController::class, 'inbox'])->name('inbox')->middleware('permission:mail.view');
+        Route::get('sent', [\App\Http\Controllers\Admin\MailController::class, 'sent'])->name('sent')->middleware('permission:mail.view');
+        Route::get('important', [\App\Http\Controllers\Admin\MailController::class, 'important'])->name('important')->middleware('permission:mail.view');
+        Route::get('drafts', [\App\Http\Controllers\Admin\MailController::class, 'drafts'])->name('drafts')->middleware('permission:mail.view');
+        Route::get('trash', [\App\Http\Controllers\Admin\MailController::class, 'trash'])->name('trash')->middleware('permission:mail.view');
         Route::get('tags/{tag?}', [\App\Http\Controllers\Admin\MailController::class, 'tags'])->name('tags')->middleware('permission:mail.view');
 
-        Route::get('search',          [\App\Http\Controllers\Admin\MailController::class, 'search'])->name('search')->middleware('permission:mail.view');      // GET ?q=
-        Route::get('read/{id}',       [\App\Http\Controllers\Admin\MailController::class, 'read'])->name('read')->middleware('permission:mail.view');
-        Route::get('compose',         [\App\Http\Controllers\Admin\MailController::class, 'compose'])->name('compose')->middleware('permission:mail.manage');    // ?draft_id= for editing
-        Route::post('send',           [\App\Http\Controllers\Admin\MailController::class, 'send'])->name('send')->middleware('permission:mail.manage');
-        Route::post('star/{id}',      [\App\Http\Controllers\Admin\MailController::class, 'toggleStar'])->name('star')->middleware('permission:mail.manage');
-        Route::post('mark-unread/{id}',[\App\Http\Controllers\Admin\MailController::class, 'markUnread'])->name('markUnread')->middleware('permission:mail.manage');
-        Route::post('restore/{id}',   [\App\Http\Controllers\Admin\MailController::class, 'restore'])->name('restore')->middleware('permission:mail.manage');    // move out of trash
-        Route::delete('delete/{id}',  [\App\Http\Controllers\Admin\MailController::class, 'destroy'])->name('destroy')->middleware('permission:mail.manage');
+        Route::get('search', [\App\Http\Controllers\Admin\MailController::class, 'search'])->name('search')->middleware('permission:mail.view');      // GET ?q=
+        Route::get('read/{id}', [\App\Http\Controllers\Admin\MailController::class, 'read'])->name('read')->middleware('permission:mail.view');
+        Route::get('compose', [\App\Http\Controllers\Admin\MailController::class, 'compose'])->name('compose')->middleware('permission:mail.manage');    // ?draft_id= for editing
+        Route::post('send', [\App\Http\Controllers\Admin\MailController::class, 'send'])->name('send')->middleware('permission:mail.manage');
+        Route::post('star/{id}', [\App\Http\Controllers\Admin\MailController::class, 'toggleStar'])->name('star')->middleware('permission:mail.manage');
+        Route::post('mark-unread/{id}', [\App\Http\Controllers\Admin\MailController::class, 'markUnread'])->name('markUnread')->middleware('permission:mail.manage');
+        Route::post('restore/{id}', [\App\Http\Controllers\Admin\MailController::class, 'restore'])->name('restore')->middleware('permission:mail.manage');    // move out of trash
+        Route::delete('delete/{id}', [\App\Http\Controllers\Admin\MailController::class, 'destroy'])->name('destroy')->middleware('permission:mail.manage');
     });
 });
 

@@ -9,6 +9,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +58,37 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    /**
+     * Verify the credentials WITHOUT starting an authenticated session, and
+     * return the matching user. Used by the MFA flow, which must confirm the
+     * password before issuing a second-factor code but must NOT log the user
+     * in until that code is verified. Applies the same rate limiting and the
+     * same generic "auth.failed" message as authenticate() (no user enumeration).
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function validateCredentials(): User
+    {
+        $this->ensureIsNotRateLimited();
+
+        $provider = Auth::guard('web')->getProvider();
+        $credentials = $this->only('email', 'password');
+
+        $user = $provider->retrieveByCredentials($credentials);
+
+        if (! $user || ! $provider->validateCredentials($user, $credentials)) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        RateLimiter::clear($this->throttleKey());
+
+        return $user;
     }
 
     /**
