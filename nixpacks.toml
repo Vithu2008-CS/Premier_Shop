@@ -32,4 +32,4 @@ cmds = [
 #    deduped even if the service scales to multiple instances.
 # 4. Serve in the foreground. NOTE: `artisan serve` is PHP's single-threaded
 #    dev server — fine for a demo, but front with nginx + php-fpm for real load.
-cmd = "php artisan config:cache && php artisan migrate --force && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "php artisan config:cache && (php artisan migrate --force || true) && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
