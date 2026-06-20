@@ -43,6 +43,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/debug-env', function () {
     return response()->json([
+        'url_test' => url('test'),
+        'asset_test' => asset('js/csp-shim.js'),
         'APP_ENV' => env('APP_ENV'),
         'app_environment' => app()->environment(),
         'secure' => request()->isSecure(),
