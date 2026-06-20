@@ -191,7 +191,13 @@ class MailController extends Controller
         }
         $emails = array_unique(array_filter($emails));
 
-        $parsedMessage = \Illuminate\Support\Str::markdown($request->message);
+        // Escape any raw HTML in the admin's input so markdown formatting still
+        // renders but embedded tags (e.g. <script>) cannot be injected into the
+        // outbound customer email or the stored "sent" copy.
+        $parsedMessage = \Illuminate\Support\Str::markdown($request->message, [
+            'html_input'         => 'escape',
+            'allow_unsafe_links' => false,
+        ]);
         $htmlContent   = view('emails.admin_custom', ['mailMessage' => $parsedMessage])->render();
 
         if (! $isDraft) {
