@@ -61,9 +61,9 @@ jobs:
           php-version: '8.2'
           coverage: none
 
-      # Reads composer.lock against the advisories DB — no install needed.
+      # --locked reads composer.lock against the advisories DB — no install needed.
       - name: Audit Composer dependencies
-        run: composer audit --no-interaction
+        run: composer audit --locked --no-interaction
 
       - name: Setup Node
         uses: actions/setup-node@v4
