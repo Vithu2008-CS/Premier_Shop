@@ -46,6 +46,9 @@ class StripeWebhookController extends Controller
 
             if ($order && $order->payment_status !== 'completed') {
                 $order->update(['payment_status' => 'completed']);
+                // Grant earned points now that payment is confirmed (idempotent —
+                // card orders confirmed synchronously have already earned theirs).
+                $order->awardLoyaltyPoints();
                 Log::info("Stripe webhook marked order {$order->order_number} paid.");
             }
         }
