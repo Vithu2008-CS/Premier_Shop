@@ -20,10 +20,13 @@ cmds = [
 [start]
 # 1. Cache config NOW (runtime) so it captures the real DB_*/MAIL_*/APP_* env
 #    vars Railway injects — must run before migrate so it connects to the right DB.
-# 2. Apply migrations (never seed in prod).
+# 2. Apply migrations, then run AdminUserSeeder ONLY. It is idempotent
+#    (updateOrCreate keyed on email) so it safely provisions/refreshes the admin
+#    account on every deploy without touching demo data. Do NOT add the full
+#    DatabaseSeeder here — that would duplicate products/categories in prod.
 # 3. Run the scheduler in the background (cart:remind-abandoned hourly + user
 #    pruning). withoutOverlapping uses the shared DB cache lock, so it stays
 #    deduped even if the service scales to multiple instances.
 # 4. Serve in the foreground. NOTE: `artisan serve` is PHP's single-threaded
 #    dev server — fine for a demo, but front with nginx + php-fpm for real load.
-cmd = "php artisan config:cache && (php artisan migrate --force || true) && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "php artisan config:cache && (php artisan migrate --force || true) && (php artisan db:seed --class=AdminUserSeeder --force || true) && (php artisan schedule:work &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
