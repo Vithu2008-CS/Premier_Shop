@@ -36,7 +36,14 @@ return [
     ],
 
     'google' => [
+        // Browser key — rendered client-side in maps/geocoding Blade views.
+        // Restrict by HTTP referrer (your domains) in Google Cloud Console.
         'maps_key' => env('GOOGLE_MAPS_API_KEY'),
+
+        // Server key — used for the server-side Distance Matrix call.
+        // Restrict by IP address (your server) in Google Cloud Console.
+        // Falls back to the browser key if not set.
+        'maps_server_key' => env('GOOGLE_MAPS_SERVER_API_KEY', env('GOOGLE_MAPS_API_KEY')),
     ],
 
     'stripe' => [
