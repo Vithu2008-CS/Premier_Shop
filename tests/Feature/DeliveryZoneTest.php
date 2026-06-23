@@ -195,7 +195,7 @@ class DeliveryZoneTest extends TestCase
             'type' => 'cart',
         ]);
 
-        config(['services.google.maps_key' => 'mocked-key']);
+        config(['services.google.maps_server_key' => 'mocked-key']);
         Http::fake([
             'maps.googleapis.com/*' => Http::response([
                 'status' => 'OK',
@@ -285,7 +285,7 @@ class DeliveryZoneTest extends TestCase
 
     public function test_distance_service_uses_configured_coordinates_as_origin(): void
     {
-        config(['services.google.maps_key' => 'mocked-key']);
+        config(['services.google.maps_server_key' => 'mocked-key']);
 
         Setting::create([
             'other_settings' => ['origin_latitude' => 51.5074, 'origin_longitude' => -0.1278],

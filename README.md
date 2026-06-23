@@ -183,8 +183,16 @@ MAIL_MAILER=smtp
 MAIL_HOST=smtp.mailtrap.io
 MAIL_PORT=2525
 
-GOOGLE_MAPS_API_KEY=your_key_here
+GOOGLE_MAPS_API_KEY=your_browser_key_here
+GOOGLE_MAPS_SERVER_API_KEY=your_server_key_here
 ```
+
+> **Google Maps keys:** Use two keys. `GOOGLE_MAPS_API_KEY` is exposed in the
+> browser (driver tracking, contact/settings maps) — restrict it by **HTTP
+> referrer** to the Maps JavaScript + Geocoding APIs. `GOOGLE_MAPS_SERVER_API_KEY`
+> is used only by the server-side shipping Distance Matrix call — restrict it by
+> **IP address** to the Distance Matrix API. If the server key is omitted, the
+> browser key is used as a fallback.
 
 **3. Database and assets**
 ```bash

@@ -54,7 +54,7 @@ class ShippingCalculationService
             }
         }
 
-        $apiKey = config('services.google.maps_key');
+        $apiKey = config('services.google.maps_server_key');
 
         if (! $apiKey) {
             Log::error('Google Maps API key is not configured inside services config.');
