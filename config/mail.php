@@ -45,7 +45,12 @@ return [
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            // Short connect/read timeout. A blocked or unreachable SMTP host
+            // (e.g. Railway filters outbound 25/465/587) must fail fast with a
+            // catchable TransportException — without this it hangs until PHP's
+            // max_execution_time fires an UNcatchable fatal, 500-ing the login
+            // page where the OTP is sent. Keep it well under max_execution_time.
+            'timeout' => env('MAIL_TIMEOUT', 5),
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
             'stream' => [
                 'ssl' => [
