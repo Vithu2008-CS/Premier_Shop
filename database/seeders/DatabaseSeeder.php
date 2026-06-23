@@ -32,21 +32,10 @@ class DatabaseSeeder extends Seeder
         // Admin user
         User::create([
             'name' => 'Shop Admin',
-            'email' => 'tharunyathangavel@gmail.com',
-            'password' => bcrypt('admin123'),
+            'email' => 'shopretail357@gmail.com',
+            'password' => bcrypt('12345678'),
             'dob' => '1990-01-01',
             'phone' => '07700000000',
-            'address' => 'Premier Shop HQ, London, UK',
-            'role_id' => $adminRole->id,
-        ]);
-
-        // Additional Admin user from README
-        User::create([
-            'name' => 'Vithu Admin',
-            'email' => 'vithu@example.com',
-            'password' => bcrypt('12345678'),
-            'dob' => '1995-01-01',
-            'phone' => '07700000002',
             'address' => 'Premier Shop HQ, London, UK',
             'role_id' => $adminRole->id,
         ]);
