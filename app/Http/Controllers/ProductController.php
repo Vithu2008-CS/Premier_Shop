@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
  * Handles the public product catalogue: listing with filters/search/sort,
  * single product detail, and a live search-suggestion JSON endpoint.
  * Age-restricted products are hidden from users under 16.
- * 
+ *
  * FIXED: Added eager loading for reviews to prevent N+1 queries
  */
 class ProductController extends Controller
@@ -127,7 +127,7 @@ class ProductController extends Controller
             $recentIds = array_slice($recentIds, 0, 12);
             session(['recently_viewed' => $recentIds]);
 
-            if (!empty($recentIds)) {
+            if (! empty($recentIds)) {
                 // FIXED: Added eager loading for reviews
                 $recentlyViewed = Product::with(['category', 'reviews'])
                     ->where('is_active', true)
