@@ -7,10 +7,13 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\UserItem;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CheckoutTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected User $user;
     protected Product $product;
 
@@ -68,7 +71,7 @@ class CheckoutTest extends TestCase
             'discount_type' => 'percentage',
             'discount_value' => 10,
             'is_active' => true,
-            'expiry_date' => now()->addDays(7),
+            'valid_until' => now()->addDays(7),
             'min_order_amount' => 0,
             'usage_limit' => null,
             'times_used' => 0,
@@ -100,14 +103,14 @@ class CheckoutTest extends TestCase
         $coupon = Coupon::factory()->create([
             'code' => 'EXPIRED',
             'is_active' => true,
-            'expiry_date' => now()->subDays(1),
+            'valid_until' => now()->subDays(1),
         ]);
 
         $response = $this->post('/checkout/coupon', [
             'coupon_code' => 'EXPIRED',
         ]);
 
-        $response->assertSessionHasErrors();
+        $response->assertSessionHas('error');
         $this->assertNull(session('coupon'));
     }
 
@@ -121,7 +124,7 @@ class CheckoutTest extends TestCase
         $coupon = Coupon::factory()->create([
             'code' => 'LIMITED',
             'is_active' => true,
-            'expiry_date' => now()->addDays(7),
+            'valid_until' => now()->addDays(7),
             'usage_limit' => 5,
             'times_used' => 5, // Limit reached
         ]);
@@ -130,7 +133,7 @@ class CheckoutTest extends TestCase
             'coupon_code' => 'LIMITED',
         ]);
 
-        $response->assertSessionHasErrors();
+        $response->assertSessionHas('error');
     }
 
     /**
@@ -191,7 +194,7 @@ class CheckoutTest extends TestCase
             'items' => [$cartItem->id],
         ]);
 
-        $response->assertSessionHasErrors();
+        $response->assertSessionHas('error');
         $this->assertDatabaseMissing('orders', [
             'user_id' => $this->user->id,
         ]);
@@ -228,7 +231,7 @@ class CheckoutTest extends TestCase
             'items' => [$cartItem->id],
         ]);
 
-        $response->assertSessionHasErrors();
+        $response->assertSessionHas('error');
     }
 
     /**
@@ -278,7 +281,7 @@ class CheckoutTest extends TestCase
             'discount_type' => 'percentage',
             'discount_value' => 10,
             'is_active' => true,
-            'expiry_date' => now()->addDays(7),
+            'valid_until' => now()->addDays(7),
             'min_order_amount' => 0,
             'times_used' => 0,
         ]);

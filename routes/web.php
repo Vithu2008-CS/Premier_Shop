@@ -41,20 +41,6 @@ use Illuminate\Support\Facades\Route;
 // ── PUBLIC ROUTES ────────────────────────────────────────────────────────────
 // No authentication required — visible to all visitors.
 
-Route::get('/debug-env', function () {
-    return response()->json([
-        'url_test' => url('test'),
-        'asset_test' => asset('js/csp-shim.js'),
-        'APP_ENV' => env('APP_ENV'),
-        'app_environment' => app()->environment(),
-        'secure' => request()->isSecure(),
-        'headers' => request()->headers->all(),
-        'server' => array_intersect_key($_SERVER, array_flip([
-            'HTTP_HOST', 'HTTP_X_FORWARDED_PROTO', 'HTTP_X_FORWARDED_FOR', 'HTTPS', 'SERVER_PORT', 'SERVER_NAME'
-        ]))
-    ]);
-});
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/offers', [HomeController::class, 'offers'])->name('offers');
 Route::get('/categories', [HomeController::class, 'categories'])->name('categories');
