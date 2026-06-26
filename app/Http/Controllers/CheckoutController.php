@@ -455,12 +455,19 @@ class CheckoutController extends Controller
             \Log::error('Failed to send order receipt: '.$e->getMessage());
         }
 
-        \App\Models\AppNotification::notifyNewOrder($order);
+        // Admin/low-stock notifications are best-effort: the order is already
+        // committed, so a notification failure must never 500 the customer's
+        // successful checkout — log and carry on.
+        try {
+            \App\Models\AppNotification::notifyNewOrder($order);
 
-        foreach ($purchasedItems as $item) {
-            if ($item->product->stock < 10) {
-                \App\Models\AppNotification::notifyLowStock($item->product);
+            foreach ($purchasedItems as $item) {
+                if ($item->product->stock < 10) {
+                    \App\Models\AppNotification::notifyLowStock($item->product);
+                }
             }
+        } catch (\Throwable $e) {
+            \Log::error('Failed to dispatch order notifications: '.$e->getMessage());
         }
 
         return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
