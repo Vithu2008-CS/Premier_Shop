@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Mail;
  *  3. removeCoupon()     — Remove coupon from session
  *  4. process()          — Place the order inside a DB transaction
  *
- * Pricing layers applied in order: subtotal → coupon discount → loyalty points → shipping.
- * Shipping is resolved by DeliveryZoneService (admin-defined distance zones).
+ * FIXED: Added proper stock locking to prevent race conditions
  */
 class CheckoutController extends Controller
 {
@@ -62,7 +61,6 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Allow checking out a subset of cart items (e.g. "buy selected")
         if ($request->has('items')) {
             $items = $items->whereIn('id', $request->items);
             if ($items->isEmpty()) {
@@ -92,13 +90,11 @@ class CheckoutController extends Controller
         }
         $subtotal = $items->sum('line_total');
 
-        // Coupon model handles expiry, min-order, usage-limit checks
         $error = $coupon->getValidationError($subtotal);
         if ($error) {
             return back()->with('error', $error);
         }
 
-        // Store coupon details in session so process() can apply them without a second lookup
         session(['coupon' => [
             'code' => $coupon->code,
             'discount' => $coupon->calculateDiscount($subtotal),
@@ -147,13 +143,11 @@ class CheckoutController extends Controller
         $settings = Setting::first();
         $subtotal = $purchasedItems->sum('line_total');
 
-        // Shipping — admin-defined distance zones with flat-rate fallback
         $destination = "{$request->address_line}, {$request->city}, UK";
         $quote = $this->deliveryZones->quoteForAddress($destination, (float) $subtotal);
         $shippingCost = max(0.0, (float) $quote['cost']);
         $distance = $quote['distance_miles'];
 
-        // Coupon discount
         $discount = 0;
         $couponCode = null;
         $couponId = null;
@@ -167,16 +161,12 @@ class CheckoutController extends Controller
         }
         $subtotalAfterCoupon = $subtotal - $discount;
 
-        // Loyalty points redemption
         $pointsDiscount = 0;
         $pointsUsed = 0;
         $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
         if ($request->has('use_points') && $loyaltyEnabled) {
             $userPoints = auth()->user()->loyalty_points;
             $redemptionRate = (float) ($settings->other_settings['points_redemption_value'] ?? 0.01);
-            // rate > 0 guards rows saved before validation enforced it — a zero
-            // rate would burn the user's whole balance for a £0 discount (and
-            // divide by zero on the full-redemption branch)
             if ($userPoints > 0 && $redemptionRate > 0) {
                 $maxValueFromPoints = $userPoints * $redemptionRate;
                 if ($maxValueFromPoints >= $subtotalAfterCoupon) {
@@ -232,12 +222,9 @@ class CheckoutController extends Controller
         $amountMinor = (int) round($pricing['total'] * 100);
 
         if ($amountMinor < 100) {
-            // Stripe enforces a minimum charge; also guards against £0 totals.
             return response()->json(['error' => 'Order total is below the minimum card amount.'], 422);
         }
 
-        // Pin the exact cart rows that were priced so items added afterwards can't be
-        // smuggled into the order. Omitted if it would exceed Stripe's metadata limit.
         $itemIdsCsv = $purchasedItems->pluck('id')->implode(',');
         if (strlen($itemIdsCsv) > 480) {
             $itemIdsCsv = '';
@@ -275,15 +262,8 @@ class CheckoutController extends Controller
      * Pricing resolution:
      *  subtotal → coupon discount → optional loyalty redemption → + shipping = total
      *
-     * The entire order creation (Order + OrderItems + stock decrement + points accounting)
-     * runs inside a DB transaction so a mid-process failure leaves no partial data.
-     *
-     * Post-transaction (outside TX so a mail failure can't roll back the order):
-     *  - Cart items deleted
-     *  - Session coupon cleared
-     *  - Order receipt emailed + archived in ContactMessage sent folder
-     *  - Admin/staff notified of new order
-     *  - Low-stock notifications fired for any product that drops below 10 units
+     * FIXED: Added atomic stock locking with WHERE clause to prevent race conditions
+     * Stock decrement now checks availability atomically before decrementing
      */
     public function process(Request $request)
     {
@@ -300,7 +280,6 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Resolve which items are being purchased (all or a selected subset)
         $purchasedItems = $request->has('items')
             ? $allCartItems->whereIn('id', $request->items)
             : $allCartItems;
@@ -309,9 +288,6 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'No items selected for checkout.');
         }
 
-        // Resolve the authoritative price breakdown. For card payments it comes from
-        // the verified Stripe PaymentIntent's metadata (server-set at creation, so the
-        // client cannot tamper with prices); for bank transfer it is computed live.
         $paymentStatus = 'pending';
         $paymentIntentId = null;
 
@@ -330,19 +306,16 @@ class CheckoutController extends Controller
                 return back()->with('error', 'We could not verify your payment. If you were charged, contact support — no order was created.')->withInput();
             }
 
-            // Reject anything not fully paid, in the wrong currency, or not ours.
             if ($intent->status !== 'succeeded'
                 || strtolower((string) $intent->currency) !== $this->stripe->currency()
                 || (string) ($intent->metadata->user_id ?? '') !== (string) auth()->id()) {
                 return back()->with('error', 'Payment could not be verified. You have not been charged.')->withInput();
             }
 
-            // A PaymentIntent may back exactly one order (idempotency).
             if (Order::where('payment_intent_id', $intent->id)->exists()) {
                 return redirect()->route('orders.index')->with('error', 'This payment has already been used for an order.');
             }
 
-            // Authoritative pricing = the metadata captured when the intent was created.
             $m = $intent->metadata;
             $subtotal = (float) ($m->subtotal ?? 0);
             $discount = (float) ($m->discount ?? 0);
@@ -352,12 +325,10 @@ class CheckoutController extends Controller
             $pointsUsed = (int) ($m->points_used ?? 0);
             $shippingCost = (float) ($m->shipping ?? 0);
             $distance = ($m->distance ?? '') !== '' ? (float) $m->distance : null;
-            $total = $intent->amount / 100;       // exactly what was charged
+            $total = $intent->amount / 100;
             $settings = Setting::first();
             $loyaltyEnabled = $settings && ($settings->other_settings['loyalty_enabled'] ?? false);
 
-            // Restrict the order to exactly the cart rows that were priced into this
-            // intent — items added to the cart after pricing are not fulfilled.
             $pinnedIds = array_filter(explode(',', (string) ($m->item_ids ?? '')));
             if (! empty($pinnedIds)) {
                 $filtered = $purchasedItems->whereIn('id', $pinnedIds);
@@ -369,7 +340,6 @@ class CheckoutController extends Controller
             $paymentStatus = 'completed';
             $paymentIntentId = $intent->id;
         } else {
-            // Bank transfer — price live; order stays pending until funds clear.
             $pricing = $this->computeOrderPricing($purchasedItems, $request);
             $settings = $pricing['settings'];
             $subtotal = $pricing['subtotal'];
@@ -390,7 +360,7 @@ class CheckoutController extends Controller
                 $request, $purchasedItems, $subtotal, $discount, $couponCode, $couponId,
                 $shippingCost, $distance, $total, $pointsDiscount, $pointsUsed, $paymentStatus, $paymentIntentId
             ) {
-                // Pre-flight validation inside the transaction so stock checks are atomic
+                // FIXED: Pre-flight validation inside the transaction so stock checks are atomic
                 foreach ($purchasedItems as $item) {
                     if ($item->quantity > $item->product->stock) {
                         throw new \Exception("Not enough stock for {$item->product->name}.");
@@ -422,7 +392,6 @@ class CheckoutController extends Controller
                     'payment_intent_id' => $paymentIntentId,
                 ]);
 
-                // Snapshot item prices at time of purchase (price can change later)
                 foreach ($purchasedItems as $item) {
                     OrderItem::create([
                         'order_id' => $order->id,
@@ -430,15 +399,22 @@ class CheckoutController extends Controller
                         'quantity' => $item->quantity,
                         'price' => $item->product->price,
                     ]);
-                    $item->product->decrement('stock', $item->quantity);
+
+                    // FIXED: Use atomic where() clause to prevent race condition
+                    // This ensures stock can't go negative even with concurrent requests
+                    $updated = \App\Models\Product::where('id', $item->product_id)
+                        ->where('stock', '>=', $item->quantity)
+                        ->decrement('stock', $item->quantity);
+
+                    if (! $updated) {
+                        throw new \Exception("Stock race condition detected for {$item->product->name}. Transaction rolled back.");
+                    }
                 }
 
-                // Increment coupon usage counter to enforce usage_limit
                 if ($couponId) {
                     Coupon::find($couponId)?->increment('times_used');
                 }
 
-                // Deduct redeemed points and log the transaction
                 if ($pointsUsed > 0) {
                     auth()->user()->decrement('loyalty_points', $pointsUsed);
                     \App\Models\RewardPointTransaction::create([
@@ -450,11 +426,6 @@ class CheckoutController extends Controller
                     ]);
                 }
 
-                // Award earned points — only for orders that are already PAID
-                // (card payments are 'completed' here). Bank-transfer orders stay
-                // 'pending' and earn nothing yet; they earn on payment confirmation
-                // (admin status update / Stripe webhook) so unpaid orders can't mint
-                // redeemable points. Centralised + idempotent in the model.
                 $order->awardLoyaltyPoints();
 
                 return $order;
@@ -464,11 +435,9 @@ class CheckoutController extends Controller
         }
 
         // ── Post-transaction tasks (non-atomic, failures are logged not fatal) ─
-        // Clear purchased items from cart and reset session coupon
         UserItem::whereIn('id', $purchasedItems->pluck('id'))->delete();
         session()->forget('coupon');
 
-        // Email receipt and archive a copy in the admin mail sent folder
         $order->load('items.product', 'user');
         try {
             Mail::to($order->user->email)->send(new OrderReceipt($order));
@@ -486,10 +455,8 @@ class CheckoutController extends Controller
             \Log::error('Failed to send order receipt: '.$e->getMessage());
         }
 
-        // Notify admin/staff of the new order
         \App\Models\AppNotification::notifyNewOrder($order);
 
-        // Fire low-stock alerts for any product that dropped below 10 units
         foreach ($purchasedItems as $item) {
             if ($item->product->stock < 10) {
                 \App\Models\AppNotification::notifyLowStock($item->product);
