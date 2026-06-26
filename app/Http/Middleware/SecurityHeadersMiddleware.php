@@ -56,17 +56,23 @@ class SecurityHeadersMiddleware
             $response->headers->set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
         }
 
+        // The Vite dev server (http/ws on 127.0.0.1:5173) is only reachable while
+        // running locally. Whitelisting it in production needlessly widens
+        // script-src/connect-src, so include it only outside production.
+        $viteDev = app()->environment('production') ? '' : ' http://127.0.0.1:5173';
+        $viteDevWs = app()->environment('production') ? '' : ' http://127.0.0.1:5173 ws://127.0.0.1:5173';
+
         $response->headers->set(
             'Content-Security-Policy',
             implode(' ', [
                 "default-src 'self';",
                 "object-src 'none';",
-                "script-src 'self' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://maps.googleapis.com https://maps.gstatic.com https://js.stripe.com http://127.0.0.1:5173;",
-                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com http://127.0.0.1:5173;",
+                "script-src 'self' 'nonce-{$nonce}' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://maps.googleapis.com https://maps.gstatic.com https://js.stripe.com{$viteDev};",
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com{$viteDev};",
                 "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;",
-                "img-src 'self' data: https: http://127.0.0.1:5173;",
+                "img-src 'self' data: https:{$viteDev};",
                 "frame-src 'self' https://maps.google.com https://www.google.com https://js.stripe.com https://hooks.stripe.com;",
-                "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com https://api.stripe.com https://m.stripe.network http://127.0.0.1:5173 ws://127.0.0.1:5173;",
+                "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com https://api.stripe.com https://m.stripe.network{$viteDevWs};",
                 "frame-ancestors 'self';",
                 "base-uri 'self';",
                 "form-action 'self';",
