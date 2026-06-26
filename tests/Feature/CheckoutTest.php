@@ -15,6 +15,7 @@ class CheckoutTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Product $product;
 
     protected function setUp(): void
@@ -34,7 +35,7 @@ class CheckoutTest extends TestCase
     public function test_user_can_view_checkout_page(): void
     {
         $this->actingAs($this->user);
-        
+
         // Add product to cart
         UserItem::create([
             'user_id' => $this->user->id,
@@ -54,7 +55,7 @@ class CheckoutTest extends TestCase
     public function test_checkout_redirects_when_cart_empty(): void
     {
         $this->actingAs($this->user);
-        
+
         $response = $this->get('/checkout');
         $response->assertRedirect('/cart');
     }
@@ -65,7 +66,7 @@ class CheckoutTest extends TestCase
     public function test_user_can_apply_valid_coupon(): void
     {
         $this->actingAs($this->user);
-        
+
         $coupon = Coupon::factory()->create([
             'code' => 'SAVE10',
             'discount_type' => 'percentage',
@@ -99,7 +100,7 @@ class CheckoutTest extends TestCase
     public function test_expired_coupon_cannot_be_applied(): void
     {
         $this->actingAs($this->user);
-        
+
         $coupon = Coupon::factory()->create([
             'code' => 'EXPIRED',
             'is_active' => true,
@@ -120,7 +121,7 @@ class CheckoutTest extends TestCase
     public function test_coupon_with_exceeded_usage_limit_cannot_be_applied(): void
     {
         $this->actingAs($this->user);
-        
+
         $coupon = Coupon::factory()->create([
             'code' => 'LIMITED',
             'is_active' => true,
@@ -142,7 +143,7 @@ class CheckoutTest extends TestCase
     public function test_user_can_place_order_with_bank_transfer(): void
     {
         $this->actingAs($this->user);
-        
+
         // Add item to cart
         $cartItem = UserItem::create([
             'user_id' => $this->user->id,
@@ -176,9 +177,9 @@ class CheckoutTest extends TestCase
     public function test_checkout_fails_with_insufficient_stock(): void
     {
         $this->actingAs($this->user);
-        
+
         $lowStockProduct = Product::factory()->create(['stock' => 1]);
-        
+
         $cartItem = UserItem::create([
             'user_id' => $this->user->id,
             'product_id' => $lowStockProduct->id,
@@ -208,14 +209,14 @@ class CheckoutTest extends TestCase
         $underAgeUser = User::factory()->create([
             'dob' => now()->subYears(15),
         ]);
-        
+
         $ageRestrictedProduct = Product::factory()->create([
             'stock' => 100,
             'is_age_restricted' => true,
         ]);
 
         $this->actingAs($underAgeUser);
-        
+
         $cartItem = UserItem::create([
             'user_id' => $underAgeUser->id,
             'product_id' => $ageRestrictedProduct->id,
@@ -240,7 +241,7 @@ class CheckoutTest extends TestCase
     public function test_cart_items_are_removed_after_checkout(): void
     {
         $this->actingAs($this->user);
-        
+
         $cartItem = UserItem::create([
             'user_id' => $this->user->id,
             'product_id' => $this->product->id,
@@ -275,7 +276,7 @@ class CheckoutTest extends TestCase
     public function test_coupon_times_used_incremented_after_checkout(): void
     {
         $this->actingAs($this->user);
-        
+
         $coupon = Coupon::factory()->create([
             'code' => 'SAVE10',
             'discount_type' => 'percentage',
@@ -316,7 +317,7 @@ class CheckoutTest extends TestCase
     public function test_concurrent_checkout_does_not_oversell(): void
     {
         $limitedProduct = Product::factory()->create(['stock' => 1]);
-        
+
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
 
@@ -338,7 +339,7 @@ class CheckoutTest extends TestCase
         // First checkout should succeed
         $this->actingAs($user1);
         $cartItem1 = UserItem::where('user_id', $user1->id)->first();
-        
+
         $response1 = $this->post('/checkout/process', [
             'address_line' => '123 Main Street',
             'city' => 'London',
@@ -350,7 +351,7 @@ class CheckoutTest extends TestCase
         // Second checkout should fail (no stock left)
         $this->actingAs($user2);
         $cartItem2 = UserItem::where('user_id', $user2->id)->first();
-        
+
         $response2 = $this->post('/checkout/process', [
             'address_line' => '123 Main Street',
             'city' => 'London',

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 /**
  * Admin moderation of product reviews: listing, approval toggling,
  * admin reply, and deletion.
- * 
+ *
  * FIXED: Added HTML escaping to prevent XSS vulnerability in admin_reply
  */
 class ReviewController extends Controller
@@ -59,7 +59,7 @@ class ReviewController extends Controller
      */
     public function toggleApproval(Review $review)
     {
-        $review->update(['is_approved' => !$review->is_approved]);
+        $review->update(['is_approved' => ! $review->is_approved]);
 
         return back()->with('success', 'Review status updated successfully.');
     }
