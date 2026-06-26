@@ -200,14 +200,29 @@ class MailController extends Controller
         ]);
         $htmlContent = view('emails.admin_custom', ['mailMessage' => $parsedMessage])->render();
 
+        $sent = [];
+        $failed = [];
         if (! $isDraft) {
             if (empty($emails)) {
                 return back()->withErrors(['to' => 'Add at least one recipient.'])->withInput();
             }
+            // Send per-recipient so one bad address / transient SMTP error can't
+            // abort the whole batch (and lose the "sent" record below). Track
+            // failures and surface them instead of 500-ing on a successful send.
             foreach ($emails as $email) {
-                Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $parsedMessage));
+                try {
+                    Mail::to($email)->send(new \App\Mail\AdminCustomMail($request->subject, $parsedMessage));
+                    $sent[] = $email;
+                } catch (\Throwable $e) {
+                    $failed[] = $email;
+                    \Log::error("Admin mail failed to {$email}: ".$e->getMessage());
+                }
             }
-            \Log::info('Admin mail sent to: '.implode(', ', $emails));
+            \Log::info('Admin mail sent to: '.implode(', ', $sent));
+
+            if (empty($sent)) {
+                return back()->withErrors(['to' => 'Message could not be sent to any recipient. Please try again.'])->withInput();
+            }
         }
 
         // If editing a draft, delete the old one
@@ -217,7 +232,7 @@ class MailController extends Controller
 
         ContactMessage::create([
             'name' => 'Admin ('.auth()->user()->name.')',
-            'email' => implode(', ', $emails),
+            'email' => implode(', ', $isDraft ? $emails : $sent),
             'subject' => $request->subject,
             'message' => $isDraft ? $request->message : $htmlContent,
             'is_read' => true,
@@ -228,8 +243,12 @@ class MailController extends Controller
             return redirect()->route('admin.mail.drafts')->with('success', 'Draft saved.');
         }
 
-        return redirect()->route('admin.mail.sent')
-            ->with('success', 'Message sent to '.count($emails).' recipient(s).');
+        $summary = 'Message sent to '.count($sent).' recipient(s).';
+        if (! empty($failed)) {
+            $summary .= ' Failed for '.count($failed).': '.implode(', ', $failed).'.';
+        }
+
+        return redirect()->route('admin.mail.sent')->with('success', $summary);
     }
 
     public function toggleStar($id)
