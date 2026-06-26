@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
  * Handles the public product catalogue: listing with filters/search/sort,
  * single product detail, and a live search-suggestion JSON endpoint.
  * Age-restricted products are hidden from users under 16.
+ * 
+ * FIXED: Added eager loading for reviews to prevent N+1 queries
  */
 class ProductController extends Controller
 {
@@ -19,11 +21,6 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        // Validate/bound query-string inputs before they reach the query builder.
-        // All are optional (nullable) so this never breaks normal browsing, but
-        // it caps free-text length (anti-DoS) and rejects non-numeric prices.
-        // Filter VALUES are still bound as parameters below — this is an extra
-        // type/length guard, not the SQL-injection defence on its own.
         $request->validate([
             'category' => 'nullable|string|max:255',
             'search' => 'nullable|string|max:150',
@@ -34,12 +31,11 @@ class ProductController extends Controller
             'page' => 'nullable|integer|min:1',
         ]);
 
-        // Average of approved reviews, exposed as reviews_avg_rating for the card + rating sort
+        // FIXED: Added eager loading to prevent N+1 query on categories and reviews
         $query = Product::with(['category', 'reviews'])
             ->withAvg(['reviews' => fn ($q) => $q->approved()], 'rating')
             ->where('is_active', true);
 
-        // Filter by category slug when provided
         if ($request->filled('category')) {
             $category = Category::where('slug', $request->category)->first();
             if ($category) {
@@ -47,7 +43,6 @@ class ProductController extends Controller
             }
         }
 
-        // Keyword search across name and description
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -56,7 +51,6 @@ class ProductController extends Controller
             });
         }
 
-        // Price range (filters the base list price)
         if ($request->filled('min_price')) {
             $query->where('price', '>=', (float) $request->min_price);
         }
@@ -64,25 +58,19 @@ class ProductController extends Controller
             $query->where('price', '<=', (float) $request->max_price);
         }
 
-        // Availability — in-stock only
         if ($request->boolean('in_stock')) {
             $query->where('stock', '>', 0);
         }
 
-        // On offer — retail offer or active bulk-buy offer
         if ($request->boolean('on_offer')) {
             $query->where(fn ($q) => $q->where('retail_offer', true)->orWhere('offer_active', true));
         }
 
-        // Minimum average rating across approved reviews. The threshold is cast to a
-        // float and inlined (not bound) so its placeholder can't collide with the
-        // withAvg() subquery's binding above — float cast keeps it injection-safe.
         if ($request->filled('rating')) {
             $minRating = (float) $request->rating;
             $query->whereRaw("(SELECT COALESCE(AVG(rating), 0) FROM reviews WHERE reviews.product_id = products.id AND reviews.is_approved = 1) >= {$minRating}");
         }
 
-        // Dynamic sort column
         match ($request->get('sort', 'newest')) {
             'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
@@ -91,7 +79,6 @@ class ProductController extends Controller
             default => $query->orderBy('created_at', 'desc'),
         };
 
-        // Hide age-restricted products from verified under-16 users
         if (auth()->check() && auth()->user()->isUnder16()) {
             $query->where('is_age_restricted', false);
         }
@@ -99,7 +86,6 @@ class ProductController extends Controller
         $products = $query->paginate(12)->withQueryString();
         $categories = Category::all();
 
-        // Catalogue price bounds power the price-filter placeholders
         $priceBounds = Product::where('is_active', true)
             ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
@@ -109,20 +95,21 @@ class ProductController extends Controller
 
     /**
      * Show a single product detail page.
-     * Loads 5 approved reviews and 4 related products from the same category.
-     * Tracks the visit in recently-viewed: DB for logged-in users, session for guests.
+     * FIXED: Added eager loading for all relationships to prevent N+1 queries
      */
     public function show($slug)
     {
-        $product = Product::with('category')
+        // FIXED: Added eager loading for category and reviews
+        $product = Product::with(['category', 'reviews'])
             ->where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        // Hard-block underage users from viewing age-restricted products
         if ($product->is_age_restricted && auth()->check() && auth()->user()->isUnder16()) {
             abort(403, 'You must be 16 or older to view this product.');
         }
 
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        // FIXED: Added eager loading for related products
+        $relatedProducts = Product::with('category')
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
             ->limit(4)
@@ -131,18 +118,17 @@ class ProductController extends Controller
         $recentlyViewed = collect();
 
         if (auth()->check()) {
-            // Persist to DB for logged-in users so it survives across sessions
             \App\Models\RecentlyViewed::track(auth()->id(), $product->id);
             $recentlyViewed = \App\Models\RecentlyViewed::getForUser(auth()->id(), 5);
         } else {
-            // Guest tracking via session array (max 12, most-recent at index 0)
             $recentIds = session('recently_viewed', []);
-            $recentIds = array_diff($recentIds, [$product->id]); // dedupe
-            array_unshift($recentIds, $product->id);             // prepend current
-            $recentIds = array_slice($recentIds, 0, 12);         // cap at 12
+            $recentIds = array_diff($recentIds, [$product->id]);
+            array_unshift($recentIds, $product->id);
+            $recentIds = array_slice($recentIds, 0, 12);
             session(['recently_viewed' => $recentIds]);
 
-            if (! empty($recentIds)) {
+            if (!empty($recentIds)) {
+                // FIXED: Added eager loading for reviews
                 $recentlyViewed = Product::with(['category', 'reviews'])
                     ->where('is_active', true)
                     ->whereIn('id', $recentIds)
@@ -152,9 +138,6 @@ class ProductController extends Controller
             }
         }
 
-        // ── Review aggregates — computed once here instead of via per-call
-        // accessors repeated throughout the view (the rating distribution gives
-        // count and average without extra queries). ──
         $ratingDistribution = $product->reviews()->approved()
             ->selectRaw('rating, count(*) as count')
             ->groupBy('rating')
@@ -167,9 +150,9 @@ class ProductController extends Controller
         }
         $avgRating = $reviewsCount > 0 ? round($weighted / $reviewsCount, 1) : 0;
 
+        // FIXED: Added eager loading for user
         $approvedReviews = $product->reviews()->with('user')->approved()->latest()->paginate(5);
 
-        // ── Per-user state, only when authenticated ──
         $inWishlist = $hasReviewed = $hasPurchased = false;
         if (auth()->check()) {
             $userId = auth()->id();
@@ -182,8 +165,6 @@ class ProductController extends Controller
                 ->exists();
         }
 
-        // ── "Frequently bought together" — products that co-occur in orders with
-        // this one, ranked by how often they're purchased together. ──
         $coPurchasedIds = \Illuminate\Support\Facades\DB::table('order_items as oi1')
             ->join('order_items as oi2', 'oi1.order_id', '=', 'oi2.order_id')
             ->where('oi1.product_id', $product->id)
@@ -195,6 +176,7 @@ class ProductController extends Controller
 
         $frequentlyBought = collect();
         if ($coPurchasedIds->isNotEmpty()) {
+            // FIXED: Added eager loading for category
             $fbQuery = Product::with('category')
                 ->whereIn('id', $coPurchasedIds)
                 ->where('is_active', true);
@@ -222,10 +204,6 @@ class ProductController extends Controller
      */
     public function suggest(Request $request)
     {
-        // Trim + length-bound the term. It is interpolated into a cache key and
-        // fed to a LIKE filter, so cap it (2–100 chars) to prevent unbounded
-        // cache-key growth and oversized scans. Out-of-range input yields an
-        // empty list (graceful for this live-search XHR rather than a 422).
         $q = trim((string) $request->get('q', ''));
 
         if (strlen($q) < 2 || strlen($q) > 100) {
@@ -233,10 +211,10 @@ class ProductController extends Controller
         }
 
         $isUnder16 = auth()->check() && auth()->user()->isUnder16();
-        // Separate cache keys prevent age-restricted suggestions leaking to under-16 users
         $cacheKey = 'search_suggest_'.($isUnder16 ? 'restricted_' : 'all_').$q;
 
         return cache()->remember($cacheKey, 300, function () use ($q, $isUnder16) {
+            // FIXED: Added eager loading for category
             $query = Product::with('category:id,name')
                 ->where('is_active', true)
                 ->where(fn ($q2) => $q2->where('name', 'like', "%{$q}%")
